@@ -1,0 +1,61 @@
+﻿<UserControl x:Class="BleRecorder.UI.WPF.View.testSubjectDetailView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:BleRecorder.UI.WPF.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="500" d:DesignWidth="600"
+             d:DataContext="{d:DesignInstance viewModels:TestSubjectDetailViewModel, d:IsDesignTimeCreatable=True}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Label Content="First name" Margin="10 10 10 0"/>
+        <TextBox Grid.Row="1" Text="{Binding TestSubject.FirstName,
+        Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="10 0 10 10"/>
+
+        <Label Grid.Row="2" Content="Last name" Margin="10 0"/>
+        <TextBox Grid.Row="3" Text="{Binding TestSubject.LastName,
+        Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="10 0 10 10"/>
+
+        <DockPanel Grid.Row="8"  Margin="10">
+            <StackPanel DockPanel.Dock="Right">
+                <Button Content="Add" Command="{Binding AddMeasurementCommand}" CommandParameter=""/>
+                <Button Content="Edit" Command="{Binding EditMeasurementCommand}"/>
+                <Button Content="Remove" Command="{Binding RemoveMeasurementCommand}"/>
+            </StackPanel>
+            <DataGrid BorderThickness="2" IsSynchronizedWithCurrentItem="True"
+                      ItemsSource="{Binding Measurements}" 
+                      AutoGenerateColumns="False" RowHeaderWidth="0"
+                      CanUserAddRows="False" >
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Measurement description" Width="*"
+                                        Binding="{Binding Description, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+                    <DataGridTextColumn Header="Length" Width="100"  CanUserResize="False"
+                                        Binding="{Binding ForceData.Count, Mode=OneWay}">
+                        <DataGridTextColumn.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.CellStyle>
+                    </DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </DockPanel>
+
+        <StackPanel Grid.Row="9" Orientation="Horizontal">
+            <Button Content="Save" Command="{Binding SaveCommand}"/>
+            <Button Content="Delete" Command="{Binding DeleteCommand}"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -1,0 +1,66 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net6.0-windows$([Microsoft.Build.Utilities.ToolLocationHelper]::GetLatestSDKTargetPlatformVersion('Windows', '10.0'))</TargetFramework>
+		<Nullable>enable</Nullable>
+		<UseWPF>true</UseWPF>
+		<SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="Assets\splashScreen.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Autofac" Version="6.3.0" />
+		<PackageReference Include="Fody" Version="6.6.2">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.0-beta.240" />
+		<PackageReference Include="MahApps.Metro" Version="2.4.9" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.5" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.5">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.18362.2005" />
+		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="1.4.1" />
+		<PackageReference Include="Prism.Core" Version="8.1.97" />
+		<PackageReference Include="PropertyChanged.Fody" Version="3.4.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\BleRecorder.DataAccess\BleRecorder.DataAccess.csproj" />
+	  <ProjectReference Include="..\BleRecorder.Models\BleRecorder.Models.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <SplashScreen Include="Assets\splashScreen.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Properties\Settings.Designer.cs">
+	    <DesignTimeSharedInput>True</DesignTimeSharedInput>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Settings.settings</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="BleRecorder.Experiments.db">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Properties\Settings.settings">
+	    <Generator>SettingsSingleFileGenerator</Generator>
+	    <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+	  </None>
+	</ItemGroup>
+
+
+</Project>

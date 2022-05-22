@@ -1,0 +1,53 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using BleRecorder.DataAccess;
+using BleRecorder.Models.TestSubject;
+using Microsoft.EntityFrameworkCore;
+
+namespace BleRecorder.UI.WPF.Data.Lookups
+{
+  public class LookupDataService : ITestSubjectLookupDataService, 
+    IMeasurementLookupDataService
+  {
+    private Func<ExperimentsDbContext> _contextCreator;
+
+    public LookupDataService(Func<ExperimentsDbContext> contextCreator)
+    {
+      _contextCreator = contextCreator;
+    }
+
+    public async Task<IEnumerable<LookupItem>> GetTestSubjectLookupAsync()
+    {
+      using (var ctx = _contextCreator())
+      {
+        return await ctx.TestSubjects.AsNoTracking()
+          .Select(f =>
+          new LookupItem
+          {
+            Id = f.Id,
+            DisplayMember = f.FirstName + " " + f.LastName
+          })
+          .ToListAsync();
+      }
+    }
+
+    public async Task<List<LookupItem>> GetMeasurementLookupAsync()
+    {
+      using (var ctx = _contextCreator())
+      {
+        var items = await ctx.Measurements.AsNoTracking()
+          .Select(m =>
+             new LookupItem
+             {
+               Id = m.Id,
+               DisplayMember = m.Description
+             })
+          .ToListAsync();
+        return items;
+      }
+    }
+
+  }
+}
