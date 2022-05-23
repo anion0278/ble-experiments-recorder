@@ -1,1 +1,1 @@
-# BleRecorder
+# VSB BleRecorder GUI
