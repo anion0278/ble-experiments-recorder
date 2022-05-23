@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="600" d:DesignWidth="300">
     <UserControl.Resources>
         <Style x:Key="NavigationItemContainerStyle" TargetType="ContentPresenter">
             <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -36,7 +36,7 @@
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="300"/>
+            <RowDefinition Height="2*"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <GroupBox Header="Test Subjects">
@@ -49,13 +49,10 @@
             </ScrollViewer>
         </GroupBox>
         <GroupBox Header="MYODAM Device status" Grid.Row="1">
-            <ScrollViewer VerticalScrollBarVisibility="Auto"
-                  HorizontalScrollBarVisibility="Auto">
-                <ItemsControl ItemsSource="{Binding Measurements}"
-                    ItemContainerStyle="{StaticResource NavigationItemContainerStyle}"
-                    ItemTemplate="{StaticResource NavigationItemTemplate}"
-                    Margin="10"/>
-            </ScrollViewer>
+            <StackPanel>
+                <Button Content="Connect"/>
+                <Label Content="Status: Not found"/>
+            </StackPanel>
         </GroupBox>
     </Grid>
 </UserControl>
