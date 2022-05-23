@@ -1,1 +1,1 @@
-# Mebster.Myodam
+# Mebster Myodam GUI
