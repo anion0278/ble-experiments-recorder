@@ -37,12 +37,12 @@
             <DataGrid BorderThickness="2" IsSynchronizedWithCurrentItem="True"
                       ItemsSource="{Binding Measurements}" 
                       AutoGenerateColumns="False" RowHeaderWidth="0"
-                      CanUserAddRows="False" >
+                      CanUserAddRows="False" CanUserDeleteRows="False">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Measurement description" Width="*"
                                         Binding="{Binding Description, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
-                    <DataGridTextColumn Header="Length" Width="100"  CanUserResize="False"
-                                        Binding="{Binding ForceData.Count, Mode=OneWay}">
+                    <DataGridTextColumn Header="Length" Width="100"  CanUserResize="False">
+                        <!--Binding="{Binding ForceData.Count, Mode=OneWay}"-->
                         <DataGridTextColumn.CellStyle>
                             <Style TargetType="DataGridCell">
                                 <Setter Property="HorizontalAlignment" Value="Center" />

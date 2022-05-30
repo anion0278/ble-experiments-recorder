@@ -30,8 +30,7 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         public ICommand AddMeasurementCommand { get; set; }
 
-
-        private BindingList<Measurement> _measurements = new();
+        private ObservableCollection<Measurement> _measurements;
 
         public ICollectionView Measurements { get; set; }
 
@@ -62,7 +61,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             _testSubjectRepository = testSubjectRepository;
             _measurementsRepository = measurementsRepository;
 
-            Measurements = new CollectionViewSource() { Source = _measurements }.View;
+           
 
             AddMeasurementCommand = new DehandateCommand(OnAddMeasurement);
             EditMeasurementCommand = new DehandateCommand(OnEditMeasurement);
@@ -103,7 +102,8 @@ namespace BleRecorder.UI.WPF.ViewModels
 
             InitializeTestSubject(testSubject);
 
-            //Measurements = _measurementsRepository.GetAllTestSubjectsAsync()
+            _measurements = new ObservableCollection<Measurement>(TestSubject.Measurements);
+            Measurements = new CollectionViewSource() { Source = _measurements }.View;
         }
 
         private void InitializeTestSubject(TestSubject testSubject)
@@ -135,10 +135,10 @@ namespace BleRecorder.UI.WPF.ViewModels
 
             var now = DateTime.Now;
 
-            _measurements.Add(
+            TestSubject.Measurements.Add(
                 new Measurement()
                 {
-                    Description = "Intermittent test 1",
+                    Description = "Intermittent test " + new Random().Next(1, 100),
                     ForceData = new List<MeasuredValue>()
                     {
                         new MeasuredValue(3.3f, now.AddSeconds(1)),
@@ -147,15 +147,15 @@ namespace BleRecorder.UI.WPF.ViewModels
                         new MeasuredValue(3.3f, now.AddSeconds(4)),
                     }
                 });
-            _measurements.Add(new Measurement()
+            TestSubject.Measurements.Add(new Measurement()
             {
-                Description = "Max force test 2",
+                Description = "Max force test " + new Random().Next(1, 100),
                 ForceData = new List<MeasuredValue>()
                     {
-                        new MeasuredValue(3.3f, now.AddSeconds(1)),
-                        new MeasuredValue(4.3f, now.AddSeconds(2)),
-                        new MeasuredValue(5.3f, now.AddSeconds(3)),
-                        new MeasuredValue(3.3f, now.AddSeconds(4)),
+                        new MeasuredValue(33.3f, now.AddSeconds(1)),
+                        new MeasuredValue(44.3f, now.AddSeconds(2)),
+                        new MeasuredValue(55.3f, now.AddSeconds(3)),
+                        new MeasuredValue(33.3f, now.AddSeconds(4)),
                     }
             });
         }
@@ -167,7 +167,7 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         protected override async void OnSaveExecute()
         {
-            await SaveAsync(_testSubjectRepository.SaveAsync,
+            await SaveAsync(_testSubjectRepository.SaveAsync, // TODO rewrite explicitly, expand
               () =>
               {
                   HasChanges = _testSubjectRepository.HasChanges();

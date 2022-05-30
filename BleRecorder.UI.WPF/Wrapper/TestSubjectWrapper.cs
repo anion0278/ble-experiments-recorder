@@ -24,6 +24,12 @@ namespace BleRecorder.UI.WPF.Wrapper
             set { SetValue(value); }
         }
 
+        public ICollection<Measurement> Measurements
+        {
+            get { return GetValue<ICollection<Measurement>>(); }
+            set { SetValue(value); }
+        }
+
         protected override IEnumerable<string> ValidateProperty(string propertyName)
         {
             switch (propertyName)

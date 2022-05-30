@@ -16,7 +16,8 @@ public class ExperimentsDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Measurement>().OwnsMany(x=> x.ForceData);
+        //modelBuilder.Entity<Measurement>().OwnsMany(x=> x.ForceData);
+        //modelBuilder.Entity<TestSubject>().Ignore(ts => ts.Measurements);
 
         base.OnModelCreating(modelBuilder);
 

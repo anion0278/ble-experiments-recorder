@@ -6,7 +6,7 @@
              xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:testSubject="clr-namespace:BleRecorder.Models.TestSubject;assembly=BleRecorder.Models"
-             xmlns:wpf="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+             xmlns:livecharts="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
              mc:Ignorable="d"
              d:DesignHeight="500" d:DesignWidth="600">
     <Grid>
@@ -31,9 +31,17 @@
             <Label Content="TEST SUBJECT NAME"/>
         </StackPanel>
 
-        <wpf:CartesianChart Grid.Row="4" Margin="4"
-                            Series="{Binding SeriesCollection}"  >
-        </wpf:CartesianChart>
+        <livecharts:CartesianChart DisableAnimations="True" Grid.Row="4" Margin="4" Name="DATA">
+            <livecharts:CartesianChart.SeriesColors>
+                <livecharts:ColorsCollection>
+                    <Color>Aqua</Color>
+                    <Color R="50" G="40" B="130" />
+                </livecharts:ColorsCollection>
+            </livecharts:CartesianChart.SeriesColors >
+            <livecharts:CartesianChart.Series>
+                <livecharts:LineSeries Values="{Binding Values}"></livecharts:LineSeries>
+            </livecharts:CartesianChart.Series>
+        </livecharts:CartesianChart>
 
         <StackPanel Grid.Row="5" Orientation="Horizontal">
             <Button Content="Save" Command="{Binding SaveCommand}"/>
