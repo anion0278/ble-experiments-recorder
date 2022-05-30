@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using LiveChartsCore;
-using LiveChartsCore.SkiaSharpView;
-using LiveChartsCore.SkiaSharpView.Painting;
+using LiveCharts;
 using Mebster.Myodam.Models.TestSubject;
 using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.Event;
@@ -14,7 +13,6 @@ using Mebster.Myodam.UI.WPF.View.Services;
 using Mebster.Myodam.UI.WPF.Wrapper;
 using Prism.Commands;
 using Prism.Events;
-using SkiaSharp;
 
 namespace Mebster.Myodam.UI.WPF.ViewModels
 {
@@ -26,16 +24,8 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         private TestSubject _selectedAddedTestSubject;
         private List<TestSubject> _allTestSubjects;
 
-        public ISeries[] SeriesCollection { get; set; } = {
-            new LineSeries<double>
-            {
-                Values = new double[] { 2, 1, 3, 5, 3, 4, 6 },
-                Fill = new LinearGradientPaint(SKColors.Aqua, new SKColor(50, 40, 130)),
-                Name = "Data from MYODAM",
-                GeometrySize = 6.0,
-            }
-        };
-
+        // ChartValues<double> implements INotifyCollectionChanged, but it is too concrete
+        public IList<double> ForceValues { get; set; } 
 
         public ICommand AddTestSubjectCommand { get; }
 
@@ -81,6 +71,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             IMessageDialogService messageDialogService,
             IMeasurementRepository measurementRepository) : base(eventAggregator, messageDialogService)
         {
+            ForceValues = new ChartValues<double> { 2, 1, 3, 5, 3, 4, 6 };
             _measurementRepository = measurementRepository;
             eventAggregator.GetEvent<AfterDetailSavedEvent>().Subscribe(AfterDetailSaved);
             eventAggregator.GetEvent<AfterDetailDeletedEvent>().Subscribe(AfterDetailDeleted);
@@ -99,6 +90,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         protected override async void OnDeleteExecute()
         {
+            //Values.Add(new Random().Next(1, 10));
             var result = await MessageDialogService.ShowOkCancelDialogAsync($"Do you really want to delete the measurement {Measurement.Title}?", "Question");
             if (result == MessageDialogResult.OK)
             {

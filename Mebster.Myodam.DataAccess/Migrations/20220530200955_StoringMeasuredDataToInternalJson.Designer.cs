@@ -2,6 +2,7 @@
 using Mebster.Myodam.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Mebster.Myodam.DataAccess.Migrations
 {
     [DbContext(typeof(ExperimentsDbContext))]
-    partial class ExperimentsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220530200955_StoringMeasuredDataToInternalJson")]
+    partial class StoringMeasuredDataToInternalJson
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.5");

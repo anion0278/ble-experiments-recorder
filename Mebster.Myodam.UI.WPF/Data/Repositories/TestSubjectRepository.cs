@@ -18,6 +18,6 @@ public class TestSubjectRepository : GenericRepository<TestSubject, ExperimentsD
 
     public override async Task<TestSubject> GetByIdAsync(int testSubjectId)
     {
-        return await Context.TestSubjects.SingleAsync(s => s.Id == testSubjectId);
+        return await Context.TestSubjects.Include(ts => ts.Measurements).SingleAsync(s => s.Id == testSubjectId);
     }
 }
