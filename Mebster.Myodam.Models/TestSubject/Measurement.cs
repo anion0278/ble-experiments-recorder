@@ -32,6 +32,7 @@ public class Measurement
 
 
     [EditorBrowsable(EditorBrowsableState.Never)]
+    // TODO try use  protected property
     public string InternalForceData
     {
         get => _internalForceData;

@@ -3,27 +3,27 @@ using System.Linq;
 using System.Threading.Tasks;
 using Mebster.Myodam.UI.WPF.Data.Lookups;
 using Mebster.Myodam.UI.WPF.Event;
-using Prism.Events;
+using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace Mebster.Myodam.UI.WPF.ViewModels
 {
   public class NavigationViewModel : ViewModelBase, INavigationViewModel
   {
     private ITestSubjectLookupDataService _testSubjectLookupService;
-    private IEventAggregator _eventAggregator;
+    private IMessenger _eventAggregator;
     private IMeasurementLookupDataService _measurementLookupService;
 
     public NavigationViewModel(ITestSubjectLookupDataService testSubjectLookupService,
       IMeasurementLookupDataService measurementLookupService,
-      IEventAggregator eventAggregator)
+      IMessenger eventAggregator)
     {
       _testSubjectLookupService = testSubjectLookupService;
       _measurementLookupService = measurementLookupService;
       _eventAggregator = eventAggregator;
       TestSubjects = new ObservableCollection<NavigationItemViewModel>();
       Measurements = new ObservableCollection<NavigationItemViewModel>();
-      _eventAggregator.GetEvent<AfterDetailSavedEvent>().Subscribe(AfterDetailSaved);
-      _eventAggregator.GetEvent<AfterDetailDeletedEvent>().Subscribe(AfterDetailDeleted);
+      _eventAggregator.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
+      _eventAggregator.Register<AfterDetailDeletedEventArgs>(this, (s,e) => AfterDetailDeleted(e));
     }
 
     public async Task LoadAsync()
@@ -73,7 +73,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
       }
     }
 
-    private void AfterDetailSaved(AfterDetailSavedEventArgs args)
+    private void AfterDetailSaved(AfterDetailSavedEventArgs args) // TODO refactoring!
     {
       switch (args.ViewModelName)
       {
@@ -86,8 +86,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
       }
     }
 
-    private void AfterDetailSaved(ObservableCollection<NavigationItemViewModel> items,
-      AfterDetailSavedEventArgs args)
+    private void AfterDetailSaved(ObservableCollection<NavigationItemViewModel> items, AfterDetailSavedEventArgs args)
     {
       var lookupItem = items.SingleOrDefault(l => l.Id == args.Id);
       if (lookupItem == null)

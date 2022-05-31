@@ -12,9 +12,6 @@ using Mebster.Myodam.UI.WPF.Startup;
 
 namespace Mebster.Myodam.UI.WPF
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App : Application
     {
         private void Application_Startup(object sender, StartupEventArgs e)
@@ -29,7 +26,7 @@ namespace Mebster.Myodam.UI.WPF
         private void Application_DispatcherUnhandledException(object sender,
             System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-            MessageBox.Show("Unexpected error occured. Please inform the admin."
+            MessageBox.Show("Unexpected error occured."
                             + Environment.NewLine + e.Exception.Message, "Unexpected error");
 
             e.Handled = true;

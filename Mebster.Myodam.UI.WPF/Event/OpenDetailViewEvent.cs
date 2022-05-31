@@ -1,11 +1,5 @@
-﻿using Prism.Events;
-
-namespace Mebster.Myodam.UI.WPF.Event
+﻿namespace Mebster.Myodam.UI.WPF.Event
 {
-  public class OpenDetailViewEvent : PubSubEvent<OpenDetailViewEventArgs>
-  {
-  }
-
   public class OpenDetailViewEventArgs
   {
     public int Id { get; set; }

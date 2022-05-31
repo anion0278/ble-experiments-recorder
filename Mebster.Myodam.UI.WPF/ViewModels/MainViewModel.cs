@@ -8,16 +8,15 @@ using System.Windows.Input;
 using Autofac.Features.Indexed;
 using Mebster.Myodam.UI.WPF.Event;
 using Mebster.Myodam.UI.WPF.View.Services;
-using Prism.Commands;
-using Prism.Events;
+using Microsoft.Toolkit.Mvvm.Input;
+using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace Mebster.Myodam.UI.WPF.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
         private int nextNewItemId = 0;
-        private IDetailViewModel _selectedDetailViewModel;
-        private readonly IEventAggregator _eventAggregator;
+        private readonly IMessenger _eventAggregator;
         private readonly IMessageDialogService _messageDialogService;
         private readonly IIndex<string, IDetailViewModel> _detailViewModelCreator; // TODO change
 
@@ -36,15 +35,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         public ObservableCollection<IDetailViewModel> DetailViewModels { get; }
 
 
-        public IDetailViewModel SelectedDetailViewModel
-        {
-            get { return _selectedDetailViewModel; }
-            set
-            {
-                _selectedDetailViewModel = value;
-                OnPropertyChanged();
-            }
-        }
+        public IDetailViewModel SelectedDetailViewModel { get; set; }
 
         /// <summary>
         /// Design-time ctor
@@ -56,7 +47,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         public MainViewModel(INavigationViewModel navigationViewModel,
             IIndex<string, IDetailViewModel> detailViewModelCreator,
-            IEventAggregator eventAggregator,
+            IMessenger eventAggregator,
             IMessageDialogService messageDialogService)
         {
             _eventAggregator = eventAggregator;
@@ -65,12 +56,12 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
             DetailViewModels = new ObservableCollection<IDetailViewModel>();
 
-            _eventAggregator.GetEvent<OpenDetailViewEvent>().Subscribe(OnOpenDetailView);
-            _eventAggregator.GetEvent<AfterDetailDeletedEvent>().Subscribe(AfterDetailDeleted);
-            _eventAggregator.GetEvent<AfterDetailClosedEvent>().Subscribe(AfterDetailClosed);
+            _eventAggregator.Register<OpenDetailViewEventArgs>(this, (s, e) => OnOpenDetailView(e));
+            _eventAggregator.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
+            _eventAggregator.Register<AfterDetailClosedEventArgs>(this, (s, e) => AfterDetailClosed(e));
 
-            CreateNewDetailCommand = new DelegateCommand<Type>(OnCreateNewDetailExecute);
-            OpenSingleDetailViewCommand = new DelegateCommand<Type>(OnOpenSingleDetailViewExecute);
+            CreateNewDetailCommand = new RelayCommand<Type>(OnCreateNewDetailExecute);
+            OpenSingleDetailViewCommand = new RelayCommand<Type>(OnOpenSingleDetailViewExecute);
 
             NavigationViewModel = navigationViewModel;
         }
@@ -101,7 +92,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         }
 
         private void OnOpenSingleDetailViewExecute(Type viewModelType)
-        { 
+        {
             OnOpenDetailView(
            new OpenDetailViewEventArgs
            {

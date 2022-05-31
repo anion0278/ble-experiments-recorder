@@ -4,7 +4,7 @@ using Mebster.Myodam.UI.WPF.Data.Lookups;
 using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.View.Services;
 using Mebster.Myodam.UI.WPF.ViewModels;
-using Prism.Events;
+using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace Mebster.Myodam.UI.WPF.Startup
 {
@@ -14,7 +14,7 @@ namespace Mebster.Myodam.UI.WPF.Startup
     {
       var builder = new ContainerBuilder();
 
-      builder.RegisterType<EventAggregator>().As<IEventAggregator>().SingleInstance();
+      builder.RegisterInstance<IMessenger>(WeakReferenceMessenger.Default);
 
       builder.RegisterType<ExperimentsDbContext>().AsSelf();
 

@@ -13,8 +13,8 @@ using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.Event;
 using Mebster.Myodam.UI.WPF.View.Services;
 using Mebster.Myodam.UI.WPF.Wrapper;
-using Prism.Commands;
-using Prism.Events;
+using Microsoft.Toolkit.Mvvm.Input;
+using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace Mebster.Myodam.UI.WPF.ViewModels
 {
@@ -22,7 +22,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
     {
         private ITestSubjectRepository _testSubjectRepository;
         private readonly IMeasurementRepository _measurementsRepository;
-        private TestSubjectWrapper _testSubject;
 
         public ICommand RemoveMeasurementCommand { get; set; }
 
@@ -35,15 +34,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         public ICollectionView Measurements { get; set; }
 
 
-        public TestSubjectWrapper TestSubject
-        {
-            get { return _testSubject; }
-            private set
-            {
-                _testSubject = value;
-                OnPropertyChanged();
-            }
-        }
+        public TestSubjectWrapper TestSubject { get; private set; }
 
         /// <summary>
         /// Design-time ctor
@@ -54,21 +45,16 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         public TestSubjectDetailViewModel(
             ITestSubjectRepository testSubjectRepository,
             IMeasurementRepository measurementsRepository,
-            IEventAggregator eventAggregator,
+            IMessenger eventAggregator,
             IMessageDialogService messageDialogService)
           : base(eventAggregator, messageDialogService)
         {
             _testSubjectRepository = testSubjectRepository;
             _measurementsRepository = measurementsRepository;
 
-           
-
-            AddMeasurementCommand = new DelegateCommand(OnAddMeasurement);
-            EditMeasurementCommand = new DelegateCommand(OnEditMeasurement);
-            RemoveMeasurementCommand = new DelegateCommand(OnRemoveMeasurement, () => _measurements.Any());
-
-            //eventAggregator.GetEvent<AfterCollectionSavedEvent>()
-            // .Subscribe(AfterCollectionSaved);
+            AddMeasurementCommand = new RelayCommand(OnAddMeasurement);
+            EditMeasurementCommand = new RelayCommand(OnEditMeasurement);
+            RemoveMeasurementCommand = new RelayCommand(OnRemoveMeasurement, () => _measurements.Any());
         }
 
         private void OnRemoveMeasurement()
@@ -79,7 +65,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         private void OnEditMeasurement()
         {
-            EventAggregator.GetEvent<OpenDetailViewEvent>().Publish(
+            EventAggregator.Send(
                     new OpenDetailViewEventArgs
                     {
                         Id = -1,
@@ -108,28 +94,28 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         private void InitializeTestSubject(TestSubject testSubject)
         {
-            _testSubject = new TestSubjectWrapper(testSubject);
-            _testSubject.PropertyChanged += (s, e) =>
+            TestSubject = new TestSubjectWrapper(testSubject);
+            TestSubject.PropertyChanged += (s, e) =>
           {
               // TODO REFACTORING !!!
               if (!HasChanges)
               {
                   HasChanges = _testSubjectRepository.HasChanges();
               }
-              if (e.PropertyName == nameof(_testSubject.HasErrors))
+              if (e.PropertyName == nameof(TestSubject.HasErrors))
               {
-                  ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
+                  ((RelayCommand)SaveCommand).NotifyCanExecuteChanged();
               }
               if (e.PropertyName == nameof(testSubject.FirstName) || e.PropertyName == nameof(testSubject.LastName))
               {
                   SetTitle();
               }
           };
-            ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
-            if (_testSubject.Id == 0)
+            ((RelayCommand)SaveCommand).NotifyCanExecuteChanged();
+            if (TestSubject.Id == 0)
             {
                 // trigger the validation
-                _testSubject.FirstName = "";
+                TestSubject.FirstName = "";
             }
             SetTitle();
 
