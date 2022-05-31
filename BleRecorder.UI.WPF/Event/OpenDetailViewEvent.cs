@@ -1,11 +1,5 @@
-﻿using Prism.Events;
-
-namespace BleRecorder.UI.WPF.Event
+﻿namespace BleRecorder.UI.WPF.Event
 {
-  public class OpenDetailViewEvent : PubSubEvent<OpenDetailViewEventArgs>
-  {
-  }
-
   public class OpenDetailViewEventArgs
   {
     public int Id { get; set; }

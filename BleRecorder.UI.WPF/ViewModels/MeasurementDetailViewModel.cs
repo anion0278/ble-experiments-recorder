@@ -11,8 +11,8 @@ using BleRecorder.UI.WPF.Data.Repositories;
 using BleRecorder.UI.WPF.Event;
 using BleRecorder.UI.WPF.View.Services;
 using BleRecorder.UI.WPF.Wrapper;
-using Prism.Commands;
-using Prism.Events;
+using Microsoft.Toolkit.Mvvm.Input;
+using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace BleRecorder.UI.WPF.ViewModels
 {
@@ -41,7 +41,6 @@ namespace BleRecorder.UI.WPF.ViewModels
             private set
             {
                 _measurement = value;
-                OnPropertyChanged();
             }
         }
 
@@ -51,8 +50,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             set
             {
                 _selectedAvailableTestSubject = value;
-                OnPropertyChanged();
-                ((DehandateCommand)AddTestSubjectCommand).RaiseCanExecuteChanged();
+                ((RelayCommand)AddTestSubjectCommand).NotifyCanExecuteChanged();
             }
         }
 
@@ -62,19 +60,18 @@ namespace BleRecorder.UI.WPF.ViewModels
             set
             {
                 _selectedAddedTestSubject = value;
-                OnPropertyChanged();
-                ((DehandateCommand)RemoveTestSubjectCommand).RaiseCanExecuteChanged();
+                ((RelayCommand)RemoveTestSubjectCommand).NotifyCanExecuteChanged();
             }
         }
 
-        public MeasurementDetailViewModel(IEventAggregator eventAggregator,
+        public MeasurementDetailViewModel(IMessenger eventAggregator,
             IMessageDialogService messageDialogService,
             IMeasurementRepository measurementRepository) : base(eventAggregator, messageDialogService)
         {
             ForceValues = new ChartValues<double> { 2, 1, 3, 5, 3, 4, 6 };
             _measurementRepository = measurementRepository;
-            eventAggregator.GetEvent<AfterDetailSavedEvent>().Subscribe(AfterDetailSaved);
-            eventAggregator.GetEvent<AfterDetailDeletedEvent>().Subscribe(AfterDetailDeleted);
+            eventAggregator.Register<AfterDetailSavedEventArgs>(this, (s,e) => AfterDetailSaved(e));
+            eventAggregator.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
 
             AddedTestSubjects = new ObservableCollection<TestSubject>();
             AvailableTestSubjects = new ObservableCollection<TestSubject>();

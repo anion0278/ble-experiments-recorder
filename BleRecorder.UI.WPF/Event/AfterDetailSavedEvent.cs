@@ -1,10 +1,6 @@
-﻿using Prism.Events;
-
+﻿
 namespace BleRecorder.UI.WPF.Event
 {
-  public class AfterDetailSavedEvent : PubSubEvent<AfterDetailSavedEventArgs>
-  {
-  }
 
   public class AfterDetailSavedEventArgs
   {

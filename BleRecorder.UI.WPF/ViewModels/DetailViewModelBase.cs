@@ -5,52 +5,28 @@ using System.Windows.Input;
 using BleRecorder.UI.WPF.Event;
 using BleRecorder.UI.WPF.View.Services;
 using Microsoft.EntityFrameworkCore;
-using Prism.Commands;
-using Prism.Events;
+using Microsoft.Toolkit.Mvvm.Input;
+using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace BleRecorder.UI.WPF.ViewModels
 {
     public abstract class DetailViewModelBase : ViewModelBase, IDetailViewModel
     {
         private bool _hasChanges;
-        protected readonly IEventAggregator EventAggregator;
+        protected readonly IMessenger EventAggregator;
         protected readonly IMessageDialogService MessageDialogService;
-        private int _id;
-        private string _title;
-
-        public DetailViewModelBase(IEventAggregator eventAggregator,
-          IMessageDialogService messageDialogService)
-        {
-            EventAggregator = eventAggregator;
-            MessageDialogService = messageDialogService;
-            SaveCommand = new DehandateCommand(OnSaveExecute, OnSaveCanExecute);
-            DeleteCommand = new DehandateCommand(OnDeleteExecute);
-            CloseDetailViewCommand = new DehandateCommand(OnCloseDetailViewExecute);
-        }
 
         public abstract Task LoadAsync(int measurementId);
 
-        public ICommand SaveCommand { get; private set; }
+        public ICommand SaveCommand { get; }
 
-        public ICommand DeleteCommand { get; private set; }
+        public ICommand DeleteCommand { get; }
 
         public ICommand CloseDetailViewCommand { get; }
 
-        public int Id
-        {
-            get { return _id; }
-            protected set { _id = value; }
-        }
+        public int Id { get; protected set; }
 
-        public virtual string Title
-        {
-            get { return _title; }
-            protected set
-            {
-                _title = value;
-                OnPropertyChanged();
-            }
-        }
+        public virtual string Title { get; protected set; }
 
         public bool HasChanges
         {
@@ -60,10 +36,19 @@ namespace BleRecorder.UI.WPF.ViewModels
                 if (_hasChanges != value)
                 {
                     _hasChanges = value;
-                    OnPropertyChanged();
-                    ((DehandateCommand)SaveCommand).RaiseCanExecuteChanged();
+                    ((RelayCommand)SaveCommand).NotifyCanExecuteChanged();
                 }
             }
+        }
+
+        public DetailViewModelBase(IMessenger eventAggregator,
+            IMessageDialogService messageDialogService)
+        {
+            EventAggregator = eventAggregator;
+            MessageDialogService = messageDialogService;
+            SaveCommand = new RelayCommand(OnSaveExecute, OnSaveCanExecute);
+            DeleteCommand = new RelayCommand(OnDeleteExecute);
+            CloseDetailViewCommand = new RelayCommand(OnCloseDetailViewExecute);
         }
 
         protected abstract void OnDeleteExecute();
@@ -74,8 +59,7 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         protected virtual void RaiseDetailDeletedEvent(int modelId)
         {
-            EventAggregator.GetEvent<AfterDetailDeletedEvent>()
-                .Publish(new AfterDetailDeletedEventArgs
+            EventAggregator.Send(new AfterDetailDeletedEventArgs
                 {
                     Id = modelId,
                     ViewModelName = this.GetType().Name
@@ -84,7 +68,7 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         protected virtual void RaiseDetailSavedEvent(int modelId, string displayMember)
         {
-            EventAggregator.GetEvent<AfterDetailSavedEvent>().Publish(new AfterDetailSavedEventArgs
+            EventAggregator.Send(new AfterDetailSavedEventArgs
             {
                 Id = modelId,
                 DisplayMember = displayMember,
@@ -92,14 +76,14 @@ namespace BleRecorder.UI.WPF.ViewModels
             });
         }
 
-        protected virtual void RaiseCollectionSavedEvent()
-        {
-            EventAggregator.GetEvent<AfterCollectionSavedEvent>()
-              .Publish(new AfterCollectionSavedEventArgs
-              {
-                  ViewModelName = this.GetType().Name
-              });
-        }
+        //protected virtual void RaiseCollectionSavedEvent()
+        //{
+        //    EventAggregator.GetEvent<AfterCollectionSavedEvent>()
+        //      .Publish(new AfterCollectionSavedEventArgs
+        //      {
+        //          ViewModelName = this.GetType().Name
+        //      });
+        //}
 
         protected virtual async void OnCloseDetailViewExecute()
         {
@@ -113,8 +97,7 @@ namespace BleRecorder.UI.WPF.ViewModels
                 }
             }
 
-            EventAggregator.GetEvent<AfterDetailClosedEvent>()
-              .Publish(new AfterDetailClosedEventArgs
+            EventAggregator.Send(new AfterDetailClosedEventArgs
               {
                   Id = this.Id,
                   ViewModelName = this.GetType().Name

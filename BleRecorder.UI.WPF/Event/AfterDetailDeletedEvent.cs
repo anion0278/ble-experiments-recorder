@@ -1,13 +1,8 @@
-﻿using Prism.Events;
+﻿namespace BleRecorder.UI.WPF.Event;
 
-namespace BleRecorder.UI.WPF.Event
+public class AfterDetailDeletedEventArgs
 {
-  public class AfterDetailDeletedEvent : PubSubEvent<AfterDetailDeletedEventArgs>
-  {
-  }
-  public class AfterDetailDeletedEventArgs
-  {
     public int Id { get; set; }
     public string ViewModelName { get; set; }
-  }
 }
+

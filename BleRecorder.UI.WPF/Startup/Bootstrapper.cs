@@ -4,7 +4,7 @@ using BleRecorder.UI.WPF.Data.Lookups;
 using BleRecorder.UI.WPF.Data.Repositories;
 using BleRecorder.UI.WPF.View.Services;
 using BleRecorder.UI.WPF.ViewModels;
-using Prism.Events;
+using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace BleRecorder.UI.WPF.Startup
 {
@@ -14,7 +14,7 @@ namespace BleRecorder.UI.WPF.Startup
     {
       var builder = new ContainerBuilder();
 
-      builder.RegisterType<EventAggregator>().As<IEventAggregator>().SingleInstance();
+      builder.RegisterInstance<IMessenger>(WeakReferenceMessenger.Default);
 
       builder.RegisterType<ExperimentsDbContext>().AsSelf();
 
