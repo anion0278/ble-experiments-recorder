@@ -16,7 +16,7 @@ namespace BleRecorder.UI.WPF.ViewModels
     public class MainViewModel : ViewModelBase
     {
         private int nextNewItemId = 0;
-        private readonly IMessenger _eventAggregator;
+        private readonly IMessenger _messenger;
         private readonly IMessageDialogService _messageDialogService;
         private readonly IIndex<string, IDetailViewModel> _detailViewModelCreator; // TODO change
 
@@ -47,18 +47,18 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         public MainViewModel(INavigationViewModel navigationViewModel,
             IIndex<string, IDetailViewModel> detailViewModelCreator,
-            IMessenger eventAggregator,
+            IMessenger messenger,
             IMessageDialogService messageDialogService)
         {
-            _eventAggregator = eventAggregator;
+            _messenger = messenger;
             _detailViewModelCreator = detailViewModelCreator;
             _messageDialogService = messageDialogService;
 
             DetailViewModels = new ObservableCollection<IDetailViewModel>();
 
-            _eventAggregator.Register<OpenDetailViewEventArgs>(this, (s, e) => OnOpenDetailView(e));
-            _eventAggregator.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
-            _eventAggregator.Register<AfterDetailClosedEventArgs>(this, (s, e) => AfterDetailClosed(e));
+            _messenger.Register<OpenDetailViewEventArgs>(this, (s, e) => OnOpenDetailView(e));
+            _messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
+            _messenger.Register<AfterDetailClosedEventArgs>(this, (s, e) => AfterDetailClosed(e));
 
             CreateNewDetailCommand = new RelayCommand<Type>(OnCreateNewDetailExecute);
             OpenSingleDetailViewCommand = new RelayCommand<Type>(OnOpenSingleDetailViewExecute);

@@ -64,14 +64,14 @@ namespace BleRecorder.UI.WPF.ViewModels
             }
         }
 
-        public MeasurementDetailViewModel(IMessenger eventAggregator,
+        public MeasurementDetailViewModel(IMessenger messenger,
             IMessageDialogService messageDialogService,
-            IMeasurementRepository measurementRepository) : base(eventAggregator, messageDialogService)
+            IMeasurementRepository measurementRepository) : base(messenger, messageDialogService)
         {
             ForceValues = new ChartValues<double> { 2, 1, 3, 5, 3, 4, 6 };
             _measurementRepository = measurementRepository;
-            eventAggregator.Register<AfterDetailSavedEventArgs>(this, (s,e) => AfterDetailSaved(e));
-            eventAggregator.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
+            messenger.Register<AfterDetailSavedEventArgs>(this, (s,e) => AfterDetailSaved(e));
+            messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
 
             AddedTestSubjects = new ObservableCollection<TestSubject>();
             AvailableTestSubjects = new ObservableCollection<TestSubject>();

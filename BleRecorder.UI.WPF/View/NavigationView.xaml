@@ -49,12 +49,10 @@
             </ScrollViewer>
         </GroupBox>
         <GroupBox Header="Aggregator Device status" Grid.Row="1">
-            <GroupBox Header="Aggregator Device status" Grid.Row="1">
-                <StackPanel>
-                    <Button Content="Connect"/>
-                    <Label Content="Status: Not found"/>
-                </StackPanel>
-            </GroupBox>
+            <StackPanel>
+                <Button Content="Connect"/>
+                <Label Content="Status: Not found"/>
+            </StackPanel>
         </GroupBox>
     </Grid>
 </UserControl>

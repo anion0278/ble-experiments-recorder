@@ -7,7 +7,7 @@ namespace BleRecorder.UI.WPF.ViewModels
 {
     public class NavigationItemViewModel : ViewModelBase
     {
-        private IMessenger _eventAggregator;
+        private IMessenger _messenger;
         private string _detailViewModelName;
 
         public int Id { get; }
@@ -18,9 +18,9 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         public NavigationItemViewModel(int id, string displayMember,
             string detailViewModelName,
-            IMessenger eventAggregator)
+            IMessenger messenger)
         {
-            _eventAggregator = eventAggregator;
+            _messenger = messenger;
             Id = id;
             DisplayMember = displayMember;
             _detailViewModelName = detailViewModelName;
@@ -29,7 +29,7 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         private void OnOpenDetailViewExecute()
         {
-            _eventAggregator.Send(
+            _messenger.Send(
               new OpenDetailViewEventArgs
               {
                   Id = Id,
