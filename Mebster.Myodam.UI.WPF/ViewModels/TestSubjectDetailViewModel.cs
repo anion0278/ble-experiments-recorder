@@ -45,9 +45,9 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         public TestSubjectDetailViewModel(
             ITestSubjectRepository testSubjectRepository,
             IMeasurementRepository measurementsRepository,
-            IMessenger eventAggregator,
+            IMessenger messenger,
             IMessageDialogService messageDialogService)
-          : base(eventAggregator, messageDialogService)
+          : base(messenger, messageDialogService)
         {
             _testSubjectRepository = testSubjectRepository;
             _measurementsRepository = measurementsRepository;
@@ -65,7 +65,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         private void OnEditMeasurement()
         {
-            EventAggregator.Send(
+            Messenger.Send(
                     new OpenDetailViewEventArgs
                     {
                         Id = -1,

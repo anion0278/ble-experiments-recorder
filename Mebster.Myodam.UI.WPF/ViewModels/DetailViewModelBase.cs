@@ -13,7 +13,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
     public abstract class DetailViewModelBase : ViewModelBase, IDetailViewModel
     {
         private bool _hasChanges;
-        protected readonly IMessenger EventAggregator;
+        protected readonly IMessenger Messenger;
         protected readonly IMessageDialogService MessageDialogService;
 
         public abstract Task LoadAsync(int measurementId);
@@ -41,10 +41,10 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             }
         }
 
-        public DetailViewModelBase(IMessenger eventAggregator,
+        public DetailViewModelBase(IMessenger messenger,
             IMessageDialogService messageDialogService)
         {
-            EventAggregator = eventAggregator;
+            Messenger = messenger;
             MessageDialogService = messageDialogService;
             SaveCommand = new RelayCommand(OnSaveExecute, OnSaveCanExecute);
             DeleteCommand = new RelayCommand(OnDeleteExecute);
@@ -59,7 +59,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         protected virtual void RaiseDetailDeletedEvent(int modelId)
         {
-            EventAggregator.Send(new AfterDetailDeletedEventArgs
+            Messenger.Send(new AfterDetailDeletedEventArgs
                 {
                     Id = modelId,
                     ViewModelName = this.GetType().Name
@@ -68,22 +68,13 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         protected virtual void RaiseDetailSavedEvent(int modelId, string displayMember)
         {
-            EventAggregator.Send(new AfterDetailSavedEventArgs
+            Messenger.Send(new AfterDetailSavedEventArgs
             {
                 Id = modelId,
                 DisplayMember = displayMember,
                 ViewModelName = this.GetType().Name
             });
         }
-
-        //protected virtual void RaiseCollectionSavedEvent()
-        //{
-        //    EventAggregator.GetEvent<AfterCollectionSavedEvent>()
-        //      .Publish(new AfterCollectionSavedEventArgs
-        //      {
-        //          ViewModelName = this.GetType().Name
-        //      });
-        //}
 
         protected virtual async void OnCloseDetailViewExecute()
         {
@@ -97,7 +88,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
                 }
             }
 
-            EventAggregator.Send(new AfterDetailClosedEventArgs
+            Messenger.Send(new AfterDetailClosedEventArgs
               {
                   Id = this.Id,
                   ViewModelName = this.GetType().Name
