@@ -21,6 +21,7 @@ namespace myodam_test
         string rx_buffer;
         byte sn_low;
         byte sn_hi;
+        bool simulation_run = false;
 
 
         private void label1_Click(object sender, EventArgs e)
@@ -250,7 +251,7 @@ namespace myodam_test
             tx_buffer[9] = sn_hi;
             tx_buffer[10] = sn_low;
 
-            int delay = byte.Parse(numericUpDown1.Text);
+            int delay = byte.Parse(numericUpDown3.Text);
 
 
             tx_buffer[11] = (byte)((delay >> 8) & 0xFF);
@@ -265,6 +266,9 @@ namespace myodam_test
             {
                 serialPort1.Write(tx_buffer, 0, 16);
             }
+
+            simulation_run = true;
+
 
         }
 
@@ -282,7 +286,7 @@ namespace myodam_test
             tx_buffer[9] = sn_hi;
             tx_buffer[10] = sn_low;
 
-            int delay = byte.Parse(numericUpDown1.Text);
+            int delay = byte.Parse(numericUpDown3.Text);
 
 
             tx_buffer[11] = (byte)((delay >> 8) & 0xFF);
@@ -298,6 +302,7 @@ namespace myodam_test
                 serialPort1.Write(tx_buffer, 0, 16);
             }
 
+            simulation_run = false;
         }
 
         private void btn_NeuGaitSetMode_Click(object sender, EventArgs e)
@@ -372,6 +377,20 @@ namespace myodam_test
                 serialPort1.Write(tx_buffer, 0, 15);
             }
 
+        }
+
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+            numericUpDown1.Value = trackBar1.Value;
+
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            if (simulation_run && checkBox1.Checked)
+            {
+                button2_Click(null, null);
+            }
         }
     }
 }
