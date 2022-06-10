@@ -22,12 +22,9 @@ namespace myodam_test
         byte sn_low;
         byte sn_hi;
         bool simulation_run = false;
+        bool ack = false;
 
 
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -65,7 +62,11 @@ namespace myodam_test
 
             comboBox1.Text = "50us";
 
+            label24.Text = trackBar1.Minimum.ToString();
+            label25.Text = trackBar1.Maximum.ToString();
 
+            trackBar1.Value = (int)numericUpDown1.Value;
+            label26.Text = trackBar1.Value.ToString();
 
         }
 
@@ -143,22 +144,37 @@ namespace myodam_test
             string rx = serialPort1.ReadExisting();
             rx_buffer += rx;
 
-            if (rx_buffer.Length == 23)
+            int find = rx_buffer.IndexOf("BAT");
+            if (find > 0)
             {
-                int find = rx_buffer.IndexOf("BAT");
                 int bat_value = 0;
-                if (find > 0)
+                try
                 {
                     bat_value = (byte)rx_buffer[find + 3];
                 }
+                catch (Exception)
+                {
 
-                textBox2.BeginInvoke(new Action(() => { textBox2.AppendText("\r\nBAT: " + bat_value.ToString() + "\r\n"); }));
-
+                }
+                
+                if (bat_value > 0)
+                {
+                    textBox2.BeginInvoke(new Action(() => { textBox2.AppendText("\r\nBAT: " + bat_value.ToString() + "\r\n"); }));
+                    rx_buffer = "";
+                }
             }
+
+            find = rx_buffer.IndexOf("ACK");
+            if (find > 0)
+            {
+                ack = true;
+                rx_buffer = "";
+            }
+
 
             textBox2.BeginInvoke(new Action(() => { textBox2.AppendText(rx); }));
 
-
+            //rx_buffer = "";
 
 
 
@@ -166,7 +182,7 @@ namespace myodam_test
         }
 
 
-        private void button2_Click(object sender, EventArgs e)
+        private void Btn_SetSimulationParameters(object sender, EventArgs e)
         {
             byte pusle_width;
             byte stim_waveform;
@@ -231,13 +247,14 @@ namespace myodam_test
 
             if (serialPort1.IsOpen)
             {
+                ack = false;
                 serialPort1.Write(tx_buffer, 0, 17);
             }
 
 
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void Btn_NeugaitStartStimulation_Click(object sender, EventArgs e)
         {
 
             tx_buffer[4] = 0x09;
@@ -264,6 +281,7 @@ namespace myodam_test
 
             if (serialPort1.IsOpen)
             {
+                ack = false;
                 serialPort1.Write(tx_buffer, 0, 16);
             }
 
@@ -299,6 +317,7 @@ namespace myodam_test
 
             if (serialPort1.IsOpen)
             {
+                ack = false;
                 serialPort1.Write(tx_buffer, 0, 16);
             }
 
@@ -382,15 +401,118 @@ namespace myodam_test
         private void trackBar1_Scroll(object sender, EventArgs e)
         {
             numericUpDown1.Value = trackBar1.Value;
-
+            label26.Text = trackBar1.Value.ToString();
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
             if (simulation_run && checkBox1.Checked)
             {
-                button2_Click(null, null);
+                if (checkBox2.Checked == false)
+                {
+                    Btn_SetSimulationParameters(null, null);
+                }
+                else
+                {
+
+                    btn_NeugaitStopStimulation_Click(null, null);
+
+                    //while(ack == false)
+                    //{
+
+                    //}
+
+                    Btn_SetSimulationParameters(null, null);
+
+                    //while (ack == false)
+                    //{
+
+                    //}
+
+                    Btn_NeugaitStartStimulation_Click(null, null);
+
+
+                }
+
+
+
             }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            textBox2.Clear();
+        }
+
+        private void Btn_SetGaitParameters_Click(object sender, EventArgs e)
+        {
+            tx_buffer[4] = 0x0B;
+
+            tx_buffer[5] = 0x00;
+            tx_buffer[6] = 0x08;
+
+            tx_buffer[7] = 0xED;
+            tx_buffer[8] = 0x02;
+
+            tx_buffer[9] = sn_hi;
+            tx_buffer[10] = sn_low;
+
+            tx_buffer[11] = (byte)(num_GaitRiseTime.Value / 255);
+            tx_buffer[12] = (byte)(num_GaitFallTime.Value / 255);
+            tx_buffer[13] = (byte)(num_GaitExtensionTime.Value / 255);
+            tx_buffer[14] = (byte)(num_GaitMaxStimulationTime.Value);
+
+
+            tx_buffer[15] = CalculateCheckSum();
+
+            tx_buffer[16] = 0x0D;
+            tx_buffer[17] = 0x0A;
+
+            if (serialPort1.IsOpen)
+            {
+                ack = false;
+                serialPort1.Write(tx_buffer, 0, 18);
+            }
+
+        }
+
+        private void Btn_SetExerciceParameters_Click(object sender, EventArgs e)
+        {
+            tx_buffer[4] = 0x12;
+
+            tx_buffer[5] = 0x00;
+            tx_buffer[6] = 0x0F;
+
+            tx_buffer[7] = 0xED;
+            tx_buffer[8] = 0x03;
+
+            tx_buffer[9] = sn_hi;
+            tx_buffer[10] = sn_low;
+
+            tx_buffer[11] = (byte)(num_ExcerciseRiseTime.Value / 255);
+            tx_buffer[12] = (byte)(num_ExcerciseFallTime.Value / 255);
+            tx_buffer[13] = (byte)(num_ExcerciseStimDuration1.Value / 255);
+            tx_buffer[14] = (byte)(num_ExcerciseRestDuration1.Value / 255);
+            tx_buffer[15] = (byte)(num_ExcerciseStimDuration2.Value / 255);
+            tx_buffer[16] = (byte)(num_ExcerciseRestDuration2.Value / 255);
+            tx_buffer[17] = (byte)(num_ExcerciseStimDuration3.Value / 255);
+            tx_buffer[18] = (byte)(num_ExcerciseRestDuration3.Value / 255);
+            tx_buffer[19] = (byte)(num_ExcerciseStimDuration4.Value / 255);
+            tx_buffer[20] = (byte)(num_ExcerciseRestDuration4.Value / 255);
+            tx_buffer[21] = (byte)(num_ExerciseTotalExcerciceTime.Value);
+
+            tx_buffer[22] = CalculateCheckSum();
+
+            tx_buffer[23] = 0x0D;
+            tx_buffer[24] = 0x0A;
+
+            if (serialPort1.IsOpen)
+            {
+                ack = false;
+                serialPort1.Write(tx_buffer, 0, 25);
+            }
+
+
         }
     }
 }
