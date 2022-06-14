@@ -1,8 +1,14 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using BleRecorder.Business.Device;
+using BleRecorder.Infrastructure.Bluetooth;
+using BleRecorder.Models.Device;
 using BleRecorder.UI.WPF.Data.Lookups;
 using BleRecorder.UI.WPF.Event;
+using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace BleRecorder.UI.WPF.ViewModels
@@ -10,22 +16,37 @@ namespace BleRecorder.UI.WPF.ViewModels
     public class NavigationViewModel : ViewModelBase, INavigationViewModel
     {
         private readonly IMessenger _messenger;
-        private readonly IMeasurementLookupDataService _measurementLookupService;
+        private readonly IBleRecorderManager _bleRecorderManager;
+        private readonly IBluetoothManager _bluetoothManager;
         private readonly ITestSubjectLookupDataService _testSubjectLookupService;
 
         public ObservableCollection<NavigationItemViewModel> TestSubjects { get; } = new();
 
-        public ObservableCollection<NavigationItemViewModel> Measurements { get; } = new();
+        public ICommand ConnectBleRecorderCommand { get; }
 
-        public NavigationViewModel(ITestSubjectLookupDataService testSubjectLookupService,
-              IMeasurementLookupDataService measurementLookupService,
-              IMessenger messenger)
+        public DeviceStatus BleRecorderStatus => _bleRecorderManager.BleRecorderStatus;
+
+        public NavigationViewModel(ITestSubjectLookupDataService testSubjectLookupService, IMessenger messenger, IBleRecorderManager bleRecorderManager)
         {
+            ConnectBleRecorderCommand = new AsyncRelayCommand(ConnectBleRecorder, () => true);
             _testSubjectLookupService = testSubjectLookupService;
-            _measurementLookupService = measurementLookupService;
             _messenger = messenger;
+            _bleRecorderManager = bleRecorderManager;
+            _bleRecorderManager.BleRecorderStatusChanged += (_, _) => { OnPropertyChanged(nameof(BleRecorderStatus)); };
             _messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
             _messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
+        }
+
+        public async Task ConnectBleRecorder()
+        {
+            try
+            {
+                await _bleRecorderManager.ConnectBleRecorder();
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
         public async Task LoadAsync()
@@ -38,25 +59,24 @@ namespace BleRecorder.UI.WPF.ViewModels
                   nameof(TestSubjectDetailViewModel),
                   _messenger));
             }
-            lookup = await _measurementLookupService.GetMeasurementLookupAsync();
-            Measurements.Clear();
-            foreach (var item in lookup)
-            {
-                Measurements.Add(new NavigationItemViewModel(item.Id, item.DisplayMember,
-                  nameof(MeasurementDetailViewModel),
-                  _messenger));
-            }
         }
 
-        private void AfterDetailDeleted(AfterDetailDeletedEventArgs args)
+        private void AfterDetailDeleted(AfterDetailDeletedEventArgs args) // TODO refactoring!
         {
             switch (args.ViewModelName)
             {
                 case nameof(TestSubjectDetailViewModel):
                     AfterDetailDeleted(TestSubjects, args);
                     break;
-                case nameof(MeasurementDetailViewModel):
-                    AfterDetailDeleted(Measurements, args);
+            }
+        }
+
+        private void AfterDetailSaved(AfterDetailSavedEventArgs args) // TODO refactoring!
+        {
+            switch (args.ViewModelName)
+            {
+                case nameof(TestSubjectDetailViewModel):
+                    AfterDetailSaved(TestSubjects, args);
                     break;
             }
         }
@@ -68,19 +88,6 @@ namespace BleRecorder.UI.WPF.ViewModels
             if (item != null)
             {
                 items.Remove(item);
-            }
-        }
-
-        private void AfterDetailSaved(AfterDetailSavedEventArgs args) // TODO refactoring!
-        {
-            switch (args.ViewModelName)
-            {
-                case nameof(TestSubjectDetailViewModel):
-                    AfterDetailSaved(TestSubjects, args);
-                    break;
-                case nameof(MeasurementDetailViewModel):
-                    AfterDetailSaved(Measurements, args);
-                    break;
             }
         }
 

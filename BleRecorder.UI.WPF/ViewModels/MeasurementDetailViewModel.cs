@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using LiveCharts;
+using BleRecorder.Business.Device;
 using BleRecorder.Models.TestSubject;
 using BleRecorder.UI.WPF.Data.Repositories;
 using BleRecorder.UI.WPF.Event;
@@ -18,76 +19,71 @@ namespace BleRecorder.UI.WPF.ViewModels
 {
     public class MeasurementDetailViewModel : DetailViewModelBase, IMeasurementDetailViewModel
     {
+        private readonly IBleRecorderManager _bleRecorderManager;
         private IMeasurementRepository _measurementRepository;
-        private MeasurementWrapper _measurement;
-        private TestSubject _selectedAvailableTestSubject;
-        private TestSubject _selectedAddedTestSubject;
-        private List<TestSubject> _allTestSubjects;
 
         // ChartValues<double> implements INotifyCollectionChanged, but it is too concrete
         public IList<double> ForceValues { get; set; } 
-
-        public ICommand AddTestSubjectCommand { get; }
-
-        public ICommand RemoveTestSubjectCommand { get; }
 
         public ObservableCollection<TestSubject> AddedTestSubjects { get; }
 
         public ObservableCollection<TestSubject> AvailableTestSubjects { get; }
 
-        public MeasurementWrapper Measurement
-        {
-            get { return _measurement; }
-            private set
-            {
-                _measurement = value;
-            }
-        }
+        public bool IsCurrentlyMeasuring { get; set; }
 
-        public TestSubject SelectedAvailableTestSubject
-        {
-            get { return _selectedAvailableTestSubject; }
-            set
-            {
-                _selectedAvailableTestSubject = value;
-                ((RelayCommand)AddTestSubjectCommand).NotifyCanExecuteChanged();
-            }
-        }
+        public TestSubject RelatedTestSubject { get; set; }
 
-        public TestSubject SelectedAddedTestSubject
-        {
-            get { return _selectedAddedTestSubject; }
-            set
-            {
-                _selectedAddedTestSubject = value;
-                ((RelayCommand)RemoveTestSubjectCommand).NotifyCanExecuteChanged();
-            }
-        }
+        public MeasurementWrapper Measurement { get; private set; }
+
+        public ICommand StartMeasurementCommand { get; }
+        public ICommand StopMeasurementCommand { get; }
+        public ICommand CleanRecordedDataCommand { get; set; }
+
 
         public MeasurementDetailViewModel(IMessenger messenger,
             IMessageDialogService messageDialogService,
+            IBleRecorderManager bleRecorderManager,
             IMeasurementRepository measurementRepository) : base(messenger, messageDialogService)
         {
-            ForceValues = new ChartValues<double> { 2, 1, 3, 5, 3, 4, 6 };
+            StartMeasurementCommand = new AsyncRelayCommand(StartMeasurement, () => true);
+            StopMeasurementCommand = new AsyncRelayCommand(StopMeasurement, () => true);
+            CleanRecordedDataCommand = new RelayCommand(CleanRecordedData, () => true);
+
+            ForceValues = new ChartValues<double> { 2 };
+            _bleRecorderManager = bleRecorderManager;
             _measurementRepository = measurementRepository;
-            messenger.Register<AfterDetailSavedEventArgs>(this, (s,e) => AfterDetailSaved(e));
-            messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
+            //messenger.Register<AfterDetailSavedEventArgs>(this, (s,e) => AfterDetailSaved(e));
+            //messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
 
             AddedTestSubjects = new ObservableCollection<TestSubject>();
             AvailableTestSubjects = new ObservableCollection<TestSubject>();
+        }
+
+        private void CleanRecordedData()
+        {
+            ForceValues.Clear();
         }
 
         public override async Task LoadAsync(int measurementId)
         {
             var measurement = _measurementRepository.GetByIdAsync(measurementId);
             Id = measurementId;
+        }
 
-            //_allTestSubjects = await _measurementRepository.GetAllTestSubjectsAsync();
+        public async Task StartMeasurement()
+        {
+            _bleRecorderManager.BleRecorderDevice.NewValueReceived += (sender, value) => { ForceValues.Add(value.Value); };
+            await _bleRecorderManager.BleRecorderDevice.StartMeasurement(new StimulationParameters(100, 50, 20));
+        }
+
+
+        public async Task StopMeasurement()
+        {
+            await _bleRecorderManager.BleRecorderDevice.StopMeasurement();
         }
 
         protected override async void OnDeleteExecute()
         {
-            //Values.Add(new Random().Next(1, 10));
             var result = await MessageDialogService.ShowOkCancelDialogAsync($"Do you really want to delete the measurement {Measurement.Title}?", "Question");
             if (result == MessageDialogResult.OK)
             {
@@ -111,21 +107,21 @@ namespace BleRecorder.UI.WPF.ViewModels
         }
 
 
-        private async void AfterDetailSaved(AfterDetailSavedEventArgs args)
-        {
-            if (args.ViewModelName == nameof(TestSubjectDetailViewModel))
-            {
-                await _measurementRepository.ReloadTestSubjectAsync(args.Id);
-                _allTestSubjects = await _measurementRepository.GetAllTestSubjectsAsync();
-            }
-        }
+        //private async void AfterDetailSaved(AfterDetailSavedEventArgs args)
+        //{
+        //    if (args.ViewModelName == nameof(TestSubjectDetailViewModel))
+        //    {
+        //        await _measurementRepository.ReloadTestSubjectAsync(args.Id);
+        //        _allTestSubjects = await _measurementRepository.GetAllTestSubjectsAsync();
+        //    }
+        //}
 
-        private async void AfterDetailDeleted(AfterDetailDeletedEventArgs args)
-        {
-            if (args.ViewModelName == nameof(TestSubjectDetailViewModel))
-            {
-                _allTestSubjects = await _measurementRepository.GetAllTestSubjectsAsync();
-            }
-        }
+        //private async void AfterDetailDeleted(AfterDetailDeletedEventArgs args)
+        //{
+        //    if (args.ViewModelName == nameof(TestSubjectDetailViewModel))
+        //    {
+        //        _allTestSubjects = await _measurementRepository.GetAllTestSubjectsAsync();
+        //    }
+        //}
     }
 }

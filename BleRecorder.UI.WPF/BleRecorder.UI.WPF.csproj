@@ -37,7 +37,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\BleRecorder.Business\BleRecorder.Business.csproj" />
 	  <ProjectReference Include="..\BleRecorder.DataAccess\BleRecorder.DataAccess.csproj" />
+	  <ProjectReference Include="..\BleRecorder.Infrastructure\BleRecorder.Infrastructure.csproj" />
 	  <ProjectReference Include="..\BleRecorder.Models\BleRecorder.Models.csproj" />
 	</ItemGroup>
 

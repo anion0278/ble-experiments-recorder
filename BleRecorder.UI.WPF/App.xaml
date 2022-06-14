@@ -4,6 +4,7 @@
              xmlns:local="clr-namespace:BleRecorder.UI.WPF"
              xmlns:viewModel="clr-namespace:BleRecorder.UI.WPF.ViewModels"
              xmlns:view="clr-namespace:BleRecorder.UI.WPF.View"
+             xmlns:resouces="clr-namespace:BleRecorder.UI.WPF.View.Resouces"
              Startup="Application_Startup"
              DispatcherUnhandledException="Application_DispatcherUnhandledException">
     <Application.Resources>
@@ -30,23 +31,23 @@
                         <Setter Property="Margin" Value="10"/>
                     </Style>
                     <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
-                        <Setter Property="FontSize" Value="20"/>
+                        <Setter Property="FontSize" Value="12"/>
                     </Style>
                     <Style TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
                         <Setter Property="Foreground" Value="#CCCCCC"/>
                     </Style>
 
                     <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter"/>
+                    <resouces:InverseBooleanConverter x:Key="inverseBooleanConverter"/>
 
                     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-                        <Setter Property="FontSize" Value="20"/>
+                        <Setter Property="FontSize" Value="14"/>
                         <Setter Property="Validation.ErrorTemplate">
                             <Setter.Value>
                                 <ControlTemplate>
                                     <StackPanel>
                                         <AdornedElementPlaceholder x:Name="placeholder"/>
-                                        <TextBlock FontSize="12" Foreground="White" Text="{Binding ElementName=placeholder,
-                Path=AdornedElement.(Validation.Errors)/ErrorContent}"/>
+                                        <TextBlock FontSize="12" Foreground="White" Text="{Binding ElementName=placeholder, Path=AdornedElement.(Validation.Errors)/ErrorContent}"/>
                                     </StackPanel>
                                 </ControlTemplate>
                             </Setter.Value>
@@ -54,8 +55,7 @@
                         <Style.Triggers>
                             <Trigger Property="Validation.HasError" Value="True">
                                 <Setter Property="Background" Value="DarkRed"/>
-                                <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self},
-            Path=(Validation.Errors)/ErrorContent}"/>
+                                <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)/ErrorContent}"/>
                             </Trigger>
                         </Style.Triggers>
                     </Style>

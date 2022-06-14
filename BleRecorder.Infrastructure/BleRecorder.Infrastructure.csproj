@@ -10,4 +10,8 @@
 		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="1.4.1" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\BleRecorder.Models\BleRecorder.Models.csproj" />
+	</ItemGroup>
+
 </Project>

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Windows.Foundation.Metadata;
 using Autofac;
+using BleRecorder.Business.Device;
 using BleRecorder.DataAccess;
 using BleRecorder.UI.WPF.Startup;
 
