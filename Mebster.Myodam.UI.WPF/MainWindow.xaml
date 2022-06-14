@@ -33,18 +33,42 @@
                 SelectedItem="{Binding SelectedDetailViewModel,Mode=TwoWay}">
             <TabControl.ItemContainerStyle>
                 <Style BasedOn="{StaticResource {x:Type TabItem}}" TargetType="TabItem">
-                    <Setter Property="Background" Value="#333333"/>
+                    <Setter Property="Background" Value="DodgerBlue"/>
                     <Setter Property="BorderBrush" Value="Transparent"/>
                     <Setter Property="BorderThickness" Value="2"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="FontWeight" Value="Heavy" />
+                            <Setter Property="FontStyle" Value="Italic"/>
+                            <Setter Property="Background" Value="DarkSlateBlue"/>
+                        </Trigger>
+                    </Style.Triggers>
                 </Style>
             </TabControl.ItemContainerStyle>
             <TabControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Title}"/>
+                        <TextBlock Text="{Binding Title}" FontSize="14" Foreground="White" />
                         <TextBlock Text="*" Visibility="{Binding HasChanges, Converter={StaticResource booleanToVisibilityConverter}}"/>
-                        <Button Content="x" VerticalContentAlignment="Top" Width="10" Height="5"  Margin="0" Padding="0"  FontSize="8"
-                                Command="{Binding CloseDetailViewCommand}" />
+                        <Button Content="x" Background="Transparent" 
+                                Margin="3 -5 0 0" Padding="0" FontSize="16"
+                                Foreground="MidnightBlue" FontWeight="Bold"
+                                Command="{Binding CloseDetailViewCommand}">
+                            <Button.ToolTip>Close tab</Button.ToolTip>
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Grid Background="{TemplateBinding Background}">
+                                                    <ContentPresenter />
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                        </Button>
                     </StackPanel>
                 </DataTemplate>
             </TabControl.ItemTemplate>

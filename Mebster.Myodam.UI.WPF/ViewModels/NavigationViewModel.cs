@@ -1,8 +1,14 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using Mebster.Myodam.Business.Device;
+using Mebster.Myodam.Infrastructure.Bluetooth;
+using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.UI.WPF.Data.Lookups;
 using Mebster.Myodam.UI.WPF.Event;
+using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace Mebster.Myodam.UI.WPF.ViewModels
@@ -10,22 +16,37 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
     public class NavigationViewModel : ViewModelBase, INavigationViewModel
     {
         private readonly IMessenger _messenger;
-        private readonly IMeasurementLookupDataService _measurementLookupService;
+        private readonly IMyodamManager _myodamManager;
+        private readonly IBluetoothManager _bluetoothManager;
         private readonly ITestSubjectLookupDataService _testSubjectLookupService;
 
         public ObservableCollection<NavigationItemViewModel> TestSubjects { get; } = new();
 
-        public ObservableCollection<NavigationItemViewModel> Measurements { get; } = new();
+        public ICommand ConnectMyodamCommand { get; }
 
-        public NavigationViewModel(ITestSubjectLookupDataService testSubjectLookupService,
-              IMeasurementLookupDataService measurementLookupService,
-              IMessenger messenger)
+        public DeviceStatus MyodamStatus => _myodamManager.MyodamStatus;
+
+        public NavigationViewModel(ITestSubjectLookupDataService testSubjectLookupService, IMessenger messenger, IMyodamManager myodamManager)
         {
+            ConnectMyodamCommand = new AsyncRelayCommand(ConnectMyodam, () => true);
             _testSubjectLookupService = testSubjectLookupService;
-            _measurementLookupService = measurementLookupService;
             _messenger = messenger;
+            _myodamManager = myodamManager;
+            _myodamManager.MyodamStatusChanged += (_, _) => { OnPropertyChanged(nameof(MyodamStatus)); };
             _messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
             _messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
+        }
+
+        public async Task ConnectMyodam()
+        {
+            try
+            {
+                await _myodamManager.ConnectMyodam();
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
         public async Task LoadAsync()
@@ -38,25 +59,24 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
                   nameof(TestSubjectDetailViewModel),
                   _messenger));
             }
-            lookup = await _measurementLookupService.GetMeasurementLookupAsync();
-            Measurements.Clear();
-            foreach (var item in lookup)
-            {
-                Measurements.Add(new NavigationItemViewModel(item.Id, item.DisplayMember,
-                  nameof(MeasurementDetailViewModel),
-                  _messenger));
-            }
         }
 
-        private void AfterDetailDeleted(AfterDetailDeletedEventArgs args)
+        private void AfterDetailDeleted(AfterDetailDeletedEventArgs args) // TODO refactoring!
         {
             switch (args.ViewModelName)
             {
                 case nameof(TestSubjectDetailViewModel):
                     AfterDetailDeleted(TestSubjects, args);
                     break;
-                case nameof(MeasurementDetailViewModel):
-                    AfterDetailDeleted(Measurements, args);
+            }
+        }
+
+        private void AfterDetailSaved(AfterDetailSavedEventArgs args) // TODO refactoring!
+        {
+            switch (args.ViewModelName)
+            {
+                case nameof(TestSubjectDetailViewModel):
+                    AfterDetailSaved(TestSubjects, args);
                     break;
             }
         }
@@ -68,19 +88,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             if (item != null)
             {
                 items.Remove(item);
-            }
-        }
-
-        private void AfterDetailSaved(AfterDetailSavedEventArgs args) // TODO refactoring!
-        {
-            switch (args.ViewModelName)
-            {
-                case nameof(TestSubjectDetailViewModel):
-                    AfterDetailSaved(TestSubjects, args);
-                    break;
-                case nameof(MeasurementDetailViewModel):
-                    AfterDetailSaved(Measurements, args);
-                    break;
             }
         }
 

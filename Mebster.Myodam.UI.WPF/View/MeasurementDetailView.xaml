@@ -17,6 +17,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Label Grid.Row="0" Content="Description" Margin="10 10 10 0"/>
         <TextBox Grid.Row="1" Text="{Binding Measurement.Description,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10 0 10 10"/>
@@ -32,18 +33,34 @@
         </StackPanel>
 
         <livecharts:CartesianChart DisableAnimations="True" Grid.Row="4" Margin="4" Name="DATA">
+            <livecharts:CartesianChart.AxisY>
+                <livecharts:Axis MaxValue="120" MinValue="0" />
+            </livecharts:CartesianChart.AxisY>
+
             <livecharts:CartesianChart.SeriesColors>
                 <livecharts:ColorsCollection>
                     <Color>Aqua</Color>
                     <Color R="50" G="40" B="130" />
                 </livecharts:ColorsCollection>
             </livecharts:CartesianChart.SeriesColors >
+
             <livecharts:CartesianChart.Series>
-                <livecharts:LineSeries Values="{Binding Values}"></livecharts:LineSeries>
+                <livecharts:LineSeries Values="{Binding ForceValues}"></livecharts:LineSeries>
             </livecharts:CartesianChart.Series>
         </livecharts:CartesianChart>
 
-        <StackPanel Grid.Row="5" Orientation="Horizontal">
+        <Grid Grid.Row="5" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Content="Start measurement" Command="{Binding StartMeasurementCommand}"/>
+            <Button Grid.Column="1" Content="Stop measurement" Command="{Binding StopMeasurementCommand}"/>
+            <Button Grid.Column="2" Content="Clean data" Command="{Binding CleanRecordedDataCommand}"/>
+        </Grid>
+
+        <StackPanel Grid.Row="6" Orientation="Horizontal">
             <Button Content="Save" Command="{Binding SaveCommand}"/>
             <Button Content="Delete" Command="{Binding DeleteCommand}"/>
         </StackPanel>

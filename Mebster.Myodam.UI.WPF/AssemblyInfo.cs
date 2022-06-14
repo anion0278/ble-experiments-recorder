@@ -1,5 +1,7 @@
 using System.Windows;
 
+
+// TODO solve dupe assembly info
 [assembly: ThemeInfo(
     ResourceDictionaryLocation.None, //where theme specific resource dictionaries are located
                                      //(used if a resource is not found in the page,

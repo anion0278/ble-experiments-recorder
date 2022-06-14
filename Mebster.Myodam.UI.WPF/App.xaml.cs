@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Windows.Foundation.Metadata;
 using Autofac;
+using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.DataAccess;
 using Mebster.Myodam.UI.WPF.Startup;
 
