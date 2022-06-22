@@ -8,6 +8,7 @@ using Mebster.Myodam.Infrastructure.Bluetooth;
 using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.UI.WPF.Data.Lookups;
 using Mebster.Myodam.UI.WPF.Event;
+using Mebster.Myodam.UI.WPF.View.Services;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 
@@ -26,9 +27,14 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         public DeviceStatus MyodamStatus => _myodamManager.MyodamStatus;
 
-        public NavigationViewModel(ITestSubjectLookupDataService testSubjectLookupService, IMessenger messenger, IMyodamManager myodamManager)
+        public NavigationViewModel(
+            ITestSubjectLookupDataService testSubjectLookupService, 
+            IMessenger messenger, 
+            IMyodamManager myodamManager, 
+            IAsyncRelayCommandFactory asyncCommandFactory)
         {
-            ConnectMyodamCommand = new AsyncRelayCommand(ConnectMyodam, () => true);
+            ConnectMyodamCommand = asyncCommandFactory.Create(ConnectMyodam, () => true);
+
             _testSubjectLookupService = testSubjectLookupService;
             _messenger = messenger;
             _myodamManager = myodamManager;
@@ -39,14 +45,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         public async Task ConnectMyodam()
         {
-            try
-            {
-                await _myodamManager.ConnectMyodam();
-            }
-            catch (Exception ex)
-            {
-
-            }
+            await _myodamManager.ConnectMyodam();
         }
 
         public async Task LoadAsync()

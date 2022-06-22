@@ -31,12 +31,12 @@ public class MyodamManager : IMyodamManager
     public MyodamManager(IBluetoothManager bluetoothManager)
     {
         _bluetoothManager = bluetoothManager;
-        _bluetoothManager.AvailableDevicesChanged += _bluetoothManager_AvailableDevicesChanged;
+        _bluetoothManager.AvailableDevicesChanged += OnAvailableDevicesChanged;
         MyodamStatus = DeviceStatus.DisconnectedUnavailable;
         _bluetoothManager.StartScanning();
     }
 
-    private void _bluetoothManager_AvailableDevicesChanged(object? sender, EventArgs e)
+    private void OnAvailableDevicesChanged(object? sender, EventArgs e)
     {
         MyodamStatus = DeviceStatus.DisconnectedAvailable;
     }

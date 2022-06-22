@@ -4,6 +4,7 @@ using Mebster.Myodam.DataAccess;
 using Mebster.Myodam.Infrastructure.Bluetooth;
 using Mebster.Myodam.UI.WPF.Data.Lookups;
 using Mebster.Myodam.UI.WPF.Data.Repositories;
+using Mebster.Myodam.UI.WPF.Exception;
 using Mebster.Myodam.UI.WPF.View.Services;
 using Mebster.Myodam.UI.WPF.ViewModels;
 using Microsoft.Toolkit.Mvvm.Messaging;
@@ -31,6 +32,10 @@ namespace Mebster.Myodam.UI.WPF.Startup
               .Keyed<IDetailViewModel>(nameof(TestSubjectDetailViewModel));
             builder.RegisterType<MeasurementDetailViewModel>()
               .Keyed<IDetailViewModel>(nameof(MeasurementDetailViewModel));
+
+            builder.RegisterType<GlobalExceptionHandler>().As<IGlobalExceptionHandler>();
+            builder.RegisterType<AsyncRelayCommandFactory>().As<IAsyncRelayCommandFactory>();
+
 
             builder.RegisterType<BluetoothManager>().As<IBluetoothManager>();
             builder.RegisterType<MyodamManager>().As<IMyodamManager>().SingleInstance();
