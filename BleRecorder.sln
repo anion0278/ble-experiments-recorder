@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BleRecorder.Infrastructure"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BleRecorder.Business", "BleRecorder.Business\BleRecorder.Business.csproj", "{E99B09B4-E34B-4C53-A386-11B95B0B8B80}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BleRecorder.Communication", "Neucognic.Communication\BleRecorder.Communication.csproj", "{FBAC6C18-68A6-4EA6-8C78-3B4ED0EC98BC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neucognic.Communication", "Neucognic.Communication\Neucognic.Communication.csproj", "{FBAC6C18-68A6-4EA6-8C78-3B4ED0EC98BC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GUI", "GUI", "{CC8F7ABF-CCCE-460B-A6F7-E797A614268C}"
 EndProject
