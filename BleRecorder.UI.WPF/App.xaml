@@ -5,8 +5,7 @@
              xmlns:viewModel="clr-namespace:BleRecorder.UI.WPF.ViewModels"
              xmlns:view="clr-namespace:BleRecorder.UI.WPF.View"
              xmlns:resouces="clr-namespace:BleRecorder.UI.WPF.View.Resouces"
-             Startup="Application_Startup"
-             DispatcherUnhandledException="Application_DispatcherUnhandledException">
+             Startup="Application_Startup">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

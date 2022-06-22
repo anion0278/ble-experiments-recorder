@@ -4,6 +4,7 @@ using BleRecorder.DataAccess;
 using BleRecorder.Infrastructure.Bluetooth;
 using BleRecorder.UI.WPF.Data.Lookups;
 using BleRecorder.UI.WPF.Data.Repositories;
+using BleRecorder.UI.WPF.Exception;
 using BleRecorder.UI.WPF.View.Services;
 using BleRecorder.UI.WPF.ViewModels;
 using Microsoft.Toolkit.Mvvm.Messaging;
@@ -31,6 +32,10 @@ namespace BleRecorder.UI.WPF.Startup
               .Keyed<IDetailViewModel>(nameof(TestSubjectDetailViewModel));
             builder.RegisterType<MeasurementDetailViewModel>()
               .Keyed<IDetailViewModel>(nameof(MeasurementDetailViewModel));
+
+            builder.RegisterType<GlobalExceptionHandler>().As<IGlobalExceptionHandler>();
+            builder.RegisterType<AsyncRelayCommandFactory>().As<IAsyncRelayCommandFactory>();
+
 
             builder.RegisterType<BluetoothManager>().As<IBluetoothManager>();
             builder.RegisterType<BleRecorderManager>().As<IBleRecorderManager>().SingleInstance();

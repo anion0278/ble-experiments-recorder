@@ -8,6 +8,7 @@ using BleRecorder.Infrastructure.Bluetooth;
 using BleRecorder.Models.Device;
 using BleRecorder.UI.WPF.Data.Lookups;
 using BleRecorder.UI.WPF.Event;
+using BleRecorder.UI.WPF.View.Services;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 
@@ -26,9 +27,14 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         public DeviceStatus BleRecorderStatus => _bleRecorderManager.BleRecorderStatus;
 
-        public NavigationViewModel(ITestSubjectLookupDataService testSubjectLookupService, IMessenger messenger, IBleRecorderManager bleRecorderManager)
+        public NavigationViewModel(
+            ITestSubjectLookupDataService testSubjectLookupService, 
+            IMessenger messenger, 
+            IBleRecorderManager bleRecorderManager, 
+            IAsyncRelayCommandFactory asyncCommandFactory)
         {
-            ConnectBleRecorderCommand = new AsyncRelayCommand(ConnectBleRecorder, () => true);
+            ConnectBleRecorderCommand = asyncCommandFactory.Create(ConnectBleRecorder, () => true);
+
             _testSubjectLookupService = testSubjectLookupService;
             _messenger = messenger;
             _bleRecorderManager = bleRecorderManager;
@@ -39,14 +45,7 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         public async Task ConnectBleRecorder()
         {
-            try
-            {
-                await _bleRecorderManager.ConnectBleRecorder();
-            }
-            catch (Exception ex)
-            {
-
-            }
+            await _bleRecorderManager.ConnectBleRecorder();
         }
 
         public async Task LoadAsync()
