@@ -6,10 +6,10 @@ using BleRecorder.Models.Device;
 
 namespace BleRecorder.Infrastructure.Bluetooth;
 
-public class BleAvailableAvailableDeviceWrapperWrapper : IBleAvailableDeviceWrapper
+public class BleAvailableDevice : IBleAvailableDevice, IDisposable
 {
     public event EventHandler<string>? DataReceived;
-    public event EventHandler<DeviceStatus>? DeviceStatusChanged;
+    public event EventHandler<BleRecorderAvailabilityStatus>? DeviceStatusChanged;
 
     private BluetoothLEDevice? _device;
     private GattCharacteristic? _rxCharacteristic;
@@ -17,8 +17,17 @@ public class BleAvailableAvailableDeviceWrapperWrapper : IBleAvailableDeviceWrap
     public ulong Address { get; set; }
     public string Name { get; set; }
     public short SignalStrength { get; set; }
+    public DateTimeOffset LatestTimestamp { get; set; }
 
-    public async Task ConnectDevice()
+    public BleAvailableDevice(string name, ulong address, short signalStrength, DateTimeOffset timestamp)
+    {
+        Name = name;
+        Address = address;
+        SignalStrength = signalStrength;
+        LatestTimestamp = timestamp;
+    }
+
+    public async Task<IBleAvailableDevice> ConnectDevice()
     {
         _device = await BluetoothLEDevice.FromBluetoothAddressAsync(Address);
         _device.ConnectionStatusChanged += BleDeviceOnConnectionStatusChanged;
@@ -37,6 +46,8 @@ public class BleAvailableAvailableDeviceWrapperWrapper : IBleAvailableDeviceWrap
 
         await _rxCharacteristic.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify); // required to receive data
         _rxCharacteristic.ValueChanged += Uart_ReceivedData;
+
+        return this;
     }
 
     private void BleDeviceOnConnectionStatusChanged(BluetoothLEDevice sender, object args)
@@ -44,13 +55,13 @@ public class BleAvailableAvailableDeviceWrapperWrapper : IBleAvailableDeviceWrap
         switch (sender.ConnectionStatus)
         {
             case BluetoothConnectionStatus.Disconnected:
-                DeviceStatusChanged?.Invoke(this, DeviceStatus.DisconnectedUnavailable);
+                DeviceStatusChanged?.Invoke(this, BleRecorderAvailabilityStatus.DisconnectedUnavailable);
                 break;
             case BluetoothConnectionStatus.Connected:
-                DeviceStatusChanged?.Invoke(this, DeviceStatus.Connected);
+                DeviceStatusChanged?.Invoke(this, BleRecorderAvailabilityStatus.Connected);
                 break;
             default:
-                DeviceStatusChanged?.Invoke(this, DeviceStatus.ErrorOnDevice);
+                DeviceStatusChanged?.Invoke(this, BleRecorderAvailabilityStatus.ErrorOnDevice);
                 break;
         }
     }
@@ -68,12 +79,23 @@ public class BleAvailableAvailableDeviceWrapperWrapper : IBleAvailableDeviceWrap
 
     public async Task Send(string msg)
     {
-
+        //charac.WriteValueAsync
     }
 
     public void Disconnect()
     {
-        _rxCharacteristic.ValueChanged -= Uart_ReceivedData;
-        _device.Dispose();
+        Dispose();
+    }
+
+    public void Dispose()
+    {
+        //https://stackoverflow.com/questions/39599252/windows-ble-uwp-disconnect
+
+        if (_rxCharacteristic != null)
+        {
+            _rxCharacteristic.ValueChanged -= Uart_ReceivedData;
+            _rxCharacteristic.Service.Dispose();
+        }
+        _device?.Dispose();
     }
 }

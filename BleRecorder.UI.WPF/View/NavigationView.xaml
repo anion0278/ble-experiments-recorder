@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:device="clr-namespace:BleRecorder.Models.Device;assembly=BleRecorder.Models"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="300">
     <UserControl.Resources>
@@ -51,19 +52,45 @@
         </GroupBox>
         <GroupBox Header="Aggregator Device status" Grid.Row="1">
             <StackPanel>
-                <Button Content="Connect" Command="{Binding ConnectBleRecorderCommand}" IsEnabled="{Binding ConnectBleRecorderCommand.IsRunning, Converter={StaticResource inverseBooleanConverter}}">
-                    <!--<Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding BleRecorderStatus}" Value="{x:Static device:DeviceStatus.Connected}">
-                                    <Setter Property="Content" Value="Disconnect"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>-->
+                <Button Command="{Binding ConnectBleRecorderCommand}" FontSize="14"
+                        IsEnabled="{Binding ConnectBleRecorderCommand.IsRunning, Converter={StaticResource inverseBooleanConverter}}">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <mah:ProgressRing Foreground="Azure" 
+                                              Height="5" Width="5" Padding="0" Margin="0 0 5 0">
+                                <mah:ProgressRing.Style>
+                                    <Style TargetType="mah:ProgressRing">
+                                        <Setter Property="IsActive" Value="False" />
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ConnectBleRecorderCommand.IsRunning}" Value="True">
+                                                <Setter Property="IsActive" Value="True"/>
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </mah:ProgressRing.Style>
+                            </mah:ProgressRing>
+                            <TextBlock>
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Text" Value="Connect" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ConnectBleRecorderCommand.IsRunning}" Value="True" >
+                                                <Setter Property="Text" Value="Connecting..."></Setter>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding BleRecorderAvailability}" Value="{x:Static device:BleRecorderAvailabilityStatus.Connected}" >
+                                                <Setter Property="Text" Value="Reconnect"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </StackPanel>
+                    </Button.Content>
                 </Button>
 
-                <Label Content="{Binding BleRecorderStatus}" ContentStringFormat="Status: {0}"/>
+                <Label Content="{Binding BleRecorderAvailability}" ContentStringFormat="Status: {0}"/>
             </StackPanel>
         </GroupBox>
     </Grid>

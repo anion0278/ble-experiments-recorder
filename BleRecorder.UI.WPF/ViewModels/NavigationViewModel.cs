@@ -23,9 +23,9 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         public ObservableCollection<NavigationItemViewModel> TestSubjects { get; } = new();
 
-        public ICommand ConnectBleRecorderCommand { get; }
+        public IAsyncRelayCommand ConnectBleRecorderCommand { get; }
 
-        public DeviceStatus BleRecorderStatus => _bleRecorderManager.BleRecorderStatus;
+        public BleRecorderAvailabilityStatus BleRecorderAvailability => _bleRecorderManager.BleRecorderAvailability;
 
         public NavigationViewModel(
             ITestSubjectLookupDataService testSubjectLookupService, 
@@ -33,14 +33,20 @@ namespace BleRecorder.UI.WPF.ViewModels
             IBleRecorderManager bleRecorderManager, 
             IAsyncRelayCommandFactory asyncCommandFactory)
         {
-            ConnectBleRecorderCommand = asyncCommandFactory.Create(ConnectBleRecorder, () => true);
+            ConnectBleRecorderCommand = asyncCommandFactory.Create(ConnectBleRecorder, CanConnectBleRecorder);
 
             _testSubjectLookupService = testSubjectLookupService;
             _messenger = messenger;
             _bleRecorderManager = bleRecorderManager;
-            _bleRecorderManager.BleRecorderStatusChanged += (_, _) => { OnPropertyChanged(nameof(BleRecorderStatus)); };
+            _bleRecorderManager.BleRecorderStatusChanged += (_, _) => { OnPropertyChanged(nameof(BleRecorderAvailability)); ConnectBleRecorderCommand.NotifyCanExecuteChanged();};
             _messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
             _messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
+        }
+
+        private bool CanConnectBleRecorder()
+        {
+            // BleRecorderAvailability != BleRecorderAvailabilityStatus.DisconnectedUnavailable
+            return true;
         }
 
         public async Task ConnectBleRecorder()

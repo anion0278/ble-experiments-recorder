@@ -1,6 +1,6 @@
 ﻿namespace BleRecorder.Models.Device;
 
-public interface IBleAvailableDeviceWrapper
+public interface IBleAvailableDevice
 {
     event EventHandler<string> DataReceived;
 
@@ -10,16 +10,15 @@ public interface IBleAvailableDeviceWrapper
 
     Task Send(string msg);
 
-    Task ConnectDevice();
+    Task<IBleAvailableDevice> ConnectDevice();
 
     void Disconnect();
 }
 
-public enum DeviceStatus
+public enum BleRecorderAvailabilityStatus
 {
-    Unknown,
-    DisconnectedAvailable,
     DisconnectedUnavailable,
+    DisconnectedAvailable,
     Connected,
     ErrorOnDevice
 }

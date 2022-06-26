@@ -6,19 +6,19 @@ namespace BleRecorder.Business.Device;
 
 public class BleRecorderDevice
 {
-    private readonly IBleAvailableDeviceWrapper _bleAvailableDeviceWrapper;
+    private readonly IBleAvailableDevice _bleAvailableDevice;
     public event EventHandler<MeasuredValue>? NewValueReceived;
     public event EventHandler? MeasurementFinished;
 
     private bool IsCurrentlyMeasuring = false; // temp
 
-    public BleRecorderDevice(IBleAvailableDeviceWrapper bleAvailableDeviceWrapper)
+    public BleRecorderDevice(IBleAvailableDevice bleAvailableDevice)
     {
-        _bleAvailableDeviceWrapper = bleAvailableDeviceWrapper;
-        _bleAvailableDeviceWrapper.DataReceived += BleAvailableDeviceWrapperDataReceived;
+        _bleAvailableDevice = bleAvailableDevice;
+        _bleAvailableDevice.DataReceived += BleAvailableDeviceDataReceived;
     }
 
-    private void BleAvailableDeviceWrapperDataReceived(object? sender, string data)
+    private void BleAvailableDeviceDataReceived(object? sender, string data)
     {
         var regex = Regex.Match(data, @"\+\d+,-?(\d+.\d+)\n");
         if (regex.Success && float.TryParse(regex.Groups[1].Value, out var measuredForceValue) && IsCurrentlyMeasuring) 
@@ -38,19 +38,19 @@ public class BleRecorderDevice
     {
         IsCurrentlyMeasuring = true;
         var msg = new BleRecorderCommonMessage(parameters, true);
-        await _bleAvailableDeviceWrapper.Send(msg.FormatForSending());
+        await _bleAvailableDevice.Send(msg.FormatForSending());
     }
 
     public async Task StopMeasurement()
     {
         IsCurrentlyMeasuring = false;
         var msg = new BleRecorderCommonMessage(new StimulationParameters(0,0,0), false);
-        await _bleAvailableDeviceWrapper.Send(msg.FormatForSending());
+        await _bleAvailableDevice.Send(msg.FormatForSending());
     }
 
-    public async Task Disconnect()
+    public void Disconnect()
     {
-        _bleAvailableDeviceWrapper.DataReceived -= BleAvailableDeviceWrapperDataReceived;
-        _bleAvailableDeviceWrapper.Disconnect();
+        _bleAvailableDevice.DataReceived -= BleAvailableDeviceDataReceived;
+        _bleAvailableDevice.Disconnect();
     }
 }
