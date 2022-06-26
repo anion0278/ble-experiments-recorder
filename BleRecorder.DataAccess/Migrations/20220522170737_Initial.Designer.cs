@@ -25,7 +25,7 @@ namespace BleRecorder.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Description")
+                    b.Property<string>("Notes")
                         .IsRequired()
                         .HasColumnType("TEXT");
 

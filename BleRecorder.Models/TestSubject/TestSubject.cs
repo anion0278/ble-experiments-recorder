@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BleRecorder.Models.TestSubject;
 
@@ -19,6 +20,9 @@ public class TestSubject
     [Required]
     [StringLength(50)]
     public string LastName { get; set; }
+
+    [NotMapped]
+    public string FullName => FirstName + " " + LastName;
 
     public ICollection<Measurement> Measurements { get; set; }
 }

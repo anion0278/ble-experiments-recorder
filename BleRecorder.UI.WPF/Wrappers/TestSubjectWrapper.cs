@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using BleRecorder.Models.TestSubject;
 
-namespace BleRecorder.UI.WPF.Wrapper
+namespace BleRecorder.UI.WPF.Wrappers
 {
     public class TestSubjectWrapper : ModelWrapper<TestSubject>
     {
@@ -12,6 +13,7 @@ namespace BleRecorder.UI.WPF.Wrapper
 
         public int Id { get { return Model.Id; } }
 
+        [Required]
         public string FirstName
         {
             get { return GetValue<string>(); }

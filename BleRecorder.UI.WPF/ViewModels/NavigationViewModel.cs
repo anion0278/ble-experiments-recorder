@@ -25,8 +25,6 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         public ObservableCollection<NavigationItemViewModel> TestSubjects { get; } = new();
 
-        private SynchronizationContext ViewSynchronizationContext { get; }
-
         public IAsyncRelayCommand ConnectBleRecorderCommand { get; }
 
         public BleRecorderAvailabilityStatus BleRecorderAvailability => _bleRecorderManager.BleRecorderAvailability;
@@ -38,7 +36,6 @@ namespace BleRecorder.UI.WPF.ViewModels
             IBleRecorderManager bleRecorderManager, 
             IAsyncRelayCommandFactory asyncCommandFactory)
         {
-            ViewSynchronizationContext = SynchronizationContext.Current!;
             ConnectBleRecorderCommand = asyncCommandFactory.Create(ConnectBleRecorder, CanConnectBleRecorder);
 
             _testSubjectLookupService = testSubjectLookupService;
@@ -97,8 +94,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             }
         }
 
-        private void AfterDetailDeleted(ObservableCollection<NavigationItemViewModel> items,
-          AfterDetailDeletedEventArgs args)
+        private void AfterDetailDeleted(ObservableCollection<NavigationItemViewModel> items, AfterDetailDeletedEventArgs args)
         {
             var item = items.SingleOrDefault(f => f.Id == args.Id);
             if (item != null)

@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BleRecorder.DataAccess.Migrations
 {
     [DbContext(typeof(ExperimentsDbContext))]
-    [Migration("20220530200955_StoringMeasuredDataToInternalJson")]
-    partial class StoringMeasuredDataToInternalJson
+    [Migration("20220626165459_AddedMeasurementNotes")]
+    partial class AddedMeasurementNotes
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,17 +24,22 @@ namespace BleRecorder.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("InternalForceData")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Notes")
                         .IsRequired()
                         .HasMaxLength(400)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("InternalForceData")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("TestSubjectId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 

@@ -26,7 +26,7 @@
 
                     <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                         <Setter Property="FontSize" Value="12"/>
-                        <Setter Property="Width" Value="125"/>
+                        <Setter Property="Width" Value="150"/>
                         <Setter Property="Margin" Value="10"/>
                     </Style>
                     <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">

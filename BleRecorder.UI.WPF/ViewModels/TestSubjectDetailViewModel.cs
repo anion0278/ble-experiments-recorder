@@ -12,7 +12,7 @@ using BleRecorder.UI.WPF.Data.Lookups;
 using BleRecorder.UI.WPF.Data.Repositories;
 using BleRecorder.UI.WPF.Event;
 using BleRecorder.UI.WPF.View.Services;
-using BleRecorder.UI.WPF.Wrapper;
+using BleRecorder.UI.WPF.Wrappers;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 
@@ -53,29 +53,32 @@ namespace BleRecorder.UI.WPF.ViewModels
             _measurementsRepository = measurementsRepository;
 
             AddMeasurementCommand = new RelayCommand(OnAddMeasurement);
-            EditMeasurementCommand = new RelayCommand(OnEditMeasurement);
-            RemoveMeasurementCommand = new RelayCommand(OnRemoveMeasurement, () => _measurements.Any());
+            EditMeasurementCommand = new RelayCommand(OnEditMeasurement, () => Measurements!.CurrentItem != null);
+            RemoveMeasurementCommand = new RelayCommand(OnRemoveMeasurement, () => Measurements!.CurrentItem != null);
+        }
+
+        private void OnAddMeasurement()
+        {
+            Messenger.Send(new OpenDetailViewEventArgs
+            {
+                Id = -1,
+                ViewModelName = nameof(MeasurementDetailViewModel)
+            });
+        }
+
+        private void OnEditMeasurement()
+        {
+            Messenger.Send(new OpenDetailViewEventArgs
+            {
+                Id = ((Measurement)Measurements.CurrentItem).Id,
+                ViewModelName = nameof(MeasurementDetailViewModel)
+            });
         }
 
         private void OnRemoveMeasurement()
         {
             if (Measurements.CurrentItem != null)
                 _measurements.Remove((Measurement)Measurements.CurrentItem);
-        }
-
-        private void OnEditMeasurement()
-        {
-            Messenger.Send(
-                    new OpenDetailViewEventArgs
-                    {
-                        Id = -1,
-                        ViewModelName = nameof(MeasurementDetailViewModel)
-                    });
-        }
-
-        private void OnAddMeasurement()
-        {
-            throw new NotImplementedException();
         }
 
         public override async Task LoadAsync(int measurementId)
@@ -95,55 +98,25 @@ namespace BleRecorder.UI.WPF.ViewModels
         private void InitializeTestSubject(TestSubject testSubject)
         {
             TestSubject = new TestSubjectWrapper(testSubject);
-            TestSubject.PropertyChanged += (s, e) =>
+            TestSubject.PropertyChanged += (_, e) =>
           {
               // TODO REFACTORING !!!
               if (!HasChanges)
               {
                   HasChanges = _testSubjectRepository.HasChanges();
               }
-              if (e.PropertyName == nameof(TestSubject.HasErrors))
-              {
-                  ((RelayCommand)SaveCommand).NotifyCanExecuteChanged();
-              }
+
               if (e.PropertyName == nameof(testSubject.FirstName) || e.PropertyName == nameof(testSubject.LastName))
               {
                   SetTitle();
               }
           };
-            ((RelayCommand)SaveCommand).NotifyCanExecuteChanged();
             if (TestSubject.Id == 0)
             {
                 // trigger the validation
                 TestSubject.FirstName = "";
             }
             SetTitle();
-
-            var now = DateTime.Now;
-
-            TestSubject.Measurements.Add(
-                new Measurement()
-                {
-                    Description = "Intermittent test " + new Random().Next(1, 100),
-                    ForceData = new List<MeasuredValue>()
-                    {
-                        new MeasuredValue(3.3f, now.AddSeconds(1)),
-                        new MeasuredValue(4.3f, now.AddSeconds(2)),
-                        new MeasuredValue(5.3f, now.AddSeconds(3)),
-                        new MeasuredValue(3.3f, now.AddSeconds(4)),
-                    }
-                });
-            TestSubject.Measurements.Add(new Measurement()
-            {
-                Description = "Max force test " + new Random().Next(1, 100),
-                ForceData = new List<MeasuredValue>()
-                    {
-                        new MeasuredValue(33.3f, now.AddSeconds(1)),
-                        new MeasuredValue(44.3f, now.AddSeconds(2)),
-                        new MeasuredValue(55.3f, now.AddSeconds(3)),
-                        new MeasuredValue(33.3f, now.AddSeconds(4)),
-                    }
-            });
         }
 
         private void SetTitle() // TODO utilize FOdy

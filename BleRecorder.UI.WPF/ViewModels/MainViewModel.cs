@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Autofac.Features.Indexed;
+using BleRecorder.Business.Device;
 using BleRecorder.UI.WPF.Event;
 using BleRecorder.UI.WPF.View.Services;
 using Microsoft.Toolkit.Mvvm.Input;
@@ -17,9 +18,10 @@ namespace BleRecorder.UI.WPF.ViewModels
     {
         private int nextNewItemId = 0;
         private readonly IMessenger _messenger;
+        private readonly IBleRecorderManager _bleRecorderManager;
         private readonly IMessageDialogService _messageDialogService;
         private readonly IIndex<string, IDetailViewModel> _detailViewModelCreator; // TODO change
-
+        private IDetailViewModel _selectedDetailViewModel;
 
         public async Task LoadAsync()
         {
@@ -35,7 +37,20 @@ namespace BleRecorder.UI.WPF.ViewModels
         public ObservableCollection<IDetailViewModel> DetailViewModels { get; }
 
 
-        public IDetailViewModel SelectedDetailViewModel { get; set; }
+        public IDetailViewModel SelectedDetailViewModel
+        {
+            get => _selectedDetailViewModel;
+            set
+            {
+                if (_bleRecorderManager.IsCurrentlyMeasuring)
+                {
+                    // TODO check for potential deadlock, maybe Changing eventhandler from Collection view can be async
+                    _messageDialogService.ShowInfoDialogAsync("Please, stop the measurement first.").Wait();
+                    return;
+                }
+                _selectedDetailViewModel = value;
+            }
+        } // TODO replace with collection view
 
         /// <summary>
         /// Design-time ctor
@@ -48,9 +63,11 @@ namespace BleRecorder.UI.WPF.ViewModels
         public MainViewModel(INavigationViewModel navigationViewModel,
             IIndex<string, IDetailViewModel> detailViewModelCreator,
             IMessenger messenger,
+            IBleRecorderManager bleRecorderManager,
             IMessageDialogService messageDialogService)
         {
             _messenger = messenger;
+            _bleRecorderManager = bleRecorderManager;
             _detailViewModelCreator = detailViewModelCreator;
             _messageDialogService = messageDialogService;
 
@@ -60,8 +77,8 @@ namespace BleRecorder.UI.WPF.ViewModels
             _messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
             _messenger.Register<AfterDetailClosedEventArgs>(this, (s, e) => AfterDetailClosed(e));
 
-            CreateNewDetailCommand = new RelayCommand<Type>(OnCreateNewDetailExecute);
-            OpenSingleDetailViewCommand = new RelayCommand<Type>(OnOpenSingleDetailViewExecute);
+            CreateNewDetailCommand = new RelayCommand<Type>(OnCreateNewDetailExecute!);
+            OpenSingleDetailViewCommand = new RelayCommand<Type>(OnOpenSingleDetailViewExecute!);
 
             NavigationViewModel = navigationViewModel;
         }
@@ -93,12 +110,11 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         private void OnOpenSingleDetailViewExecute(Type viewModelType)
         {
-            OnOpenDetailView(
-           new OpenDetailViewEventArgs
-           {
-               Id = -1,
-               ViewModelName = viewModelType.Name // TODO change
-           });
+            OnOpenDetailView(new OpenDetailViewEventArgs
+            {
+                Id = -1,
+                ViewModelName = viewModelType.Name // TODO change
+            });
         }
 
         private void AfterDetailDeleted(AfterDetailDeletedEventArgs args)

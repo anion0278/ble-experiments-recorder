@@ -6,19 +6,21 @@ namespace BleRecorder.Business.Device;
 public interface IBleRecorderManager
 {
     event EventHandler BleRecorderAvailabilityChanged;
+    public event EventHandler? MeasurementStatusChanged;
     public BleRecorderDevice? BleRecorderDevice { get; }
-    BleRecorderAvailabilityStatus BleRecorderAvailability { get; set; }
+    BleRecorderAvailabilityStatus BleRecorderAvailability { get; }
+    bool IsCurrentlyMeasuring { get; }
     Task ConnectBleRecorder();
 }
 
 public class BleRecorderManager : IBleRecorderManager
 {
+    public event EventHandler? BleRecorderAvailabilityChanged;
+    public event EventHandler? MeasurementStatusChanged;
     private readonly IBluetoothManager _bluetoothManager;
     private BleRecorderAvailabilityStatus _bleRecorderAvailability;
+    private const string _bleRecorderName = "Aggregator";
     public BleRecorderDevice? BleRecorderDevice { get; private set; }
-    public event EventHandler? BleRecorderAvailabilityChanged;
-
-    private string _bleRecorderName = "Aggregator";
 
     public BleRecorderAvailabilityStatus BleRecorderAvailability
     {
@@ -30,6 +32,8 @@ public class BleRecorderManager : IBleRecorderManager
             BleRecorderAvailabilityChanged?.Invoke(this, EventArgs.Empty);
         }
     }
+
+    public bool IsCurrentlyMeasuring => BleRecorderDevice?.IsCurrentlyMeasuring ?? false;
 
     public BleRecorderManager(IBluetoothManager bluetoothManager)
     {
@@ -58,6 +62,7 @@ public class BleRecorderManager : IBleRecorderManager
         if (BleRecorderDevice != null)
         {
             BleRecorderDevice.ConnectionStatusChanged -= OnConnectionStatusChanged;
+            BleRecorderDevice.MeasurementStatusChanged -= OnMeasurementStatusChanged;
             BleRecorderDevice.Disconnect();
             BleRecorderDevice = null;
         }
@@ -67,6 +72,12 @@ public class BleRecorderManager : IBleRecorderManager
         BleRecorderDevice = new BleRecorderDevice(await bleRecorderDevices.Single().ConnectDevice());
         BleRecorderAvailability = BleRecorderAvailabilityStatus.Connected;
         BleRecorderDevice.ConnectionStatusChanged += OnConnectionStatusChanged;
+        BleRecorderDevice.MeasurementStatusChanged += OnMeasurementStatusChanged;
+    }
+
+    private void OnMeasurementStatusChanged(object? sender, EventArgs e)
+    {
+        MeasurementStatusChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private void OnConnectionStatusChanged(object? o, EventArgs eventArgs)
