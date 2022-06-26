@@ -13,8 +13,13 @@ public class Measurement
 
     public int Id { get; set; }
 
+    [Required]
+    [MaxLength(40)]
+    public string Title { get; set; }
+
     [MaxLength(400)]
-    public string Description { get; set; }
+    [Column("Description")]
+    public string Notes { get; set; }
     public int TestSubjectId { get; set; }
     public TestSubject TestSubject { get; set; }
 
@@ -31,8 +36,8 @@ public class Measurement
     }
 
 
-    [EditorBrowsable(EditorBrowsableState.Never)]
     // TODO try use  protected property
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public string InternalForceData
     {
         get => _internalForceData;

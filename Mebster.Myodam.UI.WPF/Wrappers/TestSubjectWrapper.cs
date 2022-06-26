@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Mebster.Myodam.Models.TestSubject;
 
-namespace Mebster.Myodam.UI.WPF.Wrapper
+namespace Mebster.Myodam.UI.WPF.Wrappers
 {
     public class TestSubjectWrapper : ModelWrapper<TestSubject>
     {
@@ -12,6 +13,7 @@ namespace Mebster.Myodam.UI.WPF.Wrapper
 
         public int Id { get { return Model.Id; } }
 
+        [Required]
         public string FirstName
         {
             get { return GetValue<string>(); }

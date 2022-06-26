@@ -24,7 +24,7 @@ namespace Mebster.Myodam.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Description")
+                    b.Property<string>("Notes")
                         .IsRequired()
                         .HasMaxLength(400)
                         .HasColumnType("TEXT");

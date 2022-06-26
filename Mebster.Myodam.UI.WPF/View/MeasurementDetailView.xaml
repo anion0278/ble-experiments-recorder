@@ -7,10 +7,15 @@
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:testSubject="clr-namespace:Mebster.Myodam.Models.TestSubject;assembly=Mebster.Myodam.Models"
              xmlns:livecharts="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+             xmlns:viewModels="clr-namespace:Mebster.Myodam.UI.WPF.ViewModels"
+             xmlns:extensions="clr-namespace:Mebster.Myodam.UI.WPF.Extensions"
              mc:Ignorable="d"
-             d:DesignHeight="500" d:DesignWidth="600">
+             d:DesignHeight="500" d:DesignWidth="600" 
+             d:DataContext="{d:DesignInstance viewModels:MeasurementDetailViewModel, IsDesignTimeCreatable=True}">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -19,37 +24,45 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Label Grid.Row="0" Content="Description" Margin="10 10 10 0"/>
-        <TextBox Grid.Row="1" Text="{Binding Measurement.Description,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10 0 10 10"/>
+        <Label Grid.Row="0" Content="Short description" Margin="10 10 10 0"/>
+        <TextBox Grid.Row="1" MaxLength="20" Width="300" Margin="10 0 10 10" HorizontalAlignment="Left"
+                 Text="{Binding Measurement.Title, UpdateSourceTrigger=PropertyChanged}" />
 
-        <StackPanel Grid.Row="2"  Orientation="Horizontal">
-            <Label Content="Date:" />
+        <Label Grid.Row="2" Content="Notes" Margin="10 10 10 0"/>
+        <TextBox Grid.Row="3" Margin="10 0 10 10" TextWrapping="Wrap" AcceptsReturn="True" AcceptsTab="True"
+                 Text="{Binding Measurement.Notes}" />
+
+        <StackPanel Grid.Row="4"  Orientation="Horizontal" Margin="10">
+            <Label Content="Performed on:" />
             <mah:DateTimePicker IsReadOnly="True"/>
         </StackPanel>
 
-        <StackPanel Grid.Row="3" Orientation="Horizontal">
-            <Label Content="Performed with: "/>
-            <Label Content="TEST SUBJECT NAME"/>
+        <StackPanel Grid.Row="5" Orientation="Horizontal" Margin="10">
+            <Label Content="Test subject:   "/>
+            <ComboBox MinWidth="250" DisplayMemberPath="FullName"
+                      SelectedItem="{Binding Measurement.TestSubject}"
+                      ItemsSource="{Binding AvailableTestSubjects}" /> 
         </StackPanel>
 
-        <livecharts:CartesianChart DisableAnimations="True" Grid.Row="4" Margin="4" Name="DATA">
-            <livecharts:CartesianChart.AxisY>
-                <livecharts:Axis MaxValue="120" MinValue="0" />
-            </livecharts:CartesianChart.AxisY>
+        <ScrollViewer Grid.Row="6">
+            <livecharts:CartesianChart  DisableAnimations="True" Margin="4" MinHeight="300" >
+                <livecharts:CartesianChart.AxisY>
+                    <livecharts:Axis MaxValue="120" MinValue="0" />
+                </livecharts:CartesianChart.AxisY>
 
-            <livecharts:CartesianChart.SeriesColors>
-                <livecharts:ColorsCollection>
-                    <Color>Aqua</Color>
-                    <Color R="50" G="40" B="130" />
-                </livecharts:ColorsCollection>
-            </livecharts:CartesianChart.SeriesColors >
+                <livecharts:CartesianChart.SeriesColors>
+                    <livecharts:ColorsCollection>
+                        <Color>Aqua</Color>
+                        <Color R="50" G="40" B="130" />
+                    </livecharts:ColorsCollection>
+                </livecharts:CartesianChart.SeriesColors >
 
-            <livecharts:CartesianChart.Series>
-                <livecharts:LineSeries Values="{Binding ForceValues}"></livecharts:LineSeries>
-            </livecharts:CartesianChart.Series>
-        </livecharts:CartesianChart>
-
-        <Grid Grid.Row="5" >
+                <livecharts:CartesianChart.Series>
+                    <livecharts:LineSeries Values="{Binding ForceValues}"></livecharts:LineSeries>
+                </livecharts:CartesianChart.Series>
+            </livecharts:CartesianChart>
+        </ScrollViewer>
+        <Grid Grid.Row="7" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition />
@@ -60,8 +73,9 @@
             <Button Grid.Column="2" Content="Clean data" Command="{Binding CleanRecordedDataCommand}"/>
         </Grid>
 
-        <StackPanel Grid.Row="6" Orientation="Horizontal">
-            <Button Content="Save" Command="{Binding SaveCommand}"/>
+        <StackPanel Grid.Row="8" Orientation="Horizontal">
+            <Button Content="Save" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
+                    Command="{Binding SaveCommand}"/>
             <Button Content="Delete" Command="{Binding DeleteCommand}"/>
         </StackPanel>
 

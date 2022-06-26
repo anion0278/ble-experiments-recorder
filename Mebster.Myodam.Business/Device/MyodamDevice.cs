@@ -1,19 +1,32 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Diagnostics;
+using System.Text.RegularExpressions;
 using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.Models.TestSubject;
 
 namespace Mebster.Myodam.Business.Device;
 
-public class MyodamDevice
+public class MyodamDevice // TODO Extract inteface
 {
     private readonly IBleDeviceHandler _bleDeviceHandler;
+    private bool _isCurrentlyMeasuring;
     public event EventHandler<MeasuredValue>? NewValueReceived;
     public event EventHandler? MeasurementFinished;
     public event EventHandler? ConnectionStatusChanged;
+    public event EventHandler? MeasurementStatusChanged;
 
     public bool IsConnected => _bleDeviceHandler.IsConnected;
 
-    private bool IsCurrentlyMeasuring = false; // temp
+    public bool IsCurrentlyMeasuring
+    {
+        get => _isCurrentlyMeasuring;
+        private set
+        {
+            if (_isCurrentlyMeasuring == value) return;
+            _isCurrentlyMeasuring = value;
+            Debug.Print("Changed meas:" + _isCurrentlyMeasuring);
+            MeasurementStatusChanged?.Invoke(this, EventArgs.Empty);
+        }
+    }
 
     public MyodamDevice(IBleDeviceHandler bleDeviceHandler)
     {
@@ -25,6 +38,7 @@ public class MyodamDevice
     private void BleDeviceStatusChanged(object? sender, EventArgs e)
     {
         ConnectionStatusChanged?.Invoke(this, EventArgs.Empty);
+        if (!_bleDeviceHandler.IsConnected) IsCurrentlyMeasuring = false;
     }
 
     private void BleDeviceHandlerDataReceived(object? sender, string data)
@@ -45,16 +59,16 @@ public class MyodamDevice
     // We always send up-to-date parameters in order to make sure that stimulation is correct even if the device has restarted in meantime
     public async Task StartMeasurement(StimulationParameters parameters)
     {
-        IsCurrentlyMeasuring = true;
         var msg = new MyodamCommonMessage(parameters, true);
         await _bleDeviceHandler.Send(msg.FormatForSending());
+        IsCurrentlyMeasuring = true;
     }
 
     public async Task StopMeasurement()
     {
-        IsCurrentlyMeasuring = false;
         var msg = new MyodamCommonMessage(new StimulationParameters(0,0,0), false);
         await _bleDeviceHandler.Send(msg.FormatForSending());
+        IsCurrentlyMeasuring = false;
     }
 
     public void Disconnect()

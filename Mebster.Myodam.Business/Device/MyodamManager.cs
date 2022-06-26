@@ -6,19 +6,21 @@ namespace Mebster.Myodam.Business.Device;
 public interface IMyodamManager
 {
     event EventHandler MyodamAvailabilityChanged;
+    public event EventHandler? MeasurementStatusChanged;
     public MyodamDevice? MyodamDevice { get; }
-    MyodamAvailabilityStatus MyodamAvailability { get; set; }
+    MyodamAvailabilityStatus MyodamAvailability { get; }
+    bool IsCurrentlyMeasuring { get; }
     Task ConnectMyodam();
 }
 
 public class MyodamManager : IMyodamManager
 {
+    public event EventHandler? MyodamAvailabilityChanged;
+    public event EventHandler? MeasurementStatusChanged;
     private readonly IBluetoothManager _bluetoothManager;
     private MyodamAvailabilityStatus _myodamAvailability;
+    private const string _myodamName = "MYODAM";
     public MyodamDevice? MyodamDevice { get; private set; }
-    public event EventHandler? MyodamAvailabilityChanged;
-
-    private string _myodamName = "MYODAM";
 
     public MyodamAvailabilityStatus MyodamAvailability
     {
@@ -30,6 +32,8 @@ public class MyodamManager : IMyodamManager
             MyodamAvailabilityChanged?.Invoke(this, EventArgs.Empty);
         }
     }
+
+    public bool IsCurrentlyMeasuring => MyodamDevice?.IsCurrentlyMeasuring ?? false;
 
     public MyodamManager(IBluetoothManager bluetoothManager)
     {
@@ -58,6 +62,7 @@ public class MyodamManager : IMyodamManager
         if (MyodamDevice != null)
         {
             MyodamDevice.ConnectionStatusChanged -= OnConnectionStatusChanged;
+            MyodamDevice.MeasurementStatusChanged -= OnMeasurementStatusChanged;
             MyodamDevice.Disconnect();
             MyodamDevice = null;
         }
@@ -67,6 +72,12 @@ public class MyodamManager : IMyodamManager
         MyodamDevice = new MyodamDevice(await myodamDevices.Single().ConnectDevice());
         MyodamAvailability = MyodamAvailabilityStatus.Connected;
         MyodamDevice.ConnectionStatusChanged += OnConnectionStatusChanged;
+        MyodamDevice.MeasurementStatusChanged += OnMeasurementStatusChanged;
+    }
+
+    private void OnMeasurementStatusChanged(object? sender, EventArgs e)
+    {
+        MeasurementStatusChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private void OnConnectionStatusChanged(object? o, EventArgs eventArgs)

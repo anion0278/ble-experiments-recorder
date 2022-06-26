@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:Mebster.Myodam.UI.WPF.ViewModels"
+             xmlns:extensions="clr-namespace:Mebster.Myodam.UI.WPF.Extensions"
              mc:Ignorable="d" 
              d:DesignHeight="500" d:DesignWidth="600"
              d:DataContext="{d:DesignInstance viewModels:TestSubjectDetailViewModel, d:IsDesignTimeCreatable=True}">
@@ -30,19 +31,21 @@
 
         <DockPanel Grid.Row="8"  Margin="10">
             <StackPanel DockPanel.Dock="Right">
-                <Button Content="Add" Command="{Binding AddMeasurementCommand}" CommandParameter=""/>
-                <Button Content="Edit" Command="{Binding EditMeasurementCommand}"/>
-                <Button Content="Remove" Command="{Binding RemoveMeasurementCommand}"/>
+                <Button Content="Add" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
+                        Command="{Binding AddMeasurementCommand}" CommandParameter=""/>
+                <Button Content="Edit" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
+                        Command="{Binding EditMeasurementCommand}"/>
+                <Button Content="Remove" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
+                        Command="{Binding RemoveMeasurementCommand}"/>
             </StackPanel>
             <DataGrid BorderThickness="2" IsSynchronizedWithCurrentItem="True"
                       ItemsSource="{Binding Measurements}" 
                       AutoGenerateColumns="False" RowHeaderWidth="0"
                       CanUserAddRows="False" CanUserDeleteRows="False">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Measurement description" Width="*"
-                                        Binding="{Binding Description, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
-                    <DataGridTextColumn Header="Length" Width="100"  CanUserResize="False">
-                        <!--Binding="{Binding ForceData.Count, Mode=OneWay}"-->
+                    <DataGridTextColumn Header="Measurement description" Width="*" IsReadOnly="True"
+                                        Binding="{Binding Title, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+                    <DataGridTextColumn Header="Type" Width="100"  CanUserResize="False">
                         <DataGridTextColumn.CellStyle>
                             <Style TargetType="DataGridCell">
                                 <Setter Property="HorizontalAlignment" Value="Center" />
@@ -54,8 +57,10 @@
         </DockPanel>
 
         <StackPanel Grid.Row="9" Orientation="Horizontal">
-            <Button Content="Save" Command="{Binding SaveCommand}"/>
-            <Button Content="Delete" Command="{Binding DeleteCommand}"/>
+            <Button Content="Save" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
+                    Command="{Binding SaveCommand}"/>
+            <Button Content="Delete" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
+                    Command="{Binding DeleteCommand}"/>
         </StackPanel>
     </Grid>
 </UserControl>

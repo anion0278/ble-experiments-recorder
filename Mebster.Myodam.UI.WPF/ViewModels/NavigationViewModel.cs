@@ -25,8 +25,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         public ObservableCollection<NavigationItemViewModel> TestSubjects { get; } = new();
 
-        private SynchronizationContext ViewSynchronizationContext { get; }
-
         public IAsyncRelayCommand ConnectMyodamCommand { get; }
 
         public MyodamAvailabilityStatus MyodamAvailability => _myodamManager.MyodamAvailability;
@@ -38,7 +36,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             IMyodamManager myodamManager, 
             IAsyncRelayCommandFactory asyncCommandFactory)
         {
-            ViewSynchronizationContext = SynchronizationContext.Current!;
             ConnectMyodamCommand = asyncCommandFactory.Create(ConnectMyodam, CanConnectMyodam);
 
             _testSubjectLookupService = testSubjectLookupService;
@@ -97,8 +94,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             }
         }
 
-        private void AfterDetailDeleted(ObservableCollection<NavigationItemViewModel> items,
-          AfterDetailDeletedEventArgs args)
+        private void AfterDetailDeleted(ObservableCollection<NavigationItemViewModel> items, AfterDetailDeletedEventArgs args)
         {
             var item = items.SingleOrDefault(f => f.Id == args.Id);
             if (item != null)

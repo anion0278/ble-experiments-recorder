@@ -41,7 +41,7 @@ namespace Mebster.Myodam.UI.WPF.Data.Lookups
                      new LookupItem
                      {
                          Id = m.Id,
-                         DisplayMember = m.Description
+                         DisplayMember = m.Notes
                      })
                   .ToListAsync();
                 return items;

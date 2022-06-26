@@ -18,7 +18,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         public abstract Task LoadAsync(int measurementId);
 
-        public ICommand SaveCommand { get; }
+        public IRelayCommand SaveCommand { get; }
 
         public ICommand DeleteCommand { get; }
 
@@ -26,7 +26,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         public int Id { get; protected set; }
 
-        public virtual string Title { get; protected set; }
+        public virtual string Title { get; set; }
 
         public bool HasChanges
         {
@@ -36,7 +36,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
                 if (_hasChanges != value)
                 {
                     _hasChanges = value;
-                    ((RelayCommand)SaveCommand).NotifyCanExecuteChanged();
+                    SaveCommand.NotifyCanExecuteChanged();
                 }
             }
         }
@@ -82,10 +82,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             {
                 var result = await MessageDialogService.ShowOkCancelDialogAsync(
                   "You've made changes. Close this item?", "Question");
-                if (result == MessageDialogResult.Cancel)
-                {
-                    return;
-                }
+                if (result == MessageDialogResult.Cancel) return;
             }
 
             Messenger.Send(new AfterDetailClosedEventArgs
