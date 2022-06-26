@@ -18,13 +18,24 @@ public class BleDeviceHandler : IBleDeviceHandler
     private readonly System.Timers.Timer _heartbeatWatchdog; // thread-safe timer
     private TimeSpan _hearbeatWatchdogInterval = TimeSpan.FromSeconds(1);
     private TimeSpan _hearbeatTimeout = TimeSpan.FromSeconds(2);
+    private bool _isConnected;
 
     public bool IsDisposed { get; private set; } 
     public ulong Address { get; set; }
     public string Name { get; set; }
     public short SignalStrength { get; set; }
     public DateTimeOffset LatestTimestamp { get; set; }
-    public bool IsConnected { get; private set; }
+
+    public bool IsConnected
+    {
+        get => _isConnected;
+        private set
+        {
+            if (value == _isConnected) return;
+            _isConnected = value;
+            DeviceStatusChanged?.Invoke(this, EventArgs.Empty);
+        }
+    }
 
     public BleDeviceHandler(string name, ulong address, short signalStrength, DateTimeOffset timestamp)
     {
@@ -65,10 +76,9 @@ public class BleDeviceHandler : IBleDeviceHandler
 
     private void OnWatchdogPeriodElapsed(object? sender, ElapsedEventArgs e)
     {
-        if (DateTimeOffset.Now - LatestTimestamp < _hearbeatTimeout) return;
+        var ts = DateTimeOffset.Now;
+        if (ts - LatestTimestamp < _hearbeatTimeout) return;
 
-        IsConnected = false;
-        DeviceStatusChanged?.Invoke(this, EventArgs.Empty);
         Dispose();
     }
 
@@ -77,12 +87,10 @@ public class BleDeviceHandler : IBleDeviceHandler
         switch (sender.ConnectionStatus) // we cannot rely on this prop, since its not updated when the device is disconnected "externally"
         {
             case BluetoothConnectionStatus.Disconnected:
-                IsConnected = false;
-                DeviceStatusChanged?.Invoke(this, EventArgs.Empty);
+                Dispose();
                 break;
             case BluetoothConnectionStatus.Connected:
                 IsConnected = true;
-                DeviceStatusChanged?.Invoke(this, EventArgs.Empty);
                 break;
         }
     }
@@ -112,6 +120,7 @@ public class BleDeviceHandler : IBleDeviceHandler
 
     public void Dispose()
     {
+        IsConnected = false;
         IsDisposed = true;
         _heartbeatWatchdog.Stop();
         _heartbeatWatchdog.Dispose();
@@ -123,7 +132,12 @@ public class BleDeviceHandler : IBleDeviceHandler
             _rxCharacteristic.Service.Dispose();
             _rxCharacteristic = null;
         }
-        _device?.Dispose();
-        _device = null;
+
+        if (_device != null)
+        {
+            _device.ConnectionStatusChanged -= BleDeviceOnConnectionStatusChanged;
+            _device?.Dispose();
+            _device = null;
+        }
     }
 }

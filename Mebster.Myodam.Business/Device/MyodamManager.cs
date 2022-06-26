@@ -41,6 +41,8 @@ public class MyodamManager : IMyodamManager
 
     private void OnAvailableDevicesChanged(object? sender, EventArgs e)
     {
+        if (MyodamDevice != null && MyodamDevice.IsConnected) return;
+
         MyodamAvailability = _bluetoothManager.AvailableBleDevices.Any(IsMyodamDevice)
             ? MyodamAvailabilityStatus.DisconnectedAvailable
             : MyodamAvailabilityStatus.DisconnectedUnavailable;
