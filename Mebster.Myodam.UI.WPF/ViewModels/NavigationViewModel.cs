@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Threading;
 using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.Infrastructure.Bluetooth;
 using Mebster.Myodam.Models.Device;
@@ -18,14 +21,16 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
     {
         private readonly IMessenger _messenger;
         private readonly IMyodamManager _myodamManager;
-        private readonly IBluetoothManager _bluetoothManager;
         private readonly ITestSubjectLookupDataService _testSubjectLookupService;
 
         public ObservableCollection<NavigationItemViewModel> TestSubjects { get; } = new();
 
+        private SynchronizationContext ViewSynchronizationContext { get; }
+
         public IAsyncRelayCommand ConnectMyodamCommand { get; }
 
         public MyodamAvailabilityStatus MyodamAvailability => _myodamManager.MyodamAvailability;
+
 
         public NavigationViewModel(
             ITestSubjectLookupDataService testSubjectLookupService, 
@@ -33,20 +38,26 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             IMyodamManager myodamManager, 
             IAsyncRelayCommandFactory asyncCommandFactory)
         {
+            ViewSynchronizationContext = SynchronizationContext.Current!;
             ConnectMyodamCommand = asyncCommandFactory.Create(ConnectMyodam, CanConnectMyodam);
 
             _testSubjectLookupService = testSubjectLookupService;
             _messenger = messenger;
             _myodamManager = myodamManager;
-            _myodamManager.MyodamStatusChanged += (_, _) => { OnPropertyChanged(nameof(MyodamAvailability)); ConnectMyodamCommand.NotifyCanExecuteChanged();};
+            _myodamManager.MyodamAvailabilityChanged += OnMyodamAvailabilityChanged;
             _messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
             _messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
         }
 
+        private void OnMyodamAvailabilityChanged(object? o, EventArgs eventArgs)
+        {
+            OnPropertyChanged(nameof(MyodamAvailability));
+            ViewSynchronizationContext.Send(_ => ConnectMyodamCommand.NotifyCanExecuteChanged(), null);
+        }
+
         private bool CanConnectMyodam()
         {
-            // MyodamAvailability != MyodamAvailabilityStatus.DisconnectedUnavailable
-            return true;
+            return MyodamAvailability != MyodamAvailabilityStatus.DisconnectedUnavailable;
         }
 
         public async Task ConnectMyodam()

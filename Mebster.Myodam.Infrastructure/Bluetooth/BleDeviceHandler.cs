@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
+using System.Timers;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Storage.Streams;
@@ -6,29 +8,38 @@ using Mebster.Myodam.Models.Device;
 
 namespace Mebster.Myodam.Infrastructure.Bluetooth;
 
-public class BleAvailableDevice : IBleAvailableDevice, IDisposable
+public class BleDeviceHandler : IBleDeviceHandler
 {
     public event EventHandler<string>? DataReceived;
-    public event EventHandler<MyodamAvailabilityStatus>? DeviceStatusChanged;
+    public event EventHandler? DeviceStatusChanged;
 
     private BluetoothLEDevice? _device;
     private GattCharacteristic? _rxCharacteristic;
+    private readonly System.Timers.Timer _heartbeatWatchdog; // thread-safe timer
+    private TimeSpan _hearbeatWatchdogInterval = TimeSpan.FromSeconds(1);
+    private TimeSpan _hearbeatTimeout = TimeSpan.FromSeconds(2);
 
+    public bool IsDisposed { get; private set; } 
     public ulong Address { get; set; }
     public string Name { get; set; }
     public short SignalStrength { get; set; }
     public DateTimeOffset LatestTimestamp { get; set; }
+    public bool IsConnected { get; private set; }
 
-    public BleAvailableDevice(string name, ulong address, short signalStrength, DateTimeOffset timestamp)
+    public BleDeviceHandler(string name, ulong address, short signalStrength, DateTimeOffset timestamp)
     {
         Name = name;
         Address = address;
         SignalStrength = signalStrength;
         LatestTimestamp = timestamp;
+        _heartbeatWatchdog = new System.Timers.Timer(_hearbeatWatchdogInterval.TotalMilliseconds);
+        _heartbeatWatchdog.Elapsed += OnWatchdogPeriodElapsed;
     }
 
-    public async Task<IBleAvailableDevice> ConnectDevice()
+    public async Task<IBleDeviceHandler> ConnectDevice()
     {
+        if (IsDisposed) throw new ObjectDisposedException("BLE devise was disposed! Create a new object.");
+
         _device = await BluetoothLEDevice.FromBluetoothAddressAsync(Address);
         _device.ConnectionStatusChanged += BleDeviceOnConnectionStatusChanged;
 
@@ -46,28 +57,40 @@ public class BleAvailableDevice : IBleAvailableDevice, IDisposable
 
         await _rxCharacteristic.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify); // required to receive data
         _rxCharacteristic.ValueChanged += Uart_ReceivedData;
+        
+        _heartbeatWatchdog.Start();
 
         return this;
     }
 
+    private void OnWatchdogPeriodElapsed(object? sender, ElapsedEventArgs e)
+    {
+        if (DateTimeOffset.Now - LatestTimestamp < _hearbeatTimeout) return;
+
+        IsConnected = false;
+        DeviceStatusChanged?.Invoke(this, EventArgs.Empty);
+        Dispose();
+    }
+
     private void BleDeviceOnConnectionStatusChanged(BluetoothLEDevice sender, object args)
     {
-        switch (sender.ConnectionStatus)
+        switch (sender.ConnectionStatus) // we cannot rely on this prop, since its not updated when the device is disconnected "externally"
         {
             case BluetoothConnectionStatus.Disconnected:
-                DeviceStatusChanged?.Invoke(this, MyodamAvailabilityStatus.DisconnectedUnavailable);
+                IsConnected = false;
+                DeviceStatusChanged?.Invoke(this, EventArgs.Empty);
                 break;
             case BluetoothConnectionStatus.Connected:
-                DeviceStatusChanged?.Invoke(this, MyodamAvailabilityStatus.Connected);
-                break;
-            default:
-                DeviceStatusChanged?.Invoke(this, MyodamAvailabilityStatus.ErrorOnDevice);
+                IsConnected = true;
+                DeviceStatusChanged?.Invoke(this, EventArgs.Empty);
                 break;
         }
     }
 
     private void Uart_ReceivedData(GattCharacteristic sender, GattValueChangedEventArgs args)
     {
+        LatestTimestamp = DateTimeOffset.Now;
+        Debug.Print(LatestTimestamp.ToString());
         var reader = DataReader.FromBuffer(args.CharacteristicValue);
         var input = new byte[reader.UnconsumedBufferLength];
         reader.ReadBytes(input);
@@ -89,13 +112,18 @@ public class BleAvailableDevice : IBleAvailableDevice, IDisposable
 
     public void Dispose()
     {
+        IsDisposed = true;
+        _heartbeatWatchdog.Stop();
+        _heartbeatWatchdog.Dispose();
         //https://stackoverflow.com/questions/39599252/windows-ble-uwp-disconnect
 
         if (_rxCharacteristic != null)
         {
             _rxCharacteristic.ValueChanged -= Uart_ReceivedData;
             _rxCharacteristic.Service.Dispose();
+            _rxCharacteristic = null;
         }
         _device?.Dispose();
+        _device = null;
     }
 }
