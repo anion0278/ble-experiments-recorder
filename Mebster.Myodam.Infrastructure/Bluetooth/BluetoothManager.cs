@@ -1,25 +1,43 @@
 ﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
 using Windows.Devices.Bluetooth.Advertisement;
 using Windows.Devices.Enumeration;
 using Mebster.Myodam.Models.Device;
+using Swordfish.NET.Collections;
 
 namespace Mebster.Myodam.Infrastructure.Bluetooth
 {
     public interface IBluetoothManager
     {
-        public event EventHandler? AvailableDevicesChanged;
+        ConcurrentObservableCollection<BleAvailableDevice> AvailableBleDevices { get; }
         void StartScanning();
-        Task<IBleAvailableDeviceWrapper> Connect();
     }
 
     public class BluetoothManager : IBluetoothManager
     {
-        public event EventHandler? AvailableDevicesChanged;
+        readonly BluetoothLEAdvertisementWatcher _bleWatcher;
+        private readonly Timer _timer;
+        public ConcurrentObservableCollection<BleAvailableDevice> AvailableBleDevices { get; } = new();
 
-        readonly BluetoothLEAdvertisementWatcher _bleWatcher = new();
-        public List<BleAvailableAvailableDeviceWrapperWrapper> AvailableBleDevices { get; } = new();
+        public BluetoothManager()
+        {
+            _bleWatcher = new() { ScanningMode = BluetoothLEScanningMode.Active }; // Active - possible Windows bug https://stackoverflow.com/questions/54525137/why-does-bluetoothleadvertisementwatcher-stop-firing-received-events
+            _bleWatcher.SignalStrengthFilter.InRangeThresholdInDBm = -70;
+            _bleWatcher.SignalStrengthFilter.OutOfRangeThresholdInDBm = -75;
+            //_bleWatcher.SignalStrengthFilter.OutOfRangeTimeout = TimeSpan.FromSeconds(4);
+            _timer = new Timer(Callback, null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
+        }
 
-        private string _myodamName = "MYODAM";
+        private void Callback(object? state)
+        {
+            foreach (var availableBleDevice in AvailableBleDevices.ToArray())
+            {
+                if (DateTimeOffset.Now - availableBleDevice.LatestTimestamp > TimeSpan.FromSeconds(2))
+                {
+                    AvailableBleDevices.Remove(availableBleDevice);
+                }
+            }
+        }
 
         public void StartScanning()
         {
@@ -31,21 +49,20 @@ namespace Mebster.Myodam.Infrastructure.Bluetooth
 
         private void BleWatcher_Received(BluetoothLEAdvertisementWatcher sender, BluetoothLEAdvertisementReceivedEventArgs args)
         {
-            if (!string.IsNullOrEmpty(args.Advertisement.LocalName) && args.Advertisement.LocalName.Equals(_myodamName) && AvailableBleDevices.All(d => d.Address != args.BluetoothAddress))
+            if (!string.IsNullOrEmpty(args.Advertisement.LocalName) && args.Advertisement.LocalName == "MYODAM")
             {
-                AvailableBleDevices.Add(new BleAvailableAvailableDeviceWrapperWrapper() { Address = args.BluetoothAddress, Name = args.Advertisement.LocalName, SignalStrength = args.RawSignalStrengthInDBm });
-                AvailableDevicesChanged?.Invoke(this, EventArgs.Empty);
+                var now = DateTimeOffset.Now;
+                var existing = AvailableBleDevices.SingleOrDefault(d => d.Address == args.BluetoothAddress);
+                if (existing == null) AvailableBleDevices.Add(new BleAvailableDevice(args.Advertisement.LocalName, args.BluetoothAddress, args.RawSignalStrengthInDBm, args.Timestamp));
+                else
+                {
+                    existing.LatestTimestamp = args.Timestamp;
+                }
+
+               
             }
         }
-
-        public async Task<IBleAvailableDeviceWrapper> Connect()
-        {
-            var device = AvailableBleDevices.First();
-            await device.ConnectDevice();
-            return device;
-        }
     }
-
 
     //public class BleUart
     //{

@@ -23,9 +23,9 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         public ObservableCollection<NavigationItemViewModel> TestSubjects { get; } = new();
 
-        public ICommand ConnectMyodamCommand { get; }
+        public IAsyncRelayCommand ConnectMyodamCommand { get; }
 
-        public DeviceStatus MyodamStatus => _myodamManager.MyodamStatus;
+        public MyodamAvailabilityStatus MyodamAvailability => _myodamManager.MyodamAvailability;
 
         public NavigationViewModel(
             ITestSubjectLookupDataService testSubjectLookupService, 
@@ -33,14 +33,20 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             IMyodamManager myodamManager, 
             IAsyncRelayCommandFactory asyncCommandFactory)
         {
-            ConnectMyodamCommand = asyncCommandFactory.Create(ConnectMyodam, () => true);
+            ConnectMyodamCommand = asyncCommandFactory.Create(ConnectMyodam, CanConnectMyodam);
 
             _testSubjectLookupService = testSubjectLookupService;
             _messenger = messenger;
             _myodamManager = myodamManager;
-            _myodamManager.MyodamStatusChanged += (_, _) => { OnPropertyChanged(nameof(MyodamStatus)); };
+            _myodamManager.MyodamStatusChanged += (_, _) => { OnPropertyChanged(nameof(MyodamAvailability)); ConnectMyodamCommand.NotifyCanExecuteChanged();};
             _messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
             _messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
+        }
+
+        private bool CanConnectMyodam()
+        {
+            // MyodamAvailability != MyodamAvailabilityStatus.DisconnectedUnavailable
+            return true;
         }
 
         public async Task ConnectMyodam()
