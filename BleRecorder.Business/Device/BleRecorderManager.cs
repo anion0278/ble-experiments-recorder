@@ -41,6 +41,8 @@ public class BleRecorderManager : IBleRecorderManager
 
     private void OnAvailableDevicesChanged(object? sender, EventArgs e)
     {
+        if (BleRecorderDevice != null && BleRecorderDevice.IsConnected) return;
+
         BleRecorderAvailability = _bluetoothManager.AvailableBleDevices.Any(IsBleRecorderDevice)
             ? BleRecorderAvailabilityStatus.DisconnectedAvailable
             : BleRecorderAvailabilityStatus.DisconnectedUnavailable;
