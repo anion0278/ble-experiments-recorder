@@ -5,7 +5,7 @@ namespace BleRecorder.Business.Device;
 
 public interface IBleRecorderManager
 {
-    event EventHandler BleRecorderStatusChanged;
+    event EventHandler BleRecorderAvailabilityChanged;
     public BleRecorderDevice? BleRecorderDevice { get; }
     BleRecorderAvailabilityStatus BleRecorderAvailability { get; set; }
     Task ConnectBleRecorder();
@@ -16,7 +16,7 @@ public class BleRecorderManager : IBleRecorderManager
     private readonly IBluetoothManager _bluetoothManager;
     private BleRecorderAvailabilityStatus _bleRecorderAvailability;
     public BleRecorderDevice? BleRecorderDevice { get; private set; }
-    public event EventHandler? BleRecorderStatusChanged;
+    public event EventHandler? BleRecorderAvailabilityChanged;
 
     private string _bleRecorderName = "Aggregator";
 
@@ -25,8 +25,9 @@ public class BleRecorderManager : IBleRecorderManager
         get => _bleRecorderAvailability;
         set
         {
+            if (value == _bleRecorderAvailability) return;
             _bleRecorderAvailability = value;
-            BleRecorderStatusChanged?.Invoke(this, EventArgs.Empty);
+            BleRecorderAvailabilityChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 
@@ -45,19 +46,32 @@ public class BleRecorderManager : IBleRecorderManager
             : BleRecorderAvailabilityStatus.DisconnectedUnavailable;
     }
 
-    private bool IsBleRecorderDevice(BleAvailableDevice device)
+    private bool IsBleRecorderDevice(BleDeviceHandler deviceHandler)
     {
-        return device.Name.Equals(_bleRecorderName);
+        return deviceHandler.Name.Equals(_bleRecorderName);
     }
 
     public async Task ConnectBleRecorder()
     {
-        BleRecorderDevice?.Disconnect();
+        if (BleRecorderDevice != null)
+        {
+            BleRecorderDevice.ConnectionStatusChanged -= OnConnectionStatusChanged;
+            BleRecorderDevice.Disconnect();
+            BleRecorderDevice = null;
+        }
 
         var bleRecorderDevices = _bluetoothManager.AvailableBleDevices.Where(IsBleRecorderDevice).ToArray();
         if (bleRecorderDevices.Length > 1) throw new Exception("There is more than one bleRecorder device!");
         BleRecorderDevice = new BleRecorderDevice(await bleRecorderDevices.Single().ConnectDevice());
         BleRecorderAvailability = BleRecorderAvailabilityStatus.Connected;
+        BleRecorderDevice.ConnectionStatusChanged += OnConnectionStatusChanged;
     }
 
+    private void OnConnectionStatusChanged(object? o, EventArgs eventArgs)
+    {
+        if (BleRecorderDevice != null && !BleRecorderDevice.IsConnected)
+        {
+            BleRecorderAvailabilityChanged?.Invoke(this, EventArgs.Empty);
+        }
+    }
 }

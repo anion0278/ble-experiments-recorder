@@ -6,19 +6,28 @@ namespace BleRecorder.Business.Device;
 
 public class BleRecorderDevice
 {
-    private readonly IBleAvailableDevice _bleAvailableDevice;
+    private readonly IBleDeviceHandler _bleDeviceHandler;
     public event EventHandler<MeasuredValue>? NewValueReceived;
     public event EventHandler? MeasurementFinished;
+    public event EventHandler? ConnectionStatusChanged;
+
+    public bool IsConnected => _bleDeviceHandler.IsConnected;
 
     private bool IsCurrentlyMeasuring = false; // temp
 
-    public BleRecorderDevice(IBleAvailableDevice bleAvailableDevice)
+    public BleRecorderDevice(IBleDeviceHandler bleDeviceHandler)
     {
-        _bleAvailableDevice = bleAvailableDevice;
-        _bleAvailableDevice.DataReceived += BleAvailableDeviceDataReceived;
+        _bleDeviceHandler = bleDeviceHandler;
+        _bleDeviceHandler.DataReceived += BleDeviceHandlerDataReceived;
+        _bleDeviceHandler.DeviceStatusChanged += BleDeviceStatusChanged;
     }
 
-    private void BleAvailableDeviceDataReceived(object? sender, string data)
+    private void BleDeviceStatusChanged(object? sender, EventArgs e)
+    {
+        ConnectionStatusChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void BleDeviceHandlerDataReceived(object? sender, string data)
     {
         var regex = Regex.Match(data, @"\+\d+,-?(\d+.\d+)\n");
         if (regex.Success && float.TryParse(regex.Groups[1].Value, out var measuredForceValue) && IsCurrentlyMeasuring) 
@@ -38,19 +47,19 @@ public class BleRecorderDevice
     {
         IsCurrentlyMeasuring = true;
         var msg = new BleRecorderCommonMessage(parameters, true);
-        await _bleAvailableDevice.Send(msg.FormatForSending());
+        await _bleDeviceHandler.Send(msg.FormatForSending());
     }
 
     public async Task StopMeasurement()
     {
         IsCurrentlyMeasuring = false;
         var msg = new BleRecorderCommonMessage(new StimulationParameters(0,0,0), false);
-        await _bleAvailableDevice.Send(msg.FormatForSending());
+        await _bleDeviceHandler.Send(msg.FormatForSending());
     }
 
     public void Disconnect()
     {
-        _bleAvailableDevice.DataReceived -= BleAvailableDeviceDataReceived;
-        _bleAvailableDevice.Disconnect();
+        _bleDeviceHandler.DataReceived -= BleDeviceHandlerDataReceived;
+        _bleDeviceHandler.Disconnect();
     }
 }

@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Threading;
 using BleRecorder.Business.Device;
 using BleRecorder.Infrastructure.Bluetooth;
 using BleRecorder.Models.Device;
@@ -18,14 +21,16 @@ namespace BleRecorder.UI.WPF.ViewModels
     {
         private readonly IMessenger _messenger;
         private readonly IBleRecorderManager _bleRecorderManager;
-        private readonly IBluetoothManager _bluetoothManager;
         private readonly ITestSubjectLookupDataService _testSubjectLookupService;
 
         public ObservableCollection<NavigationItemViewModel> TestSubjects { get; } = new();
 
+        private SynchronizationContext ViewSynchronizationContext { get; }
+
         public IAsyncRelayCommand ConnectBleRecorderCommand { get; }
 
         public BleRecorderAvailabilityStatus BleRecorderAvailability => _bleRecorderManager.BleRecorderAvailability;
+
 
         public NavigationViewModel(
             ITestSubjectLookupDataService testSubjectLookupService, 
@@ -33,20 +38,26 @@ namespace BleRecorder.UI.WPF.ViewModels
             IBleRecorderManager bleRecorderManager, 
             IAsyncRelayCommandFactory asyncCommandFactory)
         {
+            ViewSynchronizationContext = SynchronizationContext.Current!;
             ConnectBleRecorderCommand = asyncCommandFactory.Create(ConnectBleRecorder, CanConnectBleRecorder);
 
             _testSubjectLookupService = testSubjectLookupService;
             _messenger = messenger;
             _bleRecorderManager = bleRecorderManager;
-            _bleRecorderManager.BleRecorderStatusChanged += (_, _) => { OnPropertyChanged(nameof(BleRecorderAvailability)); ConnectBleRecorderCommand.NotifyCanExecuteChanged();};
+            _bleRecorderManager.BleRecorderAvailabilityChanged += OnBleRecorderAvailabilityChanged;
             _messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
             _messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
         }
 
+        private void OnBleRecorderAvailabilityChanged(object? o, EventArgs eventArgs)
+        {
+            OnPropertyChanged(nameof(BleRecorderAvailability));
+            ViewSynchronizationContext.Send(_ => ConnectBleRecorderCommand.NotifyCanExecuteChanged(), null);
+        }
+
         private bool CanConnectBleRecorder()
         {
-            // BleRecorderAvailability != BleRecorderAvailabilityStatus.DisconnectedUnavailable
-            return true;
+            return BleRecorderAvailability != BleRecorderAvailabilityStatus.DisconnectedUnavailable;
         }
 
         public async Task ConnectBleRecorder()
