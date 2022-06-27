@@ -5,6 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:Mebster.Myodam.UI.WPF.ViewModels"
              xmlns:extensions="clr-namespace:Mebster.Myodam.UI.WPF.Extensions"
+             xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:resouces="clr-namespace:Mebster.Myodam.UI.WPF.View.Resouces"
              mc:Ignorable="d" 
              d:DesignHeight="500" d:DesignWidth="600"
              d:DataContext="{d:DesignInstance viewModels:TestSubjectDetailViewModel, d:IsDesignTimeCreatable=True}">
@@ -22,12 +24,12 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Label Content="First name" Margin="10 10 10 0"/>
-        <TextBox Grid.Row="1" Text="{Binding TestSubject.FirstName,
-        Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="10 0 10 10"/>
 
         <Label Grid.Row="2" Content="Last name" Margin="10 0"/>
-        <TextBox Grid.Row="3" Text="{Binding TestSubject.LastName,
-        Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="10 0 10 10"/>
+        <TextBox Grid.Row="1" MaxLength="15" Margin="10 0 10 10"
+                 Text="{Binding TestSubject.FirstName, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" />
+        <TextBox Grid.Row="3" MaxLength="15" Margin="10 0 10 10"
+                 Text="{Binding TestSubject.LastName, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" />
 
         <DockPanel Grid.Row="8"  Margin="10">
             <StackPanel DockPanel.Dock="Right">
@@ -38,28 +40,79 @@
                 <Button Content="Remove" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
                         Command="{Binding RemoveMeasurementCommand}"/>
             </StackPanel>
-            <DataGrid BorderThickness="2" IsSynchronizedWithCurrentItem="True"
+            <DataGrid x:Name="MeasurementsGrid" BorderThickness="2" IsSynchronizedWithCurrentItem="True"
+                      SelectionMode="Single" SelectionUnit="FullRow"
                       ItemsSource="{Binding Measurements}" 
                       AutoGenerateColumns="False" RowHeaderWidth="0"
                       CanUserAddRows="False" CanUserDeleteRows="False">
+                <!--<DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}">
+                        <Setter Property="resouces:Behaviours.DoubleClickCommand" Value="{Binding ElementName=MeasurementsGrid, Path=DataContext.EditMeasurementCommand}"/>
+                    </Style>
+                </DataGrid.RowStyle>-->
+                <DataGrid.GroupStyle>
+                    <GroupStyle>
+                        <GroupStyle.Panel>
+                            <ItemsPanelTemplate>
+                                <DataGridRowsPresenter/>
+                            </ItemsPanelTemplate>
+                        </GroupStyle.Panel>
+                        <GroupStyle.ContainerStyle>
+                            <Style TargetType="{x:Type GroupItem}">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type GroupItem}">
+                                            <Expander IsExpanded="True" BorderThickness="0" Background="DarkSlateBlue" IsTabStop="False" Style="{x:Null}">
+                                                <Expander.Header>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock FontSize="11" FontStyle="Italic" Foreground="White">
+                                                            <TextBlock.Text>
+                                                                <MultiBinding StringFormat="Grouped by Type: {0}, Items: {1}">
+                                                                    <Binding Path="Name" />
+                                                                    <Binding Path="ItemCount" />
+                                                                </MultiBinding>
+                                                            </TextBlock.Text>
+                                                        </TextBlock>
+                                                    </StackPanel>
+                                                </Expander.Header>
+                                                <ItemsPresenter />
+                                            </Expander>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </GroupStyle.ContainerStyle>
+                        <GroupStyle.HeaderTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" >
+                                    <TextBlock Text="{Binding Type}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                    </GroupStyle>
+                </DataGrid.GroupStyle>
+
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Measurement description" Width="*" IsReadOnly="True"
-                                        Binding="{Binding Title, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
-                    <DataGridTextColumn Header="Type" Width="100"  CanUserResize="False">
-                        <DataGridTextColumn.CellStyle>
+                    <DataGridTextColumn Header="Measurement title" Width="*" IsReadOnly="True"
+                                        Binding="{Binding Title}"/>
+                    <DataGridTextColumn Header="Type" Width="180"  CanUserResize="False" IsReadOnly="True"
+                                        Binding="{Binding Type}"/>
+                    <DataGridTextColumn Header="Experiment Date" Width="200"  CanUserResize="False" IsReadOnly="True"
+                                            Binding="{Binding Date, TargetNullValue='Not completed'}"/>
+                    <!--<DataGridTextColumn.CellStyle>
                             <Style TargetType="DataGridCell">
                                 <Setter Property="HorizontalAlignment" Value="Center" />
                             </Style>
-                        </DataGridTextColumn.CellStyle>
-                    </DataGridTextColumn>
+                        </DataGridTextColumn.CellStyle>-->
+
                 </DataGrid.Columns>
             </DataGrid>
         </DockPanel>
 
         <StackPanel Grid.Row="9" Orientation="Horizontal">
-            <Button Content="Save" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
+            <Button Content="Save Subject" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
                     Command="{Binding SaveCommand}"/>
-            <Button Content="Delete" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
+            <Button Content="Delete Subject" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
                     Command="{Binding DeleteCommand}"/>
         </StackPanel>
     </Grid>

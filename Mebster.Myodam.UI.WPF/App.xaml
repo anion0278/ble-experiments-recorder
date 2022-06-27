@@ -39,6 +39,7 @@
 
                     <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter"/>
                     <resouces:InverseBooleanConverter x:Key="inverseBooleanConverter"/>
+                    <resouces:CollectionLengthToBooleanConverter x:Key="collectionLengthToBooleanConverter"/>
 
                     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                         <Setter Property="FontSize" Value="14"/>

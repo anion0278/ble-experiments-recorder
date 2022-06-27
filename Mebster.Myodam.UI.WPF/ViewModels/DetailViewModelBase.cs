@@ -97,6 +97,5 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             await saveFunc();
             afterSaveAction();
         }
-
     }
 }

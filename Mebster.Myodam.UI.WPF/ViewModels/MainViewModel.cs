@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using Autofac.Features.Indexed;
 using Mebster.Myodam.Business.Device;
@@ -44,8 +45,8 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             {
                 if (_myodamManager.IsCurrentlyMeasuring)
                 {
-                    // TODO check for potential deadlock, maybe Changing eventhandler from Collection view can be async
-                    _messageDialogService.ShowInfoDialogAsync("Please, stop the measurement first.").Wait();
+                    //_messageDialogService.ShowInfoDialogAsync("Please, stop the measurement first.").Result();
+                    MessageBox.Show("Please, stop the measurement first."); // TODO SOLVE!
                     return;
                 }
                 _selectedDetailViewModel = value;

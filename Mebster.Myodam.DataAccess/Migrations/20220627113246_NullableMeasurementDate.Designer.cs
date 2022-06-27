@@ -3,6 +3,7 @@ using System;
 using Mebster.Myodam.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Mebster.Myodam.DataAccess.Migrations
 {
     [DbContext(typeof(ExperimentsDbContext))]
-    partial class ExperimentsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220627113246_NullableMeasurementDate")]
+    partial class NullableMeasurementDate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.5");
@@ -50,7 +52,7 @@ namespace Mebster.Myodam.DataAccess.Migrations
 
                     b.HasIndex("TestSubjectId");
 
-                    b.ToTable("Measurements", (string)null);
+                    b.ToTable("Measurements");
                 });
 
             modelBuilder.Entity("Mebster.Myodam.Models.TestSubject.TestSubject", b =>
@@ -71,7 +73,7 @@ namespace Mebster.Myodam.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TestSubjects", (string)null);
+                    b.ToTable("TestSubjects");
                 });
 
             modelBuilder.Entity("Mebster.Myodam.Models.TestSubject.Measurement", b =>

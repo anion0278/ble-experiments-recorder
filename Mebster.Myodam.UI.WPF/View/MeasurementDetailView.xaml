@@ -9,42 +9,62 @@
              xmlns:livecharts="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
              xmlns:viewModels="clr-namespace:Mebster.Myodam.UI.WPF.ViewModels"
              xmlns:extensions="clr-namespace:Mebster.Myodam.UI.WPF.Extensions"
+             xmlns:System="clr-namespace:System;assembly=System.Runtime"
              mc:Ignorable="d"
              d:DesignHeight="500" d:DesignWidth="600" 
              d:DataContext="{d:DesignInstance viewModels:MeasurementDetailViewModel, IsDesignTimeCreatable=True}">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <Label Grid.Row="0" Content="Short description" Margin="10 10 10 0"/>
-        <TextBox Grid.Row="1" MaxLength="20" Width="300" Margin="10 0 10 10" HorizontalAlignment="Left"
+    <UserControl.Resources>
+        <ObjectDataProvider x:Key="MeasurementTypeEnum" MethodName="GetValues"
+                            ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="testSubject:MeasurementType"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </UserControl.Resources>
+
+    <ScrollViewer>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0" Content="Short description" Margin="10 10 10 0"/>
+            <TextBox Grid.Row="1" MaxLength="40" Width="300" Margin="10 0 10 10" HorizontalAlignment="Left"
                  Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" />
 
-        <Label Grid.Row="2" Content="Notes" Margin="10 10 10 0"/>
-        <TextBox Grid.Row="3" Margin="10 0 10 10" TextWrapping="Wrap" AcceptsReturn="True" AcceptsTab="True"
+            <Label Grid.Row="2" Content="Notes" Margin="10 10 10 0"/>
+            <TextBox Grid.Row="3" Margin="10 0 10 10" TextWrapping="Wrap" AcceptsReturn="True" AcceptsTab="True"
                  Text="{Binding Notes}" />
 
-        <StackPanel Grid.Row="4"  Orientation="Horizontal" Margin="10">
-            <Label Content="Performed on:" />
-            <!--<mah:DateTimePicker IsReadOnly="True" SelectedDate="{Binding Date}" />-->
-            <Label FontWeight="Bold" Content="{Binding Date, StringFormat=ddd MM yyyy}" />
-        </StackPanel>
+            <StackPanel Grid.Row="4"  Orientation="Horizontal" Margin="10 0 10 10">
+                <Label Content="Performed on:" />
+                <!--<mah:DateTimePicker IsReadOnly="True" SelectedDate="{Binding Date}" />-->
+                <Label FontWeight="Bold" Content="{Binding Date, StringFormat=ddd MM yyyy}" />
+            </StackPanel>
 
-        <StackPanel Grid.Row="5" Orientation="Horizontal" Margin="10">
-            <Label Content="Test subject:   "/>
-            <Label FontWeight="Bold" Content="{Binding Measurement.TestSubject.FullName}"/>
-        </StackPanel>
+            <StackPanel Grid.Row="5"  Orientation="Horizontal" Margin="10 0 10 10">
+                <Label Content="Measurement type:" />
+                <!--<mah:DateTimePicker IsReadOnly="True" SelectedDate="{Binding Date}" />-->
+                <ComboBox SelectedItem="{Binding Type}"
+                          IsEnabled="{Binding ForceValues,Mode=OneWay, Converter={StaticResource collectionLengthToBooleanConverter}}"
+                          ItemsSource="{Binding Source={StaticResource MeasurementTypeEnum}}" />
+            </StackPanel>
 
-        <ScrollViewer Grid.Row="6">
-            <livecharts:CartesianChart  DisableAnimations="True" Margin="4" MinHeight="300" >
+            <StackPanel Grid.Row="6" Orientation="Horizontal" Margin="10 0 10 10">
+                <Label Content="Test subject:   "/>
+                <Label FontWeight="Bold" Content="{Binding Measurement.TestSubject.FullName}"/>
+            </StackPanel>
+
+
+            <livecharts:CartesianChart Grid.Row="7"  DisableAnimations="True" Margin="4" Height="300" >
                 <livecharts:CartesianChart.AxisY>
                     <livecharts:Axis MaxValue="120" MinValue="0" />
                 </livecharts:CartesianChart.AxisY>
@@ -60,34 +80,35 @@
                     <livecharts:LineSeries Values="{Binding ForceValues}"></livecharts:LineSeries>
                 </livecharts:CartesianChart.Series>
             </livecharts:CartesianChart>
-        </ScrollViewer>
-        <Grid Grid.Row="7" >
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Content="Start measurement" Command="{Binding StartMeasurementCommand}">
-                <Button.Style>
-                    <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                        
-                        <Style.Triggers>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="ToolTip" Value="Check device connection" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-            </Button>
-            <Button Grid.Column="1" Content="Stop measurement" Command="{Binding StopMeasurementCommand}"/>
-            <Button Grid.Column="2" Content="Clean data" Command="{Binding CleanRecordedDataCommand}"/>
-        </Grid>
 
-        <StackPanel Grid.Row="8" Orientation="Horizontal">
-            <Button Content="Save" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
+            <Grid Grid.Row="8" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Content="Start measurement" Command="{Binding StartMeasurementCommand}">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+
+                            <Style.Triggers>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="ToolTip" Value="Check device connection" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Grid.Column="1" Content="Stop measurement" Command="{Binding StopMeasurementCommand}"/>
+                <Button Grid.Column="2" Content="Clean data" Command="{Binding CleanRecordedDataCommand}"/>
+            </Grid>
+
+            <StackPanel Grid.Row="9" Orientation="Horizontal">
+                <Button Content="Save" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
                     Command="{Binding SaveCommand}"/>
-            <Button Content="Delete" Command="{Binding DeleteCommand}"/>
-        </StackPanel>
+                <Button Content="Delete" Command="{Binding DeleteCommand}"/>
+            </StackPanel>
 
-    </Grid>
+        </Grid>
+    </ScrollViewer>
 </UserControl>
