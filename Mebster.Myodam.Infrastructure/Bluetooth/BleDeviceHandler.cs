@@ -16,8 +16,8 @@ public class BleDeviceHandler : IBleDeviceHandler
     private BluetoothLEDevice? _device;
     private GattCharacteristic? _rxCharacteristic;
     private readonly System.Timers.Timer _heartbeatWatchdog; // thread-safe timer
-    private TimeSpan _hearbeatWatchdogInterval = TimeSpan.FromSeconds(1);
-    private TimeSpan _hearbeatTimeout = TimeSpan.FromSeconds(2);
+    private TimeSpan _hearbeatWatchdogInterval = TimeSpan.FromSeconds(0.3);
+    private TimeSpan _hearbeatTimeout = TimeSpan.FromSeconds(0.8);
     private bool _isConnected;
 
     public bool IsDisposed { get; private set; } 

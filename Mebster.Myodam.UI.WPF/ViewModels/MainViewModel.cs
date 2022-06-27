@@ -59,7 +59,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         {
         }
 
-
         public MainViewModel(INavigationViewModel navigationViewModel,
             IIndex<string, IDetailViewModel> detailViewModelCreator,
             IMessenger messenger,
@@ -77,8 +76,8 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             _messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
             _messenger.Register<AfterDetailClosedEventArgs>(this, (s, e) => AfterDetailClosed(e));
 
-            CreateNewDetailCommand = new RelayCommand<Type>(OnCreateNewDetailExecute!);
-            OpenSingleDetailViewCommand = new RelayCommand<Type>(OnOpenSingleDetailViewExecute!);
+            CreateNewDetailCommand = new RelayCommand(OnCreateNewDetailExecute);
+            OpenSingleDetailViewCommand = new RelayCommand(OnOpenSingleDetailViewExecute);
 
             NavigationViewModel = navigationViewModel;
         }
@@ -92,28 +91,28 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             if (detailViewModel == null)
             {
                 detailViewModel = _detailViewModelCreator[args.ViewModelName];
-                await detailViewModel.LoadAsync(args.Id);
+                await detailViewModel.LoadAsync(args.Id, args.Data);
                 DetailViewModels.Add(detailViewModel);
             }
 
             SelectedDetailViewModel = detailViewModel;
         }
 
-        private void OnCreateNewDetailExecute(Type viewModelType)
+        private void OnCreateNewDetailExecute()
         {
             OnOpenDetailView(new OpenDetailViewEventArgs
             {
                 Id = nextNewItemId--,
-                ViewModelName = viewModelType.Name
+                ViewModelName = nameof(TestSubjectDetailViewModel)
             });
         }
 
-        private void OnOpenSingleDetailViewExecute(Type viewModelType)
+        private void OnOpenSingleDetailViewExecute()
         {
             OnOpenDetailView(new OpenDetailViewEventArgs
             {
                 Id = -1,
-                ViewModelName = viewModelType.Name // TODO change
+                ViewModelName = nameof(TestSubjectDetailViewModel)
             });
         }
 

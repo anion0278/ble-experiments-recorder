@@ -21,7 +21,7 @@ namespace Mebster.Myodam.Infrastructure.Bluetooth
         public ConcurrentObservableCollection<BleDeviceHandler> AvailableBleDevices { get; } = new();
 
         private TimeSpan _advertisementWatchdogInterval = TimeSpan.FromSeconds(1);
-        private TimeSpan _advertisementWatchdogTimeout = TimeSpan.FromSeconds(3);
+        private TimeSpan _advertisementWatchdogTimeout = TimeSpan.FromSeconds(2);
 
         public BluetoothManager()
         {

@@ -21,10 +21,9 @@ namespace Mebster.Myodam.UI.WPF.Data.Repositories
         .SingleAsync(m => m.Id == id);
     }
 
-    public async Task<List<TestSubject>> GetAllTestSubjectsAsync()
+    public void StartTrackingTestSubject(TestSubject testSubject)
     {
-      return await Context.Set<TestSubject>()
-          .ToListAsync();
+        Context.TestSubjects.Attach(testSubject);
     }
 
     public async Task ReloadTestSubjectAsync(int testSubjectId)

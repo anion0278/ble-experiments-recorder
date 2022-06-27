@@ -26,22 +26,21 @@
         </Grid.RowDefinitions>
         <Label Grid.Row="0" Content="Short description" Margin="10 10 10 0"/>
         <TextBox Grid.Row="1" MaxLength="20" Width="300" Margin="10 0 10 10" HorizontalAlignment="Left"
-                 Text="{Binding Measurement.Title, UpdateSourceTrigger=PropertyChanged}" />
+                 Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" />
 
         <Label Grid.Row="2" Content="Notes" Margin="10 10 10 0"/>
         <TextBox Grid.Row="3" Margin="10 0 10 10" TextWrapping="Wrap" AcceptsReturn="True" AcceptsTab="True"
-                 Text="{Binding Measurement.Notes}" />
+                 Text="{Binding Notes}" />
 
         <StackPanel Grid.Row="4"  Orientation="Horizontal" Margin="10">
             <Label Content="Performed on:" />
-            <mah:DateTimePicker IsReadOnly="True"/>
+            <!--<mah:DateTimePicker IsReadOnly="True" SelectedDate="{Binding Date}" />-->
+            <Label FontWeight="Bold" Content="{Binding Date, StringFormat=ddd MM yyyy}" />
         </StackPanel>
 
         <StackPanel Grid.Row="5" Orientation="Horizontal" Margin="10">
             <Label Content="Test subject:   "/>
-            <ComboBox MinWidth="250" DisplayMemberPath="FullName"
-                      SelectedItem="{Binding Measurement.TestSubject}"
-                      ItemsSource="{Binding AvailableTestSubjects}" /> 
+            <Label FontWeight="Bold" Content="{Binding Measurement.TestSubject.FullName}"/>
         </StackPanel>
 
         <ScrollViewer Grid.Row="6">
@@ -68,7 +67,18 @@
                 <ColumnDefinition />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Content="Start measurement" Command="{Binding StartMeasurementCommand}"/>
+            <Button Grid.Column="0" Content="Start measurement" Command="{Binding StartMeasurementCommand}">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                        
+                        <Style.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="ToolTip" Value="Check device connection" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
             <Button Grid.Column="1" Content="Stop measurement" Command="{Binding StopMeasurementCommand}"/>
             <Button Grid.Column="2" Content="Clean data" Command="{Binding CleanRecordedDataCommand}"/>
         </Grid>
