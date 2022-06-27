@@ -23,7 +23,6 @@ public class BleRecorderDevice // TODO Extract inteface
         {
             if (_isCurrentlyMeasuring == value) return;
             _isCurrentlyMeasuring = value;
-            Debug.Print("Changed meas:" + _isCurrentlyMeasuring);
             MeasurementStatusChanged?.Invoke(this, EventArgs.Empty);
         }
     }
@@ -41,33 +40,43 @@ public class BleRecorderDevice // TODO Extract inteface
         if (!_bleDeviceHandler.IsConnected) IsCurrentlyMeasuring = false;
     }
 
+    public async Task SendMsg(BleRecorderCommonMessage message)
+    {
+        await _bleDeviceHandler.Send(message.FormatForSending());
+    }
+
     private void BleDeviceHandlerDataReceived(object? sender, string data)
     {
-        var regex = Regex.Match(data, @"\+\d+,-?(\d+.\d+)\n");
-        if (regex.Success && float.TryParse(regex.Groups[1].Value, out var measuredForceValue) && IsCurrentlyMeasuring) 
+        var regex = Regex.Match(data, @"\+(\d+),-?(\d+.\d+)");
+        if (regex.Success 
+            && int.TryParse(regex.Groups[1].Value, out var timestamp)
+            && float.TryParse(regex.Groups[2].Value, out var measuredForceValue) 
+            && IsCurrentlyMeasuring) 
         {
-            NewValueReceived?.Invoke(this, new MeasuredValue(measuredForceValue, DateTime.Now));
+            NewValueReceived?.Invoke(
+                this, 
+                new MeasuredValue(measuredForceValue, TimeSpan.FromMilliseconds(timestamp)));
             return;
         }
 
-        if (data.Contains("Finished"))
-        {
-            MeasurementFinished?.Invoke(this, EventArgs.Empty);
-        }
+        //if (data.Contains("Finished"))
+        //{
+        //    IsCurrentlyMeasuring = false;
+        //    MeasurementFinished?.Invoke(this, EventArgs.Empty);
+        //}
     }
 
     // We always send up-to-date parameters in order to make sure that stimulation is correct even if the device has restarted in meantime
     public async Task StartMeasurement(StimulationParameters parameters)
     {
-        var msg = new BleRecorderCommonMessage(parameters, true);
-        await _bleDeviceHandler.Send(msg.FormatForSending());
+        await SendMsg(new BleRecorderCommonMessage(parameters));
         IsCurrentlyMeasuring = true;
     }
 
     public async Task StopMeasurement()
     {
-        var msg = new BleRecorderCommonMessage(new StimulationParameters(0,0,0), false);
-        await _bleDeviceHandler.Send(msg.FormatForSending());
+        var msg = new BleRecorderCommonMessage(new StimulationParameters(0,0,0, MeasurementType.MaximumContraction));
+        await SendMsg(msg);
         IsCurrentlyMeasuring = false;
     }
 

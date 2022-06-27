@@ -90,7 +90,34 @@
                     </Button.Content>
                 </Button>
 
-                <Label Content="{Binding BleRecorderAvailability}" ContentStringFormat="Status: {0}"/>
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="Status: "/>
+                    <Label Content="{Binding BleRecorderAvailability}" FontWeight="Bold"/>
+                </StackPanel>
+                <!--<GroupBox Header="Stimulation Parameters" Style="{x:Null}" Margin="5" IsEnabled="True">-->
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Row="0" Grid.Column="0" Content="Current [mA]:" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" FontWeight="Bold" HorizontalContentAlignment="Center" Margin="3" FontSize="12"
+                                 Text="{Binding StimulationCurrent}" />
+
+                        <Label Grid.Row="1" Grid.Column="0"  Content="Pulse [us]:" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" FontWeight="Bold" HorizontalContentAlignment="Center" Margin="3" FontSize="12"
+                                 Text="{Binding StimulationPulse}"/>
+
+                        <Label Grid.Row="2" Grid.Column="0"  Content="Frequency [Hz]:" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="2" Grid.Column="1" FontWeight="Bold" HorizontalContentAlignment="Center" Margin="3" FontSize="12"
+                                 Text="{Binding StimulationFrequency}"/>
+                    </Grid>
+                <!--</GroupBox>-->
             </StackPanel>
         </GroupBox>
     </Grid>

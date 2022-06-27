@@ -59,11 +59,11 @@ namespace BleRecorder.UI.WPF.ViewModels
             messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
         }
 
-        private void AfterDetailSaved(AfterDetailSavedEventArgs message)
+        private async void AfterDetailSaved(AfterDetailSavedEventArgs message)
         {
             if (message.ViewModelName == nameof(MeasurementDetailViewModel))
             {
-                // TODO reload measurement(s) when some measurement is added(reload all!)/deleted/changed
+                //await LoadAsync(TestSubject.Id, null); // TODO solve
             }
         }
 
@@ -103,7 +103,10 @@ namespace BleRecorder.UI.WPF.ViewModels
             InitializeTestSubject(testSubject);
 
             _measurements = new ObservableCollection<Measurement>(TestSubject.Measurements);
-            Measurements = new CollectionViewSource() { Source = _measurements }.View;
+            _measurements.CollectionChanged += (_, _) => OnPropertyChanged(nameof(Measurements)); // TODO solve in different way
+            Measurements = GetNewCollectionViewInstance(_measurements);
+            Measurements.SortDescriptions.Add(new SortDescription(nameof(Measurement.Date), ListSortDirection.Ascending));
+            Measurements.GroupDescriptions.Add(new PropertyGroupDescription(nameof(Measurement.Type)));
         }
 
         private void InitializeTestSubject(TestSubject testSubject)

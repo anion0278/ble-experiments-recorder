@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,8 +25,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         private readonly IBleRecorderManager _bleRecorderManager;
         private IMeasurementRepository _measurementRepository;
 
-        // ChartValues<double> implements INotifyCollectionChanged, but it is too concrete
-        public IList<float> ForceValues { get; set; }
+        public ChartValues<float> ForceValues { get; set; }
 
         public override string Title
         {
@@ -39,17 +39,17 @@ namespace BleRecorder.UI.WPF.ViewModels
             set => Measurement.Notes = value;
         }
 
-        public DateTimeOffset Date
+        public DateTimeOffset? Date
         {
             get => Measurement.Date;
             set => Measurement.Date = value;
         }
 
-        //public TestSubject TestSubject
-        //{
-        //    get => Measurement.TestSubject;
-        //    set => Measurement.TestSubject = value;
-        //}
+        public MeasurementType Type
+        {
+            get => Measurement.Type;
+            set => Measurement.Type = value;
+        }
 
         public Measurement Measurement { get; private set; }
 
@@ -78,17 +78,28 @@ namespace BleRecorder.UI.WPF.ViewModels
             CleanRecordedDataCommand = new RelayCommand(CleanRecordedData, () => true);
 
             ForceValues = new ChartValues<float>();
+            // letting ComboBox.IsDisabled know that collection changed
+            ForceValues.CollectionChanged += OnForceValuesChanged; 
+            PropertyChanged += OnPropertyChangedEventHandler; // TODO try use Context.ChangeTracker.StateChanged
 
             _bleRecorderManager.BleRecorderAvailabilityChanged += OnBleRecorderStatusChanged;
-            _bleRecorderManager.MeasurementStatusChanged += OnMeasuremetStatusChanged;
-
-            PropertyChanged += (_, _) => { HasChanges = _measurementRepository.HasChanges(); };
+            _bleRecorderManager.MeasurementStatusChanged += OnMeasurementStatusChanged;
 
             //messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
             //messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
         }
 
-        private void OnMeasuremetStatusChanged(object? sender, EventArgs e)
+        private void OnPropertyChangedEventHandler(object? o, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            HasChanges = _measurementRepository.HasChanges();
+        }
+
+        private void OnForceValuesChanged(object? o, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
+        {
+            OnPropertyChanged(nameof(ForceValues));
+        }
+
+        private void OnMeasurementStatusChanged(object? sender, EventArgs e)
         {
             StartMeasurementCommand.NotifyCanExecuteChanged();
             StopMeasurementCommand.NotifyCanExecuteChanged();
@@ -122,7 +133,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             Measurement = measurementId > 0
                 ? await _measurementRepository.GetByIdAsync(measurementId)
                 : CreateNewMeasurement((TestSubject)argsData);
-            
+
             ForceValues.AddRange(Measurement.ForceData?.Select(v => v.Value) ?? Array.Empty<float>());
 
             Id = measurementId;
@@ -131,8 +142,11 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         private Measurement CreateNewMeasurement(TestSubject correspondingTestSubject)
         {
-            var newMeasurement = new Measurement();
-            newMeasurement.ForceData = new List<MeasuredValue>();
+            var newMeasurement = new Measurement
+            {
+                ForceData = new List<MeasuredValue>(),
+                Notes = string.Empty
+            };
             _measurementRepository.StartTrackingTestSubject(correspondingTestSubject);
             newMeasurement.TestSubject = correspondingTestSubject;
             _measurementRepository.Add(newMeasurement);
@@ -141,14 +155,23 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         public async Task StartMeasurement()
         {
+            if (ForceValues.Count > 0)
+            {
+                var result = await MessageDialogService.ShowOkCancelDialogAsync(
+                    "Measurement already contains data. Starting new measurement will erase the existing data. Do you want to continue?",
+                    "Delete measurement data?");
+                if (result != MessageDialogResult.OK) return;
+            }
+
+            ForceValues.Clear();
             Date = DateTimeOffset.Now;
-            _bleRecorderManager.BleRecorderDevice!.NewValueReceived += (sender, value) => { ForceValues.Add(value.Value); };
-            await _bleRecorderManager.BleRecorderDevice.StartMeasurement(new StimulationParameters(100, 50, 20));
+            _bleRecorderManager.BleRecorderDevice!.NewValueReceived += (_, value) => { ForceValues.Add(value.Value); }; // TODO unsubscribe !!!
+            await _bleRecorderManager.BleRecorderDevice.StartMeasurement(new StimulationParameters(100, 50, 20, MeasurementType.MaximumContraction));
         }
 
         public async Task StopMeasurement()
         {
-            await _bleRecorderManager.BleRecorderDevice?.StopMeasurement();
+            if (_bleRecorderManager.BleRecorderDevice != null) await _bleRecorderManager.BleRecorderDevice.StopMeasurement();
         }
 
         protected override async void OnDeleteExecute()
@@ -156,7 +179,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             var result = await MessageDialogService.ShowOkCancelDialogAsync($"Do you really want to delete the measurement {Measurement.Title}?", "Question");
             if (result == MessageDialogResult.OK)
             {
-                //_measurementRepository.Remove(_measurement.Model);
+                _measurementRepository.Remove(Measurement);
                 await _measurementRepository.SaveAsync();
                 RaiseDetailDeletedEvent(Measurement.Id);
             }
@@ -170,12 +193,32 @@ namespace BleRecorder.UI.WPF.ViewModels
         protected override async void OnSaveExecute()
         {
             Measurement.ForceData = ForceValues
-                .Select((val, index) => new MeasuredValue((float)val, DateTime.Now.AddSeconds(index)))
+                .Select((val, index) => new MeasuredValue((float)val, TimeSpan.FromMilliseconds(index)))
                 .ToArray();
             await _measurementRepository.SaveAsync();
             HasChanges = _measurementRepository.HasChanges();
             Id = Measurement.Id;
             RaiseDetailSavedEvent(Measurement.Id, Measurement.Title);
+        }
+
+        protected override async void OnCloseDetailViewExecute()
+        {
+            if (HasChanges || _bleRecorderManager.IsCurrentlyMeasuring)
+            {
+                var result = await MessageDialogService.ShowOkCancelDialogAsync(
+                    "You've made changes or measurement is currently running. Do you want to close this item and stop measurement?", "Question");
+                if (result == MessageDialogResult.Cancel) return;
+            }
+
+            ForceValues.CollectionChanged -= OnForceValuesChanged;
+            PropertyChanged -= OnPropertyChangedEventHandler;
+
+            await StopMeasurement();
+            Messenger.Send(new AfterDetailClosedEventArgs
+            {
+                Id = Id,
+                ViewModelName = GetType().Name
+            });
         }
 
 

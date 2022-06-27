@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Security;
 using System.Text;
 using System.Timers;
 using Windows.Devices.Bluetooth;
@@ -15,12 +16,13 @@ public class BleDeviceHandler : IBleDeviceHandler
 
     private BluetoothLEDevice? _device;
     private GattCharacteristic? _rxCharacteristic;
+    private GattCharacteristic? _txCharacteristic;
     private readonly System.Timers.Timer _heartbeatWatchdog; // thread-safe timer
     private TimeSpan _hearbeatWatchdogInterval = TimeSpan.FromSeconds(0.3);
     private TimeSpan _hearbeatTimeout = TimeSpan.FromSeconds(0.8);
     private bool _isConnected;
 
-    public bool IsDisposed { get; private set; } 
+    public bool IsDisposed { get; private set; }
     public ulong Address { get; set; }
     public string Name { get; set; }
     public short SignalStrength { get; set; }
@@ -64,11 +66,15 @@ public class BleDeviceHandler : IBleDeviceHandler
         if ((await _device.GetGattServicesForUuidAsync(uartGuid)).Status != GattCommunicationStatus.Success) throw new Exception("Connection with BLE device failed!");
 
         var rxId = new Guid("6e400003-b5a3-f393-e0a9-e50e24dcca9e");
-        _rxCharacteristic = (await uartService.GetCharacteristicsAsync()).Characteristics.Single(s => s.Uuid == rxId);
+        var txId = new Guid("6e400002-b5a3-f393-e0a9-e50e24dcca9e");
+
+        var uartCharacteristics = (await uartService.GetCharacteristicsAsync()).Characteristics;
+        _rxCharacteristic = uartCharacteristics.Single(s => s.Uuid == rxId);
+        _txCharacteristic = uartCharacteristics.Single(s => s.Uuid == txId);
 
         await _rxCharacteristic.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify); // required to receive data
         _rxCharacteristic.ValueChanged += Uart_ReceivedData;
-        
+
         _heartbeatWatchdog.Start();
 
         return this;
@@ -107,10 +113,12 @@ public class BleDeviceHandler : IBleDeviceHandler
         DataReceived?.Invoke(this, receivedMsg);
     }
 
-
     public async Task Send(string msg)
     {
-        //charac.WriteValueAsync
+        using var writer = new DataWriter();
+        writer.WriteString("Some long string command");
+        var res = await _txCharacteristic.WriteValueAsync(writer.DetachBuffer(), GattWriteOption.WriteWithoutResponse);
+        if (res != GattCommunicationStatus.Success) throw new VerificationException("Failed to send data to device!");
     }
 
     public void Disconnect()
@@ -131,6 +139,12 @@ public class BleDeviceHandler : IBleDeviceHandler
             _rxCharacteristic.ValueChanged -= Uart_ReceivedData;
             _rxCharacteristic.Service.Dispose();
             _rxCharacteristic = null;
+        }
+
+        if (_txCharacteristic != null)
+        {
+            _txCharacteristic.Service.Dispose();
+            _txCharacteristic = null;
         }
 
         if (_device != null)

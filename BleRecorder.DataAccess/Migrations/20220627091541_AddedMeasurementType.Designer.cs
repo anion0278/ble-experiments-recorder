@@ -3,6 +3,7 @@ using System;
 using BleRecorder.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BleRecorder.DataAccess.Migrations
 {
     [DbContext(typeof(ExperimentsDbContext))]
-    partial class ExperimentsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220627091541_AddedMeasurementType")]
+    partial class AddedMeasurementType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.5");
@@ -23,7 +25,7 @@ namespace BleRecorder.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTimeOffset?>("Date")
+                    b.Property<DateTimeOffset>("Date")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ForceData")
@@ -50,7 +52,7 @@ namespace BleRecorder.DataAccess.Migrations
 
                     b.HasIndex("TestSubjectId");
 
-                    b.ToTable("Measurements", (string)null);
+                    b.ToTable("Measurements");
                 });
 
             modelBuilder.Entity("BleRecorder.Models.TestSubject.TestSubject", b =>
@@ -71,7 +73,7 @@ namespace BleRecorder.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TestSubjects", (string)null);
+                    b.ToTable("TestSubjects");
                 });
 
             modelBuilder.Entity("BleRecorder.Models.TestSubject.Measurement", b =>

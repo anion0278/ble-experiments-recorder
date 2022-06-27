@@ -2,14 +2,11 @@
 
 public class BleRecorderCommonMessage
 {
-    public bool IsTorqueMeasurementActive { get; }
-
     public StimulationParameters StimulationParameters { get; }
 
-    public BleRecorderCommonMessage(StimulationParameters stimulationParameters, bool isTorqueMeasurementActive)
+    public BleRecorderCommonMessage(StimulationParameters stimulationParameters)
     {
         StimulationParameters = stimulationParameters;
-        IsTorqueMeasurementActive = isTorqueMeasurementActive;
     }
 
     public string FormatForSending()
@@ -17,8 +14,7 @@ public class BleRecorderCommonMessage
         return
             $"C:{StimulationParameters.Current:0.000}mA;" +
             $"F:{StimulationParameters.Frequency:0}Hz;" +
-            $"P:{StimulationParameters.PulseWidth:0}us;" +
-            $"M:{IsTorqueMeasurementActive}";
+            $"P:{StimulationParameters.PulseWidth:0}us;";
     }
 
     public override string ToString()

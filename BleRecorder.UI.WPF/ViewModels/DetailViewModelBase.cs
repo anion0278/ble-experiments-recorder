@@ -97,6 +97,5 @@ namespace BleRecorder.UI.WPF.ViewModels
             await saveFunc();
             afterSaveAction();
         }
-
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Transactions;
+using BleRecorder.Models.TestSubject;
 
 namespace BleRecorder.Business.Device;
 
@@ -8,10 +9,13 @@ public class StimulationParameters
     public float Frequency { get; }
     public float PulseWidth { get; }
 
-    public StimulationParameters(float current, float frequency, float pulseWidth)
+    public MeasurementType MeasurementType { get; }
+
+    public StimulationParameters(float current, float frequency, float pulseWidth, MeasurementType measurementType)
     {
         Current = current;
         Frequency = frequency;
         PulseWidth = pulseWidth;
+        MeasurementType = measurementType;
     }
 }

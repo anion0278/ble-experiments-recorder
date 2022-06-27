@@ -6,34 +6,31 @@ using System.Text.Json;
 
 namespace BleRecorder.Models.TestSubject;
 
+public enum MeasurementType
+{
+    MaximumContraction,
+    Intermittent
+}
+
+
 public class Measurement
 {
-    private string _internalForceData;
-    private ICollection<MeasuredValue> _forceData;
-
     public int Id { get; set; }
 
-    public DateTimeOffset Date { get; set; }
+    public DateTimeOffset? Date { get; set; }
+
+    public MeasurementType Type { get; set; }
 
     [Required]
     [MaxLength(40)]
     public string Title { get; set; }
 
     [MaxLength(400)]
-    [Column("Description")]
     public string Notes { get; set; }
     public int TestSubjectId { get; set; }
     public TestSubject TestSubject { get; set; }
 
-    public ICollection<MeasuredValue> ForceData
-    {
-        get => _forceData;
-        set
-        {
-            _forceData = value;
-            _internalForceData = ConvertForceValuesToJson(_forceData);
-        }
-    }
+    public ICollection<MeasuredValue> ForceData { get; set; }
 
     public static ICollection<MeasuredValue>? ConvertInternalJsonToForceValues(string json)
     {
@@ -46,4 +43,4 @@ public class Measurement
     }
 }
 
-public record MeasuredValue(float Value, DateTime TimeStamp);
+public record MeasuredValue(float Value, TimeSpan Timestamp);

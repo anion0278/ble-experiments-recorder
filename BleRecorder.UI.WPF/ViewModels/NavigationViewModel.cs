@@ -29,6 +29,9 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         public BleRecorderAvailabilityStatus BleRecorderAvailability => _bleRecorderManager.BleRecorderAvailability;
 
+        public int StimulationFrequency { get; set; }
+        public int StimulationCurrent { get; set; }
+        public int StimulationPulse { get; set; }
 
         public NavigationViewModel(
             ITestSubjectLookupDataService testSubjectLookupService, 
@@ -68,9 +71,11 @@ namespace BleRecorder.UI.WPF.ViewModels
             TestSubjects.Clear();
             foreach (var item in lookup)
             {
-                TestSubjects.Add(new NavigationItemViewModel(item.Id, item.DisplayMember,
-                  nameof(TestSubjectDetailViewModel),
-                  _messenger));
+                TestSubjects.Add(new NavigationItemViewModel(
+                    item.Id, 
+                    item.DisplayMember, 
+                    nameof(TestSubjectDetailViewModel), 
+                    _messenger));
             }
         }
 
