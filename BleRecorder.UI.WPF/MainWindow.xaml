@@ -23,8 +23,7 @@
         </Grid.ColumnDefinitions>
         <Menu Grid.Row="0" Grid.ColumnSpan="2" >
             <MenuItem Header="+ Add new test subject" 
-                      Command="{Binding CreateNewDetailCommand}" 
-                      CommandParameter="{x:Type viewModel:TestSubjectDetailViewModel}"/>
+                      Command="{Binding CreateNewDetailCommand}" />
         </Menu>
         <view:NavigationView Grid.Row="1" Grid.Column="0"
                          DataContext="{Binding NavigationViewModel}"/>

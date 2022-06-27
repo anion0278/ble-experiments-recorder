@@ -16,7 +16,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         protected readonly IMessenger Messenger;
         protected readonly IMessageDialogService MessageDialogService;
 
-        public abstract Task LoadAsync(int measurementId);
+        public abstract Task LoadAsync(int measurementId, object argsData);
 
         public IRelayCommand SaveCommand { get; }
 
@@ -41,7 +41,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             }
         }
 
-        public DetailViewModelBase(IMessenger messenger,
+        protected DetailViewModelBase(IMessenger messenger,
             IMessageDialogService messageDialogService)
         {
             Messenger = messenger;
@@ -60,10 +60,10 @@ namespace BleRecorder.UI.WPF.ViewModels
         protected virtual void RaiseDetailDeletedEvent(int modelId)
         {
             Messenger.Send(new AfterDetailDeletedEventArgs
-                {
-                    Id = modelId,
-                    ViewModelName = this.GetType().Name
-                });
+            {
+                Id = modelId,
+                ViewModelName = this.GetType().Name
+            });
         }
 
         protected virtual void RaiseDetailSavedEvent(int modelId, string displayMember)
@@ -86,10 +86,10 @@ namespace BleRecorder.UI.WPF.ViewModels
             }
 
             Messenger.Send(new AfterDetailClosedEventArgs
-              {
-                  Id = this.Id,
-                  ViewModelName = this.GetType().Name
-              });
+            {
+                Id = this.Id,
+                ViewModelName = this.GetType().Name
+            });
         }
 
         protected async Task SaveAsync(Func<Task> saveFunc, Action afterSaveAction)

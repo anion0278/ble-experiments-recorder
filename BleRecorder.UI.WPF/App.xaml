@@ -28,6 +28,7 @@
                         <Setter Property="FontSize" Value="12"/>
                         <Setter Property="Width" Value="150"/>
                         <Setter Property="Margin" Value="10"/>
+                        <Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
                     </Style>
                     <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
                         <Setter Property="FontSize" Value="12"/>

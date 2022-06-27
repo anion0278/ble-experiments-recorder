@@ -55,14 +55,25 @@ namespace BleRecorder.UI.WPF.ViewModels
             AddMeasurementCommand = new RelayCommand(OnAddMeasurement);
             EditMeasurementCommand = new RelayCommand(OnEditMeasurement, () => Measurements!.CurrentItem != null);
             RemoveMeasurementCommand = new RelayCommand(OnRemoveMeasurement, () => Measurements!.CurrentItem != null);
+
+            messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
+        }
+
+        private void AfterDetailSaved(AfterDetailSavedEventArgs message)
+        {
+            if (message.ViewModelName == nameof(MeasurementDetailViewModel))
+            {
+                // TODO reload measurement(s) when some measurement is added(reload all!)/deleted/changed
+            }
         }
 
         private void OnAddMeasurement()
         {
-            Messenger.Send(new OpenDetailViewEventArgs
+            Messenger.Send(new OpenDetailViewEventArgs()
             {
                 Id = -1,
-                ViewModelName = nameof(MeasurementDetailViewModel)
+                ViewModelName = nameof(MeasurementDetailViewModel),
+                Data = TestSubject.Model
             });
         }
 
@@ -81,7 +92,7 @@ namespace BleRecorder.UI.WPF.ViewModels
                 _measurements.Remove((Measurement)Measurements.CurrentItem);
         }
 
-        public override async Task LoadAsync(int measurementId)
+        public override async Task LoadAsync(int measurementId, object argsData)
         {
             var testSubject = measurementId > 0
               ? await _testSubjectRepository.GetByIdAsync(measurementId)

@@ -18,6 +18,13 @@ public class ExperimentsDbContext : DbContext
     {
         //modelBuilder.Entity<Measurement>().OwnsMany(x=> x.ForceData);
         //modelBuilder.Entity<TestSubject>().Ignore(ts => ts.Measurements);
+        modelBuilder
+            .Entity<Measurement>()
+            .Property(e => e.ForceData)
+            .HasConversion(
+                v => Measurement.ConvertForceValuesToJson(v),
+                v => Measurement.ConvertInternalJsonToForceValues(v) ?? Array.Empty<MeasuredValue>());
+
 
         base.OnModelCreating(modelBuilder);
 

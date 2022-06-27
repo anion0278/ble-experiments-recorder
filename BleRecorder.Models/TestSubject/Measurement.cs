@@ -13,6 +13,8 @@ public class Measurement
 
     public int Id { get; set; }
 
+    public DateTimeOffset Date { get; set; }
+
     [Required]
     [MaxLength(40)]
     public string Title { get; set; }
@@ -23,8 +25,6 @@ public class Measurement
     public int TestSubjectId { get; set; }
     public TestSubject TestSubject { get; set; }
 
-
-    [NotMapped]
     public ICollection<MeasuredValue> ForceData
     {
         get => _forceData;
@@ -35,25 +35,12 @@ public class Measurement
         }
     }
 
-
-    // TODO try use  protected property
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public string InternalForceData
-    {
-        get => _internalForceData;
-        set
-        {
-            _internalForceData = value;
-            _forceData = ConvertInternalJsonToForceValues(_internalForceData) ?? Array.Empty<MeasuredValue>();
-        }
-    }
-
-    private static ICollection<MeasuredValue>? ConvertInternalJsonToForceValues(string json)
+    public static ICollection<MeasuredValue>? ConvertInternalJsonToForceValues(string json)
     {
         return JsonSerializer.Deserialize<ICollection<MeasuredValue>?>(json);
     }
 
-    private static string ConvertForceValuesToJson(ICollection<MeasuredValue> values)
+    public static string ConvertForceValuesToJson(ICollection<MeasuredValue> values)
     {
         return JsonSerializer.Serialize(values);
     }
