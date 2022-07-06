@@ -38,6 +38,7 @@ public class MyodamManager : IMyodamManager
     public MyodamManager(IBluetoothManager bluetoothManager)
     {
         _bluetoothManager = bluetoothManager;
+        _bluetoothManager.AddDeviceNameFilter(_myodamName);
         _bluetoothManager.AvailableBleDevices.CollectionChanged += OnAvailableDevicesChanged;
         MyodamAvailability = MyodamAvailabilityStatus.DisconnectedUnavailable;
         _bluetoothManager.StartScanning();

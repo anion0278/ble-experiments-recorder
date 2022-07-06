@@ -39,6 +39,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Mebster.Myodam.Business\Mebster.Myodam.Business.csproj" />
+	  <ProjectReference Include="..\Mebster.Myodam.Common\Mebster.Myodam.Common.csproj" />
 	  <ProjectReference Include="..\Mebster.Myodam.DataAccess\Mebster.Myodam.DataAccess.csproj" />
 	  <ProjectReference Include="..\Mebster.Myodam.Infrastructure\Mebster.Myodam.Infrastructure.csproj" />
 	  <ProjectReference Include="..\Mebster.Myodam.Models\Mebster.Myodam.Models.csproj" />

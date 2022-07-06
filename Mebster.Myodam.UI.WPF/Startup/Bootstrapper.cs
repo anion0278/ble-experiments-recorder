@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Mebster.Myodam.Business.Device;
+using Mebster.Myodam.Common.Services;
 using Mebster.Myodam.DataAccess;
 using Mebster.Myodam.Infrastructure.Bluetooth;
 using Mebster.Myodam.UI.WPF.Data.Lookups;
@@ -35,6 +36,7 @@ namespace Mebster.Myodam.UI.WPF.Startup
 
             builder.RegisterType<GlobalExceptionHandler>().As<IGlobalExceptionHandler>();
             builder.RegisterType<AsyncRelayCommandFactory>().As<IAsyncRelayCommandFactory>();
+            builder.RegisterType<DateTimeService>().As<IDateTimeService>();
 
 
             builder.RegisterType<BluetoothManager>().As<IBluetoothManager>();

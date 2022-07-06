@@ -5,7 +5,8 @@
              xmlns:viewModel="clr-namespace:Mebster.Myodam.UI.WPF.ViewModels"
              xmlns:view="clr-namespace:Mebster.Myodam.UI.WPF.View"
              xmlns:resouces="clr-namespace:Mebster.Myodam.UI.WPF.View.Resouces"
-             Startup="Application_Startup">
+             Startup="Application_Startup"
+             Exit="Application_OnExit">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

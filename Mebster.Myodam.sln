@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neucognic.Communication", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GUI", "GUI", "{CC8F7ABF-CCCE-460B-A6F7-E797A614268C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mebster.Myodam.Common", "Mebster.Myodam.Common\Mebster.Myodam.Common.csproj", "{7CE7A3E1-F21E-4A5F-B3DE-C39C586BCAED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -151,6 +153,26 @@ Global
 		{FBAC6C18-68A6-4EA6-8C78-3B4ED0EC98BC}.Release|x64.Build.0 = Release|Any CPU
 		{FBAC6C18-68A6-4EA6-8C78-3B4ED0EC98BC}.Release|x86.ActiveCfg = Release|Any CPU
 		{FBAC6C18-68A6-4EA6-8C78-3B4ED0EC98BC}.Release|x86.Build.0 = Release|Any CPU
+		{7CE7A3E1-F21E-4A5F-B3DE-C39C586BCAED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CE7A3E1-F21E-4A5F-B3DE-C39C586BCAED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CE7A3E1-F21E-4A5F-B3DE-C39C586BCAED}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{7CE7A3E1-F21E-4A5F-B3DE-C39C586BCAED}.Debug|ARM.Build.0 = Debug|Any CPU
+		{7CE7A3E1-F21E-4A5F-B3DE-C39C586BCAED}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{7CE7A3E1-F21E-4A5F-B3DE-C39C586BCAED}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{7CE7A3E1-F21E-4A5F-B3DE-C39C586BCAED}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7CE7A3E1-F21E-4A5F-B3DE-C39C586BCAED}.Debug|x64.Build.0 = Debug|Any CPU
+		{7CE7A3E1-F21E-4A5F-B3DE-C39C586BCAED}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7CE7A3E1-F21E-4A5F-B3DE-C39C586BCAED}.Debug|x86.Build.0 = Debug|Any CPU
+		{7CE7A3E1-F21E-4A5F-B3DE-C39C586BCAED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CE7A3E1-F21E-4A5F-B3DE-C39C586BCAED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CE7A3E1-F21E-4A5F-B3DE-C39C586BCAED}.Release|ARM.ActiveCfg = Release|Any CPU
+		{7CE7A3E1-F21E-4A5F-B3DE-C39C586BCAED}.Release|ARM.Build.0 = Release|Any CPU
+		{7CE7A3E1-F21E-4A5F-B3DE-C39C586BCAED}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{7CE7A3E1-F21E-4A5F-B3DE-C39C586BCAED}.Release|ARM64.Build.0 = Release|Any CPU
+		{7CE7A3E1-F21E-4A5F-B3DE-C39C586BCAED}.Release|x64.ActiveCfg = Release|Any CPU
+		{7CE7A3E1-F21E-4A5F-B3DE-C39C586BCAED}.Release|x64.Build.0 = Release|Any CPU
+		{7CE7A3E1-F21E-4A5F-B3DE-C39C586BCAED}.Release|x86.ActiveCfg = Release|Any CPU
+		{7CE7A3E1-F21E-4A5F-B3DE-C39C586BCAED}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

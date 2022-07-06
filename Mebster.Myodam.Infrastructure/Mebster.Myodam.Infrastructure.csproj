@@ -12,6 +12,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\Mebster.Myodam.Common\Mebster.Myodam.Common.csproj" />
 	  <ProjectReference Include="..\Mebster.Myodam.Models\Mebster.Myodam.Models.csproj" />
 	</ItemGroup>
 
