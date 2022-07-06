@@ -41,8 +41,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             }
         }
 
-        protected DetailViewModelBase(IMessenger messenger,
-            IMessageDialogService messageDialogService)
+        protected DetailViewModelBase(IMessenger messenger, IMessageDialogService messageDialogService)
         {
             Messenger = messenger;
             MessageDialogService = messageDialogService;

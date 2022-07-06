@@ -33,7 +33,7 @@ namespace BleRecorder.Infrastructure.Bluetooth
             // TODO Checkout System.Devices.Aep.IsConnected param, since sometimes device is already connected
             //public bool IsConnected => (bool?)DeviceInformation.Properties["System.Devices.Aep.IsConnected"] == true;
 
-            string[] requestedProperties = { "System.Devices.Aep.DeviceAddress", "System.Devices.Aep.IsConnected", "System.Devices.Aep.Bluetooth.Le.IsConnectable" };
+            //string[] requestedProperties = { "System.Devices.Aep.DeviceAddress", "System.Devices.Aep.IsConnected", "System.Devices.Aep.Bluetooth.Le.IsConnectable" };
             //_bleWatcher =
             //    DeviceInformation.CreateWatcher(string.Empty, requestedProperties, 
             //        DeviceInformationKind.AssociationEndpoint);
@@ -70,7 +70,6 @@ namespace BleRecorder.Infrastructure.Bluetooth
 
         private void BleWatcher_Received(BluetoothLEAdvertisementWatcher sender, BluetoothLEAdvertisementReceivedEventArgs args)
         {
-            // BluetoothAddress = 274378077492446
             var existing = AvailableBleDevices.SingleOrDefault(d => d.Address == args.BluetoothAddress);
             if (existing == null)
             {

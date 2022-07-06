@@ -9,7 +9,8 @@ using System.Windows.Threading;
 using BleRecorder.Business.Device;
 using BleRecorder.Infrastructure.Bluetooth;
 using BleRecorder.Models.Device;
-using BleRecorder.UI.WPF.Data.Lookups;
+using BleRecorder.Models.TestSubject;
+using BleRecorder.UI.WPF.Data.Repositories;
 using BleRecorder.UI.WPF.Event;
 using BleRecorder.UI.WPF.View.Services;
 using Microsoft.Toolkit.Mvvm.Input;
@@ -19,9 +20,9 @@ namespace BleRecorder.UI.WPF.ViewModels
 {
     public class NavigationViewModel : ViewModelBase, INavigationViewModel
     {
+        private readonly ITestSubjectRepository _testSubjectRepository;
         private readonly IMessenger _messenger;
         private readonly IBleRecorderManager _bleRecorderManager;
-        private readonly ITestSubjectLookupDataService _testSubjectLookupService;
 
         public ObservableCollection<NavigationItemViewModel> TestSubjects { get; } = new();
 
@@ -35,14 +36,14 @@ namespace BleRecorder.UI.WPF.ViewModels
         public StimulationPulseWidth StimulationPulse { get; set; } = StimulationPulseWidth.AvailableOptions[1];
 
         public NavigationViewModel(
-            ITestSubjectLookupDataService testSubjectLookupService, 
+            ITestSubjectRepository testSubjectRepository,
             IMessenger messenger, 
             IBleRecorderManager bleRecorderManager, 
             IAsyncRelayCommandFactory asyncCommandFactory)
         {
             ConnectBleRecorderCommand = asyncCommandFactory.Create(ConnectBleRecorder, CanConnectBleRecorder);
 
-            _testSubjectLookupService = testSubjectLookupService;
+            _testSubjectRepository = testSubjectRepository;
             _messenger = messenger;
             _bleRecorderManager = bleRecorderManager;
             _bleRecorderManager.BleRecorderAvailabilityChanged += OnBleRecorderAvailabilityChanged;
@@ -68,7 +69,12 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         public async Task LoadAsync()
         {
-            var lookup = await _testSubjectLookupService.GetTestSubjectLookupAsync();
+            var lookup = (await _testSubjectRepository.GetAllAsync())
+                .Select(ts => new LookupItem
+                {
+                    Id = ts.Id,
+                    DisplayMember = ts.FirstName + " " + ts.LastName
+                }).ToArray();
             TestSubjects.Clear();
             foreach (var item in lookup)
             {

@@ -86,8 +86,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         private async void OnOpenDetailView(OpenDetailViewEventArgs args)
         {
             var detailViewModel = DetailViewModels
-              .SingleOrDefault(vm => vm.Id == args.Id
-              && vm.GetType().Name == args.ViewModelName);
+              .SingleOrDefault(vm => vm.Id == args.Id && vm.GetType().Name == args.ViewModelName);
 
             if (detailViewModel == null)
             {

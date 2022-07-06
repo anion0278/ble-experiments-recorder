@@ -7,7 +7,7 @@
     public string DisplayMember { get; set; }
   }
 
-  public class NullLookupItem : LookupItem
+  public class NullLookupItem : LookupItem // TODO Use to create new test sub
   {
     public new int? Id { get { return null; } }
   }

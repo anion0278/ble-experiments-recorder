@@ -8,20 +8,19 @@ using System.Windows.Data;
 using System.Windows.Input;
 using Castle.Components.DictionaryAdapter;
 using BleRecorder.Models.TestSubject;
-using BleRecorder.UI.WPF.Data.Lookups;
 using BleRecorder.UI.WPF.Data.Repositories;
 using BleRecorder.UI.WPF.Event;
 using BleRecorder.UI.WPF.View.Services;
 using BleRecorder.UI.WPF.Wrappers;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
+using Swordfish.NET.Collections.Auxiliary;
 
 namespace BleRecorder.UI.WPF.ViewModels
 {
     public class TestSubjectDetailViewModel : DetailViewModelBase, ITestSubjectDetailViewModel
     {
         private ITestSubjectRepository _testSubjectRepository;
-        private readonly IMeasurementRepository _measurementsRepository;
 
         public ICommand RemoveMeasurementCommand { get; set; }
 
@@ -44,13 +43,13 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         public TestSubjectDetailViewModel(
             ITestSubjectRepository testSubjectRepository,
-            IMeasurementRepository measurementsRepository,
             IMessenger messenger,
             IMessageDialogService messageDialogService)
           : base(messenger, messageDialogService)
         {
             _testSubjectRepository = testSubjectRepository;
-            _measurementsRepository = measurementsRepository;
+
+            _testSubjectRepository.ChangesOccurred += (sender, args) => HasChanges = _testSubjectRepository.HasChanges();
 
             AddMeasurementCommand = new RelayCommand(OnAddMeasurement);
             EditMeasurementCommand = new RelayCommand(OnEditMeasurement, () => Measurements!.CurrentItem != null);
@@ -63,7 +62,12 @@ namespace BleRecorder.UI.WPF.ViewModels
         {
             if (message.ViewModelName == nameof(MeasurementDetailViewModel))
             {
-                //await LoadAsync(TestSubject.Id, null); // TODO solve
+                _measurements.Clear();
+                var reloadedTestSubject = await _testSubjectRepository.GetByIdAsync(Id);
+                foreach (var measurement in reloadedTestSubject.Measurements)// TODO !! except those which have been deleted!
+                {
+                    _measurements.Add(measurement);
+                }
             }
         }
 
@@ -89,24 +93,28 @@ namespace BleRecorder.UI.WPF.ViewModels
         private void OnRemoveMeasurement()
         {
             if (Measurements.CurrentItem != null)
+            {
+                _testSubjectRepository.RemoveMeasurement((Measurement)Measurements.CurrentItem);
                 _measurements.Remove((Measurement)Measurements.CurrentItem);
+            }
         }
 
-        public override async Task LoadAsync(int measurementId, object argsData)
+        public override async Task LoadAsync(int id, object argsData)
         {
-            var testSubject = measurementId > 0
-              ? await _testSubjectRepository.GetByIdAsync(measurementId)
+            var testSubject = id > 0
+              ? await _testSubjectRepository.GetByIdAsync(id)
               : CreateNewTestSubject();
 
-            Id = measurementId;
+            base.Id = id;
 
             InitializeTestSubject(testSubject);
 
             _measurements = new ObservableCollection<Measurement>(TestSubject.Measurements);
             _measurements.CollectionChanged += (_, _) => OnPropertyChanged(nameof(Measurements)); // TODO solve in different way
-            Measurements = GetNewCollectionViewInstance(_measurements);
+            Measurements = CollectionViewSource.GetDefaultView(_measurements);
             Measurements.SortDescriptions.Add(new SortDescription(nameof(Measurement.Date), ListSortDirection.Ascending));
-            Measurements.GroupDescriptions.Add(new PropertyGroupDescription(nameof(Measurement.Type)));
+            Measurements.GroupDescriptions.Add(new PropertyGroupDescription(nameof(Measurement.Type)));  
+            Measurements.MoveCurrentTo(null);
         }
 
         private void InitializeTestSubject(TestSubject testSubject)
@@ -115,7 +123,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             TestSubject.PropertyChanged += (_, e) =>
           {
               // TODO REFACTORING !!!
-              if (!HasChanges)
+              if (!HasChanges) // changes to test subject name are not tracked. Why?
               {
                   HasChanges = _testSubjectRepository.HasChanges();
               }
@@ -143,7 +151,6 @@ namespace BleRecorder.UI.WPF.ViewModels
             await SaveAsync(_testSubjectRepository.SaveAsync, // TODO rewrite explicitly, expand
               () =>
               {
-                  HasChanges = _testSubjectRepository.HasChanges();
                   Id = TestSubject.Id;
                   RaiseDetailSavedEvent(TestSubject.Id, $"{TestSubject.FirstName} {TestSubject.LastName}");
               });

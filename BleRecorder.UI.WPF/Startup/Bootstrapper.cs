@@ -3,7 +3,6 @@ using BleRecorder.Business.Device;
 using BleRecorder.Common.Services;
 using BleRecorder.DataAccess;
 using BleRecorder.Infrastructure.Bluetooth;
-using BleRecorder.UI.WPF.Data.Lookups;
 using BleRecorder.UI.WPF.Data.Repositories;
 using BleRecorder.UI.WPF.Exception;
 using BleRecorder.UI.WPF.View.Services;
@@ -29,20 +28,16 @@ namespace BleRecorder.UI.WPF.Startup
 
             builder.RegisterType<MainViewModel>().AsSelf();
             builder.RegisterType<NavigationViewModel>().As<INavigationViewModel>();
-            builder.RegisterType<TestSubjectDetailViewModel>()
-              .Keyed<IDetailViewModel>(nameof(TestSubjectDetailViewModel));
-            builder.RegisterType<MeasurementDetailViewModel>()
-              .Keyed<IDetailViewModel>(nameof(MeasurementDetailViewModel));
+            builder.RegisterType<TestSubjectDetailViewModel>().Keyed<IDetailViewModel>(nameof(TestSubjectDetailViewModel));
+            builder.RegisterType<MeasurementDetailViewModel>().Keyed<IDetailViewModel>(nameof(MeasurementDetailViewModel));
 
             builder.RegisterType<GlobalExceptionHandler>().As<IGlobalExceptionHandler>();
             builder.RegisterType<AsyncRelayCommandFactory>().As<IAsyncRelayCommandFactory>();
             builder.RegisterType<DateTimeService>().As<IDateTimeService>();
 
-
             builder.RegisterType<BluetoothManager>().As<IBluetoothManager>();
             builder.RegisterType<BleRecorderManager>().As<IBleRecorderManager>().SingleInstance();
 
-            builder.RegisterType<LookupDataService>().AsImplementedInterfaces();
             builder.RegisterType<TestSubjectRepository>().As<ITestSubjectRepository>();
             builder.RegisterType<MeasurementRepository>().As<IMeasurementRepository>();
 

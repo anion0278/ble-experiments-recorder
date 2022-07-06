@@ -20,7 +20,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         /// <returns>New instance of Collection View of the target collection</returns>
         protected static ICollectionView GetNewCollectionViewInstance<T>(IEnumerable<T> collection)
         {
-            return new CollectionViewSource { Source = collection }.View;
+            return new CollectionViewSource { Source = collection}.View;
         }
 
         public ViewModelBase()
