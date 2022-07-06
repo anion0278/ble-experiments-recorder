@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:device="clr-namespace:Mebster.Myodam.Models.Device;assembly=Mebster.Myodam.Models"
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:device1="clr-namespace:Mebster.Myodam.Business.Device;assembly=Mebster.Myodam.Business"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="300">
     <UserControl.Resources>
@@ -95,28 +96,47 @@
                     <Label Content="{Binding MyodamAvailability}" FontWeight="Bold"/>
                 </StackPanel>
                 <!--<GroupBox Header="Stimulation Parameters" Style="{x:Null}" Margin="5" IsEnabled="True">-->
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Label Grid.Row="0" Grid.Column="0" Content="Current [mA]:" VerticalAlignment="Center"/>
-                        <TextBox Grid.Row="0" Grid.Column="1" FontWeight="Bold" HorizontalContentAlignment="Center" Margin="3" FontSize="12"
-                                 Text="{Binding StimulationCurrent}" />
-
-                        <Label Grid.Row="1" Grid.Column="0"  Content="Pulse [us]:" VerticalAlignment="Center"/>
-                        <TextBox Grid.Row="1" Grid.Column="1" FontWeight="Bold" HorizontalContentAlignment="Center" Margin="3" FontSize="12"
-                                 Text="{Binding StimulationPulse}"/>
-
-                        <Label Grid.Row="2" Grid.Column="0"  Content="Frequency [Hz]:" VerticalAlignment="Center"/>
-                        <TextBox Grid.Row="2" Grid.Column="1" FontWeight="Bold" HorizontalContentAlignment="Center" Margin="3" FontSize="12"
-                                 Text="{Binding StimulationFrequency}"/>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <Label Grid.Row="0" Grid.Column="0"  Content="FES Battery [%]:" VerticalAlignment="Center"/>
+                    <Grid Grid.Row="0" Grid.Column="1">
+                        <ProgressBar Minimum="0" Maximum="100" Value="70" Margin="3" />
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="70" />
                     </Grid>
+
+                    <Label Grid.Row="1" Grid.Column="0"  Content="Device Battery [%]:" VerticalAlignment="Center"/>
+                    <Grid Grid.Row="1" Grid.Column="1">
+                        <ProgressBar Minimum="0" Maximum="100" Value="60" Margin="3" />
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="60" />
+                    </Grid>
+
+                    <Label Grid.Row="2" Grid.Column="0" Content="Current [mA]:" VerticalAlignment="Center"/>
+                    <mah:NumericUpDown Grid.Row="2" Grid.Column="1" FontWeight="Bold" HorizontalContentAlignment="Center" Margin="3" FontSize="12"
+                                       Interval="10" Minimum="1" Maximum="100"
+                                       Value="{Binding StimulationCurrent}" />
+
+                    <Label Grid.Row="3" Grid.Column="0"  Content="Pulse [us]:" VerticalAlignment="Center"/>
+                    <ComboBox Grid.Row="3" Grid.Column="1" FontWeight="Bold" HorizontalContentAlignment="Center" Margin="3" FontSize="12"
+                              DisplayMemberPath="PulseWidth"
+                              SelectedItem="{Binding StimulationPulse}"
+                              ItemsSource="{x:Static device1:StimulationPulseWidth.AvailableOptions}"/>
+
+                    <Label Grid.Row="4" Grid.Column="0"  Content="Frequency [Hz]:" VerticalAlignment="Center"/>
+                    <mah:NumericUpDown Grid.Row="4" Grid.Column="1" FontWeight="Bold" HorizontalContentAlignment="Center" Margin="3" FontSize="12"
+                                       Interval="5" Minimum="1" Maximum="100"
+                                       Value="{Binding StimulationFrequency}" />
+                </Grid>
                 <!--</GroupBox>-->
             </StackPanel>
         </GroupBox>

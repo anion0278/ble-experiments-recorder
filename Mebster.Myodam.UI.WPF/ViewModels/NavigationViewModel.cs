@@ -31,7 +31,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         public int StimulationFrequency { get; set; }
         public int StimulationCurrent { get; set; }
-        public int StimulationPulse { get; set; }
+        public StimulationPulseWidth StimulationPulse { get; set; }
 
         public NavigationViewModel(
             ITestSubjectLookupDataService testSubjectLookupService, 
