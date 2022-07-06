@@ -98,7 +98,7 @@
                     <DataGridTextColumn Header="Type" Width="180"  CanUserResize="False" IsReadOnly="True"
                                         Binding="{Binding Type}"/>
                     <DataGridTextColumn Header="Experiment Date" Width="200"  CanUserResize="False" IsReadOnly="True"
-                                            Binding="{Binding Date, TargetNullValue='Not completed'}"/>
+                                            Binding="{Binding Date, StringFormat='{}{0:dd MMM. yyyy, HH:mm}', ConverterCulture=cs-CZ, TargetNullValue='Not completed'}"/>
                     <!--<DataGridTextColumn.CellStyle>
                             <Style TargetType="DataGridCell">
                                 <Setter Property="HorizontalAlignment" Value="Center" />

@@ -169,7 +169,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             ForceValues.Clear();
             Date = _dateTimeService.Now;
             _bleRecorderManager.BleRecorderDevice!.NewValueReceived += (_, value) => { ForceValues.Add(value.Value); }; // TODO unsubscribe !!!
-            await _bleRecorderManager.BleRecorderDevice.StartMeasurement(new StimulationParameters(100, 50, StimulationPulseWidth.AvailableOptions.ToArray()[1], MeasurementType.MaximumContraction));
+            await _bleRecorderManager.BleRecorderDevice.StartMeasurement(new StimulationParameters(100, 50, StimulationPulseWidth.AvailableOptions[1], MeasurementType.MaximumContraction));
         }
 
         public async Task StopMeasurement()
