@@ -75,7 +75,7 @@ public class BleRecorderDevice // TODO Extract inteface
 
     public async Task StopMeasurement()
     {
-        var msg = new BleRecorderCommonMessage(new StimulationParameters(0,0,0, MeasurementType.MaximumContraction));
+        var msg = new BleRecorderCommonMessage(new StimulationParameters(0,0, StimulationPulseWidth.AvailableOptions.ToArray()[1], MeasurementType.MaximumContraction));
         await SendMsg(msg);
         IsCurrentlyMeasuring = false;
     }
