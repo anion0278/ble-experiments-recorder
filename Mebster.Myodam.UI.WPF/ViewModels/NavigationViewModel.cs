@@ -9,7 +9,8 @@ using System.Windows.Threading;
 using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.Infrastructure.Bluetooth;
 using Mebster.Myodam.Models.Device;
-using Mebster.Myodam.UI.WPF.Data.Lookups;
+using Mebster.Myodam.Models.TestSubject;
+using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.Event;
 using Mebster.Myodam.UI.WPF.View.Services;
 using Microsoft.Toolkit.Mvvm.Input;
@@ -19,9 +20,9 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 {
     public class NavigationViewModel : ViewModelBase, INavigationViewModel
     {
+        private readonly ITestSubjectRepository _testSubjectRepository;
         private readonly IMessenger _messenger;
         private readonly IMyodamManager _myodamManager;
-        private readonly ITestSubjectLookupDataService _testSubjectLookupService;
 
         public ObservableCollection<NavigationItemViewModel> TestSubjects { get; } = new();
 
@@ -35,14 +36,14 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         public StimulationPulseWidth StimulationPulse { get; set; } = StimulationPulseWidth.AvailableOptions[1];
 
         public NavigationViewModel(
-            ITestSubjectLookupDataService testSubjectLookupService, 
+            ITestSubjectRepository testSubjectRepository,
             IMessenger messenger, 
             IMyodamManager myodamManager, 
             IAsyncRelayCommandFactory asyncCommandFactory)
         {
             ConnectMyodamCommand = asyncCommandFactory.Create(ConnectMyodam, CanConnectMyodam);
 
-            _testSubjectLookupService = testSubjectLookupService;
+            _testSubjectRepository = testSubjectRepository;
             _messenger = messenger;
             _myodamManager = myodamManager;
             _myodamManager.MyodamAvailabilityChanged += OnMyodamAvailabilityChanged;
@@ -68,7 +69,12 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         public async Task LoadAsync()
         {
-            var lookup = await _testSubjectLookupService.GetTestSubjectLookupAsync();
+            var lookup = (await _testSubjectRepository.GetAllAsync())
+                .Select(ts => new LookupItem
+                {
+                    Id = ts.Id,
+                    DisplayMember = ts.FirstName + " " + ts.LastName
+                }).ToArray();
             TestSubjects.Clear();
             foreach (var item in lookup)
             {

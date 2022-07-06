@@ -7,6 +7,7 @@ namespace Mebster.Myodam.UI.WPF.Data.Repositories;
 
 public interface ITestSubjectRepository : IGenericRepository<TestSubject>
 {
+    void RemoveMeasurement(Measurement measurementsCurrentItem);
 }
 
 public class TestSubjectRepository : GenericRepository<TestSubject, ExperimentsDbContext>, ITestSubjectRepository
@@ -20,5 +21,10 @@ public class TestSubjectRepository : GenericRepository<TestSubject, ExperimentsD
     {
         // TODO check if Include is required
         return await Context.TestSubjects.Include(ts => ts.Measurements).SingleAsync(s => s.Id == testSubjectId);
+    }
+
+    public void RemoveMeasurement(Measurement item) // TODO join repositories, or change Collection to List to remove item from TestSubj
+    {
+        Context.Measurements.Remove(item);
     }
 }

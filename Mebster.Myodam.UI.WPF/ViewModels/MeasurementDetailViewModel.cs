@@ -27,7 +27,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         private IMeasurementRepository _measurementRepository;
         private IDateTimeService _dateTimeService;
 
-        public ChartValues<float> ForceValues { get; set; }
+        public ChartValues<float> ForceValues { get; set; } = new();
 
         public override string Title
         {
@@ -81,7 +81,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             StopMeasurementCommand = new AsyncRelayCommand(StopMeasurement, () => _myodamManager.IsCurrentlyMeasuring);
             CleanRecordedDataCommand = new RelayCommand(CleanRecordedData, () => true);
 
-            ForceValues = new ChartValues<float>();
             ForceValues.CollectionChanged += OnForceValuesChanged; // letting ComboBox.IsDisabled know that collection changed
             PropertyChanged += OnPropertyChangedEventHandler; // TODO try use Context.ChangeTracker.StateChanged
 
@@ -91,6 +90,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             //messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
             //messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
         }
+
 
         private void OnPropertyChangedEventHandler(object? o, PropertyChangedEventArgs propertyChangedEventArgs)
         {
@@ -135,23 +135,21 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         {
             Measurement = measurementId > 0
                 ? await _measurementRepository.GetByIdAsync(measurementId)
-                : CreateNewMeasurement((TestSubject)argsData);
+                : await CreateNewMeasurement((TestSubject)argsData);
 
             ForceValues.AddRange(Measurement.ForceData?.Select(v => v.Value) ?? Array.Empty<float>());
-
             Id = measurementId;
         }
 
 
-        private Measurement CreateNewMeasurement(TestSubject correspondingTestSubject)
+        private async Task<Measurement> CreateNewMeasurement(TestSubject correspondingTestSubject)
         {
             var newMeasurement = new Measurement
             {
                 ForceData = new List<MeasuredValue>(),
                 Notes = string.Empty
             };
-            _measurementRepository.StartTrackingTestSubject(correspondingTestSubject);
-            newMeasurement.TestSubject = correspondingTestSubject;
+            newMeasurement.TestSubject = (await _measurementRepository.GetTestSubjectById(correspondingTestSubject.Id))!;
             _measurementRepository.Add(newMeasurement);
             return newMeasurement;
         }

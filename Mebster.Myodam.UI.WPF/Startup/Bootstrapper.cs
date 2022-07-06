@@ -3,7 +3,6 @@ using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.Common.Services;
 using Mebster.Myodam.DataAccess;
 using Mebster.Myodam.Infrastructure.Bluetooth;
-using Mebster.Myodam.UI.WPF.Data.Lookups;
 using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.Exception;
 using Mebster.Myodam.UI.WPF.View.Services;
@@ -29,20 +28,16 @@ namespace Mebster.Myodam.UI.WPF.Startup
 
             builder.RegisterType<MainViewModel>().AsSelf();
             builder.RegisterType<NavigationViewModel>().As<INavigationViewModel>();
-            builder.RegisterType<TestSubjectDetailViewModel>()
-              .Keyed<IDetailViewModel>(nameof(TestSubjectDetailViewModel));
-            builder.RegisterType<MeasurementDetailViewModel>()
-              .Keyed<IDetailViewModel>(nameof(MeasurementDetailViewModel));
+            builder.RegisterType<TestSubjectDetailViewModel>().Keyed<IDetailViewModel>(nameof(TestSubjectDetailViewModel));
+            builder.RegisterType<MeasurementDetailViewModel>().Keyed<IDetailViewModel>(nameof(MeasurementDetailViewModel));
 
             builder.RegisterType<GlobalExceptionHandler>().As<IGlobalExceptionHandler>();
             builder.RegisterType<AsyncRelayCommandFactory>().As<IAsyncRelayCommandFactory>();
             builder.RegisterType<DateTimeService>().As<IDateTimeService>();
 
-
             builder.RegisterType<BluetoothManager>().As<IBluetoothManager>();
             builder.RegisterType<MyodamManager>().As<IMyodamManager>().SingleInstance();
 
-            builder.RegisterType<LookupDataService>().AsImplementedInterfaces();
             builder.RegisterType<TestSubjectRepository>().As<ITestSubjectRepository>();
             builder.RegisterType<MeasurementRepository>().As<IMeasurementRepository>();
 
