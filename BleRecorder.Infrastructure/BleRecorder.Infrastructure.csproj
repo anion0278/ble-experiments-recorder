@@ -12,6 +12,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\BleRecorder.Common\BleRecorder.Common.csproj" />
 	  <ProjectReference Include="..\BleRecorder.Models\BleRecorder.Models.csproj" />
 	</ItemGroup>
 

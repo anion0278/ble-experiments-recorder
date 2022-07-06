@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using LiveCharts;
 using BleRecorder.Business.Device;
+using BleRecorder.Common.Services;
 using BleRecorder.Models.Device;
 using BleRecorder.Models.TestSubject;
 using BleRecorder.UI.WPF.Data.Repositories;
@@ -24,6 +25,7 @@ namespace BleRecorder.UI.WPF.ViewModels
     {
         private readonly IBleRecorderManager _bleRecorderManager;
         private IMeasurementRepository _measurementRepository;
+        private IDateTimeService _dateTimeService;
 
         public ChartValues<float> ForceValues { get; set; }
 
@@ -68,18 +70,19 @@ namespace BleRecorder.UI.WPF.ViewModels
         public MeasurementDetailViewModel(IMessenger messenger,
             IMessageDialogService messageDialogService,
             IBleRecorderManager bleRecorderManager,
-            IMeasurementRepository measurementRepository) : base(messenger, messageDialogService)
+            IMeasurementRepository measurementRepository, 
+            IDateTimeService dateTimeService) : base(messenger, messageDialogService)
         {
             _bleRecorderManager = bleRecorderManager;
             _measurementRepository = measurementRepository;
+            _dateTimeService = dateTimeService;
 
             StartMeasurementCommand = new AsyncRelayCommand(StartMeasurement, StartMeasurementCanExecute);
             StopMeasurementCommand = new AsyncRelayCommand(StopMeasurement, () => _bleRecorderManager.IsCurrentlyMeasuring);
             CleanRecordedDataCommand = new RelayCommand(CleanRecordedData, () => true);
 
             ForceValues = new ChartValues<float>();
-            // letting ComboBox.IsDisabled know that collection changed
-            ForceValues.CollectionChanged += OnForceValuesChanged; 
+            ForceValues.CollectionChanged += OnForceValuesChanged; // letting ComboBox.IsDisabled know that collection changed
             PropertyChanged += OnPropertyChangedEventHandler; // TODO try use Context.ChangeTracker.StateChanged
 
             _bleRecorderManager.BleRecorderAvailabilityChanged += OnBleRecorderStatusChanged;
@@ -164,7 +167,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             }
 
             ForceValues.Clear();
-            Date = DateTimeOffset.Now;
+            Date = _dateTimeService.Now;
             _bleRecorderManager.BleRecorderDevice!.NewValueReceived += (_, value) => { ForceValues.Add(value.Value); }; // TODO unsubscribe !!!
             await _bleRecorderManager.BleRecorderDevice.StartMeasurement(new StimulationParameters(100, 50, 20, MeasurementType.MaximumContraction));
         }

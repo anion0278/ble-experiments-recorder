@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using BleRecorder.Business.Device;
+using BleRecorder.Common.Services;
 using BleRecorder.DataAccess;
 using BleRecorder.Infrastructure.Bluetooth;
 using BleRecorder.UI.WPF.Data.Lookups;
@@ -35,6 +36,7 @@ namespace BleRecorder.UI.WPF.Startup
 
             builder.RegisterType<GlobalExceptionHandler>().As<IGlobalExceptionHandler>();
             builder.RegisterType<AsyncRelayCommandFactory>().As<IAsyncRelayCommandFactory>();
+            builder.RegisterType<DateTimeService>().As<IDateTimeService>();
 
 
             builder.RegisterType<BluetoothManager>().As<IBluetoothManager>();

@@ -5,12 +5,14 @@ using System.Timers;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Storage.Streams;
+using BleRecorder.Common.Services;
 using BleRecorder.Models.Device;
 
 namespace BleRecorder.Infrastructure.Bluetooth;
 
 public class BleDeviceHandler : IBleDeviceHandler
 {
+    private readonly IDateTimeService _dateTimeService;
     public event EventHandler<string>? DataReceived;
     public event EventHandler? DeviceStatusChanged;
 
@@ -39,8 +41,10 @@ public class BleDeviceHandler : IBleDeviceHandler
         }
     }
 
-    public BleDeviceHandler(string name, ulong address, short signalStrength, DateTimeOffset timestamp)
+    public BleDeviceHandler(IDateTimeService dateTimeService, 
+        string name, ulong address, short signalStrength, DateTimeOffset timestamp)
     {
+        _dateTimeService = dateTimeService;
         Name = name;
         Address = address;
         SignalStrength = signalStrength;
@@ -56,8 +60,9 @@ public class BleDeviceHandler : IBleDeviceHandler
         _device = await BluetoothLEDevice.FromBluetoothAddressAsync(Address);
         _device.ConnectionStatusChanged += BleDeviceOnConnectionStatusChanged;
 
+        // DeviceInformation.Pairing.IsPaired;
         //var y = bleDevice.DeviceInformation.Pairing.CanPair;
-        //var x = bleDevice.ConnectionStatus;
+
         //var allDeviceServices = (await bleDevice.GetGattServicesAsync(BluetoothCacheMode.Uncached)).Services.ToArray();
 
         var uartGuid = new Guid("6e400001-b5a3-f393-e0a9-e50e24dcca9e");
@@ -72,20 +77,23 @@ public class BleDeviceHandler : IBleDeviceHandler
         _rxCharacteristic = uartCharacteristics.Single(s => s.Uuid == rxId);
         _txCharacteristic = uartCharacteristics.Single(s => s.Uuid == txId);
 
+        // TODO try GattClientCharacteristicConfigurationDescriptorValue.Indicate - indicate requires the client to acnknowhandde succ.transmition
         await _rxCharacteristic.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify); // required to receive data
         _rxCharacteristic.ValueChanged += Uart_ReceivedData;
 
         _heartbeatWatchdog.Start();
+
+        // var isAccessAllowed = await _device.RequestAccessAsync();
 
         return this;
     }
 
     private void OnWatchdogPeriodElapsed(object? sender, ElapsedEventArgs e)
     {
-        var ts = DateTimeOffset.Now;
+        var ts = _dateTimeService.Now;
         if (ts - LatestTimestamp < _hearbeatTimeout) return;
 
-        Dispose();
+        Disconnect();
     }
 
     private void BleDeviceOnConnectionStatusChanged(BluetoothLEDevice sender, object args)
@@ -93,7 +101,7 @@ public class BleDeviceHandler : IBleDeviceHandler
         switch (sender.ConnectionStatus) // we cannot rely on this prop, since its not updated when the device is disconnected "externally"
         {
             case BluetoothConnectionStatus.Disconnected:
-                Dispose();
+                Disconnect();
                 break;
             case BluetoothConnectionStatus.Connected:
                 IsConnected = true;
@@ -103,7 +111,7 @@ public class BleDeviceHandler : IBleDeviceHandler
 
     private void Uart_ReceivedData(GattCharacteristic sender, GattValueChangedEventArgs args)
     {
-        LatestTimestamp = DateTimeOffset.Now;
+        LatestTimestamp = _dateTimeService.Now;
         Debug.Print(LatestTimestamp.ToString());
         var reader = DataReader.FromBuffer(args.CharacteristicValue);
         var input = new byte[reader.UnconsumedBufferLength];

@@ -38,6 +38,7 @@ public class BleRecorderManager : IBleRecorderManager
     public BleRecorderManager(IBluetoothManager bluetoothManager)
     {
         _bluetoothManager = bluetoothManager;
+        _bluetoothManager.AddDeviceNameFilter(_bleRecorderName);
         _bluetoothManager.AvailableBleDevices.CollectionChanged += OnAvailableDevicesChanged;
         BleRecorderAvailability = BleRecorderAvailabilityStatus.DisconnectedUnavailable;
         _bluetoothManager.StartScanning();

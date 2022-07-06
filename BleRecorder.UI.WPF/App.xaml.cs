@@ -20,7 +20,6 @@ namespace BleRecorder.UI.WPF
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-
             var bootstrapper = new Bootstrapper();
             var container = bootstrapper.Bootstrap();
             _exceptionHandler = container.Resolve<IGlobalExceptionHandler>();
@@ -28,6 +27,11 @@ namespace BleRecorder.UI.WPF
 
             var mainWindow = container.Resolve<MainWindow>();
             mainWindow.Show();
+        }
+
+        private void Application_OnExit(object sender, ExitEventArgs e)
+        {
+            // TODO disconnect from devices
         }
 
         private void OnDispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
