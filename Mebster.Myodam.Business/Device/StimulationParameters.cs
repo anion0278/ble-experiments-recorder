@@ -32,6 +32,10 @@ public class StimulationPulseWidth
         PulseWidth = pulseWidth;
     }
 
-    public static IEnumerable<StimulationPulseWidth> AvailableOptions { get; } =
-        new[] { 50, 100, 200, 300, 400 }.Select(v => new StimulationPulseWidth(v));
+    static StimulationPulseWidth()
+    {
+        AvailableOptions = new[] { 50, 100, 200, 300, 400 }.Select(v => new StimulationPulseWidth(v)).ToArray();
+    }
+
+    public static StimulationPulseWidth[] AvailableOptions { get; }
 }

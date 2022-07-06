@@ -169,7 +169,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             ForceValues.Clear();
             Date = _dateTimeService.Now;
             _myodamManager.MyodamDevice!.NewValueReceived += (_, value) => { ForceValues.Add(value.Value); }; // TODO unsubscribe !!!
-            await _myodamManager.MyodamDevice.StartMeasurement(new StimulationParameters(100, 50, StimulationPulseWidth.AvailableOptions.ToArray()[1], MeasurementType.MaximumContraction));
+            await _myodamManager.MyodamDevice.StartMeasurement(new StimulationParameters(100, 50, StimulationPulseWidth.AvailableOptions[1], MeasurementType.MaximumContraction));
         }
 
         public async Task StopMeasurement()

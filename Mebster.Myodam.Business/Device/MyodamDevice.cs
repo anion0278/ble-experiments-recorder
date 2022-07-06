@@ -59,11 +59,11 @@ public class MyodamDevice // TODO Extract inteface
             return;
         }
 
-        //if (data.Contains("Finished"))
-        //{
-        //    IsCurrentlyMeasuring = false;
-        //    MeasurementFinished?.Invoke(this, EventArgs.Empty);
-        //}
+        if (data.Contains("Finished"))
+        {
+            IsCurrentlyMeasuring = false;
+            MeasurementFinished?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     // We always send up-to-date parameters in order to make sure that stimulation is correct even if the device has restarted in meantime
@@ -75,7 +75,7 @@ public class MyodamDevice // TODO Extract inteface
 
     public async Task StopMeasurement()
     {
-        var msg = new MyodamCommonMessage(new StimulationParameters(0,0, StimulationPulseWidth.AvailableOptions.ToArray()[1], MeasurementType.MaximumContraction));
+        var msg = new MyodamCommonMessage(new StimulationParameters(0,0, StimulationPulseWidth.AvailableOptions[1], MeasurementType.MaximumContraction));
         await SendMsg(msg);
         IsCurrentlyMeasuring = false;
     }

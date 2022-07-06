@@ -29,9 +29,10 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         public MyodamAvailabilityStatus MyodamAvailability => _myodamManager.MyodamAvailability;
 
-        public int StimulationFrequency { get; set; }
-        public int StimulationCurrent { get; set; }
-        public StimulationPulseWidth StimulationPulse { get; set; }
+        //TODO remember values
+        public int StimulationFrequency { get; set; } = 100;
+        public int StimulationCurrent { get; set; } = 30;
+        public StimulationPulseWidth StimulationPulse { get; set; } = StimulationPulseWidth.AvailableOptions[1];
 
         public NavigationViewModel(
             ITestSubjectLookupDataService testSubjectLookupService, 
