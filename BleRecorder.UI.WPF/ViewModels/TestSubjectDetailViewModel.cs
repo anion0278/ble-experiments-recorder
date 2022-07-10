@@ -79,7 +79,8 @@ namespace BleRecorder.UI.WPF.ViewModels
             RemoveMeasurementCommand = new RelayCommand(OnRemoveMeasurement, () => Measurements!.CurrentItem != null);
 
             PropertyChanged += OnPropertyChangedEventHandler;
-            Messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
+            Messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailChanged(e));
+            Messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailChanged(e));
         }
 
 
@@ -88,6 +89,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             PropertyChanged -= OnPropertyChangedEventHandler;
             //_measurements.CollectionChanged += (_, _) => OnPropertyChanged(nameof(Measurements));
             Messenger.Unregister<AfterDetailSavedEventArgs>(this);
+            Messenger.Unregister<AfterDetailDeletedEventArgs>(this);
         }
 
         private void OnPropertyChangedEventHandler(object? o, PropertyChangedEventArgs propertyChangedEventArgs)
@@ -95,17 +97,21 @@ namespace BleRecorder.UI.WPF.ViewModels
             HasChanges = _testSubjectRepository.HasChanges();
         }
 
-
-        private async void AfterDetailSaved(AfterDetailSavedEventArgs message)
+        private async void AfterDetailChanged(IDetailViewEventArgs message)
         {
-            if (message.ViewModelName == nameof(MeasurementDetailViewModel))
+            if (message.ViewModelName == nameof(MeasurementDetailViewModel)) // TODO into strategy?
             {
-                _measurements.Clear();
-                var reloadedTestSubject = await _testSubjectRepository.GetByIdAsync(Id);
-                foreach (var measurement in reloadedTestSubject.Measurements)// TODO !! except those which have been deleted!
-                {
-                    _measurements.Add(measurement);
-                }
+                await ReloadMeasurements();
+            }
+        }
+
+        private async Task ReloadMeasurements()
+        {
+            _measurements.Clear();
+            var reloadedTestSubject = await _testSubjectRepository.GetByIdAsync(Id);
+            foreach (var measurement in reloadedTestSubject.Measurements) // TODO !! except those which have been deleted!
+            {
+                _measurements.Add(measurement);
             }
         }
 

@@ -2,10 +2,10 @@
 namespace BleRecorder.UI.WPF.Event
 {
 
-  public class AfterDetailSavedEventArgs
-  {
-    public int Id { get; set; }
-    public string DisplayMember { get; set; }
-    public string ViewModelName { get; set; }
-  }
+    public class AfterDetailSavedEventArgs : IDetailViewEventArgs
+    {
+        public int Id { get; init; }
+        public string DisplayMember { get; init; }
+        public string ViewModelName { get; init; }
+    }
 }
