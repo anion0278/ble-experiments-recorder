@@ -17,9 +17,9 @@ public class TestSubjectRepository : GenericRepository<TestSubject, ExperimentsD
     {
     }
 
-    public override async Task<TestSubject> GetByIdAsync(int testSubjectId)
+    public override async Task<TestSubject?> GetByIdAsync(int testSubjectId)
     {
-        return await Context.TestSubjects.Include(ts => ts.Measurements).SingleAsync(s => s.Id == testSubjectId);
+        return await Context.TestSubjects.Include(ts => ts.Measurements).SingleOrDefaultAsync(s => s.Id == testSubjectId);
     }
 
     public void RemoveMeasurement(Measurement item) // TODO join repositories, or change Collection to List to remove item from TestSubj

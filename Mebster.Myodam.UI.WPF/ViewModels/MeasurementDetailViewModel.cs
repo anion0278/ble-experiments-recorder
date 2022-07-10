@@ -200,7 +200,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         protected override async void OnSaveExecute()
         {
             Measurement.ForceData = ForceValues
-                .Select((val, index) => new MeasuredValue((float)val, TimeSpan.FromMilliseconds(index)))
+                .Select((val, index) => new MeasuredValue(val, TimeSpan.FromMilliseconds(index)))
                 .ToArray();
             await _measurementRepository.SaveAsync();
             HasChanges = _measurementRepository.HasChanges();
@@ -227,20 +227,5 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
                 RaiseDetailClosedEvent();
             }
         }
-
-
-        //private async void AfterDetailSaved(AfterDetailSavedEventArgs args)
-
-        //{
-
-        //    if (args.ViewModelName == nameof(TestSubjectDetailViewModel))
-
-        //    {
-
-        //        //await _measurementRepository.ReloadTestSubjectAsync(args.Id);
-
-        //    }
-
-        //}
     }
 }

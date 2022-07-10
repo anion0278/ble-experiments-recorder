@@ -17,7 +17,6 @@ using Mebster.Myodam.UI.WPF.View.Services;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
-using Swordfish.NET.Collections.Auxiliary;
 
 namespace Mebster.Myodam.UI.WPF.ViewModels
 {
@@ -75,7 +74,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         {
             _testSubjectRepository = testSubjectRepository;
 
-            AddMeasurementCommand = new RelayCommand(OnAddMeasurement);
+            AddMeasurementCommand = new RelayCommand(async () => await OnAddMeasurement());
             EditMeasurementCommand = new RelayCommand(OnEditMeasurement, () => Measurements!.CurrentItem != null);
             RemoveMeasurementCommand = new RelayCommand(OnRemoveMeasurement, () => Measurements!.CurrentItem != null);
 
@@ -110,8 +109,15 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             }
         }
 
-        private void OnAddMeasurement()
+        private async Task OnAddMeasurement()
         {
+            if (await _testSubjectRepository.GetByIdAsync(Id) == null)
+            {
+                await MessageDialogService.ShowInfoDialogAsync(
+                    $"{Title} is not saved. Save the test subject before adding measurements.");
+                return;
+            }
+
             Messenger.Send(new OpenDetailViewEventArgs()
             {
                 Id = -1,
