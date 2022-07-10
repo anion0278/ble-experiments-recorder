@@ -73,7 +73,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         public MeasurementDetailViewModel(IMessenger messenger,
             IMessageDialogService messageDialogService,
             IMyodamManager myodamManager,
-            IMeasurementRepository measurementRepository, 
+            IMeasurementRepository measurementRepository,
             IDateTimeService dateTimeService) : base(messenger, messageDialogService)
         {
             _myodamManager = myodamManager;
@@ -85,13 +85,13 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             CleanRecordedDataCommand = new RelayCommand(CleanRecordedData, () => true);
 
             ForceValues.CollectionChanged += OnForceValuesChanged; // letting ComboBox.IsDisabled know that collection changed
-            PropertyChanged += OnPropertyChangedEventHandler; 
+            PropertyChanged += OnPropertyChangedEventHandler;
 
             _myodamManager.MyodamAvailabilityChanged += OnMyodamStatusChanged;
             _myodamManager.MeasurementStatusChanged += OnMeasurementStatusChanged;
 
-            //messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
-            messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
+            Messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
+            Messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
         }
 
         protected override void UnsubscribeOnClosing()
@@ -100,6 +100,8 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             PropertyChanged -= OnPropertyChangedEventHandler;
             _myodamManager.MyodamAvailabilityChanged -= OnMyodamStatusChanged;
             _myodamManager.MeasurementStatusChanged -= OnMeasurementStatusChanged;
+
+            Messenger.Unregister<AfterDetailSavedEventArgs>(this);
             Messenger.Unregister<AfterDetailDeletedEventArgs>(this);
         }
 
@@ -220,9 +222,19 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             return true;
         }
 
-        private void AfterDetailDeleted(AfterDetailDeletedEventArgs args)
+        private async void AfterDetailSaved(AfterDetailSavedEventArgs message)
         {
-            if (args.ViewModelName == nameof(TestSubjectDetailViewModel) && args.Id == Measurement.TestSubjectId)
+            if (message.ViewModelName == nameof(TestSubjectDetailViewModel)
+                && message.Id == Measurement.TestSubjectId
+                && await _measurementRepository.GetByIdAsync(Id) is null)
+            {
+                RaiseDetailClosedEvent();
+            }
+        }
+
+        private void AfterDetailDeleted(AfterDetailDeletedEventArgs message)
+        {
+            if (message.ViewModelName == nameof(TestSubjectDetailViewModel) && message.Id == Measurement.TestSubjectId)
             {
                 RaiseDetailClosedEvent();
             }

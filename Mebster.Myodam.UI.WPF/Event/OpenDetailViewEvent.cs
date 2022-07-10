@@ -2,11 +2,17 @@
 
 namespace Mebster.Myodam.UI.WPF.Event
 {
-    public class OpenDetailViewEventArgs
+    public interface IDetailViewEventArgs
     {
         public int Id { get; init; }
         public string ViewModelName { get; init; }
-        public object Data { get; set; }
+    }
+
+    public class OpenDetailViewEventArgs : IDetailViewEventArgs
+    {
+        public int Id { get; init; }
+        public string ViewModelName { get; init; }
+        public object Data { get; init; }
     }
 
     //public class CreateMeasurementEventArgs: OpenDetailViewEventArgs

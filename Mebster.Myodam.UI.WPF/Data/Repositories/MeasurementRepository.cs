@@ -15,12 +15,12 @@ public class MeasurementRepository : GenericRepository<Measurement, ExperimentsD
     public override async Task<Measurement?> GetByIdAsync(int id)
     {
         return await Context.Measurements.Include(m => m.TestSubject)
-          .SingleAsync(m => m.Id == id);
+          .SingleOrDefaultAsync(m => m.Id == id);
     }
 
     public void StartTrackingTestSubject(TestSubject testSubject)
     {
-         if (Context.Entry(testSubject).State == EntityState.Detached)
+        if (Context.Entry(testSubject).State == EntityState.Detached)
             Context.TestSubjects.Attach(testSubject);
     }
 
