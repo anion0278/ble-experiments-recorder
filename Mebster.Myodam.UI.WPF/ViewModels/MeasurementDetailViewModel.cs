@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Data;
@@ -14,7 +15,6 @@ using Mebster.Myodam.Models.TestSubject;
 using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.Event;
 using Mebster.Myodam.UI.WPF.View.Services;
-using Mebster.Myodam.UI.WPF.Wrappers;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using Swordfish.NET.Collections.Auxiliary;
@@ -29,6 +29,9 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         public ChartValues<float> ForceValues { get; set; } = new();
 
+        [Required]
+        [MinLength(1, ErrorMessage = "{0} should contain at least {1} characters.")]
+        [MaxLength(30, ErrorMessage = "{0} should contain maximum of {1} characters.")]
         public override string Title
         {
             get => Measurement.Title;
@@ -82,15 +85,23 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             CleanRecordedDataCommand = new RelayCommand(CleanRecordedData, () => true);
 
             ForceValues.CollectionChanged += OnForceValuesChanged; // letting ComboBox.IsDisabled know that collection changed
-            PropertyChanged += OnPropertyChangedEventHandler; // TODO try use Context.ChangeTracker.StateChanged
+            PropertyChanged += OnPropertyChangedEventHandler; 
 
             _myodamManager.MyodamAvailabilityChanged += OnMyodamStatusChanged;
             _myodamManager.MeasurementStatusChanged += OnMeasurementStatusChanged;
 
             //messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
-            //messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
+            messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
         }
 
+        protected override void UnsubscribeOnClosing()
+        {
+            ForceValues.CollectionChanged -= OnForceValuesChanged;
+            PropertyChanged -= OnPropertyChangedEventHandler;
+            _myodamManager.MyodamAvailabilityChanged -= OnMyodamStatusChanged;
+            _myodamManager.MeasurementStatusChanged -= OnMeasurementStatusChanged;
+            Messenger.Unregister<AfterDetailDeletedEventArgs>(this);
+        }
 
         private void OnPropertyChangedEventHandler(object? o, PropertyChangedEventArgs propertyChangedEventArgs)
         {
@@ -186,11 +197,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             }
         }
 
-        protected override bool OnSaveCanExecute()
-        {
-            return Measurement != null && HasChanges;
-        }
-
         protected override async void OnSaveExecute()
         {
             Measurement.ForceData = ForceValues
@@ -202,44 +208,39 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             RaiseDetailSavedEvent(Measurement.Id, Measurement.Title);
         }
 
-        protected override async void OnCloseDetailViewExecute()
+        protected override async Task<bool> UserAcknowledgedClosing()
         {
             if (HasChanges || _myodamManager.IsCurrentlyMeasuring)
             {
                 var result = await MessageDialogService.ShowOkCancelDialogAsync(
                     "You've made changes or measurement is currently running. Do you want to close this item and stop measurement?", "Question");
-                if (result == MessageDialogResult.Cancel) return;
+                if (result == MessageDialogResult.Cancel) return false;
             }
-
-            ForceValues.CollectionChanged -= OnForceValuesChanged;
-            PropertyChanged -= OnPropertyChangedEventHandler;
-
             await StopMeasurement();
-            Messenger.Send(new AfterDetailClosedEventArgs
+            return true;
+        }
+
+        private void AfterDetailDeleted(AfterDetailDeletedEventArgs args)
+        {
+            if (args.ViewModelName == nameof(TestSubjectDetailViewModel) && args.Id == Measurement.TestSubjectId)
             {
-                Id = Id,
-                ViewModelName = GetType().Name
-            });
+                RaiseDetailClosedEvent();
+            }
         }
 
 
         //private async void AfterDetailSaved(AfterDetailSavedEventArgs args)
+
         //{
+
         //    if (args.ViewModelName == nameof(TestSubjectDetailViewModel))
+
         //    {
+
         //        //await _measurementRepository.ReloadTestSubjectAsync(args.Id);
-        //    }
-        //}
-
-
-        // TODO handle deletion of TestSubjects even when Meas is not saved !
-        //private async void AfterDetailDeleted(AfterDetailDeletedEventArgs args)
-        //{
-        //    if (args.ViewModelName == nameof(TestSubjectDetailViewModel))
-        //    {
-
 
         //    }
+
         //}
     }
 }

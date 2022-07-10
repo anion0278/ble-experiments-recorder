@@ -129,12 +129,9 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         private void RemoveDetailViewModel(int id, string viewModelName)
         {
             var detailViewModel = DetailViewModels
-                   .SingleOrDefault(vm => vm.Id == id
-                   && vm.GetType().Name == viewModelName);
-            if (detailViewModel != null)
-            {
-                DetailViewModels.Remove(detailViewModel);
-            }
+                   .Single(vm => vm.Id == id && vm.GetType().Name == viewModelName);
+
+            DetailViewModels.Remove(detailViewModel);
         }
     }
 }

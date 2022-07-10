@@ -19,7 +19,6 @@ public class TestSubjectRepository : GenericRepository<TestSubject, ExperimentsD
 
     public override async Task<TestSubject> GetByIdAsync(int testSubjectId)
     {
-        // TODO check if Include is required
         return await Context.TestSubjects.Include(ts => ts.Measurements).SingleAsync(s => s.Id == testSubjectId);
     }
 

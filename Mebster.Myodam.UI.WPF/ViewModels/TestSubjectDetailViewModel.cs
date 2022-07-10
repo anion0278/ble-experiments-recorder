@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -11,7 +14,7 @@ using Mebster.Myodam.Models.TestSubject;
 using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.Event;
 using Mebster.Myodam.UI.WPF.View.Services;
-using Mebster.Myodam.UI.WPF.Wrappers;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using Swordfish.NET.Collections.Auxiliary;
@@ -21,6 +24,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
     public class TestSubjectDetailViewModel : DetailViewModelBase, ITestSubjectDetailViewModel
     {
         private ITestSubjectRepository _testSubjectRepository;
+
 
         public ICommand RemoveMeasurementCommand { get; set; }
 
@@ -32,8 +36,30 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         public ICollectionView Measurements { get; set; }
 
+        public TestSubject Model { get; set; } // MUST BE PUBLIC PROP in order to make validation work on init
 
-        public TestSubjectWrapper TestSubject { get; private set; }
+
+        [Required]
+        [MinLength(2, ErrorMessage = "{0} should contain at least {1} characters.")]
+        [MaxLength(20, ErrorMessage = "{0} should contain maximum of {1} characters.")]
+        [Display(Name = "First name")]
+        public string FirstName
+        {
+            get => Model.FirstName;
+            set => Model.FirstName = value;
+        }
+
+        [Required]
+        [MinLength(2, ErrorMessage = "{0} should contain at least {1} characters.")]
+        [MaxLength(20, ErrorMessage = "{0} should contain maximum of {1} characters.")]
+        [Display(Name = "Last name")]
+        public string LastName
+        {
+            get => Model.LastName;
+            set => Model.LastName = value;
+        }
+
+        public override string Title => $"{FirstName} {LastName}";
 
         /// <summary>
         /// Design-time ctor
@@ -49,14 +75,27 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         {
             _testSubjectRepository = testSubjectRepository;
 
-            _testSubjectRepository.ChangesOccurred += (sender, args) => HasChanges = _testSubjectRepository.HasChanges();
-
             AddMeasurementCommand = new RelayCommand(OnAddMeasurement);
             EditMeasurementCommand = new RelayCommand(OnEditMeasurement, () => Measurements!.CurrentItem != null);
             RemoveMeasurementCommand = new RelayCommand(OnRemoveMeasurement, () => Measurements!.CurrentItem != null);
 
-            messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
+            PropertyChanged += OnPropertyChangedEventHandler;
+            Messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
         }
+
+
+        protected override void UnsubscribeOnClosing()
+        {
+            PropertyChanged -= OnPropertyChangedEventHandler;
+            //_measurements.CollectionChanged += (_, _) => OnPropertyChanged(nameof(Measurements));
+            Messenger.Unregister<AfterDetailSavedEventArgs>(this);
+        }
+
+        private void OnPropertyChangedEventHandler(object? o, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            HasChanges = _testSubjectRepository.HasChanges();
+        }
+
 
         private async void AfterDetailSaved(AfterDetailSavedEventArgs message)
         {
@@ -77,7 +116,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             {
                 Id = -1,
                 ViewModelName = nameof(MeasurementDetailViewModel),
-                Data = TestSubject.Model
+                Data = Model
             });
         }
 
@@ -101,78 +140,38 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         public override async Task LoadAsync(int id, object argsData)
         {
-            var testSubject = id > 0
+            Model = id > 0
               ? await _testSubjectRepository.GetByIdAsync(id)
               : CreateNewTestSubject();
 
-            base.Id = id;
+            Id = id;
 
-            InitializeTestSubject(testSubject);
-
-            _measurements = new ObservableCollection<Measurement>(TestSubject.Measurements);
+            _measurements = new ObservableCollection<Measurement>(Model.Measurements);
             _measurements.CollectionChanged += (_, _) => OnPropertyChanged(nameof(Measurements)); // TODO solve in different way
             Measurements = CollectionViewSource.GetDefaultView(_measurements);
             Measurements.SortDescriptions.Add(new SortDescription(nameof(Measurement.Date), ListSortDirection.Ascending));
-            Measurements.GroupDescriptions.Add(new PropertyGroupDescription(nameof(Measurement.Type)));  
+            Measurements.GroupDescriptions.Add(new PropertyGroupDescription(nameof(Measurement.Type)));
             Measurements.MoveCurrentTo(null);
-        }
-
-        private void InitializeTestSubject(TestSubject testSubject)
-        {
-            TestSubject = new TestSubjectWrapper(testSubject);
-            TestSubject.PropertyChanged += (_, e) =>
-          {
-              // TODO REFACTORING !!!
-              if (!HasChanges) // changes to test subject name are not tracked. Why?
-              {
-                  HasChanges = _testSubjectRepository.HasChanges();
-              }
-
-              if (e.PropertyName == nameof(testSubject.FirstName) || e.PropertyName == nameof(testSubject.LastName))
-              {
-                  SetTitle();
-              }
-          };
-            if (TestSubject.Id == 0)
-            {
-                // trigger the validation
-                TestSubject.FirstName = "";
-            }
-            SetTitle();
-        }
-
-        private void SetTitle() // TODO utilize FOdy
-        {
-            Title = $"{TestSubject.FirstName} {TestSubject.LastName}";
         }
 
         protected override async void OnSaveExecute()
         {
-            await SaveAsync(_testSubjectRepository.SaveAsync, // TODO rewrite explicitly, expand
-              () =>
-              {
-                  Id = TestSubject.Id;
-                  RaiseDetailSavedEvent(TestSubject.Id, $"{TestSubject.FirstName} {TestSubject.LastName}");
-              });
-        }
-
-        protected override bool OnSaveCanExecute()
-        {
-            return TestSubject != null
-              && !TestSubject.HasErrors
-              && HasChanges;
+            await _testSubjectRepository.SaveAsync();
+            Id = Model.Id;
+            HasChanges = false;
+            RaiseDetailSavedEvent(Model.Id, $"{Model.FirstName} {Model.LastName}");
         }
 
         protected override async void OnDeleteExecute()
         {
             var result = await MessageDialogService.ShowOkCancelDialogAsync(
-                $"Do you really want to delete the test Subject {TestSubject.FirstName} {TestSubject.LastName}?", "Confirmation is required");
+                $"Do you really want to delete the test subject {Title} and all related measurements?", "Confirmation is required");
 
             if (result == MessageDialogResult.OK)
             {
-                _testSubjectRepository.Remove(TestSubject.Model);
+                _testSubjectRepository.Remove(Model);
                 await _testSubjectRepository.SaveAsync();
-                RaiseDetailDeletedEvent(TestSubject.Id);
+                RaiseDetailDeletedEvent(Model.Id);
             }
         }
 

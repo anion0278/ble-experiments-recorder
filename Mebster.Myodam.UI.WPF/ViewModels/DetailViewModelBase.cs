@@ -33,11 +33,9 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             get { return _hasChanges; }
             set
             {
-                if (_hasChanges != value)
-                {
-                    _hasChanges = value;
-                    SaveCommand.NotifyCanExecuteChanged();
-                }
+                if (_hasChanges == value) return;
+                _hasChanges = value;
+                SaveCommand.NotifyCanExecuteChanged();
             }
         }
 
@@ -52,20 +50,24 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         protected abstract void OnDeleteExecute();
 
-        protected abstract bool OnSaveCanExecute();
-
         protected abstract void OnSaveExecute();
+
+        protected virtual bool OnSaveCanExecute()
+        {
+            return !HasErrors && HasChanges;
+        }
 
         protected virtual void RaiseDetailDeletedEvent(int modelId)
         {
+            UnsubscribeOnClosing();
             Messenger.Send(new AfterDetailDeletedEventArgs
             {
                 Id = modelId,
-                ViewModelName = this.GetType().Name
+                ViewModelName = GetType().Name
             });
         }
 
-        protected virtual void RaiseDetailSavedEvent(int modelId, string displayMember)
+        protected virtual void RaiseDetailSavedEvent(int modelId, string displayMember)// TODO check if these are used correctly everywhere
         {
             Messenger.Send(new AfterDetailSavedEventArgs
             {
@@ -75,26 +77,32 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             });
         }
 
+        protected abstract void UnsubscribeOnClosing();
+
         protected virtual async void OnCloseDetailViewExecute()
         {
-            if (HasChanges)
-            {
-                var result = await MessageDialogService.ShowOkCancelDialogAsync(
-                  "You've made changes. Close this item?", "Question");
-                if (result == MessageDialogResult.Cancel) return;
-            }
+            if (!await UserAcknowledgedClosing()) return;
 
-            Messenger.Send(new AfterDetailClosedEventArgs
+            RaiseDetailClosedEvent();
+        }
+
+        protected void RaiseDetailClosedEvent()
+        {
+            UnsubscribeOnClosing();
+            Messenger.Send(new AfterDetailClosedEventArgs 
             {
                 Id = this.Id,
-                ViewModelName = this.GetType().Name
+                ViewModelName = GetType().Name
             });
         }
 
-        protected async Task SaveAsync(Func<Task> saveFunc, Action afterSaveAction)
+        protected virtual async Task<bool> UserAcknowledgedClosing()
         {
-            await saveFunc();
-            afterSaveAction();
+            if (!HasChanges) return true;
+
+            var result = await MessageDialogService.ShowOkCancelDialogAsync(
+                "Close this item? Changes will be lost.", "Question");
+            return result == MessageDialogResult.OK;
         }
     }
 }
