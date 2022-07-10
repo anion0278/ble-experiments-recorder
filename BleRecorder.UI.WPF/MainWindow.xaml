@@ -29,7 +29,7 @@
                          DataContext="{Binding NavigationViewModel}"/>
         <TabControl Grid.Row="1" Grid.Column="1" 
                 ItemsSource="{Binding DetailViewModels}"
-                SelectedItem="{Binding SelectedDetailViewModel,Mode=TwoWay}">
+                SelectedItem="{Binding SelectedDetailViewModel,Mode=TwoWay, ValidatesOnNotifyDataErrors=False}">
             <TabControl.ItemContainerStyle>
                 <Style BasedOn="{StaticResource {x:Type TabItem}}" TargetType="TabItem">
                     <Setter Property="Background" Value="DodgerBlue"/>
