@@ -11,12 +11,9 @@ namespace BleRecorder.UI.WPF.Data.Repositories
   {
     protected readonly TContext Context;
 
-    public event EventHandler ChangesOccurred;
-
     protected GenericRepository(TContext context)
     {
       this.Context = context;
-      context.ChangeTracker.StateChanged += (sender, args) => ChangesOccurred?.Invoke(this, EventArgs.Empty);
     }
 
     public void Add(TEntity model)

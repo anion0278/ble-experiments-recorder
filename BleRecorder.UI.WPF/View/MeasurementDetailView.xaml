@@ -45,14 +45,12 @@
                  Text="{Binding Notes}" />
 
             <StackPanel Grid.Row="4"  Orientation="Horizontal" Margin="10 0 10 10">
-                <Label Content="Performed on:" />
-                <!--<mah:DateTimePicker IsReadOnly="True" SelectedDate="{Binding Date}" />-->
-                <Label FontWeight="Bold" Content="{Binding Date, StringFormat=ddd MM yyyy}" />
+                <Label Content="Measurement date:" />
+                <Label FontWeight="Bold" Content="{Binding Date, StringFormat=ddd MM yyyy, TargetNullValue='Not measured yet'}" />
             </StackPanel>
 
             <StackPanel Grid.Row="5"  Orientation="Horizontal" Margin="10 0 10 10">
                 <Label Content="Measurement type:" />
-                <!--<mah:DateTimePicker IsReadOnly="True" SelectedDate="{Binding Date}" />-->
                 <ComboBox SelectedItem="{Binding Type}"
                           IsEnabled="{Binding ForceValues,Mode=OneWay, Converter={StaticResource collectionLengthToBooleanConverter}}"
                           ItemsSource="{Binding Source={StaticResource MeasurementTypeEnum}}" />
@@ -63,11 +61,14 @@
                 <Label FontWeight="Bold" Content="{Binding Measurement.TestSubject.FullName}"/>
             </StackPanel>
 
-
-            <livecharts:CartesianChart Grid.Row="7"  DisableAnimations="True" Margin="4" Height="300" >
+            <livecharts:CartesianChart Grid.Row="7"  DisableAnimations="True" Margin="4" Height="230" >
                 <livecharts:CartesianChart.AxisY>
-                    <livecharts:Axis MaxValue="120" MinValue="0" />
+                    <livecharts:Axis MaxValue="120" MinValue="0" Title="Contraction Force [N]" />
                 </livecharts:CartesianChart.AxisY>
+
+                <livecharts:CartesianChart.AxisX>
+                    <livecharts:Axis Title="Time [s]" />
+                </livecharts:CartesianChart.AxisX>
 
                 <livecharts:CartesianChart.SeriesColors>
                     <livecharts:ColorsCollection>

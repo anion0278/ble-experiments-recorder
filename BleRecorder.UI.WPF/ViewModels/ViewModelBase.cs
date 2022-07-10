@@ -27,5 +27,12 @@ namespace BleRecorder.UI.WPF.ViewModels
         {
             ViewSynchronizationContext = SynchronizationContext.Current!;
         }
+
+        protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+        {
+            var value = GetType().GetProperty(e.PropertyName!)!.GetValue(this);
+            ValidateProperty(value, e.PropertyName);
+            base.OnPropertyChanged(e);
+        }
     }
 }

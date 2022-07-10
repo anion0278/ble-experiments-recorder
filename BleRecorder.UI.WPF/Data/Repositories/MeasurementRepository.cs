@@ -14,7 +14,7 @@ public class MeasurementRepository : GenericRepository<Measurement, ExperimentsD
 
     public override async Task<Measurement?> GetByIdAsync(int id)
     {
-        return await Context.Measurements
+        return await Context.Measurements.Include(m => m.TestSubject)
           .SingleAsync(m => m.Id == id);
     }
 
@@ -28,14 +28,4 @@ public class MeasurementRepository : GenericRepository<Measurement, ExperimentsD
     {
         return await Context.TestSubjects.FindAsync(id);
     }
-
-    //public async Task ReloadTestSubjectAsync(int testSubjectId)
-    //{
-    //  var dbEntityEntry = Context.ChangeTracker.Entries<TestSubject>()
-    //    .SingleOrDefault(db => db.Entity.Id == testSubjectId);
-    //  if(dbEntityEntry!=null)
-    //  {
-    //    await dbEntityEntry.ReloadAsync();
-    //  }
-    //}
 }

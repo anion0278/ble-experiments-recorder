@@ -6,7 +6,6 @@ namespace BleRecorder.UI.WPF.Data.Repositories
 {
     public interface IGenericRepository<T>
     {
-        event EventHandler ChangesOccurred;
         Task<T?> GetByIdAsync(int id);
         Task<IEnumerable<T>> GetAllAsync();
         Task SaveAsync();

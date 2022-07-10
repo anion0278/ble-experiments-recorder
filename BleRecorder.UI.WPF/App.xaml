@@ -49,7 +49,7 @@
                                 <ControlTemplate>
                                     <StackPanel>
                                         <AdornedElementPlaceholder x:Name="placeholder"/>
-                                        <TextBlock FontSize="12" Foreground="White" Text="{Binding ElementName=placeholder, Path=AdornedElement.(Validation.Errors)/ErrorContent}"/>
+                                        <TextBlock FontSize="10" Foreground="OrangeRed" Text="{Binding ElementName=placeholder, Path=AdornedElement.(Validation.Errors)/ErrorContent}"/>
                                     </StackPanel>
                                 </ControlTemplate>
                             </Setter.Value>
