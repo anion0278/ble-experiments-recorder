@@ -114,7 +114,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             if (await _testSubjectRepository.GetByIdAsync(Id) == null)
             {
                 await MessageDialogService.ShowInfoDialogAsync(
-                    $"{Title} is not saved. Save the test subject before adding measurements.");
+                    "Test subject is not saved. Save changes before adding measurements.");
                 return;
             }
 
