@@ -18,14 +18,13 @@ public class MeasurementRepository : GenericRepository<Measurement, ExperimentsD
           .SingleOrDefaultAsync(m => m.Id == id);
     }
 
-    public void StartTrackingTestSubject(TestSubject testSubject)
-    {
-        if (Context.Entry(testSubject).State == EntityState.Detached)
-            Context.TestSubjects.Attach(testSubject);
-    }
-
     public async Task<TestSubject?> GetTestSubjectById(int id)
     {
         return await Context.TestSubjects.FindAsync(id);
+    }
+
+    public async Task ReloadTestSubjectAsync(TestSubject testSubject)
+    {
+        await Context.Entry(testSubject).ReloadAsync();
     }
 }

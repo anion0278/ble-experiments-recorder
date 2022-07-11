@@ -87,7 +87,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         protected override void UnsubscribeOnClosing()
         {
             PropertyChanged -= OnPropertyChangedEventHandler;
-            //_measurements.CollectionChanged += (_, _) => OnPropertyChanged(nameof(Measurements));
+            //_measurements.CollectionChanged -= (_, _) => OnPropertyChanged(nameof(Measurements));
             Messenger.Unregister<AfterDetailSavedEventArgs>(this);
             Messenger.Unregister<AfterDetailDeletedEventArgs>(this);
         }
@@ -99,17 +99,14 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         private async void AfterDetailChanged(IDetailViewEventArgs message)
         {
-            if (message.ViewModelName == nameof(MeasurementDetailViewModel)) // TODO into strategy?
-            {
-                await ReloadMeasurements();
-            }
-        }
+            if (message.ViewModelName != nameof(MeasurementDetailViewModel)) return;
 
-        private async Task ReloadMeasurements()
-        {
+            bool isDetailRelated = Model.Measurements.Any(m => m.Id == message.Id);
+            Model = await _testSubjectRepository.ReloadAsync(Model);
+            if (Model.Measurements.All(m => m.Id != message.Id) && !isDetailRelated) return;
+
             _measurements.Clear();
-            var reloadedTestSubject = await _testSubjectRepository.GetByIdAsync(Id);
-            foreach (var measurement in reloadedTestSubject.Measurements) // TODO !! except those which have been deleted!
+            foreach (var measurement in Model.Measurements) // TODO !! except those which have been deleted!
             {
                 _measurements.Add(measurement);
             }
@@ -126,7 +123,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
             Messenger.Send(new OpenDetailViewEventArgs()
             {
-                Id = -1,
+                Id = -Id,
                 ViewModelName = nameof(MeasurementDetailViewModel),
                 Data = Model
             });
@@ -159,7 +156,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             Id = id;
 
             _measurements = new ObservableCollection<Measurement>(Model.Measurements);
-            _measurements.CollectionChanged += (_, _) => OnPropertyChanged(nameof(Measurements)); // TODO solve in different way
+            _measurements.CollectionChanged += (_, _) => OnPropertyChanged(nameof(Measurements)); // TODO why is it required?
             Measurements = CollectionViewSource.GetDefaultView(_measurements);
             Measurements.SortDescriptions.Add(new SortDescription(nameof(Measurement.Date), ListSortDirection.Ascending));
             Measurements.GroupDescriptions.Add(new PropertyGroupDescription(nameof(Measurement.Type)));

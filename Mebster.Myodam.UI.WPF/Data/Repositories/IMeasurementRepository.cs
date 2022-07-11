@@ -6,7 +6,8 @@ namespace Mebster.Myodam.UI.WPF.Data.Repositories
 {
   public interface IMeasurementRepository : IGenericRepository<Measurement>
   {
-    void StartTrackingTestSubject(TestSubject testSubject);
     public Task<TestSubject?> GetTestSubjectById(int id);
+
+    Task ReloadTestSubjectAsync(TestSubject testSubject);
   }
 }

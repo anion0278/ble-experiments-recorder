@@ -30,7 +30,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         public bool HasChanges
         {
-            get { return _hasChanges; }
+            get => _hasChanges;
             set
             {
                 if (_hasChanges == value) return;

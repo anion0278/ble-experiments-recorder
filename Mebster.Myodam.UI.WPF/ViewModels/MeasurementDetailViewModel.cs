@@ -224,12 +224,16 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         private async void AfterDetailSaved(AfterDetailSavedEventArgs message)
         {
-            if (message.ViewModelName == nameof(TestSubjectDetailViewModel)
-                && message.Id == Measurement.TestSubjectId
-                && await _measurementRepository.GetByIdAsync(Id) is null)
+            if (message.ViewModelName != nameof(TestSubjectDetailViewModel) ||
+                message.Id != Measurement.TestSubjectId) return;
+
+            if (await _measurementRepository.GetByIdAsync(Id) is null)
             {
                 RaiseDetailClosedEvent();
+                return;
             }
+
+            await _measurementRepository.ReloadTestSubjectAsync(Measurement.TestSubject);
         }
 
         private void AfterDetailDeleted(AfterDetailDeletedEventArgs message)
