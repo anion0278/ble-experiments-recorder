@@ -1,4 +1,5 @@
-﻿using Mebster.Myodam.Models.TestSubject;
+﻿using Mebster.Myodam.Models.Device;
+using Mebster.Myodam.Models.TestSubject;
 
 namespace Mebster.Myodam.Business.Device;
 

@@ -1,4 +1,5 @@
 ﻿using Mebster.Myodam.Business.Device;
+using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.Models.TestSubject;
 using Xunit;
 

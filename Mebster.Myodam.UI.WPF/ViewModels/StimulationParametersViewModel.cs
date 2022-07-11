@@ -1,5 +1,7 @@
 ﻿using System;
 using Mebster.Myodam.Business.Device;
+using Mebster.Myodam.Models.Device;
+using Mebster.Myodam.UI.WPF.Data.Repositories;
 
 namespace Mebster.Myodam.UI.WPF.ViewModels;
 
@@ -31,8 +33,9 @@ public class StimulationParametersViewModel : ViewModelBase
         set => _model.StimulationTime = TimeSpan.FromSeconds(value);
     }
 
-    public StimulationParametersViewModel(StimulationParameters model)
+    public StimulationParametersViewModel(StimulationParameters model, IStimulationParametersRepository stimulationParametersRepository)
     {
         _model = model;
+        PropertyChanged += async (_, _) => await stimulationParametersRepository.SaveAsync();
     }
 }

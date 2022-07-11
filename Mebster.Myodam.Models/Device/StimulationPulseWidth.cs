@@ -1,4 +1,4 @@
-﻿namespace Mebster.Myodam.Business.Device;
+﻿namespace Mebster.Myodam.Models.Device;
 
 public class StimulationPulseWidth
 {

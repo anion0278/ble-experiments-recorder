@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.Metrics;
+using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.Models.TestSubject;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,6 +8,7 @@ public class ExperimentsDbContext : DbContext
 {
     public DbSet<TestSubject> TestSubjects { get; set; }
     public DbSet<Measurement> Measurements { get; set; }
+    public DbSet<StimulationParameters> StimulationParameters { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -22,6 +24,13 @@ public class ExperimentsDbContext : DbContext
             .HasConversion(
                 v => Measurement.ConvertForceValuesToJson(v),
                 v => Measurement.ConvertInternalJsonToForceValues(v) ?? Array.Empty<MeasuredValue>());
+
+        modelBuilder
+            .Entity<StimulationParameters>()
+            .Property(e => e.PulseWidth)
+            .HasConversion(
+                p => p.Value,
+                p => StimulationPulseWidth.AvailableOptions.SingleOrDefault(op => op.Value == p) ?? StimulationPulseWidth.AvailableOptions.First());
 
         base.OnModelCreating(modelBuilder);
     }

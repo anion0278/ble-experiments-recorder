@@ -1,11 +1,10 @@
-﻿using System.Transactions;
-using Mebster.Myodam.Models.TestSubject;
-
-namespace Mebster.Myodam.Business.Device;
+﻿namespace Mebster.Myodam.Models.Device;
 
 
 public class StimulationParameters
 {
+    public int Id { get; private set; }
+
     public int Current { get; set; }
     public int Frequency { get; set; }
     public StimulationPulseWidth PulseWidth { get; set; }

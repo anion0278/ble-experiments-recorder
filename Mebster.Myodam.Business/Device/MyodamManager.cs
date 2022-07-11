@@ -8,7 +8,7 @@ public interface IMyodamManager
     event EventHandler MyodamAvailabilityChanged;
     event EventHandler? MeasurementStatusChanged;
     MyodamDevice? MyodamDevice { get; }
-    StimulationParameters CurrentStimulationParameters { get; }
+    StimulationParameters CurrentStimulationParameters { get; set; }
     MyodamAvailabilityStatus MyodamAvailability { get; }
     bool IsCurrentlyMeasuring { get; }
     Task ConnectMyodam();
@@ -24,7 +24,7 @@ public class MyodamManager : IMyodamManager
     private const string _myodamName = "MYODAM";
     public MyodamDevice? MyodamDevice { get; private set; }
 
-    public StimulationParameters CurrentStimulationParameters { get; }
+    public StimulationParameters CurrentStimulationParameters { get; set; }
 
     public MyodamAvailabilityStatus MyodamAvailability
     {
@@ -47,10 +47,6 @@ public class MyodamManager : IMyodamManager
         _bluetoothManager.AvailableBleDevices.CollectionChanged += OnAvailableDevicesChanged;
         MyodamAvailability = MyodamAvailabilityStatus.DisconnectedUnavailable;
         _bluetoothManager.StartScanning();
-
-        // TODO init from DB
-        CurrentStimulationParameters = new StimulationParameters(100, 100, 
-            StimulationPulseWidth.AvailableOptions[0], TimeSpan.FromSeconds(5));
     }
 
     private void OnAvailableDevicesChanged(object? sender, EventArgs e)
