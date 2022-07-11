@@ -1,11 +1,10 @@
-﻿using System.Transactions;
-using BleRecorder.Models.TestSubject;
-
-namespace BleRecorder.Business.Device;
+﻿namespace BleRecorder.Models.Device;
 
 
 public class StimulationParameters
 {
+    public int Id { get; private set; }
+
     public int Current { get; set; }
     public int Frequency { get; set; }
     public StimulationPulseWidth PulseWidth { get; set; }

@@ -1,4 +1,4 @@
-﻿namespace BleRecorder.Business.Device;
+﻿namespace BleRecorder.Models.Device;
 
 public class StimulationPulseWidth
 {

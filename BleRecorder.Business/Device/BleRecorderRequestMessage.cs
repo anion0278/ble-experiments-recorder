@@ -1,4 +1,5 @@
-﻿using BleRecorder.Models.TestSubject;
+﻿using BleRecorder.Models.Device;
+using BleRecorder.Models.TestSubject;
 
 namespace BleRecorder.Business.Device;
 

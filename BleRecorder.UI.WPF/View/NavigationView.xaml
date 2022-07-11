@@ -131,7 +131,7 @@
                     <ComboBox Grid.Row="3" Grid.Column="1" FontWeight="Bold" HorizontalContentAlignment="Center" Margin="3" FontSize="12"
                               DisplayMemberPath="Value"
                               SelectedItem="{Binding StimulationParameters.PulseWidthMicroSeconds}"
-                              ItemsSource="{x:Static device1:StimulationPulseWidth.AvailableOptions}"/>
+                              ItemsSource="{x:Static device:StimulationPulseWidth.AvailableOptions}"/>
 
                     <Label Grid.Row="4" Grid.Column="0"  Content="Frequency [Hz]:" VerticalAlignment="Center"/>
                     <mah:NumericUpDown Grid.Row="4" Grid.Column="1" FontWeight="Bold" HorizontalContentAlignment="Center" Margin="3" FontSize="12"

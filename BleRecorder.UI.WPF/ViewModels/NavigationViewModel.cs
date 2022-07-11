@@ -21,6 +21,7 @@ namespace BleRecorder.UI.WPF.ViewModels
     public class NavigationViewModel : ViewModelBase, INavigationViewModel
     {
         private readonly ITestSubjectRepository _testSubjectRepository;
+        private readonly IStimulationParametersRepository _parametersRepository;
         private readonly IMessenger _messenger;
         private readonly IBleRecorderManager _bleRecorderManager;
 
@@ -30,10 +31,11 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         public BleRecorderAvailabilityStatus BleRecorderAvailability => _bleRecorderManager.BleRecorderAvailability;
 
-        public StimulationParametersViewModel StimulationParameters { get; }
+        public StimulationParametersViewModel StimulationParameters { get; private set; }
 
         public NavigationViewModel(
             ITestSubjectRepository testSubjectRepository,
+            IStimulationParametersRepository parametersRepository,
             IMessenger messenger, 
             IBleRecorderManager bleRecorderManager, 
             IAsyncRelayCommandFactory asyncCommandFactory)
@@ -41,9 +43,10 @@ namespace BleRecorder.UI.WPF.ViewModels
             ConnectBleRecorderCommand = asyncCommandFactory.Create(ConnectBleRecorder, CanConnectBleRecorder);
 
             _testSubjectRepository = testSubjectRepository;
+            _parametersRepository = parametersRepository;
             _messenger = messenger;
             _bleRecorderManager = bleRecorderManager;
-            StimulationParameters = new StimulationParametersViewModel(bleRecorderManager.CurrentStimulationParameters);
+
             _bleRecorderManager.BleRecorderAvailabilityChanged += OnBleRecorderAvailabilityChanged;
             _messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
             _messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
@@ -71,7 +74,7 @@ namespace BleRecorder.UI.WPF.ViewModels
                 .Select(ts => new LookupItem
                 {
                     Id = ts.Id,
-                    DisplayMember = ts.FirstName + " " + ts.LastName
+                    DisplayMember = ts.FirstName + " " + ts.LastName // TODO check, refactor
                 }).ToArray();
             TestSubjects.Clear();
             foreach (var item in lookup)
@@ -82,6 +85,21 @@ namespace BleRecorder.UI.WPF.ViewModels
                     nameof(TestSubjectDetailViewModel), 
                     _messenger));
             }
+
+            _bleRecorderManager.CurrentStimulationParameters = await _parametersRepository.GetByIdAsync(1) ?? CreateNewStimulationParameters();
+            StimulationParameters = new StimulationParametersViewModel(_bleRecorderManager.CurrentStimulationParameters, _parametersRepository);
+        }
+
+        private StimulationParameters CreateNewStimulationParameters()
+        {
+            var parameters = new StimulationParameters(
+                10, 
+                50, 
+                StimulationPulseWidth.AvailableOptions[0], 
+                TimeSpan.FromSeconds(5));
+
+            _parametersRepository.Add(parameters);
+            return parameters;
         }
 
         private void AfterDetailDeleted(AfterDetailDeletedEventArgs args) // TODO refactoring!

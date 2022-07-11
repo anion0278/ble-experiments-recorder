@@ -8,7 +8,7 @@ public interface IBleRecorderManager
     event EventHandler BleRecorderAvailabilityChanged;
     event EventHandler? MeasurementStatusChanged;
     BleRecorderDevice? BleRecorderDevice { get; }
-    StimulationParameters CurrentStimulationParameters { get; }
+    StimulationParameters CurrentStimulationParameters { get; set; }
     BleRecorderAvailabilityStatus BleRecorderAvailability { get; }
     bool IsCurrentlyMeasuring { get; }
     Task ConnectBleRecorder();
@@ -24,7 +24,7 @@ public class BleRecorderManager : IBleRecorderManager
     private const string _bleRecorderName = "Aggregator";
     public BleRecorderDevice? BleRecorderDevice { get; private set; }
 
-    public StimulationParameters CurrentStimulationParameters { get; }
+    public StimulationParameters CurrentStimulationParameters { get; set; }
 
     public BleRecorderAvailabilityStatus BleRecorderAvailability
     {
@@ -47,10 +47,6 @@ public class BleRecorderManager : IBleRecorderManager
         _bluetoothManager.AvailableBleDevices.CollectionChanged += OnAvailableDevicesChanged;
         BleRecorderAvailability = BleRecorderAvailabilityStatus.DisconnectedUnavailable;
         _bluetoothManager.StartScanning();
-
-        // TODO init from DB
-        CurrentStimulationParameters = new StimulationParameters(100, 100, 
-            StimulationPulseWidth.AvailableOptions[0], TimeSpan.FromSeconds(5));
     }
 
     private void OnAvailableDevicesChanged(object? sender, EventArgs e)

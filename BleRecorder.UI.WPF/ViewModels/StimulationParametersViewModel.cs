@@ -1,5 +1,7 @@
 ﻿using System;
 using BleRecorder.Business.Device;
+using BleRecorder.Models.Device;
+using BleRecorder.UI.WPF.Data.Repositories;
 
 namespace BleRecorder.UI.WPF.ViewModels;
 
@@ -31,8 +33,9 @@ public class StimulationParametersViewModel : ViewModelBase
         set => _model.StimulationTime = TimeSpan.FromSeconds(value);
     }
 
-    public StimulationParametersViewModel(StimulationParameters model)
+    public StimulationParametersViewModel(StimulationParameters model, IStimulationParametersRepository stimulationParametersRepository)
     {
         _model = model;
+        PropertyChanged += async (_, _) => await stimulationParametersRepository.SaveAsync();
     }
 }

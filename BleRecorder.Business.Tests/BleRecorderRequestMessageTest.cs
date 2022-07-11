@@ -1,4 +1,5 @@
 ﻿using BleRecorder.Business.Device;
+using BleRecorder.Models.Device;
 using BleRecorder.Models.TestSubject;
 using Xunit;
 
