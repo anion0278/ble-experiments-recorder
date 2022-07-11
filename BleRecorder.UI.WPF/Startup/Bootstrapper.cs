@@ -36,6 +36,7 @@ namespace BleRecorder.UI.WPF.Startup
             builder.RegisterType<DateTimeService>().As<IDateTimeService>();
 
             builder.RegisterType<BluetoothManager>().As<IBluetoothManager>();
+            builder.RegisterType<BleRecorderMessageParser>().As<IBleRecorderMessageParser>();
             builder.RegisterType<BleRecorderManager>().As<IBleRecorderManager>().SingleInstance();
 
             builder.RegisterType<TestSubjectRepository>().As<ITestSubjectRepository>();

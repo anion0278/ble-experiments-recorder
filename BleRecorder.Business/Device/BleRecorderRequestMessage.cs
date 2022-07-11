@@ -1,10 +1,10 @@
 ﻿namespace BleRecorder.Business.Device;
 
-public class BleRecorderCommonMessage
+public class BleRecorderRequestMessage
 {
     public StimulationParameters StimulationParameters { get; }
 
-    public BleRecorderCommonMessage(StimulationParameters stimulationParameters)
+    public BleRecorderRequestMessage(StimulationParameters stimulationParameters)
     {
         StimulationParameters = stimulationParameters;
     }

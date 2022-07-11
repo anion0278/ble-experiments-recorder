@@ -124,7 +124,7 @@ public class BleDeviceHandler : IBleDeviceHandler
     public async Task Send(string msg)
     {
         using var writer = new DataWriter();
-        writer.WriteString("Some long string command");
+        writer.WriteString(msg);
         var res = await _txCharacteristic.WriteValueAsync(writer.DetachBuffer(), GattWriteOption.WriteWithoutResponse);
         if (res != GattCommunicationStatus.Success) throw new VerificationException("Failed to send data to device!");
     }

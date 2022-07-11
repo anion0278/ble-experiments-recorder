@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Device\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\BleRecorder.Infrastructure\BleRecorder.Infrastructure.csproj" />
     <ProjectReference Include="..\BleRecorder.Models\BleRecorder.Models.csproj" />
   </ItemGroup>

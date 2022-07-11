@@ -18,6 +18,7 @@ public class BleRecorderManager : IBleRecorderManager
     public event EventHandler? BleRecorderAvailabilityChanged;
     public event EventHandler? MeasurementStatusChanged;
     private readonly IBluetoothManager _bluetoothManager;
+    private readonly IBleRecorderMessageParser _messageParser;
     private BleRecorderAvailabilityStatus _bleRecorderAvailability;
     private const string _bleRecorderName = "Aggregator";
     public BleRecorderDevice? BleRecorderDevice { get; private set; }
@@ -35,9 +36,10 @@ public class BleRecorderManager : IBleRecorderManager
 
     public bool IsCurrentlyMeasuring => BleRecorderDevice?.IsCurrentlyMeasuring ?? false;
 
-    public BleRecorderManager(IBluetoothManager bluetoothManager)
+    public BleRecorderManager(IBluetoothManager bluetoothManager, IBleRecorderMessageParser messageParser)
     {
         _bluetoothManager = bluetoothManager;
+        _messageParser = messageParser;
         _bluetoothManager.AddDeviceNameFilter(_bleRecorderName);
         _bluetoothManager.AvailableBleDevices.CollectionChanged += OnAvailableDevicesChanged;
         BleRecorderAvailability = BleRecorderAvailabilityStatus.DisconnectedUnavailable;
@@ -70,7 +72,7 @@ public class BleRecorderManager : IBleRecorderManager
 
         var bleRecorderDevices = _bluetoothManager.AvailableBleDevices.Where(IsBleRecorderDevice).ToArray();
         if (bleRecorderDevices.Length > 1) throw new Exception("There is more than one bleRecorder device!");
-        BleRecorderDevice = new BleRecorderDevice(await bleRecorderDevices.Single().ConnectDevice());
+        BleRecorderDevice = new BleRecorderDevice(await bleRecorderDevices.Single().ConnectDevice(), _messageParser);
         BleRecorderAvailability = BleRecorderAvailabilityStatus.Connected;
         BleRecorderDevice.ConnectionStatusChanged += OnConnectionStatusChanged;
         BleRecorderDevice.MeasurementStatusChanged += OnMeasurementStatusChanged;
