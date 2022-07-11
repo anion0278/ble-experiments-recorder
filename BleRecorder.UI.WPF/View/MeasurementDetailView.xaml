@@ -53,11 +53,22 @@
                 <Label Content="Measurement type:" />
                 <ComboBox SelectedItem="{Binding Type}"
                           IsEnabled="{Binding ForceValues,Mode=OneWay, Converter={StaticResource collectionLengthToBooleanConverter}}"
-                          ItemsSource="{Binding Source={StaticResource MeasurementTypeEnum}}" />
+                          ItemsSource="{Binding Source={StaticResource MeasurementTypeEnum}}" >
+                    <ComboBox.Style>
+                        <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+                            <Setter Property="ToolTipService.ShowOnDisabled" Value="True"></Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="ToolTip" Value="Measurement type can only be changed if the measurement data is empty.."></Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ComboBox.Style>
+                </ComboBox>
             </StackPanel>
 
             <StackPanel Grid.Row="6" Orientation="Horizontal" Margin="10 0 10 10">
-                <Label Content="Test subject:   "/>
+                <Label Content="Test subject:            "/>
                 <Label FontWeight="Bold" Content="{Binding Measurement.TestSubject.FullName}"/>
             </StackPanel>
 

@@ -23,6 +23,7 @@ namespace BleRecorder.UI.WPF.ViewModels
     public class TestSubjectDetailViewModel : DetailViewModelBase, ITestSubjectDetailViewModel
     {
         private ITestSubjectRepository _testSubjectRepository;
+        private readonly IMeasurementRepository _measurementRepository;
 
 
         public ICommand RemoveMeasurementCommand { get; set; }
@@ -68,11 +69,13 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         public TestSubjectDetailViewModel(
             ITestSubjectRepository testSubjectRepository,
+            IMeasurementRepository measurementRepository,
             IMessenger messenger,
             IMessageDialogService messageDialogService)
           : base(messenger, messageDialogService)
         {
             _testSubjectRepository = testSubjectRepository;
+            _measurementRepository = measurementRepository;
 
             AddMeasurementCommand = new RelayCommand(async () => await OnAddMeasurement());
             EditMeasurementCommand = new RelayCommand(OnEditMeasurement, () => Measurements!.CurrentItem != null);
@@ -101,9 +104,10 @@ namespace BleRecorder.UI.WPF.ViewModels
         {
             if (message.ViewModelName != nameof(MeasurementDetailViewModel)) return;
 
-            bool isDetailRelated = Model.Measurements.Any(m => m.Id == message.Id);
+            var relatedMeas = await _measurementRepository.GetByIdAsync(message.Id);
+            if (relatedMeas.TestSubjectId != Id) return;
+
             Model = await _testSubjectRepository.ReloadAsync(Model);
-            if (Model.Measurements.All(m => m.Id != message.Id) && !isDetailRelated) return;
 
             _measurements.Clear();
             foreach (var measurement in Model.Measurements) // TODO !! except those which have been deleted!
