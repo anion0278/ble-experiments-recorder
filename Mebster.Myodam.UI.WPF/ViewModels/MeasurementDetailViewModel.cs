@@ -84,8 +84,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             StopMeasurementCommand = new AsyncRelayCommand(StopMeasurement, () => _myodamManager.IsCurrentlyMeasuring);
             CleanRecordedDataCommand = new RelayCommand(CleanRecordedData, () => true);
 
-            ForceValues.CollectionChanged += OnForceValuesChanged; // letting ComboBox.IsDisabled know that collection changed
-            
+            ForceValues.CollectionChanged += OnForceValuesChanged; // letting ComboBox.IsDisabled know that collection changed. Required due to the way ChartValues work
 
             _myodamManager.MyodamAvailabilityChanged += OnMyodamStatusChanged;
             _myodamManager.MeasurementStatusChanged += OnMeasurementStatusChanged;
@@ -101,6 +100,12 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             _myodamManager.MyodamAvailabilityChanged -= OnMyodamStatusChanged;
             _myodamManager.MeasurementStatusChanged -= OnMeasurementStatusChanged;
 
+            if (_myodamManager.MyodamDevice != null)
+            {
+                _myodamManager.MyodamDevice.NewValueReceived -= OnNewValueReceived;
+                _myodamManager.MyodamDevice.MeasurementFinished -= OnMeasurementFinished;
+            }
+
             Messenger.Unregister<AfterDetailSavedEventArgs>(this);
             Messenger.Unregister<AfterDetailDeletedEventArgs>(this);
         }
@@ -108,7 +113,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         private void OnPropertyChangedEventHandler(object? o, PropertyChangedEventArgs propertyChangedEventArgs)
         {
             HasChanges = _measurementRepository.HasChanges();
-            SaveCommand.NotifyCanExecuteChanged();
         }
 
         private void OnForceValuesChanged(object? o, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
@@ -175,20 +179,34 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             if (ForceValues.Count > 0)
             {
                 var result = await MessageDialogService.ShowOkCancelDialogAsync(
-                    "Measurement already contains data. Starting new measurement will erase the existing data. Do you want to continue?",
+                    "Measurement already contains data. Starting a new measurement will erase the existing data. Do you want to continue?",
                     "Delete measurement data?");
                 if (result != MessageDialogResult.OK) return;
             }
 
             ForceValues.Clear();
             Date = _dateTimeService.Now;
-            _myodamManager.MyodamDevice!.NewValueReceived += (_, value) => { ForceValues.Add(value.Value); }; // TODO unsubscribe !!!
-            await _myodamManager.MyodamDevice.StartMeasurement(new StimulationParameters(100, 50, StimulationPulseWidth.AvailableOptions[1], MeasurementType.MaximumContraction));
+            _myodamManager.MyodamDevice!.NewValueReceived += OnNewValueReceived; 
+            _myodamManager.MyodamDevice!.MeasurementFinished += OnMeasurementFinished; 
+            await _myodamManager.MyodamDevice.StartMeasurement();
+        }
+
+        private void OnMeasurementFinished(object? _, EventArgs value)
+        {
+            MessageDialogService.ShowInfoDialogAsync("Measurement finished.");
+        }
+
+        private void OnNewValueReceived(object? _, MeasuredValue value)
+        {
+            ForceValues.Add(value.Value);
         }
 
         public async Task StopMeasurement()
         {
-            if (_myodamManager.MyodamDevice != null) await _myodamManager.MyodamDevice.StopMeasurement();
+            if (_myodamManager.MyodamDevice != null)
+            {
+                await _myodamManager.MyodamDevice.StopMeasurement();
+            }
         }
 
         protected override async void OnDeleteExecute() // TODO into base class, since TS OnDeleteExecute is almost same. Abstract a single main repository
@@ -218,6 +236,11 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             HasChanges = _measurementRepository.HasChanges();
             Id = Measurement.Id;
             RaiseDetailSavedEvent(Measurement.Id, Measurement.Title);
+        }
+
+        protected override bool OnSaveCanExecute()
+        {
+            return base.OnSaveCanExecute() && !_myodamManager.IsCurrentlyMeasuring;
         }
 
         protected override async Task<bool> UserAcknowledgedClosing()

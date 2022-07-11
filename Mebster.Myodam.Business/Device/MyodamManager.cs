@@ -6,8 +6,9 @@ namespace Mebster.Myodam.Business.Device;
 public interface IMyodamManager
 {
     event EventHandler MyodamAvailabilityChanged;
-    public event EventHandler? MeasurementStatusChanged;
-    public MyodamDevice? MyodamDevice { get; }
+    event EventHandler? MeasurementStatusChanged;
+    MyodamDevice? MyodamDevice { get; }
+    StimulationParameters CurrentStimulationParameters { get; }
     MyodamAvailabilityStatus MyodamAvailability { get; }
     bool IsCurrentlyMeasuring { get; }
     Task ConnectMyodam();
@@ -22,6 +23,8 @@ public class MyodamManager : IMyodamManager
     private MyodamAvailabilityStatus _myodamAvailability;
     private const string _myodamName = "MYODAM";
     public MyodamDevice? MyodamDevice { get; private set; }
+
+    public StimulationParameters CurrentStimulationParameters { get; }
 
     public MyodamAvailabilityStatus MyodamAvailability
     {
@@ -44,6 +47,10 @@ public class MyodamManager : IMyodamManager
         _bluetoothManager.AvailableBleDevices.CollectionChanged += OnAvailableDevicesChanged;
         MyodamAvailability = MyodamAvailabilityStatus.DisconnectedUnavailable;
         _bluetoothManager.StartScanning();
+
+        // TODO init from DB
+        CurrentStimulationParameters = new StimulationParameters(100, 100, 
+            StimulationPulseWidth.AvailableOptions[0], TimeSpan.FromSeconds(5));
     }
 
     private void OnAvailableDevicesChanged(object? sender, EventArgs e)
@@ -55,7 +62,7 @@ public class MyodamManager : IMyodamManager
             : MyodamAvailabilityStatus.DisconnectedUnavailable;
     }
 
-    private bool IsMyodamDevice(BleDeviceHandler deviceHandler)
+    private static bool IsMyodamDevice(BleDeviceHandler deviceHandler)
     {
         return deviceHandler.Name.Equals(_myodamName);
     }
@@ -71,8 +78,11 @@ public class MyodamManager : IMyodamManager
         }
 
         var myodamDevices = _bluetoothManager.AvailableBleDevices.Where(IsMyodamDevice).ToArray();
+
+        // TODO Handle multiple devices in a single room
         if (myodamDevices.Length > 1) throw new Exception("There is more than one myodam device!");
-        MyodamDevice = new MyodamDevice(await myodamDevices.Single().ConnectDevice(), _messageParser);
+
+        MyodamDevice = new MyodamDevice(this, await myodamDevices.Single().ConnectDevice(), _messageParser);
         MyodamAvailability = MyodamAvailabilityStatus.Connected;
         MyodamDevice.ConnectionStatusChanged += OnConnectionStatusChanged;
         MyodamDevice.MeasurementStatusChanged += OnMeasurementStatusChanged;

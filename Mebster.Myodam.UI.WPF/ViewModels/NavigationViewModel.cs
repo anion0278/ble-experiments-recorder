@@ -30,10 +30,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         public MyodamAvailabilityStatus MyodamAvailability => _myodamManager.MyodamAvailability;
 
-        //TODO remember values
-        public int StimulationFrequency { get; set; } = 100;
-        public int StimulationCurrent { get; set; } = 30;
-        public StimulationPulseWidth StimulationPulse { get; set; } = StimulationPulseWidth.AvailableOptions[1];
+        public StimulationParametersViewModel StimulationParameters { get; }
 
         public NavigationViewModel(
             ITestSubjectRepository testSubjectRepository,
@@ -46,6 +43,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             _testSubjectRepository = testSubjectRepository;
             _messenger = messenger;
             _myodamManager = myodamManager;
+            StimulationParameters = new StimulationParametersViewModel(myodamManager.CurrentStimulationParameters);
             _myodamManager.MyodamAvailabilityChanged += OnMyodamAvailabilityChanged;
             _messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
             _messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));

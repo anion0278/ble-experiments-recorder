@@ -7,6 +7,7 @@ namespace Mebster.Myodam.Business.Device;
 
 public class MyodamDevice // TODO Extract inteface
 {
+    private readonly MyodamManager _myodamManager;
     private readonly IBleDeviceHandler _bleDeviceHandler;
     private readonly IMyodamMessageParser _messageParser;
     private bool _isCurrentlyMeasuring;
@@ -22,14 +23,22 @@ public class MyodamDevice // TODO Extract inteface
         get => _isCurrentlyMeasuring;
         private set
         {
+            if (_isCurrentlyMeasuring && value == false)
+            {
+                MeasurementFinished?.Invoke(this, EventArgs.Empty);
+            }
+
             if (_isCurrentlyMeasuring == value) return;
+
             _isCurrentlyMeasuring = value;
             MeasurementStatusChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 
-    public MyodamDevice(IBleDeviceHandler bleDeviceHandler, IMyodamMessageParser messageParser)
+    public MyodamDevice(MyodamManager myodamManager, IBleDeviceHandler bleDeviceHandler,
+        IMyodamMessageParser messageParser)
     {
+        _myodamManager = myodamManager;
         _bleDeviceHandler = bleDeviceHandler;
         _messageParser = messageParser;
         _bleDeviceHandler.DataReceived += BleDeviceHandlerDataReceived;
@@ -60,15 +69,19 @@ public class MyodamDevice // TODO Extract inteface
     }
 
     // We always send up-to-date parameters in order to make sure that stimulation is correct even if the device has restarted in meantime
-    public async Task StartMeasurement(StimulationParameters parameters)
+    public async Task StartMeasurement()
     {
-        await SendMsg(new MyodamRequestMessage(parameters));
+        await SendMsg(new MyodamRequestMessage(_myodamManager.CurrentStimulationParameters, 
+            MeasurementType.MaximumContraction, 
+            true));
         IsCurrentlyMeasuring = true;
     }
 
     public async Task StopMeasurement()
     {
-        var msg = new MyodamRequestMessage(new StimulationParameters(0, 0, StimulationPulseWidth.AvailableOptions[1], MeasurementType.MaximumContraction));
+        var msg = new MyodamRequestMessage(_myodamManager.CurrentStimulationParameters, 
+            MeasurementType.MaximumContraction,
+            false);
         await SendMsg(msg);
         IsCurrentlyMeasuring = false;
     }
