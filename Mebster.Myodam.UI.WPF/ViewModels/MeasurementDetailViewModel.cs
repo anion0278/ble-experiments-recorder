@@ -108,6 +108,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         private void OnPropertyChangedEventHandler(object? o, PropertyChangedEventArgs propertyChangedEventArgs)
         {
             HasChanges = _measurementRepository.HasChanges();
+            SaveCommand.NotifyCanExecuteChanged();
         }
 
         private void OnForceValuesChanged(object? o, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)

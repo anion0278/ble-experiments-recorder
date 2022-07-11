@@ -98,6 +98,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         private void OnPropertyChangedEventHandler(object? o, PropertyChangedEventArgs propertyChangedEventArgs)
         {
             HasChanges = _testSubjectRepository.HasChanges();
+            SaveCommand.NotifyCanExecuteChanged(); // TODO investigate why this is required when more than 3 tabs are open see #7
         }
 
         private async void AfterDetailChanged(IDetailViewEventArgs message)

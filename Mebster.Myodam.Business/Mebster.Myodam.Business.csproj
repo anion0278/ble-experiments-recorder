@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Device\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Mebster.Myodam.Infrastructure\Mebster.Myodam.Infrastructure.csproj" />
     <ProjectReference Include="..\Mebster.Myodam.Models\Mebster.Myodam.Models.csproj" />
   </ItemGroup>

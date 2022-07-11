@@ -36,6 +36,7 @@ namespace Mebster.Myodam.UI.WPF.Startup
             builder.RegisterType<DateTimeService>().As<IDateTimeService>();
 
             builder.RegisterType<BluetoothManager>().As<IBluetoothManager>();
+            builder.RegisterType<MyodamMessageParser>().As<IMyodamMessageParser>();
             builder.RegisterType<MyodamManager>().As<IMyodamManager>().SingleInstance();
 
             builder.RegisterType<TestSubjectRepository>().As<ITestSubjectRepository>();

@@ -1,10 +1,10 @@
 ﻿namespace Mebster.Myodam.Business.Device;
 
-public class MyodamCommonMessage
+public class MyodamRequestMessage
 {
     public StimulationParameters StimulationParameters { get; }
 
-    public MyodamCommonMessage(StimulationParameters stimulationParameters)
+    public MyodamRequestMessage(StimulationParameters stimulationParameters)
     {
         StimulationParameters = stimulationParameters;
     }

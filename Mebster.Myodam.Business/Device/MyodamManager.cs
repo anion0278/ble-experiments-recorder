@@ -18,6 +18,7 @@ public class MyodamManager : IMyodamManager
     public event EventHandler? MyodamAvailabilityChanged;
     public event EventHandler? MeasurementStatusChanged;
     private readonly IBluetoothManager _bluetoothManager;
+    private readonly IMyodamMessageParser _messageParser;
     private MyodamAvailabilityStatus _myodamAvailability;
     private const string _myodamName = "MYODAM";
     public MyodamDevice? MyodamDevice { get; private set; }
@@ -35,9 +36,10 @@ public class MyodamManager : IMyodamManager
 
     public bool IsCurrentlyMeasuring => MyodamDevice?.IsCurrentlyMeasuring ?? false;
 
-    public MyodamManager(IBluetoothManager bluetoothManager)
+    public MyodamManager(IBluetoothManager bluetoothManager, IMyodamMessageParser messageParser)
     {
         _bluetoothManager = bluetoothManager;
+        _messageParser = messageParser;
         _bluetoothManager.AddDeviceNameFilter(_myodamName);
         _bluetoothManager.AvailableBleDevices.CollectionChanged += OnAvailableDevicesChanged;
         MyodamAvailability = MyodamAvailabilityStatus.DisconnectedUnavailable;
@@ -70,7 +72,7 @@ public class MyodamManager : IMyodamManager
 
         var myodamDevices = _bluetoothManager.AvailableBleDevices.Where(IsMyodamDevice).ToArray();
         if (myodamDevices.Length > 1) throw new Exception("There is more than one myodam device!");
-        MyodamDevice = new MyodamDevice(await myodamDevices.Single().ConnectDevice());
+        MyodamDevice = new MyodamDevice(await myodamDevices.Single().ConnectDevice(), _messageParser);
         MyodamAvailability = MyodamAvailabilityStatus.Connected;
         MyodamDevice.ConnectionStatusChanged += OnConnectionStatusChanged;
         MyodamDevice.MeasurementStatusChanged += OnMeasurementStatusChanged;

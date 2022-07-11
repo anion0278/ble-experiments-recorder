@@ -8,6 +8,7 @@ namespace Mebster.Myodam.Business.Device;
 public class MyodamDevice // TODO Extract inteface
 {
     private readonly IBleDeviceHandler _bleDeviceHandler;
+    private readonly IMyodamMessageParser _messageParser;
     private bool _isCurrentlyMeasuring;
     public event EventHandler<MeasuredValue>? NewValueReceived;
     public event EventHandler? MeasurementFinished;
@@ -27,9 +28,10 @@ public class MyodamDevice // TODO Extract inteface
         }
     }
 
-    public MyodamDevice(IBleDeviceHandler bleDeviceHandler)
+    public MyodamDevice(IBleDeviceHandler bleDeviceHandler, IMyodamMessageParser messageParser)
     {
         _bleDeviceHandler = bleDeviceHandler;
+        _messageParser = messageParser;
         _bleDeviceHandler.DataReceived += BleDeviceHandlerDataReceived;
         _bleDeviceHandler.DeviceStatusChanged += BleDeviceStatusChanged;
     }
@@ -40,42 +42,33 @@ public class MyodamDevice // TODO Extract inteface
         if (!_bleDeviceHandler.IsConnected) IsCurrentlyMeasuring = false;
     }
 
-    public async Task SendMsg(MyodamCommonMessage message)
+    public async Task SendMsg(MyodamRequestMessage message)
     {
         await _bleDeviceHandler.Send(message.FormatForSending());
     }
 
     private void BleDeviceHandlerDataReceived(object? sender, string data)
     {
-        var regex = Regex.Match(data, @"\+(\d+),-?(\d+.\d+)");
-        if (regex.Success 
-            && int.TryParse(regex.Groups[1].Value, out var timestamp)
-            && float.TryParse(regex.Groups[2].Value, out var measuredForceValue) 
-            && IsCurrentlyMeasuring) 
+        var reply = _messageParser.ParseReply(data);
+
+        if (IsCurrentlyMeasuring)
         {
             NewValueReceived?.Invoke(
-                this, 
-                new MeasuredValue(measuredForceValue, TimeSpan.FromMilliseconds(timestamp)));
-            return;
-        }
-
-        if (data.Contains("Finished"))
-        {
-            IsCurrentlyMeasuring = false;
-            MeasurementFinished?.Invoke(this, EventArgs.Empty);
+                this,
+                new MeasuredValue(reply.MeasuredForceValue, TimeSpan.FromMilliseconds(reply.Timestamp)));
         }
     }
 
     // We always send up-to-date parameters in order to make sure that stimulation is correct even if the device has restarted in meantime
     public async Task StartMeasurement(StimulationParameters parameters)
     {
-        await SendMsg(new MyodamCommonMessage(parameters));
+        await SendMsg(new MyodamRequestMessage(parameters));
         IsCurrentlyMeasuring = true;
     }
 
     public async Task StopMeasurement()
     {
-        var msg = new MyodamCommonMessage(new StimulationParameters(0,0, StimulationPulseWidth.AvailableOptions[1], MeasurementType.MaximumContraction));
+        var msg = new MyodamRequestMessage(new StimulationParameters(0, 0, StimulationPulseWidth.AvailableOptions[1], MeasurementType.MaximumContraction));
         await SendMsg(msg);
         IsCurrentlyMeasuring = false;
     }
