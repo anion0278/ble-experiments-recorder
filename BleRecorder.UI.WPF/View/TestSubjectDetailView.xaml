@@ -45,11 +45,21 @@
                       ItemsSource="{Binding Measurements}" 
                       AutoGenerateColumns="False" RowHeaderWidth="0"
                       CanUserAddRows="False" CanUserDeleteRows="False">
-                <!--<DataGrid.RowStyle>
-                    <Style TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}">
-                        <Setter Property="resouces:Behaviours.DoubleClickCommand" Value="{Binding ElementName=MeasurementsGrid, Path=DataContext.EditMeasurementCommand}"/>
+                <DataGrid.CellStyle>
+                    <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource {x:Type DataGridCell}}">
+                        <Style.Triggers>
+                            <Trigger Property="DataGridCell.IsSelected" Value="True">
+                                <Setter Property="Background" Value="DodgerBlue" />
+                                <Setter Property="BorderThickness" Value="0" />
+                            </Trigger>
+                        </Style.Triggers>
                     </Style>
-                </DataGrid.RowStyle>-->
+                </DataGrid.CellStyle>
+                <DataGrid.RowStyle>
+                    <Style TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource {x:Type DataGridRow}}">
+                        <EventSetter Event="PreviewMouseDoubleClick" Handler="Row_PreviewMouseDoubleClick" />
+                    </Style>
+                </DataGrid.RowStyle>
                 <DataGrid.GroupStyle>
                     <GroupStyle>
                         <GroupStyle.Panel>
