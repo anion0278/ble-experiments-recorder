@@ -67,9 +67,9 @@ public static class RelayCommandExtensions
         // set before the binding engine has actually resolved the target command instance.
         if (!notifiers.TryGetValue(obj, out _))
         {
-            PropertyChangeNotifier notifier = new(obj, nameof(ButtonBase.Command));
-
+            PropertyChangeNotifier notifier = new(obj, nameof(ICommandSource.Command));
             notifier.PropertyChanged += (_, _) => ToggleIsCommandUpdateEnabled(obj);
+            notifiers.Add(obj, notifier);
         }
 
         ToggleIsCommandUpdateEnabled(obj);
