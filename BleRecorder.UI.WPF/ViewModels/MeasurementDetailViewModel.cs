@@ -85,7 +85,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             CleanRecordedDataCommand = new RelayCommand(CleanRecordedData, () => true);
 
             ForceValues.CollectionChanged += OnForceValuesChanged; // letting ComboBox.IsDisabled know that collection changed
-            PropertyChanged += OnPropertyChangedEventHandler;
+            
 
             _bleRecorderManager.BleRecorderAvailabilityChanged += OnBleRecorderStatusChanged;
             _bleRecorderManager.MeasurementStatusChanged += OnMeasurementStatusChanged;
@@ -153,6 +153,8 @@ namespace BleRecorder.UI.WPF.ViewModels
 
             ForceValues.AddRange(Measurement.ForceData?.Select(v => v.Value) ?? Array.Empty<float>());
             Id = measurementId;
+
+            PropertyChanged += OnPropertyChangedEventHandler;
         }
 
 
@@ -189,15 +191,22 @@ namespace BleRecorder.UI.WPF.ViewModels
             if (_bleRecorderManager.BleRecorderDevice != null) await _bleRecorderManager.BleRecorderDevice.StopMeasurement();
         }
 
-        protected override async void OnDeleteExecute()
+        protected override async void OnDeleteExecute() // TODO into base class, since TS OnDeleteExecute is almost same. Abstract a single main repository
         {
-            var result = await MessageDialogService.ShowOkCancelDialogAsync($"Do you really want to delete the measurement {Measurement.Title}?", "Question");
-            if (result == MessageDialogResult.OK)
+            if (Id < 0)
             {
-                _measurementRepository.Remove(Measurement);
-                await _measurementRepository.SaveAsync();
-                RaiseDetailDeletedEvent(Measurement.Id);
+                OnCloseDetailViewExecute();
+                return;
             }
+
+            var result = await MessageDialogService.ShowOkCancelDialogAsync(
+                $"Do you really want to delete the measurement {Measurement.Title}?", "Question");
+            
+            if (result != MessageDialogResult.OK) return;
+
+            _measurementRepository.Remove(Measurement);
+            await _measurementRepository.SaveAsync();
+            RaiseDetailDeletedEvent(Measurement.Id);
         }
 
         protected override async void OnSaveExecute()
