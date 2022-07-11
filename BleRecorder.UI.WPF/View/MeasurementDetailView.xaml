@@ -46,12 +46,14 @@
 
             <StackPanel Grid.Row="4"  Orientation="Horizontal" Margin="10 0 10 10">
                 <Label Content="Measurement date:" />
-                <Label FontWeight="Bold" Content="{Binding Date, StringFormat=ddd MM yyyy, TargetNullValue='Not measured yet'}" />
+                <TextBlock FontWeight="Bold" VerticalAlignment="Center"
+                           Text="{Binding Date, StringFormat='{}{0:dd MMM. yyyy, HH:mm}', TargetNullValue='Not measured yet'}" />
             </StackPanel>
 
             <StackPanel Grid.Row="5"  Orientation="Horizontal" Margin="10 0 10 10">
                 <Label Content="Measurement type:" />
-                <ComboBox SelectedItem="{Binding Type}"
+                <ComboBox Width="150"
+                          SelectedItem="{Binding Type}"
                           IsEnabled="{Binding ForceValues,Mode=OneWay, Converter={StaticResource collectionLengthToBooleanConverter}}"
                           ItemsSource="{Binding Source={StaticResource MeasurementTypeEnum}}" >
                     <ComboBox.Style>

@@ -6,8 +6,9 @@ namespace BleRecorder.Business.Device;
 public interface IBleRecorderManager
 {
     event EventHandler BleRecorderAvailabilityChanged;
-    public event EventHandler? MeasurementStatusChanged;
-    public BleRecorderDevice? BleRecorderDevice { get; }
+    event EventHandler? MeasurementStatusChanged;
+    BleRecorderDevice? BleRecorderDevice { get; }
+    StimulationParameters CurrentStimulationParameters { get; }
     BleRecorderAvailabilityStatus BleRecorderAvailability { get; }
     bool IsCurrentlyMeasuring { get; }
     Task ConnectBleRecorder();
@@ -22,6 +23,8 @@ public class BleRecorderManager : IBleRecorderManager
     private BleRecorderAvailabilityStatus _bleRecorderAvailability;
     private const string _bleRecorderName = "Aggregator";
     public BleRecorderDevice? BleRecorderDevice { get; private set; }
+
+    public StimulationParameters CurrentStimulationParameters { get; }
 
     public BleRecorderAvailabilityStatus BleRecorderAvailability
     {
@@ -44,6 +47,10 @@ public class BleRecorderManager : IBleRecorderManager
         _bluetoothManager.AvailableBleDevices.CollectionChanged += OnAvailableDevicesChanged;
         BleRecorderAvailability = BleRecorderAvailabilityStatus.DisconnectedUnavailable;
         _bluetoothManager.StartScanning();
+
+        // TODO init from DB
+        CurrentStimulationParameters = new StimulationParameters(100, 100, 
+            StimulationPulseWidth.AvailableOptions[0], TimeSpan.FromSeconds(5));
     }
 
     private void OnAvailableDevicesChanged(object? sender, EventArgs e)
@@ -55,7 +62,7 @@ public class BleRecorderManager : IBleRecorderManager
             : BleRecorderAvailabilityStatus.DisconnectedUnavailable;
     }
 
-    private bool IsBleRecorderDevice(BleDeviceHandler deviceHandler)
+    private static bool IsBleRecorderDevice(BleDeviceHandler deviceHandler)
     {
         return deviceHandler.Name.Equals(_bleRecorderName);
     }
@@ -71,8 +78,11 @@ public class BleRecorderManager : IBleRecorderManager
         }
 
         var bleRecorderDevices = _bluetoothManager.AvailableBleDevices.Where(IsBleRecorderDevice).ToArray();
+
+        // TODO Handle multiple devices in a single room
         if (bleRecorderDevices.Length > 1) throw new Exception("There is more than one bleRecorder device!");
-        BleRecorderDevice = new BleRecorderDevice(await bleRecorderDevices.Single().ConnectDevice(), _messageParser);
+
+        BleRecorderDevice = new BleRecorderDevice(this, await bleRecorderDevices.Single().ConnectDevice(), _messageParser);
         BleRecorderAvailability = BleRecorderAvailabilityStatus.Connected;
         BleRecorderDevice.ConnectionStatusChanged += OnConnectionStatusChanged;
         BleRecorderDevice.MeasurementStatusChanged += OnMeasurementStatusChanged;

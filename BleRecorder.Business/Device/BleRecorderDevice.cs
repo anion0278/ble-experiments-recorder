@@ -7,6 +7,7 @@ namespace BleRecorder.Business.Device;
 
 public class BleRecorderDevice // TODO Extract inteface
 {
+    private readonly BleRecorderManager _bleRecorderManager;
     private readonly IBleDeviceHandler _bleDeviceHandler;
     private readonly IBleRecorderMessageParser _messageParser;
     private bool _isCurrentlyMeasuring;
@@ -22,14 +23,22 @@ public class BleRecorderDevice // TODO Extract inteface
         get => _isCurrentlyMeasuring;
         private set
         {
+            if (_isCurrentlyMeasuring && value == false)
+            {
+                MeasurementFinished?.Invoke(this, EventArgs.Empty);
+            }
+
             if (_isCurrentlyMeasuring == value) return;
+
             _isCurrentlyMeasuring = value;
             MeasurementStatusChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 
-    public BleRecorderDevice(IBleDeviceHandler bleDeviceHandler, IBleRecorderMessageParser messageParser)
+    public BleRecorderDevice(BleRecorderManager bleRecorderManager, IBleDeviceHandler bleDeviceHandler,
+        IBleRecorderMessageParser messageParser)
     {
+        _bleRecorderManager = bleRecorderManager;
         _bleDeviceHandler = bleDeviceHandler;
         _messageParser = messageParser;
         _bleDeviceHandler.DataReceived += BleDeviceHandlerDataReceived;
@@ -60,15 +69,19 @@ public class BleRecorderDevice // TODO Extract inteface
     }
 
     // We always send up-to-date parameters in order to make sure that stimulation is correct even if the device has restarted in meantime
-    public async Task StartMeasurement(StimulationParameters parameters)
+    public async Task StartMeasurement()
     {
-        await SendMsg(new BleRecorderRequestMessage(parameters));
+        await SendMsg(new BleRecorderRequestMessage(_bleRecorderManager.CurrentStimulationParameters, 
+            MeasurementType.MaximumContraction, 
+            true));
         IsCurrentlyMeasuring = true;
     }
 
     public async Task StopMeasurement()
     {
-        var msg = new BleRecorderRequestMessage(new StimulationParameters(0, 0, StimulationPulseWidth.AvailableOptions[1], MeasurementType.MaximumContraction));
+        var msg = new BleRecorderRequestMessage(_bleRecorderManager.CurrentStimulationParameters, 
+            MeasurementType.MaximumContraction,
+            false);
         await SendMsg(msg);
         IsCurrentlyMeasuring = false;
     }

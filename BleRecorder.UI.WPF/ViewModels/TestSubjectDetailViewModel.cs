@@ -98,7 +98,6 @@ namespace BleRecorder.UI.WPF.ViewModels
         private void OnPropertyChangedEventHandler(object? o, PropertyChangedEventArgs propertyChangedEventArgs)
         {
             HasChanges = _testSubjectRepository.HasChanges();
-            SaveCommand.NotifyCanExecuteChanged(); // TODO investigate why this is required when more than 3 tabs are open see #7
         }
 
         private async void AfterDetailChanged(IDetailViewEventArgs message)
@@ -111,7 +110,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             Model = await _testSubjectRepository.ReloadAsync(Model);
 
             _measurements.Clear();
-            foreach (var measurement in Model.Measurements) // TODO !! except those which have been deleted!
+            foreach (var measurement in Model.Measurements) // TODO fix BUG !! except those which have been deleted!
             {
                 _measurements.Add(measurement);
             }

@@ -73,7 +73,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             {
                 Id = modelId,
                 DisplayMember = displayMember,
-                ViewModelName = this.GetType().Name
+                ViewModelName = GetType().Name
             });
         }
 
