@@ -102,7 +102,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         {
             OnOpenDetailView(new OpenDetailViewEventArgs
             {
-                Id = nextNewItemId--,
+                Id = -999,
                 ViewModelName = nameof(TestSubjectDetailViewModel)
             });
         }

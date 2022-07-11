@@ -81,7 +81,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             EditMeasurementCommand = new RelayCommand(OnEditMeasurement, () => Measurements!.CurrentItem != null);
             RemoveMeasurementCommand = new RelayCommand(OnRemoveMeasurement, () => Measurements!.CurrentItem != null);
 
-            PropertyChanged += OnPropertyChangedEventHandler;
+            
             Messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailChanged(e));
             Messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailChanged(e));
         }
@@ -166,6 +166,8 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             Measurements.SortDescriptions.Add(new SortDescription(nameof(Measurement.Date), ListSortDirection.Ascending));
             Measurements.GroupDescriptions.Add(new PropertyGroupDescription(nameof(Measurement.Type)));
             Measurements.MoveCurrentTo(null);
+
+            PropertyChanged += OnPropertyChangedEventHandler;
         }
 
         protected override async void OnSaveExecute()
@@ -178,15 +180,20 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         protected override async void OnDeleteExecute()
         {
+            if (Id < 0)
+            {
+                OnCloseDetailViewExecute();
+                return;
+            }
+
             var result = await MessageDialogService.ShowOkCancelDialogAsync(
                 $"Do you really want to delete the test subject {Title} and all related measurements?", "Confirmation is required");
 
-            if (result == MessageDialogResult.OK)
-            {
-                _testSubjectRepository.Remove(Model);
-                await _testSubjectRepository.SaveAsync();
-                RaiseDetailDeletedEvent(Model.Id);
-            }
+            if (result != MessageDialogResult.OK) return;
+
+            _testSubjectRepository.Remove(Model);
+            await _testSubjectRepository.SaveAsync();
+            RaiseDetailDeletedEvent(Model.Id);
         }
 
         private TestSubject CreateNewTestSubject()
