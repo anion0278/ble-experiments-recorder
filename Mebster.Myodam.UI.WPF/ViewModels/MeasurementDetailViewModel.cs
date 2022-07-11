@@ -227,7 +227,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             if (message.ViewModelName != nameof(TestSubjectDetailViewModel) ||
                 message.Id != Measurement.TestSubjectId) return;
 
-            if (await _measurementRepository.GetByIdAsync(Id) is null)
+            if (await _measurementRepository.GetByIdAsync(Id) is null && Id > 0)
             {
                 RaiseDetailClosedEvent();
                 return;
