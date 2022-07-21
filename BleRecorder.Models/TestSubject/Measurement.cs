@@ -22,10 +22,10 @@ public class Measurement
     public MeasurementType Type { get; set; }
 
     [Required]
-    [MaxLength(40)]
+    [StringLength(40)]
     public string Title { get; set; }
 
-    [MaxLength(400)]
+    [StringLength(400)]
     public string Notes { get; set; }
     public int TestSubjectId { get; set; }
     public TestSubject TestSubject { get; set; }
