@@ -18,20 +18,20 @@ using Mebster.Myodam.UI.WPF.View.Services;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using Swordfish.NET.Collections.Auxiliary;
+using WinRT;
 
 namespace Mebster.Myodam.UI.WPF.ViewModels
 {
     public class MeasurementDetailViewModel : DetailViewModelBase, IMeasurementDetailViewModel
     {
         private readonly IMyodamManager _myodamManager;
-        private IMeasurementRepository _measurementRepository;
-        private IDateTimeService _dateTimeService;
+        private readonly IMeasurementRepository _measurementRepository;
+        private readonly IDateTimeService _dateTimeService;
 
         public ChartValues<float> ForceValues { get; set; } = new();
 
         [Required]
-        [MinLength(1, ErrorMessage = "{0} should contain at least {1} characters.")]
-        [MaxLength(30, ErrorMessage = "{0} should contain maximum of {1} characters.")]
+        [StringLength(30, MinimumLength = 1)]
         public override string Title
         {
             get => Measurement.Title;

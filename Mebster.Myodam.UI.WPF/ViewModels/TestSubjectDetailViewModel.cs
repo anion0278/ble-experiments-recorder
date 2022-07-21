@@ -40,9 +40,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
 
         [Required]
-        [MinLength(2, ErrorMessage = "{0} should contain at least {1} characters.")]
-        [MaxLength(20, ErrorMessage = "{0} should contain maximum of {1} characters.")]
-        [Display(Name = "First name")]
+        [StringLength(20, MinimumLength = 2)]
         public string FirstName
         {
             get => Model.FirstName;
@@ -50,9 +48,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         }
 
         [Required]
-        [MinLength(2, ErrorMessage = "{0} should contain at least {1} characters.")]
-        [MaxLength(20, ErrorMessage = "{0} should contain maximum of {1} characters.")]
-        [Display(Name = "Last name")]
+        [StringLength(20, MinimumLength = 2)]
         public string LastName
         {
             get => Model.LastName;

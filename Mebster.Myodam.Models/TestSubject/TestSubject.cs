@@ -6,7 +6,7 @@ namespace Mebster.Myodam.Models.TestSubject;
 
 public class TestSubject
 {
-    public TestSubject()
+    public TestSubject() // TODO EF requires at least private param-less ctor, replace.      
     {
         Measurements = new Collection<Measurement>();
     }
