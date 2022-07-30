@@ -21,7 +21,7 @@ public class MyodamManager : IMyodamManager
     private readonly IBluetoothManager _bluetoothManager;
     private readonly IMyodamMessageParser _messageParser;
     private MyodamAvailabilityStatus _myodamAvailability;
-    private const string _myodamName = "MYODAM";
+    private const string _myodamName = "MYODAM-TEST";
     public MyodamDevice? MyodamDevice { get; private set; }
 
     public StimulationParameters CurrentStimulationParameters { get; set; }

@@ -77,7 +77,7 @@
                                                     <StackPanel Orientation="Horizontal">
                                                         <TextBlock FontSize="11" FontStyle="Italic" Foreground="White">
                                                             <TextBlock.Text>
-                                                                <MultiBinding StringFormat="Grouped by Type: {0}, Items: {1}">
+                                                                <MultiBinding StringFormat="Grouped by measurement type: {0}, Items: {1}">
                                                                     <Binding Path="Name" />
                                                                     <Binding Path="ItemCount" />
                                                                 </MultiBinding>

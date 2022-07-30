@@ -112,7 +112,7 @@ public class BleDeviceHandler : IBleDeviceHandler
     private void Uart_ReceivedData(GattCharacteristic sender, GattValueChangedEventArgs args)
     {
         LatestTimestamp = _dateTimeService.Now;
-        //Debug.Print(LatestTimestamp.ToString());
+        Debug.Print(LatestTimestamp.ToString());
         var reader = DataReader.FromBuffer(args.CharacteristicValue);
         var input = new byte[reader.UnconsumedBufferLength];
         reader.ReadBytes(input);
