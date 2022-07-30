@@ -12,6 +12,8 @@ public class BleRecorderDevice // TODO Extract inteface
     private readonly IBleDeviceHandler _bleDeviceHandler;
     private readonly IBleRecorderMessageParser _messageParser;
     private bool _isCurrentlyMeasuring;
+    private System.Timers.Timer _outboundDataTimer;
+
     public event EventHandler<MeasuredValue>? NewValueReceived;
     public event EventHandler? MeasurementFinished;
     public event EventHandler? ConnectionStatusChanged;
@@ -19,7 +21,7 @@ public class BleRecorderDevice // TODO Extract inteface
 
     public StimulationParameters CurrentParameters { get; set; }
 
-    public System.Timers.Timer _outboundDataTimer;
+    public MechanismParameters Mechanism { get; set; }
 
     public bool IsConnected => _bleDeviceHandler.IsConnected;
 

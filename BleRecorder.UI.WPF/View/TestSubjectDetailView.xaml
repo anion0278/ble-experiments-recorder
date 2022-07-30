@@ -7,117 +7,127 @@
              xmlns:extensions="clr-namespace:BleRecorder.UI.WPF.Extensions"
              xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:resouces="clr-namespace:BleRecorder.UI.WPF.View.Resouces"
+             xmlns:view="clr-namespace:BleRecorder.UI.WPF.View"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d" 
              d:DesignHeight="500" d:DesignWidth="600"
              d:DataContext="{d:DesignInstance viewModels:TestSubjectDetailViewModel, d:IsDesignTimeCreatable=True}">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition />
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <Label Content="First name" Margin="10 10 10 0"/>
+    <ScrollViewer>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition />
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Label Content="First name" Margin="10 10 10 0"/>
 
-        <Label Grid.Row="2" Content="Last name" Margin="10 0"/>
-        <TextBox Grid.Row="1" MaxLength="25" Margin="10 0 10 10"
+            <Label Grid.Row="2" Content="Last name" Margin="10 0"/>
+            <TextBox Grid.Row="1" MaxLength="25" Margin="10 0 10 10"
                  Text="{Binding FirstName, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" />
-        <TextBox Grid.Row="3" MaxLength="25" Margin="10 0 10 10"
+            <TextBox Grid.Row="3" MaxLength="25" Margin="10 0 10 10"
                  Text="{Binding LastName, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" />
 
-        <DockPanel Grid.Row="8"  Margin="10">
-            <StackPanel DockPanel.Dock="Right">
-                <Button Content="Add" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
+            <Expander Grid.Row="4" Margin="10" Header="Individual settings" mah:ControlsHelper.ContentCharacterCasing="Normal"
+                      IsExpanded="{Binding Id, Mode=OneWay, Converter={StaticResource idToBooleanConverter}}">
+                <view:BleRecorderMechanicalAdjustmentView></view:BleRecorderMechanicalAdjustmentView>
+            </Expander>
+
+            <DockPanel Grid.Row="8"  Margin="10">
+                <StackPanel DockPanel.Dock="Right">
+                    <Button Content="Add" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
                         Command="{Binding AddMeasurementCommand}" CommandParameter=""/>
-                <Button Content="Edit" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
+                    <Button Content="Edit" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
                         Command="{Binding EditMeasurementCommand}"/>
-                <Button Content="Remove" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
+                    <Button Content="Remove" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
                         Command="{Binding RemoveMeasurementCommand}"/>
-            </StackPanel>
-            <DataGrid x:Name="MeasurementsGrid" BorderThickness="2" IsSynchronizedWithCurrentItem="True"
+                </StackPanel>
+                <DataGrid x:Name="MeasurementsGrid" BorderThickness="2" IsSynchronizedWithCurrentItem="True"
                       SelectionMode="Single" SelectionUnit="FullRow"
                       ItemsSource="{Binding Measurements}" 
                       AutoGenerateColumns="False" RowHeaderWidth="0"
-                      CanUserAddRows="False" CanUserDeleteRows="False">
-                <DataGrid.CellStyle>
-                    <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource {x:Type DataGridCell}}">
-                        <Style.Triggers>
-                            <Trigger Property="DataGridCell.IsSelected" Value="True">
-                                <Setter Property="Background" Value="DodgerBlue" />
-                                <Setter Property="BorderThickness" Value="0" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </DataGrid.CellStyle>
-                <DataGrid.RowStyle>
-                    <Style TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource {x:Type DataGridRow}}">
-                        <EventSetter Event="PreviewMouseDoubleClick" Handler="Row_PreviewMouseDoubleClick" />
-                    </Style>
-                </DataGrid.RowStyle>
-                <DataGrid.GroupStyle>
-                    <GroupStyle>
-                        <GroupStyle.Panel>
-                            <ItemsPanelTemplate>
-                                <DataGridRowsPresenter/>
-                            </ItemsPanelTemplate>
-                        </GroupStyle.Panel>
-                        <GroupStyle.ContainerStyle>
-                            <Style TargetType="{x:Type GroupItem}">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="{x:Type GroupItem}">
-                                            <Expander IsExpanded="True" BorderThickness="0" Background="DarkSlateBlue" IsTabStop="False" Style="{x:Null}">
-                                                <Expander.Header>
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock FontSize="11" FontStyle="Italic" Foreground="White">
-                                                            <TextBlock.Text>
-                                                                <MultiBinding StringFormat="Grouped by measurement type: {0}, Items: {1}">
-                                                                    <Binding Path="Name" />
-                                                                    <Binding Path="ItemCount" />
-                                                                </MultiBinding>
-                                                            </TextBlock.Text>
-                                                        </TextBlock>
-                                                    </StackPanel>
-                                                </Expander.Header>
-                                                <ItemsPresenter />
-                                            </Expander>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </GroupStyle.ContainerStyle>
-                        <GroupStyle.HeaderTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal" >
-                                    <TextBlock Text="{Binding Type}" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </GroupStyle.HeaderTemplate>
-                    </GroupStyle>
-                </DataGrid.GroupStyle>
+                      CanUserAddRows="False" CanUserDeleteRows="False"
+                      MinHeight="100">
+                    <DataGrid.CellStyle>
+                        <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource {x:Type DataGridCell}}">
+                            <Style.Triggers>
+                                <Trigger Property="DataGridCell.IsSelected" Value="True">
+                                    <Setter Property="Background" Value="DodgerBlue" />
+                                    <Setter Property="BorderThickness" Value="0" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.CellStyle>
+                    <DataGrid.RowStyle>
+                        <Style TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource {x:Type DataGridRow}}">
+                            <EventSetter Event="PreviewMouseDoubleClick" Handler="Row_PreviewMouseDoubleClick" />
+                        </Style>
+                    </DataGrid.RowStyle>
+                    <DataGrid.GroupStyle>
+                        <GroupStyle>
+                            <GroupStyle.Panel>
+                                <ItemsPanelTemplate>
+                                    <DataGridRowsPresenter/>
+                                </ItemsPanelTemplate>
+                            </GroupStyle.Panel>
+                            <GroupStyle.ContainerStyle>
+                                <Style TargetType="{x:Type GroupItem}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type GroupItem}">
+                                                <Expander IsExpanded="True" BorderThickness="0" Background="DarkSlateBlue" IsTabStop="False" Style="{x:Null}">
+                                                    <Expander.Header>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock FontSize="11" FontStyle="Italic" Foreground="White">
+                                                                <TextBlock.Text>
+                                                                    <MultiBinding StringFormat="Grouped by measurement type: {0}, Items: {1}">
+                                                                        <Binding Path="Name" />
+                                                                        <Binding Path="ItemCount" />
+                                                                    </MultiBinding>
+                                                                </TextBlock.Text>
+                                                            </TextBlock>
+                                                        </StackPanel>
+                                                    </Expander.Header>
+                                                    <ItemsPresenter />
+                                                </Expander>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </GroupStyle.ContainerStyle>
+                            <GroupStyle.HeaderTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" >
+                                        <TextBlock Text="{Binding Type}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </GroupStyle.HeaderTemplate>
+                        </GroupStyle>
+                    </DataGrid.GroupStyle>
 
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Measurement title" Width="*" IsReadOnly="True"
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Measurement title" Width="*" IsReadOnly="True"
                                         Binding="{Binding Title}"/>
-                    <DataGridTextColumn Header="Type" Width="180"  IsReadOnly="True"
+                        <DataGridTextColumn Header="Type" Width="180"  IsReadOnly="True"
                                         Binding="{Binding Type}"/>
-                    <DataGridTextColumn Header="Experiment Date" Width="200" IsReadOnly="True"
+                        <DataGridTextColumn Header="Experiment Date" Width="200" IsReadOnly="True"
                                         Binding="{Binding Date, StringFormat='{}{0:dd MMM. yyyy, HH:mm}', TargetNullValue='Not completed'}"/>
-                </DataGrid.Columns>
-            </DataGrid>
-        </DockPanel>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
 
-        <StackPanel Grid.Row="9" Orientation="Horizontal">
-            <Button Content="Save Subject" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
+            <StackPanel Grid.Row="9" Orientation="Horizontal">
+                <Button Content="Save Subject" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
                     Command="{Binding SaveCommand}"/>
-            <Button Content="Delete Subject" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
+                <Button Content="Delete Subject" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
                     Command="{Binding DeleteCommand}"/>
-        </StackPanel>
-    </Grid>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
 </UserControl>

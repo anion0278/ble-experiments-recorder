@@ -1,6 +1,5 @@
 ﻿namespace BleRecorder.Models.Device;
 
-
 public class StimulationParameters
 {
     public int Id { get; private set; }
