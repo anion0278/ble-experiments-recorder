@@ -3,15 +3,9 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
 using System.Text.Json;
+using Mebster.Myodam.Models.Device;
 
 namespace Mebster.Myodam.Models.TestSubject;
-
-public enum MeasurementType
-{
-    MaximumContraction,
-    Fatigue
-}
-
 
 public class Measurement
 {
@@ -25,10 +19,19 @@ public class Measurement
     [StringLength(40)]
     public string Title { get; set; }
 
+
     [StringLength(400)]
     public string Notes { get; set; }
+
     public int TestSubjectId { get; set; }
+
     public TestSubject TestSubject { get; set; }
+
+    //public MyodamMechanicalAdjustments AdjustmentsDuringMeasurement { get; set; }
+
+    //public StimulationParameters ParametersDuringMeasurement { get; set; }
+
+    //public MeasurementConditions Conditions { get; set; }
 
     public ICollection<MeasuredValue> ForceData { get; set; }
 

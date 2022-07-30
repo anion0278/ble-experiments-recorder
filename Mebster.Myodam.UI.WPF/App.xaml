@@ -5,6 +5,7 @@
              xmlns:viewModel="clr-namespace:Mebster.Myodam.UI.WPF.ViewModels"
              xmlns:view="clr-namespace:Mebster.Myodam.UI.WPF.View"
              xmlns:resouces="clr-namespace:Mebster.Myodam.UI.WPF.View.Resouces"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              Startup="Application_Startup"
              Exit="Application_OnExit">
     <Application.Resources>
@@ -13,7 +14,7 @@
                 <!-- MahApps.Metro resource dictionaries. Make sure that all file names are Case Sensitive! -->
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/dark.blue.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/dark.indigo.xaml" />
 
                 <ResourceDictionary>
                     <!--Implicit MVVM teplates-->
@@ -41,6 +42,7 @@
                     <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter"/>
                     <resouces:InverseBooleanConverter x:Key="inverseBooleanConverter"/>
                     <resouces:CollectionLengthToBooleanConverter x:Key="collectionLengthToBooleanConverter"/>
+                    <resouces:IdToBooleanConverter x:Key="idToBooleanConverter"/>
 
                     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                         <Setter Property="FontSize" Value="14"/>

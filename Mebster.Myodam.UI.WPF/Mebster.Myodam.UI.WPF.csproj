@@ -15,6 +15,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Assets\myodam_mechanical_adjustment.png" />
 	  <None Remove="Assets\splashScreen.png" />
 	</ItemGroup>
 
@@ -75,6 +76,10 @@
 
 	<ItemGroup>
 	  <Folder Include="Exception\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Resource Include="Assets\myodam_mechanical_adjustment.png" />
 	</ItemGroup>
 
 

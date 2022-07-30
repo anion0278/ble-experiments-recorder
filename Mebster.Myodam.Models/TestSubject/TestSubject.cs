@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Mebster.Myodam.Models.Device;
 
 namespace Mebster.Myodam.Models.TestSubject;
 
@@ -23,6 +24,10 @@ public class TestSubject
 
     [NotMapped]
     public string FullName => FirstName + " " + LastName;
+
+    //public MyodamMechanicalAdjustments CustomizedAdjustments { get; set; }
+
+    //public StimulationParameters CustomizedParameters { get; set; }
 
     public ICollection<Measurement> Measurements { get; set; }
 }
