@@ -112,14 +112,14 @@
                     
                     <Label Grid.Row="0" Grid.Column="0"  Content="Unit Battery [%]:" VerticalAlignment="Center"/>
                     <Grid Grid.Row="0" Grid.Column="1">
-                        <ProgressBar Minimum="0" Maximum="100" Value="70" Margin="3" />
-                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="70" />
+                        <ProgressBar Minimum="0" Maximum="100" Value="0" Margin="3" />
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="0" />
                     </Grid>
 
                     <Label Grid.Row="1" Grid.Column="0"  Content="Device Battery [%]:" VerticalAlignment="Center"/>
                     <Grid Grid.Row="1" Grid.Column="1">
-                        <ProgressBar Minimum="0" Maximum="100" Value="60" Margin="3" />
-                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="60" />
+                        <ProgressBar Minimum="0" Maximum="100" Value="0" Margin="3" />
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="0" />
                     </Grid>
 
                     <Label Grid.Row="2" Grid.Column="0" Content="Current [mA]:" VerticalAlignment="Center"/>

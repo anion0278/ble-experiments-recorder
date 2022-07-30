@@ -29,7 +29,7 @@ public class BleRecorderRequestMessage
     public string FormatForSending()
     {
         return     
-            $"SC:{StimulationParameters.Current:000}_" +
+            $">SC:{StimulationParameters.Current:000}_" +
             $"SF:{StimulationParameters.Frequency:000}_" +
             $"SP:{StimulationParameters.PulseWidth.Value:000}_" +
             $"ST:{StimulationParameters.StimulationTime.TotalSeconds:00}_" +

@@ -1,24 +1,72 @@
-﻿using BleRecorder.Models.TestSubject;
+﻿using System.Drawing;
+using BleRecorder.Models.TestSubject;
 
 namespace BleRecorder.Business.Device;
 
-public class BleRecorderReplyMessage
+
+public enum BleRecorderError
 {
-    public int Timestamp { get; }
-    public float MeasuredForceValue { get; }
+    NoError = 0,
+    StimulatorConnectionLost = 1
+}
 
-    public bool IsMeasurementFinished { get; }
+public readonly struct Percentage
+{
+    public decimal Value { get; }
 
-    public BleRecorderReplyMessage(bool isMeasurementFinished)
+    public Percentage(decimal value) 
     {
-        IsMeasurementFinished = isMeasurementFinished;
+        Value = value;
+        if (value is > 100 or < 0) throw new ArgumentException("Percentage is out of range");
     }
 
-    public BleRecorderReplyMessage(int timestamp, float measuredForceValue, bool isMeasurementFinished)
+    public static explicit operator Percentage(decimal d)
+    {
+        return new Percentage(d);
+    }
+
+    public static Percentage Parse(string value)
+    {
+        return new Percentage(decimal.Parse(value));
+    }
+
+    public static bool TryParse(string value, out Percentage percentage)
+    {
+        bool flag = decimal.TryParse(value, out var parsedValue);
+        percentage = new Percentage(parsedValue);
+        return flag;
+    }
+
+    public override string ToString()
+    {
+        return $"{Value}%";
+    }
+}
+
+public class BleRecorderReplyMessage
+{
+    public TimeSpan Timestamp { get; }
+    public double SensorValue { get; }
+    public Percentage ControllerBattery { get; }
+    public Percentage StimulatorBattery { get; }
+    public BleRecorderError Error { get; }
+    public BleRecorderMeasurement MeasurementStatus { get; }
+
+
+    public BleRecorderReplyMessage(
+        TimeSpan timestamp, 
+        double sensorValue,
+        Percentage controllerBattery,
+        Percentage stimulatorBattery,
+        BleRecorderError error,
+        BleRecorderMeasurement measurementStatus)
     {
         Timestamp = timestamp;
-        MeasuredForceValue = measuredForceValue;
-        IsMeasurementFinished = isMeasurementFinished;
+        SensorValue = sensorValue;
+        ControllerBattery = controllerBattery;
+        StimulatorBattery = stimulatorBattery;
+        Error = error;
+        MeasurementStatus = measurementStatus;
     }
 }
 

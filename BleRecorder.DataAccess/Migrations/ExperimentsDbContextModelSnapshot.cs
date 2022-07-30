@@ -37,7 +37,7 @@ namespace BleRecorder.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("StimulationParameters");
+                    b.ToTable("StimulationParameters", (string)null);
                 });
 
             modelBuilder.Entity("BleRecorder.Models.TestSubject.Measurement", b =>
@@ -73,7 +73,7 @@ namespace BleRecorder.DataAccess.Migrations
 
                     b.HasIndex("TestSubjectId");
 
-                    b.ToTable("Measurements");
+                    b.ToTable("Measurements", (string)null);
                 });
 
             modelBuilder.Entity("BleRecorder.Models.TestSubject.TestSubject", b =>
@@ -94,7 +94,7 @@ namespace BleRecorder.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TestSubjects");
+                    b.ToTable("TestSubjects", (string)null);
                 });
 
             modelBuilder.Entity("BleRecorder.Models.TestSubject.Measurement", b =>

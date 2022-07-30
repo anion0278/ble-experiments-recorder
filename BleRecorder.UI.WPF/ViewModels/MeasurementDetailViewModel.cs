@@ -28,7 +28,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         private readonly IMeasurementRepository _measurementRepository;
         private readonly IDateTimeService _dateTimeService;
 
-        public ChartValues<float> ForceValues { get; set; } = new();
+        public ChartValues<double> ForceValues { get; set; } = new();
 
         [Required]
         [StringLength(30, MinimumLength = 1)]
@@ -155,7 +155,7 @@ namespace BleRecorder.UI.WPF.ViewModels
                 ? await _measurementRepository.GetByIdAsync(measurementId)
                 : await CreateNewMeasurement((TestSubject)argsData);
 
-            ForceValues.AddRange(Measurement.ForceData?.Select(v => v.Value) ?? Array.Empty<float>());
+            ForceValues.AddRange(Measurement.ForceData?.Select(v => v.Value) ?? Array.Empty<double>());
             Id = measurementId;
 
             PropertyChanged += OnPropertyChangedEventHandler;

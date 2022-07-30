@@ -30,7 +30,8 @@ public class ExperimentsDbContext : DbContext
             .Property(e => e.PulseWidth)
             .HasConversion(
                 p => p.Value,
-                p => StimulationPulseWidth.AvailableOptions.SingleOrDefault(op => op.Value == p) ?? StimulationPulseWidth.AvailableOptions.First());
+                p => StimulationPulseWidth.AvailableOptions.SingleOrDefault(op => op.Value == p) 
+                     ?? StimulationPulseWidth.AvailableOptions.First());
 
         base.OnModelCreating(modelBuilder);
     }

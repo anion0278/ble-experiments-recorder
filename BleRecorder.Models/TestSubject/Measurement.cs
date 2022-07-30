@@ -43,4 +43,4 @@ public class Measurement
     }
 }
 
-public record MeasuredValue(float Value, TimeSpan Timestamp);
+public record MeasuredValue(double Value, TimeSpan Timestamp);

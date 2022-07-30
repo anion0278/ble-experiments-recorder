@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Text.RegularExpressions;
+using System.Timers;
 using BleRecorder.Models.Device;
 using BleRecorder.Models.TestSubject;
 
@@ -15,6 +16,10 @@ public class BleRecorderDevice // TODO Extract inteface
     public event EventHandler? MeasurementFinished;
     public event EventHandler? ConnectionStatusChanged;
     public event EventHandler? MeasurementStatusChanged;
+
+    public StimulationParameters CurrentParameters { get; set; }
+
+    public System.Timers.Timer _outboundDataTimer;
 
     public bool IsConnected => _bleDeviceHandler.IsConnected;
 
@@ -43,6 +48,22 @@ public class BleRecorderDevice // TODO Extract inteface
         _messageParser = messageParser;
         _bleDeviceHandler.DataReceived += BleDeviceHandlerDataReceived;
         _bleDeviceHandler.DeviceStatusChanged += BleDeviceStatusChanged;
+
+        _outboundDataTimer = new System.Timers.Timer(TimeSpan.FromMilliseconds(100).TotalMilliseconds);
+        _outboundDataTimer.Elapsed += OnTimerTimeElapsed;
+        _outboundDataTimer.Start();
+    }
+
+    private void OnTimerTimeElapsed(object? sender, ElapsedEventArgs e)
+    {
+        if (IsConnected)
+        {
+            Debug.Print("Sent");
+            SendMsg(new(
+                new(0, 0, StimulationPulseWidth.AvailableOptions[0], TimeSpan.Zero),
+                MeasurementType.Intermittent,
+                false));
+        }
     }
 
     private void BleDeviceStatusChanged(object? sender, EventArgs e)
@@ -64,7 +85,7 @@ public class BleRecorderDevice // TODO Extract inteface
         {
             NewValueReceived?.Invoke(
                 this,
-                new MeasuredValue(reply.MeasuredForceValue, TimeSpan.FromMilliseconds(reply.Timestamp)));
+                new MeasuredValue(reply.SensorValue, reply.Timestamp));
         }
     }
 

@@ -21,7 +21,7 @@ public class BleRecorderManager : IBleRecorderManager
     private readonly IBluetoothManager _bluetoothManager;
     private readonly IBleRecorderMessageParser _messageParser;
     private BleRecorderAvailabilityStatus _bleRecorderAvailability;
-    private const string _bleRecorderName = "Aggregator";
+    private const string _bleRecorderName = "Aggregator-TEST";
     public BleRecorderDevice? BleRecorderDevice { get; private set; }
 
     public StimulationParameters CurrentStimulationParameters { get; set; }
