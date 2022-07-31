@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="BleRecorder.UI.WPF.View.MeasurementDetailView"
+﻿<UserControl x:Class="BleRecorder.UI.WPF.Views.MeasurementDetailView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -22,7 +22,7 @@
         </ObjectDataProvider>
     </UserControl.Resources>
 
-    <ScrollViewer>
+    <ScrollViewer Padding="10">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -36,21 +36,26 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Label Grid.Row="0" Content="Short description" Margin="10 10 10 0"/>
-            <TextBox Grid.Row="1" MaxLength="40" Width="300" Margin="10 0 10 10" HorizontalAlignment="Left"
-                 Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" />
+            <Label Grid.Row="0" Content="Short description" />
+            <TextBox Grid.Row="1" MaxLength="40" Width="300" HorizontalAlignment="Left"
+                     Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" />
 
-            <Label Grid.Row="2" Content="Notes" Margin="10 10 10 0"/>
-            <TextBox Grid.Row="3" Margin="10 0 10 10" TextWrapping="Wrap" AcceptsReturn="True" AcceptsTab="True"
+            <Label Grid.Row="2" Content="Notes"/>
+            <TextBox Grid.Row="3" Style="{StaticResource NotesTextBox}"
                  Text="{Binding Notes}" />
 
-            <StackPanel Grid.Row="4"  Orientation="Horizontal" Margin="10 0 10 10">
+            <StackPanel Grid.Row="4"  Orientation="Horizontal">
                 <Label Content="Measurement date:" />
                 <TextBlock FontWeight="Bold" VerticalAlignment="Center"
                            Text="{Binding Date, StringFormat='{}{0:dd MMM. yyyy, HH:mm}', TargetNullValue='Not measured yet'}" />
             </StackPanel>
 
-            <StackPanel Grid.Row="5"  Orientation="Horizontal" Margin="10 0 10 10">
+            <StackPanel Grid.Row="5" Orientation="Horizontal" >
+                <Label Content="Test subject:          "/>
+                <Label FontWeight="Bold" Content="{Binding Measurement.TestSubject.FullName}"/>
+            </StackPanel>
+
+            <StackPanel Grid.Row="6"  Orientation="Horizontal">
                 <Label Content="Measurement type:" />
                 <ComboBox Width="150"
                           SelectedItem="{Binding Type}"
@@ -67,11 +72,6 @@
                         </Style>
                     </ComboBox.Style>
                 </ComboBox>
-            </StackPanel>
-
-            <StackPanel Grid.Row="6" Orientation="Horizontal" Margin="10 0 10 10">
-                <Label Content="Test subject:            "/>
-                <Label FontWeight="Bold" Content="{Binding Measurement.TestSubject.FullName}"/>
             </StackPanel>
 
             <livecharts:CartesianChart Grid.Row="7"  DisableAnimations="True" Margin="4" Height="230" >

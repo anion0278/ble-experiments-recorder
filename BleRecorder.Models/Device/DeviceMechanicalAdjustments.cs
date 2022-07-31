@@ -1,7 +1,13 @@
 ﻿namespace BleRecorder.Models.Device;
 
-public class BleRecorderMechanicalAdjustments
+public class AdjustableParameter
 {
+    public int Value { get; set; }
+}
+
+public class DeviceMechanicalAdjustments
+{
+    public int Id { get; private set; }
     public int AnkleAxisX { get; set; }
     public int AnkleAxisY { get; set; }
     public int AnkleAxisZ { get; set; }

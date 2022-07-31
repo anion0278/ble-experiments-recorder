@@ -3,9 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:BleRecorder.UI.WPF"
              xmlns:viewModel="clr-namespace:BleRecorder.UI.WPF.ViewModels"
-             xmlns:view="clr-namespace:BleRecorder.UI.WPF.View"
-             xmlns:resouces="clr-namespace:BleRecorder.UI.WPF.View.Resouces"
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:views="clr-namespace:BleRecorder.UI.WPF.Views"
+             xmlns:resouces="clr-namespace:BleRecorder.UI.WPF.Views.Resouces"
              Startup="Application_Startup"
              Exit="Application_OnExit">
     <Application.Resources>
@@ -19,12 +19,14 @@
                 <ResourceDictionary>
                     <!--Implicit MVVM teplates-->
                     <DataTemplate DataType="{x:Type viewModel:TestSubjectDetailViewModel}">
-                        <view:testSubjectDetailView/>
+                        <views:testSubjectDetailView/>
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type viewModel:MeasurementDetailViewModel}">
-                        <view:MeasurementDetailView/>
+                        <views:MeasurementDetailView/>
                     </DataTemplate>
                     <!--Templates end-->
+
+                    <SolidColorBrush x:Key="MainThemeColorAccent" Color="#322882"/>
 
                     <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                         <Setter Property="FontSize" Value="12"/>
@@ -46,6 +48,7 @@
 
                     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                         <Setter Property="FontSize" Value="14"/>
+                        <Setter Property="Margin" Value="0 0 0 12"/>
                         <Setter Property="Validation.ErrorTemplate">
                             <Setter.Value>
                                 <ControlTemplate>
@@ -64,6 +67,11 @@
                         </Style.Triggers>
                     </Style>
 
+                    <Style x:Key="NotesTextBox" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                        <Setter Property="TextWrapping" Value="Wrap"/>
+                        <Setter Property="AcceptsTab" Value="true"/>
+                        <Setter Property="AcceptsReturn" Value="true"/>
+                    </Style>
 
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>

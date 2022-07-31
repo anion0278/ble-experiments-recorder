@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace BleRecorder.UI.WPF.View.Services
+namespace BleRecorder.UI.WPF.Views.Services
 {
   public interface IMessageDialogService
   {

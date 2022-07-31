@@ -2,7 +2,7 @@
 using System.Windows.Input;
 using BleRecorder.UI.WPF.ViewModels;
 
-namespace BleRecorder.UI.WPF.View
+namespace BleRecorder.UI.WPF.Views
 {
     /// <summary>
     /// Interaction logic for testSubjectDetailView.xaml

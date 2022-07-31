@@ -12,6 +12,7 @@ using BleRecorder.Business.Device;
 using BleRecorder.DataAccess;
 using BleRecorder.UI.WPF.Exception;
 using BleRecorder.UI.WPF.Startup;
+using BleRecorder.UI.WPF.Views;
 
 namespace BleRecorder.UI.WPF
 {

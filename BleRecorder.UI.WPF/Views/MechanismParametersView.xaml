@@ -1,0 +1,142 @@
+﻿<UserControl x:Class="BleRecorder.UI.WPF.Views.MechanismParametersView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:resouces="clr-namespace:BleRecorder.UI.WPF.Views.Resouces"
+             xmlns:viewModels="clr-namespace:BleRecorder.UI.WPF.ViewModels"
+             mc:Ignorable="d" 
+             Height="400" Width="330"
+             d:DataContext="{d:DesignInstance viewModels:MechanismParametersViewModel, d:IsDesignTimeCreatable=True}">
+    <UserControl.Resources>
+        <ControlTemplate x:Key="SliderWithLabels" TargetType="Slider">
+            <ControlTemplate.Resources>
+                <Style TargetType="Label">
+                    <Setter Property="Foreground" Value="{StaticResource MainThemeColorAccent}"/>
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                    <Setter Property="Padding" Value="5 0 5 0"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=(resouces:AttachedRotation.Rotated), RelativeSource={RelativeSource TemplatedParent}}" Value="True">
+                            <Setter Property="LayoutTransform">
+                                <Setter.Value>
+                                    <RotateTransform Angle="90"/>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Padding" Value="0"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ControlTemplate.Resources>
+
+            <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Label Style="{x:Null}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Center" 
+                       Foreground="{StaticResource MainThemeColorAccent}" FontWeight="Bold"
+                       Content="{Binding Path=(resouces:AttachedText.Text), RelativeSource={RelativeSource TemplatedParent}}" />
+
+                <Label Grid.Row="1" Grid.Column="0" 
+                       Content="{TemplateBinding Minimum}"/>
+                <!--Value="{TemplateBinding Value}"-->
+                <Slider Grid.Row="1"  Grid.Column="1" 
+                        Value="{Binding Path=Value, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                        Interval="{TemplateBinding TickFrequency}" 
+                        TickFrequency="{TemplateBinding TickFrequency}"
+                        Minimum="{TemplateBinding Minimum}"
+                        Maximum="{TemplateBinding Maximum}"
+                        Foreground="{StaticResource MainThemeColorAccent}"
+                        Style="{StaticResource {x:Type Slider}}"
+                        Height="15" TickPlacement="Both" IsSnapToTickEnabled="True" AutoToolTipPlacement="BottomRight"/>
+                <Label Grid.Row="1" Grid.Column="2" 
+                       Content="{TemplateBinding Maximum}"/>
+
+            </Grid>
+        </ControlTemplate>
+        <Style TargetType="Slider" BasedOn="{StaticResource {x:Type Slider}}">
+            <Setter Property="VerticalAlignment" Value="Top"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Template" Value="{StaticResource SliderWithLabels}"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0 0" EndPoint="0 1">
+                <LinearGradientBrush.GradientStops>
+                    <GradientStop Offset="0.1" Color="AliceBlue" />
+                    <GradientStop Offset="1" Color="DodgerBlue" />
+                </LinearGradientBrush.GradientStops>
+            </LinearGradientBrush>
+        </Grid.Background>
+        <Image Source="../Assets/bleRecorder_mechanical_adjustment.png"
+               VerticalAlignment="Top" HorizontalAlignment="Left"
+               RenderOptions.BitmapScalingMode="HighQuality" />
+
+        <Slider Minimum="{Binding Model.KneeAxisDeviation.MinValue}"
+                Maximum="{Binding Model.KneeAxisDeviation.MaxValue}"
+                TickFrequency="{Binding Model.KneeAxisDeviation.Step}"
+                Value = "{Binding KneeAxisDeviation}"
+                resouces:AttachedText.Text="Knee param:"
+                Width = "100" Margin="227,36,3,316" />
+
+        <Slider Minimum="{Binding Model.TibiaLength.MinValue}"
+                Maximum="{Binding Model.TibiaLength.MaxValue}"
+                TickFrequency="{Binding Model.TibiaLength.Step}"
+                Value = "{Binding TibiaLength}"
+                resouces:AttachedText.Text="Tibia length:"
+                resouces:AttachedRotation.Rotated="True"
+                Width = "140"
+                Margin="2,90,0,0" RenderTransformOrigin="0.5,0.5" >
+            <Slider.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform Angle="-90"/>
+                </TransformGroup>
+            </Slider.RenderTransform>
+        </Slider>
+
+        <Slider Minimum="{Binding Model.AnkleAxisX.MinValue}"
+                Maximum="{Binding Model.AnkleAxisX.MaxValue}"
+                TickFrequency="{Binding Model.AnkleAxisX.Step}"
+                Value = "{Binding AnkleAxisX}"
+                resouces:AttachedText.Text="Foot param:"
+                resouces:AttachedRotation.Rotated="True"
+                Width = "100" Margin="-23,233,253,119" RenderTransformOrigin="0.5,0.5" >
+            <Slider.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform Angle="-90"/>
+                </TransformGroup>
+            </Slider.RenderTransform>
+        </Slider>
+
+        <Slider Minimum="{Binding Model.AnkleAxisZ.MinValue}"
+                Maximum="{Binding Model.AnkleAxisZ.MaxValue}"
+                TickFrequency="{Binding Model.AnkleAxisZ.Step}"
+                Value = "{Binding AnkleAxisZ}" 
+                resouces:AttachedText.Text="Ankle Z-axis:"
+                resouces:AttachedRotation.Rotated="True"
+                Width = "80" Margin="171,318,59,34" RenderTransformOrigin="0.5,0.5" >
+            <Slider.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform Angle="-90"/>
+                </TransformGroup>
+            </Slider.RenderTransform>
+        </Slider>
+
+        <Slider Minimum="{Binding Model.AnkleAxisY.MinValue}"
+                Maximum="{Binding Model.AnkleAxisY.MaxValue}"
+                TickFrequency="{Binding Model.AnkleAxisY.Step}"
+                Value = "{Binding AnkleAxisY}"
+                resouces:AttachedText.Text="Ankle Y-axis:"
+                Width = "150" Margin="77,352,153,0" />
+    </Grid>
+</UserControl>

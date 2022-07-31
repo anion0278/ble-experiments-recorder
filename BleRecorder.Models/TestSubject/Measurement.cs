@@ -15,23 +15,25 @@ public class Measurement
 
     public MeasurementType Type { get; set; }
 
+    public MeasurementPosition PositionDuringMeasurement { get; set; }
+
+    public MeasurementSite SiteDuringMeasurement { get; set; }
+
     [Required]
     [StringLength(40)]
     public string Title { get; set; }
 
 
     [StringLength(400)]
-    public string Notes { get; set; }
+    public string? Notes { get; set; }
 
     public int TestSubjectId { get; set; }
 
     public TestSubject TestSubject { get; set; }
 
-    //public BleRecorderMechanicalAdjustments AdjustmentsDuringMeasurement { get; set; }
+    public DeviceMechanicalAdjustments AdjustmentsDuringMeasurement { get; set; }
 
-    //public StimulationParameters ParametersDuringMeasurement { get; set; }
-
-    //public MeasurementConditions Conditions { get; set; }
+    public StimulationParameters ParametersDuringMeasurement { get; set; }
 
     public ICollection<MeasuredValue> ForceData { get; set; }
 

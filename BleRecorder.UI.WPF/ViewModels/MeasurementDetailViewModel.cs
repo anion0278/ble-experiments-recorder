@@ -14,7 +14,7 @@ using BleRecorder.Models.Device;
 using BleRecorder.Models.TestSubject;
 using BleRecorder.UI.WPF.Data.Repositories;
 using BleRecorder.UI.WPF.Event;
-using BleRecorder.UI.WPF.View.Services;
+using BleRecorder.UI.WPF.Views.Services;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using Swordfish.NET.Collections.Auxiliary;
@@ -167,7 +167,6 @@ namespace BleRecorder.UI.WPF.ViewModels
             var newMeasurement = new Measurement
             {
                 ForceData = new List<MeasuredValue>(),
-                Notes = string.Empty
             };
             newMeasurement.TestSubject = (await _measurementRepository.GetTestSubjectById(correspondingTestSubject.Id))!;
             _measurementRepository.Add(newMeasurement);

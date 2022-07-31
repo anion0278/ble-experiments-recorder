@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace BleRecorder.UI.WPF.View
+namespace BleRecorder.UI.WPF.Views
 {
   public partial class MeasurementDetailView : UserControl
   {

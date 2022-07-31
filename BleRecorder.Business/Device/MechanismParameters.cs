@@ -4,25 +4,24 @@ namespace BleRecorder.Business.Device;
 
 public class MechanismParameters
 {
-    // Implement Units type? 
-    public MechanicalAdjustment AnkleAxisX { get; set; }
-    public MechanicalAdjustment AnkleAxisY { get; set; }
-    public MechanicalAdjustment AnkleAxisZ { get; set; }
-    public MechanicalAdjustment TibiaLength { get; set; }
-    public MechanicalAdjustment KneeAxisDeviation { get; set; }
+    public MechanicalAdjustmentWithLimits AnkleAxisX { get; }
+    public MechanicalAdjustmentWithLimits AnkleAxisY { get; }
+    public MechanicalAdjustmentWithLimits AnkleAxisZ { get; }
+    public MechanicalAdjustmentWithLimits TibiaLength { get; }
+    public MechanicalAdjustmentWithLimits KneeAxisDeviation { get; }
 
-    public MechanismParameters(BleRecorderMechanicalAdjustments adjustments)
+    public MechanismParameters(DeviceMechanicalAdjustments adjustments)
     {
-        AnkleAxisX = new MechanicalAdjustment(-10, 10, adjustments.AnkleAxisX);
-        AnkleAxisY = new MechanicalAdjustment(-10, 10, adjustments.AnkleAxisY);
-        AnkleAxisZ = new MechanicalAdjustment(-10, 10, adjustments.AnkleAxisZ);
-        TibiaLength = new MechanicalAdjustment(0, 100, adjustments.TibiaLength);
-        KneeAxisDeviation = new MechanicalAdjustment(0, 50, adjustments.KneeAxisDeviation);
+        AnkleAxisX = new MechanicalAdjustmentWithLimits(-10, 10, 2, adjustments.AnkleAxisX);
+        AnkleAxisY = new MechanicalAdjustmentWithLimits(-10, 10, 2, adjustments.AnkleAxisY);
+        AnkleAxisZ = new MechanicalAdjustmentWithLimits(-10, 10, 5, adjustments.AnkleAxisZ);
+        TibiaLength = new MechanicalAdjustmentWithLimits(0, 100, 10, adjustments.TibiaLength);
+        KneeAxisDeviation = new MechanicalAdjustmentWithLimits(0, 50, 5, adjustments.KneeAxisDeviation);
     }
 
-    public BleRecorderMechanicalAdjustments GetCurrentAdjustments()
+    public DeviceMechanicalAdjustments GetCurrentAdjustments()
     {
-        return new BleRecorderMechanicalAdjustments()
+        return new DeviceMechanicalAdjustments()
         {
             AnkleAxisX = AnkleAxisX.Value,
             AnkleAxisY = AnkleAxisY.Value,

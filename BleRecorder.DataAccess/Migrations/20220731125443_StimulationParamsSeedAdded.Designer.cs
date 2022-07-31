@@ -3,6 +3,7 @@ using System;
 using BleRecorder.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BleRecorder.DataAccess.Migrations
 {
     [DbContext(typeof(ExperimentsDbContext))]
-    partial class ExperimentsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220731125443_StimulationParamsSeedAdded")]
+    partial class StimulationParamsSeedAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.5");
@@ -93,6 +95,7 @@ namespace BleRecorder.DataAccess.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Notes")
+                        .IsRequired()
                         .HasMaxLength(400)
                         .HasColumnType("TEXT");
 
@@ -150,6 +153,7 @@ namespace BleRecorder.DataAccess.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Notes")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

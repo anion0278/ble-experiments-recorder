@@ -23,6 +23,8 @@ public class TestSubjectRepository : GenericRepository<TestSubject, ExperimentsD
     {
         return await Context.TestSubjects
             .Include(ts => ts.Measurements)
+            .Include(ts => ts.CustomizedAdjustments)
+            .Include(ts => ts.CustomizedParameters)
             .SingleOrDefaultAsync(s => s.Id == testSubjectId);
     }
 

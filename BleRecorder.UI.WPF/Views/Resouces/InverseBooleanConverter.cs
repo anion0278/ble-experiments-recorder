@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Input;
 
-namespace BleRecorder.UI.WPF.View.Resouces;
+namespace BleRecorder.UI.WPF.Views.Resouces;
 
 [ValueConversion(typeof(bool), typeof(bool))]
 public class InverseBooleanConverter : IValueConverter

@@ -9,7 +9,7 @@ using System.Windows.Input;
 using Autofac.Features.Indexed;
 using BleRecorder.Business.Device;
 using BleRecorder.UI.WPF.Event;
-using BleRecorder.UI.WPF.View.Services;
+using BleRecorder.UI.WPF.Views.Services;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 

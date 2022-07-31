@@ -2,7 +2,7 @@
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 
-namespace BleRecorder.UI.WPF.View.Services
+namespace BleRecorder.UI.WPF.Views.Services
 {
     public enum MessageDialogResult
     {

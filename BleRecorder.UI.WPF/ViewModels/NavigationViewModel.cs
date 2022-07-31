@@ -12,7 +12,7 @@ using BleRecorder.Models.Device;
 using BleRecorder.Models.TestSubject;
 using BleRecorder.UI.WPF.Data.Repositories;
 using BleRecorder.UI.WPF.Event;
-using BleRecorder.UI.WPF.View.Services;
+using BleRecorder.UI.WPF.Views.Services;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 
@@ -86,21 +86,10 @@ namespace BleRecorder.UI.WPF.ViewModels
                     _messenger));
             }
 
-            _bleRecorderManager.CurrentStimulationParameters = await _parametersRepository.GetByIdAsync(1) ?? CreateNewStimulationParameters();
+            _bleRecorderManager.CurrentStimulationParameters = (await _parametersRepository.GetByIdAsync(1))!; // always populated using data seeding
             StimulationParameters = new StimulationParametersViewModel(_bleRecorderManager.CurrentStimulationParameters, _parametersRepository);
         }
 
-        private StimulationParameters CreateNewStimulationParameters()
-        {
-            var parameters = new StimulationParameters(
-                10, 
-                50, 
-                StimulationPulseWidth.AvailableOptions[0], 
-                TimeSpan.FromSeconds(5));
-
-            _parametersRepository.Add(parameters);
-            return parameters;
-        }
 
         private void AfterDetailDeleted(AfterDetailDeletedEventArgs args) // TODO refactoring!
         {

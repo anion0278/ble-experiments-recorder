@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="BleRecorder.UI.WPF.View.testSubjectDetailView"
+﻿<UserControl x:Class="BleRecorder.UI.WPF.Views.testSubjectDetailView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -6,13 +6,12 @@
              xmlns:viewModels="clr-namespace:BleRecorder.UI.WPF.ViewModels"
              xmlns:extensions="clr-namespace:BleRecorder.UI.WPF.Extensions"
              xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-             xmlns:resouces="clr-namespace:BleRecorder.UI.WPF.View.Resouces"
-             xmlns:view="clr-namespace:BleRecorder.UI.WPF.View"
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:views="clr-namespace:BleRecorder.UI.WPF.Views"
              mc:Ignorable="d" 
              d:DesignHeight="500" d:DesignWidth="600"
              d:DataContext="{d:DesignInstance viewModels:TestSubjectDetailViewModel, d:IsDesignTimeCreatable=True}">
-    <ScrollViewer>
+    <ScrollViewer Padding="10">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -26,20 +25,24 @@
                 <RowDefinition />
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Label Content="First name" Margin="10 10 10 0"/>
+            <Label Content="First name"/>
+            <TextBox Grid.Row="1" MaxLength="25" 
+                     Text="{Binding FirstName, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" />
 
-            <Label Grid.Row="2" Content="Last name" Margin="10 0"/>
-            <TextBox Grid.Row="1" MaxLength="25" Margin="10 0 10 10"
-                 Text="{Binding FirstName, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" />
-            <TextBox Grid.Row="3" MaxLength="25" Margin="10 0 10 10"
-                 Text="{Binding LastName, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" />
+            <Label Grid.Row="2" Content="Last name"/>
+            <TextBox Grid.Row="3" MaxLength="25" 
+                     Text="{Binding LastName, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" />
 
-            <Expander Grid.Row="4" Margin="10" Header="Individual settings" mah:ControlsHelper.ContentCharacterCasing="Normal"
+            <Label Grid.Row="4" Content="Notes"/>
+            <TextBox Grid.Row="5" Style="{StaticResource NotesTextBox}"
+                     Text="{Binding Notes, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" />
+
+            <Expander Grid.Row="6" Margin="0  10" Header="Individual settings" mah:ControlsHelper.ContentCharacterCasing="Normal"
                       IsExpanded="{Binding Id, Mode=OneWay, Converter={StaticResource idToBooleanConverter}}">
-                <view:BleRecorderMechanicalAdjustmentView></view:BleRecorderMechanicalAdjustmentView>
+                <views:MechanismParametersView DataContext="{Binding MechanismParametersVm}" HorizontalAlignment="Left"  />
             </Expander>
 
-            <DockPanel Grid.Row="8"  Margin="10">
+            <DockPanel Grid.Row="8" >
                 <StackPanel DockPanel.Dock="Right">
                     <Button Content="Add" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
                         Command="{Binding AddMeasurementCommand}" CommandParameter=""/>

@@ -1,4 +1,4 @@
-﻿namespace BleRecorder.Models.Device;
+﻿namespace BleRecorder.Models.TestSubject;
 
 public enum MeasurementSite
 {
