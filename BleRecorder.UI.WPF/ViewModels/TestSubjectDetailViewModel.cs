@@ -42,6 +42,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         public TestSubject Model { get; set; } // MUST BE PUBLIC PROP in order to make validation work on init
 
         public MechanismParametersViewModel MechanismParametersVm { get; private set; }
+        public StimulationParametersViewModel StimulationParametersVm { get; private set; }
 
         public override string Title => $"{FirstName} {LastName}";
 
@@ -94,9 +95,36 @@ namespace BleRecorder.UI.WPF.ViewModels
         }
 
 
+        public override async Task LoadAsync(int id, object argsData)
+        {
+            Model = id > 0
+                ? await _testSubjectRepository.GetByIdAsync(id)
+                : CreateNewTestSubject();
+
+            Id = id;
+
+            _measurements = new ObservableCollection<Measurement>(Model.Measurements);
+            _measurements.CollectionChanged += (_, _) => OnPropertyChanged(nameof(Measurements)); // TODO why is it required?
+            Measurements = CollectionViewSource.GetDefaultView(_measurements);
+            Measurements.SortDescriptions.Add(new SortDescription(nameof(Measurement.Date), ListSortDirection.Ascending));
+            Measurements.GroupDescriptions.Add(new PropertyGroupDescription(nameof(Measurement.Type)));
+            Measurements.MoveCurrentTo(null);
+
+            MechanismParametersVm = new MechanismParametersViewModel(new MechanismParameters(Model.CustomizedAdjustments));
+            MechanismParametersVm.PropertyChanged += OnPropertyChangedEventHandler;
+
+            StimulationParametersVm = new StimulationParametersViewModel(Model.CustomizedParameters);
+            StimulationParametersVm.PropertyChanged += OnPropertyChangedEventHandler;
+
+            PropertyChanged += OnPropertyChangedEventHandler;
+        }
+
         protected override void UnsubscribeOnClosing()
         {
+            MechanismParametersVm.PropertyChanged -= OnPropertyChangedEventHandler;
+            StimulationParametersVm.PropertyChanged -= OnPropertyChangedEventHandler;
             PropertyChanged -= OnPropertyChangedEventHandler;
+
             //_measurements.CollectionChanged -= (_, _) => OnPropertyChanged(nameof(Measurements)); // TODO
             Messenger.Unregister<AfterDetailSavedEventArgs>(this);
             Messenger.Unregister<AfterDetailDeletedEventArgs>(this);
@@ -160,27 +188,6 @@ namespace BleRecorder.UI.WPF.ViewModels
             _measurements.Remove((Measurement)Measurements.CurrentItem);
         }
 
-        public override async Task LoadAsync(int id, object argsData)
-        {
-            Model = id > 0
-              ? await _testSubjectRepository.GetByIdAsync(id)
-              : CreateNewTestSubject();
-
-            Id = id;
-
-            _measurements = new ObservableCollection<Measurement>(Model.Measurements);
-            _measurements.CollectionChanged += (_, _) => OnPropertyChanged(nameof(Measurements)); // TODO why is it required?
-            Measurements = CollectionViewSource.GetDefaultView(_measurements);
-            Measurements.SortDescriptions.Add(new SortDescription(nameof(Measurement.Date), ListSortDirection.Ascending));
-            Measurements.GroupDescriptions.Add(new PropertyGroupDescription(nameof(Measurement.Type)));
-            Measurements.MoveCurrentTo(null);
-
-            MechanismParametersVm = new MechanismParametersViewModel(new MechanismParameters(Model.CustomizedAdjustments));
-            MechanismParametersVm.PropertyChanged += OnPropertyChangedEventHandler;
-
-            PropertyChanged += OnPropertyChangedEventHandler;
-        }
-
         protected override async void OnSaveExecute()
         {
             await _testSubjectRepository.SaveAsync();
@@ -211,12 +218,8 @@ namespace BleRecorder.UI.WPF.ViewModels
         {
             var testSubject = new TestSubject
             {
-                CustomizedAdjustments = new DeviceMechanicalAdjustments(){TibiaLength = 20},
-                CustomizedParameters = new StimulationParameters(
-                    10,
-                    50,
-                    StimulationPulseWidth.AvailableOptions[0],
-                    TimeSpan.FromSeconds(5))
+                CustomizedAdjustments = new DeviceMechanicalAdjustments(),
+                CustomizedParameters = StimulationParameters.GetDefaultValues()
             };
 
             _testSubjectRepository.Add(testSubject);

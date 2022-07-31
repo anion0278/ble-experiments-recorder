@@ -2,7 +2,7 @@
 
 public class StimulationParameters
 {
-    public int Id { get; init; }
+    public int Id { get; set; }
 
     public int Current { get; set; }
     public int Frequency { get; set; }
@@ -18,5 +18,14 @@ public class StimulationParameters
         Frequency = frequency;
         PulseWidth = pulseWidth;
         StimulationTime = stimulationTime;
+    }
+
+    public static StimulationParameters GetDefaultValues() // TODO into  DefaultValuesFactory
+    {
+        return new StimulationParameters(
+            10,
+            50,
+            StimulationPulseWidth.AvailableOptions[0],
+            TimeSpan.FromSeconds(5));
     }
 }

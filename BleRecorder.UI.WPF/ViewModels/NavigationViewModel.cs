@@ -21,7 +21,6 @@ namespace BleRecorder.UI.WPF.ViewModels
     public class NavigationViewModel : ViewModelBase, INavigationViewModel
     {
         private readonly ITestSubjectRepository _testSubjectRepository;
-        private readonly IStimulationParametersRepository _parametersRepository;
         private readonly IMessenger _messenger;
         private readonly IBleRecorderManager _bleRecorderManager;
 
@@ -31,11 +30,8 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         public BleRecorderAvailabilityStatus BleRecorderAvailability => _bleRecorderManager.BleRecorderAvailability;
 
-        public StimulationParametersViewModel StimulationParameters { get; private set; }
-
         public NavigationViewModel(
             ITestSubjectRepository testSubjectRepository,
-            IStimulationParametersRepository parametersRepository,
             IMessenger messenger, 
             IBleRecorderManager bleRecorderManager, 
             IAsyncRelayCommandFactory asyncCommandFactory)
@@ -43,7 +39,6 @@ namespace BleRecorder.UI.WPF.ViewModels
             ConnectBleRecorderCommand = asyncCommandFactory.Create(ConnectBleRecorder, CanConnectBleRecorder);
 
             _testSubjectRepository = testSubjectRepository;
-            _parametersRepository = parametersRepository;
             _messenger = messenger;
             _bleRecorderManager = bleRecorderManager;
 
@@ -85,9 +80,6 @@ namespace BleRecorder.UI.WPF.ViewModels
                     nameof(TestSubjectDetailViewModel), 
                     _messenger));
             }
-
-            _bleRecorderManager.CurrentStimulationParameters = (await _parametersRepository.GetByIdAsync(1))!; // always populated using data seeding
-            StimulationParameters = new StimulationParametersViewModel(_bleRecorderManager.CurrentStimulationParameters, _parametersRepository);
         }
 
 
