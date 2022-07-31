@@ -33,7 +33,7 @@ public class MyodamRequestMessage
             $"SF:{StimulationParameters.Frequency:000}_" +
             $"SP:{StimulationParameters.PulseWidth.Value:000}_" +
             $"ST:{StimulationParameters.StimulationTime.TotalSeconds:00}_" +
-            $"MC:{(int)Measurement}";
+            $"MC:{(int)Measurement}\n";
     }
 
     public static MyodamMeasurement Convert(MeasurementType measurementType)

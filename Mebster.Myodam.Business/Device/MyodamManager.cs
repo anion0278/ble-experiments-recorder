@@ -7,6 +7,7 @@ public interface IMyodamManager
 {
     event EventHandler MyodamAvailabilityChanged;
     event EventHandler? MeasurementStatusChanged;
+    event EventHandler? DevicePropertyChanged;
     MyodamDevice? MyodamDevice { get; }
     StimulationParameters CurrentStimulationParameters { get; set; }
     MyodamAvailabilityStatus MyodamAvailability { get; }
@@ -18,6 +19,7 @@ public class MyodamManager : IMyodamManager
 {
     public event EventHandler? MyodamAvailabilityChanged;
     public event EventHandler? MeasurementStatusChanged;
+    public event EventHandler? DevicePropertyChanged;
     private readonly IBluetoothManager _bluetoothManager;
     private readonly IMyodamMessageParser _messageParser;
     private MyodamAvailabilityStatus _myodamAvailability;
@@ -69,6 +71,7 @@ public class MyodamManager : IMyodamManager
         {
             MyodamDevice.ConnectionStatusChanged -= OnConnectionStatusChanged;
             MyodamDevice.MeasurementStatusChanged -= OnMeasurementStatusChanged;
+            MyodamDevice.BatteryStatusChanged -= OnDeviceStatusChanged;
             MyodamDevice.Disconnect();
             MyodamDevice = null;
         }
@@ -82,6 +85,12 @@ public class MyodamManager : IMyodamManager
         MyodamAvailability = MyodamAvailabilityStatus.Connected;
         MyodamDevice.ConnectionStatusChanged += OnConnectionStatusChanged;
         MyodamDevice.MeasurementStatusChanged += OnMeasurementStatusChanged;
+        MyodamDevice.BatteryStatusChanged += OnDeviceStatusChanged;
+    }
+
+    private void OnDeviceStatusChanged(object? sender, EventArgs e)
+    {
+        DevicePropertyChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private void OnMeasurementStatusChanged(object? sender, EventArgs e)

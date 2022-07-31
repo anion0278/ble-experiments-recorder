@@ -1,4 +1,4 @@
-﻿namespace Mebster.Myodam.Models.TestSubject
+﻿namespace Mebster.Myodam.UI.WPF.ViewModels
 {
   public class LookupItem
   {

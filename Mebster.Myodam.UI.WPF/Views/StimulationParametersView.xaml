@@ -7,7 +7,7 @@
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:device="clr-namespace:Mebster.Myodam.Models.Device;assembly=Mebster.Myodam.Models"
              mc:Ignorable="d" 
-             d:DesignHeight="150" d:DesignWidth="300">
+             d:DesignHeight="200" d:DesignWidth="300">
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -21,9 +21,9 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"  Content="Individual stimulation parameters" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="10"  Content="Individual stimulation parameters" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-        <Label Grid.Row="1" Grid.Column="0" Content="Current [mA]:" VerticalAlignment="Center"/>
+        <Label Grid.Row="1" Grid.Column="0" Content="Current [mA]:"  VerticalAlignment="Center"/>
         <mah:NumericUpDown Grid.Row="1" Grid.Column="1" 
                            Interval="10" Minimum="1" Maximum="100"
                            Value="{Binding CurrentMilliAmps}" />
@@ -38,7 +38,7 @@
                            Interval="1" Minimum="1" Maximum="10"
                            Value="{Binding StimulationTimeSeconds}" />
 
-        <Label Grid.Row="4" Grid.Column="0"  Content="Pulse [us]:" VerticalAlignment="Center"/>
+        <Label Grid.Row="4" Grid.Column="0"  Content="Pulse [us]:"  VerticalAlignment="Center"/>
         <ComboBox Grid.Row="4" Grid.Column="1" 
                   DisplayMemberPath="Value"
                   SelectedItem="{Binding PulseWidthMicroSeconds}"

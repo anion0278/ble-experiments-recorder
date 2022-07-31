@@ -6,13 +6,34 @@
              xmlns:device="clr-namespace:Mebster.Myodam.Models.Device;assembly=Mebster.Myodam.Models"
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:device1="clr-namespace:Mebster.Myodam.Business.Device;assembly=Mebster.Myodam.Business"
+             xmlns:viewModels="clr-namespace:Mebster.Myodam.UI.WPF.ViewModels"
              mc:Ignorable="d" 
-             d:DesignHeight="600" d:DesignWidth="300">
+             d:DesignHeight="600" d:DesignWidth="300"
+             d:DataContext="{d:DesignInstance viewModels:NavigationViewModel, IsDesignTimeCreatable=True}">
     <UserControl.Resources>
+        <ControlTemplate x:Key="PercentageBar" TargetType="ProgressBar">
+            <Grid>
+                <ProgressBar Style="{StaticResource {x:Type ProgressBar}}" Minimum="0" Maximum="100" Margin="3"
+                             Value="{Binding Path=Value,
+                                RelativeSource={RelativeSource TemplatedParent}, 
+                                TargetNullValue=0, FallbackValue=0, Mode=TwoWay}" />
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" 
+                           FontWeight="Bold" Foreground="White"
+                           Text="{Binding Path=Value, StringFormat='{}{0}%',
+                                RelativeSource={RelativeSource TemplatedParent}, 
+                                TargetNullValue='Unknown', Mode=TwoWay}" />
+            </Grid>
+        </ControlTemplate>
+
+        <Style TargetType="ProgressBar" BasedOn="{StaticResource {x:Type ProgressBar}}">
+            <Setter Property="Template" Value="{StaticResource PercentageBar}"></Setter>
+        </Style>
+
         <Style x:Key="NavigationItemContainerStyle" TargetType="ContentPresenter">
             <Setter Property="HorizontalAlignment" Value="Left"/>
             <Setter Property="Margin" Value="2"/>
         </Style>
+
         <DataTemplate x:Key="NavigationItemTemplate">
             <Button Content="{Binding DisplayMember}"
               Command="{Binding OpenDetailViewCommand}"
@@ -105,20 +126,16 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    
+
                     <Label Grid.Row="0" Grid.Column="0"  Content="FES Battery [%]:" VerticalAlignment="Center"/>
-                    <Grid Grid.Row="0" Grid.Column="1">
-                        <ProgressBar Minimum="0" Maximum="100" Value="0" Margin="3" />
-                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="0" />
-                    </Grid>
+                    <ProgressBar Grid.Row="0" Grid.Column="1" 
+                                 d:Value ="80"
+                                 Value="{Binding StimulatorBatteryPercentage, Mode=OneWay}" />
 
                     <Label Grid.Row="1" Grid.Column="0"  Content="Device Battery [%]:" VerticalAlignment="Center"/>
-                    <Grid Grid.Row="1" Grid.Column="1">
-                        <ProgressBar Minimum="0" Maximum="100" Value="0" Margin="3" />
-                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="0" />
-                    </Grid>
+                    <ProgressBar Grid.Row="1" Grid.Column="1"
+                                 Value="{Binding ControllerBatteryPercentage, Mode=OneWay}"/>
 
-                    
                 </Grid>
                 <!--</GroupBox>-->
             </StackPanel>

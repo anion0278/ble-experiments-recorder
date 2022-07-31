@@ -44,8 +44,8 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <views:MechanismParametersView Grid.Column="0" DataContext="{Binding MechanismParametersVm}"  />
-                    <views:StimulationParametersView Grid.Column="1" DataContext="{Binding StimulationParametersVm}" />
+                    <views:MechanismParametersView Grid.Column="0"  DataContext="{Binding MechanismParametersVm}"  />
+                    <views:StimulationParametersView Grid.Column="1" HorizontalAlignment="Center" DataContext="{Binding StimulationParametersVm}" />
                 </Grid>
             </Expander>
 
