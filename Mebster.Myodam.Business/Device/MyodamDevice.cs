@@ -62,7 +62,7 @@ public class MyodamDevice // TODO Extract inteface
         {
             Debug.Print("Sent");
             SendMsg(new(
-                new(0, 0, StimulationPulseWidth.AvailableOptions[0], TimeSpan.Zero),
+                StimulationParameters.GetDefaultValues(), 
                 MeasurementType.Fatigue,
                 false));
         }

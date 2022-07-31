@@ -33,9 +33,8 @@ public class StimulationParametersViewModel : ViewModelBase
         set => _model.StimulationTime = TimeSpan.FromSeconds(value);
     }
 
-    public StimulationParametersViewModel(StimulationParameters model, IStimulationParametersRepository stimulationParametersRepository)
+    public StimulationParametersViewModel(StimulationParameters model)
     {
         _model = model;
-        PropertyChanged += async (_, _) => await stimulationParametersRepository.SaveAsync();
     }
 }

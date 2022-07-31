@@ -100,10 +100,6 @@
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
@@ -122,26 +118,7 @@
                         <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="0" />
                     </Grid>
 
-                    <Label Grid.Row="2" Grid.Column="0" Content="Current [mA]:" VerticalAlignment="Center"/>
-                    <mah:NumericUpDown Grid.Row="2" Grid.Column="1" FontWeight="Bold" HorizontalContentAlignment="Center" Margin="3" FontSize="12"
-                                       Interval="10" Minimum="1" Maximum="100"
-                                       Value="{Binding StimulationParameters.CurrentMilliAmps}" />
-
-                    <Label Grid.Row="3" Grid.Column="0"  Content="Pulse [us]:" VerticalAlignment="Center"/>
-                    <ComboBox Grid.Row="3" Grid.Column="1" FontWeight="Bold" HorizontalContentAlignment="Center" Margin="3" FontSize="12"
-                              DisplayMemberPath="Value"
-                              SelectedItem="{Binding StimulationParameters.PulseWidthMicroSeconds}"
-                              ItemsSource="{x:Static device:StimulationPulseWidth.AvailableOptions}"/>
-
-                    <Label Grid.Row="4" Grid.Column="0"  Content="Frequency [Hz]:" VerticalAlignment="Center"/>
-                    <mah:NumericUpDown Grid.Row="4" Grid.Column="1" FontWeight="Bold" HorizontalContentAlignment="Center" Margin="3" FontSize="12"
-                                       Interval="5" Minimum="1" Maximum="100"
-                                       Value="{Binding StimulationParameters.FrequencyHz}" />
-
-                    <Label Grid.Row="5" Grid.Column="0"  Content="Stimulation time [s]:" VerticalAlignment="Center"/>
-                    <mah:NumericUpDown Grid.Row="5" Grid.Column="1" FontWeight="Bold" HorizontalContentAlignment="Center" Margin="3" FontSize="12"
-                                       Interval="1" Minimum="1" Maximum="10"
-                                       Value="{Binding StimulationParameters.StimulationTimeSeconds}" />
+                    
                 </Grid>
                 <!--</GroupBox>-->
             </StackPanel>

@@ -21,7 +21,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
     public class NavigationViewModel : ViewModelBase, INavigationViewModel
     {
         private readonly ITestSubjectRepository _testSubjectRepository;
-        private readonly IStimulationParametersRepository _parametersRepository;
         private readonly IMessenger _messenger;
         private readonly IMyodamManager _myodamManager;
 
@@ -31,11 +30,8 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         public MyodamAvailabilityStatus MyodamAvailability => _myodamManager.MyodamAvailability;
 
-        public StimulationParametersViewModel StimulationParameters { get; private set; }
-
         public NavigationViewModel(
             ITestSubjectRepository testSubjectRepository,
-            IStimulationParametersRepository parametersRepository,
             IMessenger messenger, 
             IMyodamManager myodamManager, 
             IAsyncRelayCommandFactory asyncCommandFactory)
@@ -43,7 +39,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             ConnectMyodamCommand = asyncCommandFactory.Create(ConnectMyodam, CanConnectMyodam);
 
             _testSubjectRepository = testSubjectRepository;
-            _parametersRepository = parametersRepository;
             _messenger = messenger;
             _myodamManager = myodamManager;
 
@@ -85,9 +80,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
                     nameof(TestSubjectDetailViewModel), 
                     _messenger));
             }
-
-            _myodamManager.CurrentStimulationParameters = (await _parametersRepository.GetByIdAsync(1))!; // always populated using data seeding
-            StimulationParameters = new StimulationParametersViewModel(_myodamManager.CurrentStimulationParameters, _parametersRepository);
         }
 
 

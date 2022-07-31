@@ -45,7 +45,7 @@ namespace Mebster.Myodam.UI.WPF.Startup
 
             builder.RegisterType<TestSubjectRepository>().As<ITestSubjectRepository>();
             builder.RegisterType<MeasurementRepository>().As<IMeasurementRepository>();
-            builder.RegisterType<StimulationParametersRepository>().As<IStimulationParametersRepository>();
+            //builder.RegisterType<StimulationParametersRepository>().As<IStimulationParametersRepository>();
 
             return builder.Build();
         }

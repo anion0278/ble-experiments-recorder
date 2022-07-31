@@ -17,16 +17,22 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/dark.indigo.xaml" />
 
                 <ResourceDictionary>
-                    <!--Implicit MVVM teplates-->
+                    <!--Region Implicit MVVM teplates-->
                     <DataTemplate DataType="{x:Type viewModel:TestSubjectDetailViewModel}">
                         <views:testSubjectDetailView/>
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type viewModel:MeasurementDetailViewModel}">
                         <views:MeasurementDetailView/>
                     </DataTemplate>
-                    <!--Templates end-->
+                    <!--EndRegion-->
 
-                    <SolidColorBrush x:Key="MebsterColor" Color="#322882"/>
+                    <!-- Region Implicit GLOBAL styles -->
+                    <Style TargetType="mah:NumericUpDown" BasedOn="{StaticResource {x:Type mah:NumericUpDown}}">
+                        <Setter Property="Margin" Value="3"/>
+                        <Setter Property="FontWeight" Value="Bold"/>
+                        <Setter Property="TextAlignment" Value="Center"/>
+                        <Setter Property="FontSize" Value="12"/>
+                    </Style>
 
                     <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                         <Setter Property="FontSize" Value="12"/>
@@ -34,17 +40,13 @@
                         <Setter Property="Margin" Value="10"/>
                         <Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
                     </Style>
-                    <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
-                        <Setter Property="FontSize" Value="12"/>
-                    </Style>
-                    <Style TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
-                        <Setter Property="Foreground" Value="#CCCCCC"/>
-                    </Style>
 
-                    <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter"/>
-                    <resouces:InverseBooleanConverter x:Key="inverseBooleanConverter"/>
-                    <resouces:CollectionLengthToBooleanConverter x:Key="collectionLengthToBooleanConverter"/>
-                    <resouces:IdToBooleanConverter x:Key="idToBooleanConverter"/>
+                    <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        <Setter Property="FontSize" Value="12"/>
+                        <Setter Property="FontWeight" Value="Bold"/>
+                        <Setter Property="Margin" Value="3"/>
+                    </Style>
 
                     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                         <Setter Property="FontSize" Value="14"/>
@@ -66,12 +68,25 @@
                             </Trigger>
                         </Style.Triggers>
                     </Style>
+                    <Style TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
+                        <Setter Property="Foreground" Value="#CCCCCC"/>
+                    </Style>
+                    <!-- EndRegion -->
+
+                    <!-- Region Converters -->
+                    <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter"/>
+                    <resouces:InverseBooleanConverter x:Key="inverseBooleanConverter"/>
+                    <resouces:CollectionLengthToBooleanConverter x:Key="collectionLengthToBooleanConverter"/>
+                    <resouces:IdToBooleanConverter x:Key="idToBooleanConverter"/>
+                    <!-- EndRegion -->
 
                     <Style x:Key="NotesTextBox" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                         <Setter Property="TextWrapping" Value="Wrap"/>
                         <Setter Property="AcceptsTab" Value="true"/>
                         <Setter Property="AcceptsReturn" Value="true"/>
                     </Style>
+
+                    <SolidColorBrush x:Key="MebsterColor" Color="#322882"/>
 
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
