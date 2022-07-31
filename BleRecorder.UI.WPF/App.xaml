@@ -48,6 +48,12 @@
                         <Setter Property="Margin" Value="3"/>
                     </Style>
 
+                    <!--<Style TargetType="GroupBox"  BasedOn="{StaticResource {x:Type GroupBox}}">
+                        <Setter Property="FontSize" Value="12"/>
+                        <Setter Property="FontWeight" Value="Bold"/>
+                        <Setter Property="mah:ControlsHelper.ContentCharacterCasing" Value="Normal"/>
+                    </Style>-->
+
                     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                         <Setter Property="FontSize" Value="14"/>
                         <Setter Property="Margin" Value="0 0 0 12"/>

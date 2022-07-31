@@ -33,7 +33,7 @@ public class BleRecorderRequestMessage
             $"SF:{StimulationParameters.Frequency:000}_" +
             $"SP:{StimulationParameters.PulseWidth.Value:000}_" +
             $"ST:{StimulationParameters.StimulationTime.TotalSeconds:00}_" +
-            $"MC:{(int)Measurement}";
+            $"MC:{(int)Measurement}\n";
     }
 
     public static BleRecorderMeasurement Convert(MeasurementType measurementType)

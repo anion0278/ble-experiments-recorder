@@ -45,19 +45,19 @@
                  Text="{Binding Notes}" />
 
             <StackPanel Grid.Row="4"  Orientation="Horizontal">
-                <Label Content="Measurement date:" />
+                <Label Content="Measurement date:  " />
                 <TextBlock FontWeight="Bold" VerticalAlignment="Center"
                            Text="{Binding Date, StringFormat='{}{0:dd MMM. yyyy, HH:mm}', TargetNullValue='Not measured yet'}" />
             </StackPanel>
 
             <StackPanel Grid.Row="5" Orientation="Horizontal" >
-                <Label Content="Test subject:          "/>
+                <Label Content="Test subject:            "/>
                 <Label FontWeight="Bold" Content="{Binding Measurement.TestSubject.FullName}"/>
             </StackPanel>
 
             <StackPanel Grid.Row="6"  Orientation="Horizontal">
                 <Label Content="Measurement type:" />
-                <ComboBox Width="150"
+                <ComboBox Width="160"
                           SelectedItem="{Binding Type}"
                           IsEnabled="{Binding ForceValues,Mode=OneWay, Converter={StaticResource collectionLengthToBooleanConverter}}"
                           ItemsSource="{Binding Source={StaticResource MeasurementTypeEnum}}" >

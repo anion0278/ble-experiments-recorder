@@ -13,15 +13,40 @@ public class BleRecorderDevice // TODO Extract inteface
     private readonly IBleRecorderMessageParser _messageParser;
     private bool _isCurrentlyMeasuring;
     private System.Timers.Timer _outboundDataTimer;
+    private Percentage _stimulatorBattery;
+    private Percentage _controllerBattery;
 
     public event EventHandler<MeasuredValue>? NewValueReceived;
     public event EventHandler? MeasurementFinished;
     public event EventHandler? ConnectionStatusChanged;
     public event EventHandler? MeasurementStatusChanged;
+    public event EventHandler? BatteryStatusChanged;
 
     public StimulationParameters CurrentParameters { get; set; }
 
     public MechanismParameters Mechanism { get; set; }
+
+    public Percentage StimulatorBattery
+    {
+        get => _stimulatorBattery;
+        private set
+        {
+            if (_stimulatorBattery.Equals(value)) return;
+            _stimulatorBattery = value;
+            BatteryStatusChanged?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
+    public Percentage ControllerBattery
+    {
+        get => _controllerBattery;
+        private set
+        {
+            if (_controllerBattery.Equals(value)) return;
+            _controllerBattery = value;
+            BatteryStatusChanged?.Invoke(this, EventArgs.Empty);
+        }
+    }
 
     public bool IsConnected => _bleDeviceHandler.IsConnected;
 
@@ -54,18 +79,20 @@ public class BleRecorderDevice // TODO Extract inteface
         _outboundDataTimer = new System.Timers.Timer(TimeSpan.FromMilliseconds(100).TotalMilliseconds);
         _outboundDataTimer.Elapsed += OnTimerTimeElapsed;
         _outboundDataTimer.Start();
+
+        StimulatorBattery = new Percentage(0);
+        ControllerBattery = new Percentage(0);
     }
 
-    private void OnTimerTimeElapsed(object? sender, ElapsedEventArgs e)
+    private async void OnTimerTimeElapsed(object? sender, ElapsedEventArgs e)
     {
-        if (IsConnected)
-        {
-            Debug.Print("Sent");
-            SendMsg(new(
-                StimulationParameters.GetDefaultValues(), 
-                MeasurementType.Intermittent,
-                false));
-        }
+        if (!IsConnected) return;
+
+        //Debug.Print("Sent");
+        await SendMsg(new(
+            StimulationParameters.GetDefaultValues(), 
+            MeasurementType.Intermittent,
+            false));
     }
 
     private void BleDeviceStatusChanged(object? sender, EventArgs e)
@@ -81,7 +108,10 @@ public class BleRecorderDevice // TODO Extract inteface
 
     private void BleDeviceHandlerDataReceived(object? sender, string data)
     {
+        //Debug.Print("Recieved");
         var reply = _messageParser.ParseReply(data);
+        StimulatorBattery = reply.StimulatorBattery;
+        ControllerBattery = reply.ControllerBattery;
 
         if (IsCurrentlyMeasuring)
         {

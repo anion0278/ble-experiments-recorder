@@ -1,4 +1,4 @@
-﻿namespace BleRecorder.Models.TestSubject
+﻿namespace BleRecorder.UI.WPF.ViewModels
 {
   public class LookupItem
   {

@@ -30,6 +30,16 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         public BleRecorderAvailabilityStatus BleRecorderAvailability => _bleRecorderManager.BleRecorderAvailability;
 
+        public int StimulatorBatteryPercentage => (int)(_bleRecorderManager.BleRecorderDevice?.StimulatorBattery.Value ?? 0);
+        public int ControllerBatteryPercentage => (int)(_bleRecorderManager.BleRecorderDevice?.ControllerBattery.Value ?? 0);
+
+        /// <summary>
+        /// Design-time ctor
+        /// </summary>
+        public NavigationViewModel()
+        {
+        }
+
         public NavigationViewModel(
             ITestSubjectRepository testSubjectRepository,
             IMessenger messenger, 
@@ -43,8 +53,15 @@ namespace BleRecorder.UI.WPF.ViewModels
             _bleRecorderManager = bleRecorderManager;
 
             _bleRecorderManager.BleRecorderAvailabilityChanged += OnBleRecorderAvailabilityChanged;
+            _bleRecorderManager.DevicePropertyChanged += OnBleRecorderPropertyChanged;
             _messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
             _messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
+        }
+
+        private void OnBleRecorderPropertyChanged(object? sender, EventArgs e)
+        {
+            OnPropertyChanged(nameof(ControllerBatteryPercentage));
+            OnPropertyChanged(nameof(StimulatorBatteryPercentage));
         }
 
         private void OnBleRecorderAvailabilityChanged(object? o, EventArgs eventArgs)
@@ -65,12 +82,10 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         public async Task LoadAsync()
         {
+            // TODO check, refactor
             var lookup = (await _testSubjectRepository.GetAllAsync())
-                .Select(ts => new LookupItem
-                {
-                    Id = ts.Id,
-                    DisplayMember = ts.FirstName + " " + ts.LastName // TODO check, refactor
-                }).ToArray();
+                .Select(ts => new LookupItem { Id = ts.Id, DisplayMember = ts.FullName })
+                .ToArray();
             TestSubjects.Clear();
             foreach (var item in lookup)
             {

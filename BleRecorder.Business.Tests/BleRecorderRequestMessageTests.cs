@@ -9,8 +9,8 @@ namespace BleRecorder.Business.Tests
     public class BleRecorderRequestMessageTests
     {
         [Theory]
-        [InlineData(100, 80, 4, MeasurementType.MaximumContraction, true, ">SC:100_SF:080_SP:400_ST:10_MC:1")]
-        [InlineData(8, 100, 0, MeasurementType.Intermittent, false, ">SC:008_SF:100_SP:050_ST:10_MC:0")]
+        [InlineData(100, 80, 4, MeasurementType.MaximumContraction, true, ">SC:100_SF:080_SP:400_ST:10_MC:1\n")]
+        [InlineData(8, 100, 0, MeasurementType.Intermittent, false, ">SC:008_SF:100_SP:050_ST:10_MC:0\n")]
         public void Formats_valid_message_to_string(
             int current, 
             int frequency, 
