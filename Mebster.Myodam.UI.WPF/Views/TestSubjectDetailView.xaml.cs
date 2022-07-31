@@ -2,7 +2,7 @@
 using System.Windows.Input;
 using Mebster.Myodam.UI.WPF.ViewModels;
 
-namespace Mebster.Myodam.UI.WPF.View
+namespace Mebster.Myodam.UI.WPF.Views
 {
     /// <summary>
     /// Interaction logic for testSubjectDetailView.xaml

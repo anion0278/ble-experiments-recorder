@@ -12,7 +12,7 @@ using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.Models.TestSubject;
 using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.Event;
-using Mebster.Myodam.UI.WPF.View.Services;
+using Mebster.Myodam.UI.WPF.Views.Services;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 
@@ -86,21 +86,10 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
                     _messenger));
             }
 
-            _myodamManager.CurrentStimulationParameters = await _parametersRepository.GetByIdAsync(1) ?? CreateNewStimulationParameters();
+            _myodamManager.CurrentStimulationParameters = (await _parametersRepository.GetByIdAsync(1))!; // always populated using data seeding
             StimulationParameters = new StimulationParametersViewModel(_myodamManager.CurrentStimulationParameters, _parametersRepository);
         }
 
-        private StimulationParameters CreateNewStimulationParameters()
-        {
-            var parameters = new StimulationParameters(
-                10, 
-                50, 
-                StimulationPulseWidth.AvailableOptions[0], 
-                TimeSpan.FromSeconds(5));
-
-            _parametersRepository.Add(parameters);
-            return parameters;
-        }
 
         private void AfterDetailDeleted(AfterDetailDeletedEventArgs args) // TODO refactoring!
         {

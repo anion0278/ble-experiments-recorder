@@ -33,6 +33,12 @@ public class ExperimentsDbContext : DbContext
                 p => StimulationPulseWidth.AvailableOptions.SingleOrDefault(op => op.Value == p) 
                      ?? StimulationPulseWidth.AvailableOptions.First());
 
+        modelBuilder.Entity<StimulationParameters>().HasData(new StimulationParameters(
+            10,
+            50,
+            StimulationPulseWidth.AvailableOptions[0],
+            TimeSpan.FromSeconds(5)) {Id = 1});
+
         base.OnModelCreating(modelBuilder);
     }
 

@@ -9,7 +9,7 @@ using System.Windows.Input;
 using Autofac.Features.Indexed;
 using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.UI.WPF.Event;
-using Mebster.Myodam.UI.WPF.View.Services;
+using Mebster.Myodam.UI.WPF.Views.Services;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 

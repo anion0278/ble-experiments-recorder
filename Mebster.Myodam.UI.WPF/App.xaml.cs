@@ -12,6 +12,7 @@ using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.DataAccess;
 using Mebster.Myodam.UI.WPF.Exception;
 using Mebster.Myodam.UI.WPF.Startup;
+using Mebster.Myodam.UI.WPF.Views;
 
 namespace Mebster.Myodam.UI.WPF
 {

@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace Mebster.Myodam.UI.WPF.View
+namespace Mebster.Myodam.UI.WPF.Views
 {
   public partial class MeasurementDetailView : UserControl
   {

@@ -14,7 +14,7 @@ using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.Models.TestSubject;
 using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.Event;
-using Mebster.Myodam.UI.WPF.View.Services;
+using Mebster.Myodam.UI.WPF.Views.Services;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using Swordfish.NET.Collections.Auxiliary;
@@ -167,7 +167,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             var newMeasurement = new Measurement
             {
                 ForceData = new List<MeasuredValue>(),
-                Notes = string.Empty
             };
             newMeasurement.TestSubject = (await _measurementRepository.GetTestSubjectById(correspondingTestSubject.Id))!;
             _measurementRepository.Add(newMeasurement);

@@ -1,4 +1,4 @@
-﻿namespace Mebster.Myodam.Models.Device;
+﻿namespace Mebster.Myodam.Models.TestSubject;
 
 public enum MeasurementSite
 {

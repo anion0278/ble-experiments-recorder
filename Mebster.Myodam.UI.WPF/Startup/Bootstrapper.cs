@@ -1,12 +1,15 @@
 ﻿using Autofac;
+using AutoMapper;
 using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.Common.Services;
 using Mebster.Myodam.DataAccess;
 using Mebster.Myodam.Infrastructure.Bluetooth;
+using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.Exception;
-using Mebster.Myodam.UI.WPF.View.Services;
 using Mebster.Myodam.UI.WPF.ViewModels;
+using Mebster.Myodam.UI.WPF.Views;
+using Mebster.Myodam.UI.WPF.Views.Services;
 using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace Mebster.Myodam.UI.WPF.Startup
@@ -19,6 +22,7 @@ namespace Mebster.Myodam.UI.WPF.Startup
             var builder = new ContainerBuilder();
 
             builder.RegisterInstance<IMessenger>(WeakReferenceMessenger.Default);
+            builder.RegisterInstance<IMapper>(SetupMapper());
 
             builder.RegisterType<ExperimentsDbContext>().AsSelf();
 
@@ -44,6 +48,14 @@ namespace Mebster.Myodam.UI.WPF.Startup
             builder.RegisterType<StimulationParametersRepository>().As<IStimulationParametersRepository>();
 
             return builder.Build();
+        }
+
+        public IMapper SetupMapper()
+        {
+            var config = new MapperConfiguration(
+                cfg => cfg.CreateMap<DeviceMechanicalAdjustments, DeviceMechanicalAdjustments>()
+                    .IgnoreAllPropertiesWithAnInaccessibleSetter());
+            return config.CreateMapper();
         }
     }
 }

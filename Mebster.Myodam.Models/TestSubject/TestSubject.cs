@@ -25,9 +25,11 @@ public class TestSubject
     [NotMapped]
     public string FullName => FirstName + " " + LastName;
 
-    //public MyodamMechanicalAdjustments CustomizedAdjustments { get; set; }
+    public string? Notes { get; set; }
 
-    //public StimulationParameters CustomizedParameters { get; set; }
+    public DeviceMechanicalAdjustments CustomizedAdjustments { get; set; }
+
+    public StimulationParameters CustomizedParameters { get; set; }
 
     public ICollection<Measurement> Measurements { get; set; }
 }

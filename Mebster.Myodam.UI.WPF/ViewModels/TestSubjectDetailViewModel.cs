@@ -9,11 +9,14 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
+using AutoMapper;
 using Castle.Components.DictionaryAdapter;
+using Mebster.Myodam.Business.Device;
+using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.Models.TestSubject;
 using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.Event;
-using Mebster.Myodam.UI.WPF.View.Services;
+using Mebster.Myodam.UI.WPF.Views.Services;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
@@ -24,7 +27,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
     {
         private ITestSubjectRepository _testSubjectRepository;
         private readonly IMeasurementRepository _measurementRepository;
-
+        private readonly IMapper _mapper;
 
         public ICommand RemoveMeasurementCommand { get; set; }
 
@@ -38,6 +41,9 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         public TestSubject Model { get; set; } // MUST BE PUBLIC PROP in order to make validation work on init
 
+        public MechanismParametersViewModel MechanismParametersVm { get; private set; }
+
+        public override string Title => $"{FirstName} {LastName}";
 
         [Required]
         [StringLength(20, MinimumLength = 2)]
@@ -55,7 +61,11 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             set => Model.LastName = value;
         }
 
-        public override string Title => $"{FirstName} {LastName}";
+        public string Notes
+        {
+            get => Model.Notes;
+            set => Model.Notes = value;
+        }
 
         /// <summary>
         /// Design-time ctor
@@ -67,16 +77,17 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             ITestSubjectRepository testSubjectRepository,
             IMeasurementRepository measurementRepository,
             IMessenger messenger,
+            IMapper mapper,
             IMessageDialogService messageDialogService)
           : base(messenger, messageDialogService)
         {
             _testSubjectRepository = testSubjectRepository;
             _measurementRepository = measurementRepository;
+            _mapper = mapper;
 
             AddMeasurementCommand = new RelayCommand(async () => await OnAddMeasurement());
             EditMeasurementCommand = new RelayCommand(OnEditMeasurement, () => Measurements!.CurrentItem != null);
             RemoveMeasurementCommand = new RelayCommand(OnRemoveMeasurement, () => Measurements!.CurrentItem != null);
-
             
             Messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailChanged(e));
             Messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailChanged(e));
@@ -86,13 +97,16 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         protected override void UnsubscribeOnClosing()
         {
             PropertyChanged -= OnPropertyChangedEventHandler;
-            //_measurements.CollectionChanged -= (_, _) => OnPropertyChanged(nameof(Measurements));
+            //_measurements.CollectionChanged -= (_, _) => OnPropertyChanged(nameof(Measurements)); // TODO
             Messenger.Unregister<AfterDetailSavedEventArgs>(this);
             Messenger.Unregister<AfterDetailDeletedEventArgs>(this);
         }
 
         private void OnPropertyChangedEventHandler(object? o, PropertyChangedEventArgs propertyChangedEventArgs)
         {
+            // An alternative to mapping could have been a ParamValue type, which however has a disadvantage - it should be immutable VO, which makes it inappropriate
+            _mapper.Map(MechanismParametersVm.Model.GetCurrentAdjustments(), Model.CustomizedAdjustments);
+
             HasChanges = _testSubjectRepository.HasChanges();
         }
 
@@ -140,11 +154,10 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         private void OnRemoveMeasurement()
         {
-            if (Measurements.CurrentItem != null)
-            {
-                _testSubjectRepository.RemoveMeasurement((Measurement)Measurements.CurrentItem);
-                _measurements.Remove((Measurement)Measurements.CurrentItem);
-            }
+            if (Measurements.CurrentItem == null) return;
+
+            _testSubjectRepository.RemoveMeasurement((Measurement)Measurements.CurrentItem);
+            _measurements.Remove((Measurement)Measurements.CurrentItem);
         }
 
         public override async Task LoadAsync(int id, object argsData)
@@ -161,6 +174,9 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             Measurements.SortDescriptions.Add(new SortDescription(nameof(Measurement.Date), ListSortDirection.Ascending));
             Measurements.GroupDescriptions.Add(new PropertyGroupDescription(nameof(Measurement.Type)));
             Measurements.MoveCurrentTo(null);
+
+            MechanismParametersVm = new MechanismParametersViewModel(new MechanismParameters(Model.CustomizedAdjustments));
+            MechanismParametersVm.PropertyChanged += OnPropertyChangedEventHandler;
 
             PropertyChanged += OnPropertyChangedEventHandler;
         }
@@ -193,7 +209,16 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         private TestSubject CreateNewTestSubject()
         {
-            var testSubject = new TestSubject();
+            var testSubject = new TestSubject
+            {
+                CustomizedAdjustments = new DeviceMechanicalAdjustments(){TibiaLength = 20},
+                CustomizedParameters = new StimulationParameters(
+                    10,
+                    50,
+                    StimulationPulseWidth.AvailableOptions[0],
+                    TimeSpan.FromSeconds(5))
+            };
+
             _testSubjectRepository.Add(testSubject);
             return testSubject;
         }

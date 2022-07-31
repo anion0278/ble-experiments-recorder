@@ -2,10 +2,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Mebster.Myodam.UI.WPF.Exception;
-using Microsoft.Extensions.Logging;
 using Microsoft.Toolkit.Mvvm.Input;
 
-namespace Mebster.Myodam.UI.WPF.View.Services;
+namespace Mebster.Myodam.UI.WPF.Views.Services;
 
 /// <summary>
 /// Factory for creating <see cref="AsyncRelayCommand"/>s with exception handling.

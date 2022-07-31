@@ -2,7 +2,7 @@
 
 public class StimulationParameters
 {
-    public int Id { get; private set; }
+    public int Id { get; init; }
 
     public int Current { get; set; }
     public int Frequency { get; set; }
