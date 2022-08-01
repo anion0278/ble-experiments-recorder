@@ -1,4 +1,6 @@
-﻿namespace Mebster.Myodam.Models.Device;
+﻿using System.ComponentModel;
+
+namespace Mebster.Myodam.Models.Device;
 
 public interface IBleDeviceHandler : IDisposable
 {
@@ -19,9 +21,13 @@ public interface IBleDeviceHandler : IDisposable
 
 public enum MyodamAvailabilityStatus
 {
+    [Description("Disconnected, unavailable")]
     DisconnectedUnavailable,
+    [Description("Disconnected, available")]
     DisconnectedAvailable,
+    [Description("Connected")]
     Connected,
+    [Description("Error on device!")]
     ErrorOnDevice
 }
 
