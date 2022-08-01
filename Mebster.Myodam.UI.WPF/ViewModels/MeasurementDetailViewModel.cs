@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using AutoMapper;
 using LiveCharts;
 using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.Common.Services;
@@ -26,6 +27,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
     public class MeasurementDetailViewModel : DetailViewModelBase, IMeasurementDetailViewModel
     {
         private readonly IMyodamManager _myodamManager;
+        private readonly IMapper _mapper;
         private readonly IMeasurementRepository _measurementRepository;
         private readonly IDateTimeService _dateTimeService;
 
@@ -43,7 +45,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             set => Measurement.Title = value;
         }
 
-        public string Notes
+        public string? Notes
         {
             get => Measurement.Notes;
             set => Measurement.Notes = value;
@@ -73,6 +75,10 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             set => Measurement.SiteDuringMeasurement = value;
         }
 
+        public StimulationParametersViewModel StimulationParametersVm { get; private set; }
+
+        public MechanismParametersViewModel MechanismParametersVm { get; private set; }
+
         public Measurement Measurement { get; private set; }
 
         public IRelayCommand StartMeasurementCommand { get; }
@@ -90,16 +96,18 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         public MeasurementDetailViewModel(IMessenger messenger,
             IMessageDialogService messageDialogService,
             IMyodamManager myodamManager,
+            IMapper mapper,
             IMeasurementRepository measurementRepository,
             IDateTimeService dateTimeService) : base(messenger, messageDialogService)
         {
             _myodamManager = myodamManager;
+            _mapper = mapper;
             _measurementRepository = measurementRepository;
             _dateTimeService = dateTimeService;
 
             StartMeasurementCommand = new AsyncRelayCommand(StartMeasurement, StartMeasurementCanExecute);
             StopMeasurementCommand = new AsyncRelayCommand(StopMeasurement, () => _myodamManager.IsCurrentlyMeasuring);
-            CleanRecordedDataCommand = new RelayCommand(CleanRecordedData, () => true);
+            CleanRecordedDataCommand = new RelayCommand(CleanRecordedData, () => !_myodamManager.IsCurrentlyMeasuring);
 
             ForceValues.CollectionChanged += OnForceValuesChanged; // letting ComboBox.IsDisabled know that collection changed. Required due to the way ChartValues work
 
@@ -112,8 +120,11 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         protected override void UnsubscribeOnClosing()
         {
-            ForceValues.CollectionChanged -= OnForceValuesChanged;
+            MechanismParametersVm.PropertyChanged -= OnPropertyChangedEventHandler;
+            StimulationParametersVm.PropertyChanged -= OnPropertyChangedEventHandler;
             PropertyChanged -= OnPropertyChangedEventHandler;
+
+            ForceValues.CollectionChanged -= OnForceValuesChanged;
             _myodamManager.MyodamAvailabilityChanged -= OnMyodamStatusChanged;
             _myodamManager.MeasurementStatusChanged -= OnMeasurementStatusChanged;
 
@@ -129,6 +140,8 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         private void OnPropertyChangedEventHandler(object? o, PropertyChangedEventArgs propertyChangedEventArgs)
         {
+            MechanismParametersVm.CopyAdjustmentValuesTo(Measurement.AdjustmentsDuringMeasurement!);
+
             HasChanges = _measurementRepository.HasChanges();
         }
 
@@ -141,6 +154,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         {
             StartMeasurementCommand.NotifyCanExecuteChanged();
             StopMeasurementCommand.NotifyCanExecuteChanged();
+            CleanRecordedDataCommand.NotifyCanExecuteChanged();
         }
 
         private bool StartMeasurementCanExecute()
@@ -168,9 +182,18 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         public override async Task LoadAsync(int measurementId, object argsData)
         {
-            Measurement = measurementId > 0
+            var ts = (TestSubject)argsData;
+            Measurement = (measurementId > 0
                 ? await _measurementRepository.GetByIdAsync(measurementId)
-                : await CreateNewMeasurement((TestSubject)argsData);
+                : await CreateNewMeasurement(ts))!;
+
+            Measurement.ParametersDuringMeasurement ??= (StimulationParameters)ts.CustomizedParameters.Clone();
+            StimulationParametersVm = new StimulationParametersViewModel(Measurement.ParametersDuringMeasurement);
+            StimulationParametersVm.PropertyChanged += OnPropertyChangedEventHandler;
+            
+            Measurement.AdjustmentsDuringMeasurement ??= (DeviceMechanicalAdjustments)ts.CustomizedAdjustments.Clone();
+            MechanismParametersVm = new MechanismParametersViewModel(new MechanismParameters(Measurement.AdjustmentsDuringMeasurement), _mapper);
+            MechanismParametersVm.PropertyChanged += OnPropertyChangedEventHandler;
 
             ForceValues.AddRange(Measurement.ForceData?.Select(v => v.Value) ?? Array.Empty<double>());
             Id = measurementId;
@@ -192,9 +215,14 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         public async Task StartMeasurement()
         {
+            var result = await MessageDialogService.ShowOkCancelDialogAsync(
+                "Are you sure you want to start measurement with current parameters listed in this page (they may differ from user-specific parameter settings)?",
+                "Start measurement?");
+            if (result != MessageDialogResult.OK) return;
+
             if (ForceValues.Count > 0)
             {
-                var result = await MessageDialogService.ShowOkCancelDialogAsync(
+                result = await MessageDialogService.ShowOkCancelDialogAsync(
                     "Measurement already contains data. Starting a new measurement will erase the existing data. Do you want to continue?",
                     "Delete measurement data?");
                 if (result != MessageDialogResult.OK) return;
@@ -202,8 +230,8 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
             ForceValues.Clear();
             Date = _dateTimeService.Now;
-            _myodamManager.MyodamDevice!.NewValueReceived += OnNewValueReceived; 
-            _myodamManager.MyodamDevice!.MeasurementFinished += OnMeasurementFinished; 
+            _myodamManager.MyodamDevice!.NewValueReceived += OnNewValueReceived;
+            _myodamManager.MyodamDevice!.MeasurementFinished += OnMeasurementFinished;
             await _myodamManager.MyodamDevice.StartMeasurement();
         }
 
@@ -235,7 +263,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
             var result = await MessageDialogService.ShowOkCancelDialogAsync(
                 $"Do you really want to delete the measurement {Measurement.Title}?", "Question");
-            
+
             if (result != MessageDialogResult.OK) return;
 
             _measurementRepository.Remove(Measurement);
@@ -245,9 +273,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         protected override async void OnSaveExecute()
         {
-            Measurement.ParametersDuringMeasurement = StimulationParameters.GetDefaultValues();
-            Measurement.AdjustmentsDuringMeasurement = new DeviceMechanicalAdjustments();
-
             Measurement.ForceData = ForceValues
                 .Select((val, index) => new MeasuredValue(val, TimeSpan.FromMilliseconds(index)))
                 .ToArray();
@@ -267,7 +292,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             if (HasChanges || _myodamManager.IsCurrentlyMeasuring)
             {
                 var result = await MessageDialogService.ShowOkCancelDialogAsync(
-                    "You've made changes or measurement is currently running. Do you want to close this item and stop measurement?", "Question");
+                    "You made changes or measurement is currently running. Do you want to close this item and stop measurement?", "Question");
                 if (result == MessageDialogResult.Cancel) return false;
             }
             await StopMeasurement();

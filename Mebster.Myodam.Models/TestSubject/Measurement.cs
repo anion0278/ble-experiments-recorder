@@ -31,9 +31,9 @@ public class Measurement
 
     public TestSubject TestSubject { get; set; }
 
-    public DeviceMechanicalAdjustments AdjustmentsDuringMeasurement { get; set; }
+    public DeviceMechanicalAdjustments? AdjustmentsDuringMeasurement { get; set; }
 
-    public StimulationParameters ParametersDuringMeasurement { get; set; }
+    public StimulationParameters? ParametersDuringMeasurement { get; set; }
 
     public ICollection<MeasuredValue> ForceData { get; set; }
 

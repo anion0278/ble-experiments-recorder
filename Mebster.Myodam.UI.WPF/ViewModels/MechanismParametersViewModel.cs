@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using AutoMapper;
 using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.Models.Device;
 
@@ -6,6 +7,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels;
 
 public class MechanismParametersViewModel : ViewModelBase
 {
+    private readonly IMapper _mapper;
     public MechanismParameters Model { get; }
 
     public int AnkleAxisX
@@ -46,8 +48,15 @@ public class MechanismParametersViewModel : ViewModelBase
         Model = new MechanismParameters(new DeviceMechanicalAdjustments());
     }
 
-    public MechanismParametersViewModel(MechanismParameters model)
+    public MechanismParametersViewModel(MechanismParameters model, IMapper mapper)
     {
+        _mapper = mapper;
         Model = model;
+    }
+
+    public void CopyAdjustmentValuesTo(DeviceMechanicalAdjustments target)
+    {
+        // An alternative to mapping could have been a ParamValue type, which however has a disadvantage - it should be immutable VO, which makes it inappropriate
+        _mapper.Map(Model.GetCurrentAdjustments(), target);
     }
 }

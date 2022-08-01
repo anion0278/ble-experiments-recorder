@@ -40,8 +40,7 @@ public class ExperimentsDbContext : DbContext
 
     private static void SetDataSeeding(ModelBuilder modelBuilder)
     {
-        var defaultStimulationParameters = Models.Device.StimulationParameters.GetDefaultValues();
-        defaultStimulationParameters.Id = 1;
+        var defaultStimulationParameters = Models.Device.StimulationParameters.GetDefaultValues(1);
         modelBuilder.Entity<StimulationParameters>().HasData(defaultStimulationParameters);
     }
 }
