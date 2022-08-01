@@ -11,4 +11,8 @@
     <ProjectReference Include="..\BleRecorder.Models\BleRecorder.Models.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Exception\" />
+  </ItemGroup>
+
 </Project>

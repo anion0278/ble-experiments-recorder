@@ -232,7 +232,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             Date = _dateTimeService.Now;
             _bleRecorderManager.BleRecorderDevice!.NewValueReceived += OnNewValueReceived;
             _bleRecorderManager.BleRecorderDevice!.MeasurementFinished += OnMeasurementFinished;
-            await _bleRecorderManager.BleRecorderDevice.StartMeasurement();
+            await _bleRecorderManager.BleRecorderDevice.StartMeasurement(Measurement.ParametersDuringMeasurement!);
         }
 
         private void OnMeasurementFinished(object? _, EventArgs value)

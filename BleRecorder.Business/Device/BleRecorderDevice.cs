@@ -121,8 +121,9 @@ public class BleRecorderDevice // TODO Extract inteface
     }
 
     // We always send up-to-date parameters in order to make sure that stimulation is correct even if the device has restarted in meantime
-    public async Task StartMeasurement()
+    public async Task StartMeasurement(StimulationParameters parameters)
     {
+        CurrentParameters = parameters;
         await SendMsg(new BleRecorderRequestMessage(
             CurrentParameters, 
             MeasurementType.MaximumContraction, 

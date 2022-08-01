@@ -21,7 +21,7 @@
             <Setter Property="Width" Value="160"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="IsEnabled" Value="{Binding ForceValues,Mode=OneWay, Converter={StaticResource collectionLengthToBooleanConverter}}"/>
+            <Setter Property="IsEnabled" Value="{Binding ForceValues,Mode=OneWay, Converter={StaticResource measuredDataLengthToBooleanConverter}}"/>
             <Setter Property="ItemTemplate">
                 <Setter.Value>
                     <DataTemplate>
@@ -96,13 +96,13 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
-                <Label Grid.Row="0" Grid.Column="0" Content="Measurement date:" />
-                <Label Grid.Row="0" Grid.Column="1"  FontWeight="Bold" VerticalAlignment="Center" 
-                           Content="{Binding Date, StringFormat='{}{0:dd MMM. yyyy, HH:mm}', TargetNullValue='Not measured yet'}" />
-
-                <Label Grid.Row="1" Grid.Column="0"  Content="Test subject:"/>
-                <Label Grid.Row="1" Grid.Column="1" FontWeight="Bold" 
+                <Label Grid.Row="0" Grid.Column="0"  Content="Test subject:"/>
+                <Label Grid.Row="0" Grid.Column="1" FontWeight="Bold" 
                        Content="{Binding Measurement.TestSubject.FullName}"/>
+
+                <Label Grid.Row="1" Grid.Column="0" Content="Measurement date:" />
+                <Label Grid.Row="1" Grid.Column="1"  FontWeight="Bold" VerticalAlignment="Center" ContentStringFormat="dd MMM. yyyy, HH:mm"
+                           Content="{Binding Date, TargetNullValue='Not measured yet'}" />
 
                 <Label Grid.Row="2" Grid.Column="0"  Content="Measurement type:" />
                 <ComboBox Grid.Row="2" Grid.Column="1" SelectedItem="{Binding Type}" Style="{StaticResource MeasurementParamComboBoxStyle}"
@@ -119,7 +119,7 @@
 
             <Expander Grid.Row="5" Margin="0  10" Header="Settings for this measurement" mah:ControlsHelper.ContentCharacterCasing="Normal"
                       IsExpanded="{Binding Id, Mode=OneTime, Converter={StaticResource idToBooleanConverter}}">
-                <Grid>
+                <Grid IsEnabled="{Binding ForceValues, Converter={StaticResource measuredDataLengthToBooleanConverter}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition />
@@ -161,7 +161,6 @@
                 <Button Grid.Column="0" Content="Start measurement" Command="{Binding StartMeasurementCommand}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-
                             <Style.Triggers>
                                 <Trigger Property="IsEnabled" Value="False">
                                     <Setter Property="ToolTip" Value="Check device connection" />

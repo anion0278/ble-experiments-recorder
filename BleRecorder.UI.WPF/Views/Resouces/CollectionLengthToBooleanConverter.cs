@@ -6,7 +6,7 @@ using Castle.Core.Internal;
 namespace BleRecorder.UI.WPF.Views.Resouces;
 
 [ValueConversion(typeof(IEnumerable), typeof(bool))]
-public class CollectionLengthToBooleanConverter : IValueConverter
+public class MeasuredDataToBooleanConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
     {
