@@ -140,49 +140,55 @@
             <!--<Label Grid.Row="6" Content="Measured data" />-->
 
             <Expander Grid.Row="7" Header="Measured data" mah:ControlsHelper.ContentCharacterCasing="Normal" IsExpanded="True">
-                <livecharts:CartesianChart Foreground="{StaticResource MainThemeColorAccent}"  DisableAnimations="True" Height="230" Margin="10 10 10 0">
-                    <livecharts:CartesianChart.AxisY>
-                        <livecharts:Axis MaxValue="120" MinValue="0" Title="Contraction Force [N]" />
-                    </livecharts:CartesianChart.AxisY>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <livecharts:CartesianChart Foreground="{StaticResource MainThemeColorAccent}"  
+                                               DisableAnimations="True" MinHeight="230" Margin="10 10 10 0">
+                        <livecharts:CartesianChart.AxisY>
+                            <livecharts:Axis MaxValue="120" MinValue="0" Title="Contraction Force [N]" />
+                        </livecharts:CartesianChart.AxisY>
 
-                    <livecharts:CartesianChart.AxisX>
-                        <livecharts:Axis MinValue="0" Title="Time [s]" />
-                    </livecharts:CartesianChart.AxisX>
+                        <livecharts:CartesianChart.AxisX>
+                            <livecharts:Axis MinValue="0" Title="Time [s]" />
+                        </livecharts:CartesianChart.AxisX>
 
-                    <livecharts:CartesianChart.SeriesColors>
-                        <livecharts:ColorsCollection>
-                            <Color>Aqua</Color>
-                            <Color R="50" G="40" B="130" />
-                        </livecharts:ColorsCollection>
-                    </livecharts:CartesianChart.SeriesColors>
+                        <livecharts:CartesianChart.SeriesColors>
+                            <livecharts:ColorsCollection>
+                                <Color>Aqua</Color>
+                                <Color R="50" G="40" B="130" />
+                            </livecharts:ColorsCollection>
+                        </livecharts:CartesianChart.SeriesColors>
 
-                    <livecharts:CartesianChart.Series>
-                        <livecharts:LineSeries Title="Measured force" Values="{Binding MeasuredValues}"
+                        <livecharts:CartesianChart.Series>
+                            <livecharts:LineSeries Title="Measured force" Values="{Binding MeasuredValues}"
                                            Configuration="{StaticResource chartPointMapper}"/>
-                    </livecharts:CartesianChart.Series>
-                </livecharts:CartesianChart>
+                        </livecharts:CartesianChart.Series>
+                    </livecharts:CartesianChart>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Content="Start measurement" Command="{Binding StartMeasurementCommand}">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter Property="ToolTip" Value="Check device connection" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <Button Grid.Column="1" Content="Stop measurement" Command="{Binding StopMeasurementCommand}"/>
+                        <Button Grid.Column="2" Content="Clean data" Command="{Binding CleanRecordedDataCommand}"/>
+                    </Grid>
+                </Grid>
             </Expander>
-
-            <Grid Grid.Row="8" >
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Content="Start measurement" Command="{Binding StartMeasurementCommand}">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                            <Style.Triggers>
-                                <Trigger Property="IsEnabled" Value="False">
-                                    <Setter Property="ToolTip" Value="Check device connection" />
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                </Button>
-                <Button Grid.Column="1" Content="Stop measurement" Command="{Binding StopMeasurementCommand}"/>
-                <Button Grid.Column="2" Content="Clean data" Command="{Binding CleanRecordedDataCommand}"/>
-            </Grid>
 
             <StackPanel Grid.Row="9" Orientation="Horizontal">
                 <Button Content="Save" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
