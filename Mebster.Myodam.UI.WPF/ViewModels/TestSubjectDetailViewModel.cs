@@ -72,7 +72,10 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         /// Design-time ctor
         /// </summary>
         public TestSubjectDetailViewModel() : base(null, null)
-        { }
+        {
+            _measurements = new ObservableCollection<Measurement>() { new Measurement() {Title = "Measurement 1"}};
+            Measurements = CollectionViewSource.GetDefaultView(_measurements);
+        }
 
         public TestSubjectDetailViewModel(
             ITestSubjectRepository testSubjectRepository,

@@ -1,8 +1,11 @@
-﻿namespace Mebster.Myodam.Models.TestSubject;
+﻿using System.ComponentModel;
+
+namespace Mebster.Myodam.Models.TestSubject;
 
 public enum MeasurementSite
 {
-    Undefined,
+    [Description("Left leg")]
     LeftLeg,
+    [Description("Right leg")]
     RightLeg
 }

@@ -56,6 +56,18 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             set => Measurement.Type = value;
         }
 
+        public PositionDuringMeasurement Position
+        {
+            get => Measurement.PositionDuringMeasurement;
+            set => Measurement.PositionDuringMeasurement = value;
+        }
+
+        public MeasurementSite Site
+        {
+            get => Measurement.SiteDuringMeasurement;
+            set => Measurement.SiteDuringMeasurement = value;
+        }
+
         public Measurement Measurement { get; private set; }
 
         public IRelayCommand StartMeasurementCommand { get; }
@@ -228,8 +240,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         protected override async void OnSaveExecute()
         {
-            Measurement.SiteDuringMeasurement = MeasurementSite.LeftLeg;
-            Measurement.PositionDuringMeasurement = MeasurementPosition.Seated;
             Measurement.ParametersDuringMeasurement = StimulationParameters.GetDefaultValues();
             Measurement.AdjustmentsDuringMeasurement = new DeviceMechanicalAdjustments();
 

@@ -24,7 +24,7 @@ public class MyodamDevice // TODO Extract inteface
 
     public StimulationParameters CurrentParameters { get; set; }
 
-    public MechanismParameters Mechanism { get; set; }
+    public MechanismParameters MechanismParameters { get; set; }
 
     public Percentage StimulatorBattery
     {
@@ -67,8 +67,7 @@ public class MyodamDevice // TODO Extract inteface
         }
     }
 
-    public MyodamDevice(MyodamManager myodamManager, IBleDeviceHandler bleDeviceHandler,
-        IMyodamMessageParser messageParser)
+    public MyodamDevice(MyodamManager myodamManager, IBleDeviceHandler bleDeviceHandler, IMyodamMessageParser messageParser)
     {
         _myodamManager = myodamManager;
         _bleDeviceHandler = bleDeviceHandler;
@@ -124,7 +123,8 @@ public class MyodamDevice // TODO Extract inteface
     // We always send up-to-date parameters in order to make sure that stimulation is correct even if the device has restarted in meantime
     public async Task StartMeasurement()
     {
-        await SendMsg(new MyodamRequestMessage(_myodamManager.CurrentStimulationParameters, 
+        await SendMsg(new MyodamRequestMessage(
+            CurrentParameters, 
             MeasurementType.MaximumContraction, 
             true));
         IsCurrentlyMeasuring = true;
@@ -132,7 +132,8 @@ public class MyodamDevice // TODO Extract inteface
 
     public async Task StopMeasurement()
     {
-        var msg = new MyodamRequestMessage(_myodamManager.CurrentStimulationParameters, 
+        var msg = new MyodamRequestMessage(
+            CurrentParameters, 
             MeasurementType.MaximumContraction,
             false);
         await SendMsg(msg);

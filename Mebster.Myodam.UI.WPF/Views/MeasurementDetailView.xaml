@@ -14,10 +14,41 @@
              d:DesignHeight="500" d:DesignWidth="600" 
              d:DataContext="{d:DesignInstance viewModels:MeasurementDetailViewModel, IsDesignTimeCreatable=True}">
     <UserControl.Resources>
-        <ObjectDataProvider x:Key="MeasurementTypeEnum" MethodName="GetValues"
-                            ObjectType="{x:Type System:Enum}">
+        <Style x:Key="MeasurementParamComboBoxStyle" TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+            <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Width" Value="160"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="IsEnabled" Value="{Binding ForceValues,Mode=OneWay, Converter={StaticResource collectionLengthToBooleanConverter}}"/>
+            <Setter Property="ItemTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Path=., Converter={StaticResource enumDescriptionConverter}}" />
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="ToolTip" Value="Measurement parameters can only be changed if the measurement data is empty."></Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <ObjectDataProvider x:Key="MeasurementTypeEnum" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
             <ObjectDataProvider.MethodParameters>
                 <x:Type TypeName="testSubject:MeasurementType"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <ObjectDataProvider x:Key="MeasurementSiteEnum" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="testSubject:MeasurementSite"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <ObjectDataProvider x:Key="PositionDuringMeasurementEnum" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="testSubject:PositionDuringMeasurement"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
     </UserControl.Resources>
@@ -30,56 +61,55 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
+
             <Label Grid.Row="0" Content="Short description" />
-            <TextBox Grid.Row="1" MaxLength="40" Width="300" HorizontalAlignment="Left"
+            <TextBox Grid.Row="1" MaxLength="40" 
                      Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" />
 
             <Label Grid.Row="2" Content="Notes"/>
             <TextBox Grid.Row="3" Style="{StaticResource NotesTextBox}"
                  Text="{Binding Notes}" />
 
-            <StackPanel Grid.Row="4"  Orientation="Horizontal">
-                <Label Content="Measurement date:  " />
-                <TextBlock FontWeight="Bold" VerticalAlignment="Center"
-                           Text="{Binding Date, StringFormat='{}{0:dd MMM. yyyy, HH:mm}', TargetNullValue='Not measured yet'}" />
-            </StackPanel>
+            <Grid Grid.Row="4">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
 
-            <StackPanel Grid.Row="5" Orientation="Horizontal" >
-                <Label Content="Test subject:            "/>
-                <Label FontWeight="Bold" Content="{Binding Measurement.TestSubject.FullName}"/>
-            </StackPanel>
+                <Label Grid.Row="0" Grid.Column="0" Content="Measurement date:" />
+                <Label Grid.Row="0" Grid.Column="1"  FontWeight="Bold" VerticalAlignment="Center" 
+                           Content="{Binding Date, StringFormat='{}{0:dd MMM. yyyy, HH:mm}', TargetNullValue='Not measured yet'}" />
 
-            <StackPanel Grid.Row="6"  Orientation="Horizontal">
-                <Label Content="Measurement type:" />
-                <ComboBox Width="160" HorizontalContentAlignment="Left"
-                          SelectedItem="{Binding Type}"
-                          IsEnabled="{Binding ForceValues,Mode=OneWay, Converter={StaticResource collectionLengthToBooleanConverter}}"
-                          ItemsSource="{Binding Source={StaticResource MeasurementTypeEnum}}" >
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Path=., Converter={StaticResource enumDescriptionConverter}}" />
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                    <ComboBox.Style>
-                        <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
-                            <Setter Property="ToolTipService.ShowOnDisabled" Value="True"></Setter>
-                            <Style.Triggers>
-                                <Trigger Property="IsEnabled" Value="False">
-                                    <Setter Property="ToolTip" Value="Measurement type can only be changed if the measurement data is empty.."></Setter>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ComboBox.Style>
-                </ComboBox>
-            </StackPanel>
+                <Label Grid.Row="1" Grid.Column="0"  Content="Test subject:"/>
+                <Label Grid.Row="1" Grid.Column="1" FontWeight="Bold" 
+                       Content="{Binding Measurement.TestSubject.FullName}"/>
 
-            <livecharts:CartesianChart Grid.Row="7"  DisableAnimations="True" Margin="4" Height="230" >
+                <Label Grid.Row="2" Grid.Column="0"  Content="Measurement type:" />
+                <ComboBox Grid.Row="2" Grid.Column="1" SelectedItem="{Binding Type}" Style="{StaticResource MeasurementParamComboBoxStyle}"
+                          ItemsSource="{Binding Source={StaticResource MeasurementTypeEnum}}" />
+
+                <Label Grid.Row="3" Grid.Column="0"  Content="Measurement site:" />
+                <ComboBox Grid.Row="3" Grid.Column="1" SelectedItem="{Binding Site}" Style="{StaticResource MeasurementParamComboBoxStyle}"
+                          ItemsSource="{Binding Source={StaticResource MeasurementSiteEnum}}" />
+
+                <Label Grid.Row="4" Grid.Column="0"  Content="Test subject position:" />
+                <ComboBox Grid.Row="4" Grid.Column="1" SelectedItem="{Binding Position}" Style="{StaticResource MeasurementParamComboBoxStyle}"
+                          ItemsSource="{Binding Source={StaticResource PositionDuringMeasurementEnum}}" />
+
+            </Grid>
+
+            <livecharts:CartesianChart Grid.Row="5"  DisableAnimations="True" Margin="4" Height="230" >
                 <livecharts:CartesianChart.AxisY>
                     <livecharts:Axis MaxValue="120" MinValue="0" Title="Contraction Force [N]" />
                 </livecharts:CartesianChart.AxisY>
@@ -100,7 +130,7 @@
                 </livecharts:CartesianChart.Series>
             </livecharts:CartesianChart>
 
-            <Grid Grid.Row="8" >
+            <Grid Grid.Row="6" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
@@ -122,7 +152,7 @@
                 <Button Grid.Column="2" Content="Clean data" Command="{Binding CleanRecordedDataCommand}"/>
             </Grid>
 
-            <StackPanel Grid.Row="9" Orientation="Horizontal">
+            <StackPanel Grid.Row="7" Orientation="Horizontal">
                 <Button Content="Save" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
                     Command="{Binding SaveCommand}"/>
                 <Button Content="Delete" Command="{Binding DeleteCommand}"/>
