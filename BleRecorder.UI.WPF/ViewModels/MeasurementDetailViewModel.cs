@@ -228,6 +228,11 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         protected override async void OnSaveExecute()
         {
+            Measurement.SiteDuringMeasurement = MeasurementSite.LeftHand;
+            Measurement.PositionDuringMeasurement = MeasurementPosition.Seated;
+            Measurement.ParametersDuringMeasurement = StimulationParameters.GetDefaultValues();
+            Measurement.AdjustmentsDuringMeasurement = new DeviceMechanicalAdjustments();
+
             Measurement.ForceData = ForceValues
                 .Select((val, index) => new MeasuredValue(val, TimeSpan.FromMilliseconds(index)))
                 .ToArray();

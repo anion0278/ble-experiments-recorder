@@ -84,6 +84,7 @@
                     <resouces:InverseBooleanConverter x:Key="inverseBooleanConverter"/>
                     <resouces:CollectionLengthToBooleanConverter x:Key="collectionLengthToBooleanConverter"/>
                     <resouces:IdToBooleanConverter x:Key="idToBooleanConverter"/>
+                    <resouces:EnumToDescriptionConverter x:Key="enumDescriptionConverter"/>
                     <!-- EndRegion -->
 
                     <Style x:Key="NotesTextBox" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">

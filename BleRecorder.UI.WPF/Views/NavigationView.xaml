@@ -114,7 +114,7 @@
 
                 <StackPanel Orientation="Horizontal">
                     <Label Content="Status: "/>
-                    <Label Content="{Binding BleRecorderAvailability}" FontWeight="Bold"/>
+                    <Label Content="{Binding BleRecorderAvailability, Converter={StaticResource enumDescriptionConverter}}" FontWeight="Bold"/>
                 </StackPanel>
                 <!--<GroupBox Header="Stimulation Parameters" Style="{x:Null}" Margin="5" IsEnabled="True">-->
                 <Grid>
