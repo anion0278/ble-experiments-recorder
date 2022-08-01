@@ -20,6 +20,7 @@ using BleRecorder.UI.WPF.Views.Services;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
+using PropertyChanged;
 
 namespace BleRecorder.UI.WPF.ViewModels
 {
@@ -44,10 +45,11 @@ namespace BleRecorder.UI.WPF.ViewModels
         public MechanismParametersViewModel MechanismParametersVm { get; private set; }
         public StimulationParametersViewModel StimulationParametersVm { get; private set; }
 
-        public override string Title => $"{FirstName} {LastName}";
+        public override string Title => string.IsNullOrWhiteSpace(Model.FullName) ? "(New subject)" : Model.FullName;
 
         [Required]
         [StringLength(20, MinimumLength = 2)]
+        [AlsoNotifyFor(nameof(Title))]
         public string FirstName
         {
             get => Model.FirstName;
@@ -56,6 +58,7 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         [Required]
         [StringLength(20, MinimumLength = 2)]
+        [AlsoNotifyFor(nameof(Title))]
         public string LastName
         {
             get => Model.LastName;

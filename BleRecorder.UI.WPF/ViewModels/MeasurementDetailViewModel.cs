@@ -17,6 +17,7 @@ using BleRecorder.UI.WPF.Event;
 using BleRecorder.UI.WPF.Views.Services;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
+using PropertyChanged;
 using Swordfish.NET.Collections.Auxiliary;
 using WinRT;
 
@@ -30,9 +31,13 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         public ChartValues<double> ForceValues { get; set; } = new();
 
+        public override string Title => string.IsNullOrWhiteSpace(Measurement.Title) ? "(New measurement)" : Measurement.Title;
+
         [Required]
         [StringLength(30, MinimumLength = 1)]
-        public override string Title
+        [Display(Name = "Short description")]
+        [AlsoNotifyFor(nameof(Title))]
+        public string MeasurementDescription
         {
             get => Measurement.Title;
             set => Measurement.Title = value;
