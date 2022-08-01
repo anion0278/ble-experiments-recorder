@@ -232,7 +232,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             Date = _dateTimeService.Now;
             _myodamManager.MyodamDevice!.NewValueReceived += OnNewValueReceived;
             _myodamManager.MyodamDevice!.MeasurementFinished += OnMeasurementFinished;
-            await _myodamManager.MyodamDevice.StartMeasurement();
+            await _myodamManager.MyodamDevice.StartMeasurement(Measurement.ParametersDuringMeasurement!);
         }
 
         private void OnMeasurementFinished(object? _, EventArgs value)

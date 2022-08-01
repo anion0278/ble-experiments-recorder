@@ -82,7 +82,7 @@
                     <!-- Region Converters -->
                     <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter"/>
                     <resouces:InverseBooleanConverter x:Key="inverseBooleanConverter"/>
-                    <resouces:CollectionLengthToBooleanConverter x:Key="collectionLengthToBooleanConverter"/>
+                    <resouces:MeasuredDataToBooleanConverter x:Key="measuredDataLengthToBooleanConverter"/>
                     <resouces:IdToBooleanConverter x:Key="idToBooleanConverter"/>
                     <resouces:EnumToDescriptionConverter x:Key="enumDescriptionConverter"/>
                     <!-- EndRegion -->

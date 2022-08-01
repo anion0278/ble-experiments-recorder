@@ -1,4 +1,5 @@
-﻿using Mebster.Myodam.Infrastructure.Bluetooth;
+﻿using Mebster.Myodam.Business.Exception;
+using Mebster.Myodam.Infrastructure.Bluetooth;
 using Mebster.Myodam.Models.Device;
 
 namespace Mebster.Myodam.Business.Device;
@@ -79,9 +80,19 @@ public class MyodamManager : IMyodamManager
         var myodamDevices = _bluetoothManager.AvailableBleDevices.Where(IsMyodamDevice).ToArray();
 
         // TODO Handle multiple devices in a single room
-        if (myodamDevices.Length > 1) throw new Exception("There is more than one myodam device!");
+        if (myodamDevices.Length > 1) throw new System.Exception("There is more than one myodam device!");
 
-        MyodamDevice = new MyodamDevice(this, await myodamDevices.Single().ConnectDevice(), _messageParser);
+        IBleDeviceHandler bleDevice;
+        try
+        {
+            bleDevice = await myodamDevices.Single().ConnectDevice();
+        }
+        catch (System.Exception ex)
+        {
+            throw new DeviceConnectionException(ex);
+        }
+
+        MyodamDevice = new MyodamDevice(this, bleDevice, _messageParser);
         MyodamAvailability = MyodamAvailabilityStatus.Connected;
         MyodamDevice.ConnectionStatusChanged += OnConnectionStatusChanged;
         MyodamDevice.MeasurementStatusChanged += OnMeasurementStatusChanged;

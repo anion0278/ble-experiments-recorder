@@ -11,4 +11,8 @@
     <ProjectReference Include="..\Mebster.Myodam.Models\Mebster.Myodam.Models.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Exception\" />
+  </ItemGroup>
+
 </Project>
