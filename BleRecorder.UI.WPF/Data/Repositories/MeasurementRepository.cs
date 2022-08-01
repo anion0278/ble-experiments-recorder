@@ -14,8 +14,11 @@ public class MeasurementRepository : GenericRepository<Measurement, ExperimentsD
 
     public override async Task<Measurement?> GetByIdAsync(int id)
     {
-        return await Context.Measurements.Include(m => m.TestSubject)
-          .SingleOrDefaultAsync(m => m.Id == id);
+        return await Context.Measurements
+            .Include(m => m.TestSubject)
+            .Include(m => m.AdjustmentsDuringMeasurement)
+            .Include(m => m.ParametersDuringMeasurement)
+            .SingleOrDefaultAsync(m => m.Id == id);
     }
 
     public async Task<TestSubject?> GetTestSubjectById(int id)

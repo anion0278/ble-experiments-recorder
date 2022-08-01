@@ -65,7 +65,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             set => Model.LastName = value;
         }
 
-        public string Notes
+        public string? Notes
         {
             get => Model.Notes;
             set => Model.Notes = value;
@@ -116,7 +116,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             Measurements.GroupDescriptions.Add(new PropertyGroupDescription(nameof(Measurement.Type)));
             Measurements.MoveCurrentTo(null);
 
-            MechanismParametersVm = new MechanismParametersViewModel(new MechanismParameters(Model.CustomizedAdjustments));
+            MechanismParametersVm = new MechanismParametersViewModel(new MechanismParameters(Model.CustomizedAdjustments), _mapper);
             MechanismParametersVm.PropertyChanged += OnPropertyChangedEventHandler;
 
             StimulationParametersVm = new StimulationParametersViewModel(Model.CustomizedParameters);
@@ -138,8 +138,7 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         private void OnPropertyChangedEventHandler(object? o, PropertyChangedEventArgs propertyChangedEventArgs)
         {
-            // An alternative to mapping could have been a ParamValue type, which however has a disadvantage - it should be immutable VO, which makes it inappropriate
-            _mapper.Map(MechanismParametersVm.Model.GetCurrentAdjustments(), Model.CustomizedAdjustments);
+            MechanismParametersVm.CopyAdjustmentValuesTo(Model.CustomizedAdjustments);
 
             HasChanges = _testSubjectRepository.HasChanges();
         }
@@ -162,7 +161,7 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         private async Task OnAddMeasurement()
         {
-            if (await _testSubjectRepository.GetByIdAsync(Id) == null)
+            if (await _testSubjectRepository.GetByIdAsync(Id) == null || HasChanges)
             {
                 await MessageDialogService.ShowInfoDialogAsync(
                     "Test subject is not saved. Save changes before adding measurements.");
@@ -182,7 +181,8 @@ namespace BleRecorder.UI.WPF.ViewModels
             Messenger.Send(new OpenDetailViewEventArgs
             {
                 Id = ((Measurement)Measurements.CurrentItem).Id,
-                ViewModelName = nameof(MeasurementDetailViewModel)
+                ViewModelName = nameof(MeasurementDetailViewModel),
+                Data = Model
             });
         }
 
@@ -212,7 +212,6 @@ namespace BleRecorder.UI.WPF.ViewModels
 
             var result = await MessageDialogService.ShowOkCancelDialogAsync(
                 $"Do you really want to delete the test subject {Title} and all related measurements?", "Confirmation is required");
-
             if (result != MessageDialogResult.OK) return;
 
             _testSubjectRepository.Remove(Model);

@@ -1,8 +1,8 @@
 ﻿namespace BleRecorder.Models.Device;
 
-public class StimulationParameters
+public class StimulationParameters :ICloneable
 {
-    public int Id { get; set; }
+    public int Id { get; private set; }
 
     public int Current { get; set; }
     public int Frequency { get; set; }
@@ -20,12 +20,17 @@ public class StimulationParameters
         StimulationTime = stimulationTime;
     }
 
-    public static StimulationParameters GetDefaultValues() // TODO into  DefaultValuesFactory
+    public static StimulationParameters GetDefaultValues(int id = 0) // TODO into  DefaultValuesFactory
     {
         return new StimulationParameters(
             10,
             50,
             StimulationPulseWidth.AvailableOptions[0],
-            TimeSpan.FromSeconds(5));
+            TimeSpan.FromSeconds(5)) { Id = id };
+    }
+
+    public object Clone()
+    {
+        return MemberwiseClone();
     }
 }

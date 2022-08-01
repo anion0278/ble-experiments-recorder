@@ -10,8 +10,9 @@
              xmlns:viewModels="clr-namespace:BleRecorder.UI.WPF.ViewModels"
              xmlns:extensions="clr-namespace:BleRecorder.UI.WPF.Extensions"
              xmlns:System="clr-namespace:System;assembly=System.Runtime"
+             xmlns:views="clr-namespace:BleRecorder.UI.WPF.Views"
              mc:Ignorable="d"
-             d:DesignHeight="500" d:DesignWidth="600" 
+             d:DesignHeight="800" d:DesignWidth="600" 
              d:DataContext="{d:DesignInstance viewModels:MeasurementDetailViewModel, IsDesignTimeCreatable=True}">
     <UserControl.Resources>
         <Style x:Key="MeasurementParamComboBoxStyle" TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
@@ -19,6 +20,7 @@
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
             <Setter Property="Width" Value="160"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="IsEnabled" Value="{Binding ForceValues,Mode=OneWay, Converter={StaticResource collectionLengthToBooleanConverter}}"/>
             <Setter Property="ItemTemplate">
                 <Setter.Value>
@@ -32,6 +34,11 @@
                     <Setter Property="ToolTip" Value="Measurement parameters can only be changed if the measurement data is empty."></Setter>
                 </Trigger>
             </Style.Triggers>
+        </Style>
+
+        <Style TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
 
         <ObjectDataProvider x:Key="MeasurementTypeEnum" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
@@ -61,6 +68,8 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -106,10 +115,23 @@
                 <Label Grid.Row="4" Grid.Column="0"  Content="Test subject position:" />
                 <ComboBox Grid.Row="4" Grid.Column="1" SelectedItem="{Binding Position}" Style="{StaticResource MeasurementParamComboBoxStyle}"
                           ItemsSource="{Binding Source={StaticResource PositionDuringMeasurementEnum}}" />
-
             </Grid>
 
-            <livecharts:CartesianChart Grid.Row="5"  DisableAnimations="True" Margin="4" Height="230" >
+            <Expander Grid.Row="5" Margin="0  10" Header="Settings for this measurement" mah:ControlsHelper.ContentCharacterCasing="Normal"
+                      IsExpanded="{Binding Id, Mode=OneTime, Converter={StaticResource idToBooleanConverter}}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <views:MechanismParametersView Grid.Column="0"  DataContext="{Binding MechanismParametersVm}"  />
+                    <views:StimulationParametersView Grid.Column="1" HorizontalAlignment="Center" DataContext="{Binding StimulationParametersVm}" />
+                </Grid>
+            </Expander>
+
+            <Label Grid.Row="6" Content="Measured data" />
+
+            <livecharts:CartesianChart Grid.Row="7" DisableAnimations="True" Height="230" Margin="10 0 -35 0">
                 <livecharts:CartesianChart.AxisY>
                     <livecharts:Axis MaxValue="120" MinValue="0" Title="Contraction Force [N]" />
                 </livecharts:CartesianChart.AxisY>
@@ -126,11 +148,11 @@
                 </livecharts:CartesianChart.SeriesColors >
 
                 <livecharts:CartesianChart.Series>
-                    <livecharts:LineSeries Values="{Binding ForceValues}"></livecharts:LineSeries>
+                    <livecharts:LineSeries Values="{Binding ForceValues}"/>
                 </livecharts:CartesianChart.Series>
             </livecharts:CartesianChart>
 
-            <Grid Grid.Row="6" >
+            <Grid Grid.Row="8" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
@@ -152,7 +174,7 @@
                 <Button Grid.Column="2" Content="Clean data" Command="{Binding CleanRecordedDataCommand}"/>
             </Grid>
 
-            <StackPanel Grid.Row="7" Orientation="Horizontal">
+            <StackPanel Grid.Row="9" Orientation="Horizontal">
                 <Button Content="Save" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
                     Command="{Binding SaveCommand}"/>
                 <Button Content="Delete" Command="{Binding DeleteCommand}"/>

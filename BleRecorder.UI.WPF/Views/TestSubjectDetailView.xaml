@@ -10,7 +10,7 @@
              xmlns:views="clr-namespace:BleRecorder.UI.WPF.Views"
              xmlns:testSubject="clr-namespace:BleRecorder.Models.TestSubject;assembly=BleRecorder.Models"
              mc:Ignorable="d" 
-             d:DesignHeight="500" d:DesignWidth="900"
+             d:DesignHeight="900" d:DesignWidth="900"
              d:DataContext="{d:DesignInstance viewModels:TestSubjectDetailViewModel, d:IsDesignTimeCreatable=True}">
     <UserControl.Resources>
         <GroupStyle x:Key="MeasurementDataGridGroupStyle">
@@ -94,6 +94,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition />
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
@@ -110,7 +111,9 @@
                      Text="{Binding Notes, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" />
 
             <Expander Grid.Row="6" Margin="0  10" Header="Individual settings" mah:ControlsHelper.ContentCharacterCasing="Normal"
-                      IsExpanded="{Binding Id, Mode=OneWay, Converter={StaticResource idToBooleanConverter}}">
+                      IsExpanded="{Binding Id, Mode=OneTime, Converter={StaticResource idToBooleanConverter}}">
+                <!--TODO OneTime Binding does not work as expected, probably due to virtualization. 
+                    Possible solution https://www.codeproject.com/Articles/460989/WPF-TabControl-Turning-Off-Tab-Virtualization-->
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -121,17 +124,15 @@
                 </Grid>
             </Expander>
 
-            <DockPanel Grid.Row="7" >
-                <StackPanel DockPanel.Dock="Right">
-                    <Button Content="Add" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
-                        Command="{Binding AddMeasurementCommand}" CommandParameter=""/>
-                    <Button Content="Edit" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
-                        Command="{Binding EditMeasurementCommand}"/>
-                    <Button Content="Remove" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
-                        Command="{Binding RemoveMeasurementCommand}"/>
-                </StackPanel>
+            <Label  Grid.Row="7" Content="Measurements" />
 
-                <DataGrid x:Name="MeasurementsGrid" 
+            <Grid Grid.Row="8" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <DataGrid x:Name="MeasurementsGrid"  
                           ItemsSource="{Binding Measurements}">
                     <DataGrid.GroupStyle>
                         <StaticResource ResourceKey="MeasurementDataGridGroupStyle" />
@@ -140,19 +141,28 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Measurement title" Width="*" IsReadOnly="True"
                                         Binding="{Binding Title}"/>
-                        <DataGridTextColumn Header="Type" Width="150"  IsReadOnly="True"
+                        <DataGridTextColumn Header="Type" Width="130"  IsReadOnly="True"
                                         Binding="{Binding Type, Converter={StaticResource enumDescriptionConverter}}"/>
                         <DataGridTextColumn Header="Site" Width="60" IsReadOnly="True"
                                             Binding="{Binding SiteDuringMeasurement, Converter={StaticResource enumDescriptionConverter}}"/>
-                        <DataGridTextColumn Header="Type" Width="60"  IsReadOnly="True"
+                        <DataGridTextColumn Header="Type" Width="50"  IsReadOnly="True"
                                             Binding="{Binding PositionDuringMeasurement, Converter={StaticResource enumDescriptionConverter}}"/>
-                        <DataGridTextColumn Header="Experiment Date" Width="150" IsReadOnly="True"
+                        <DataGridTextColumn Header="Experiment Date" Width="130" IsReadOnly="True"
                                         Binding="{Binding Date, StringFormat='{}{0:dd MMM. yyyy, HH:mm}', TargetNullValue='Not completed'}"/>
                     </DataGrid.Columns>
                 </DataGrid>
-            </DockPanel>
 
-            <StackPanel Grid.Row="8" Orientation="Horizontal">
+                <StackPanel Grid.Column="1">
+                    <Button Content="Add" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
+                            Command="{Binding AddMeasurementCommand}" CommandParameter=""/>
+                    <Button Content="Edit" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
+                            Command="{Binding EditMeasurementCommand}"/>
+                    <Button Content="Remove" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
+                            Command="{Binding RemoveMeasurementCommand}"/>
+                </StackPanel>
+            </Grid>
+
+            <StackPanel Grid.Row="9" Orientation="Horizontal">
                 <Button Content="Save Subject" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
                     Command="{Binding SaveCommand}"/>
                 <Button Content="Delete Subject" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
