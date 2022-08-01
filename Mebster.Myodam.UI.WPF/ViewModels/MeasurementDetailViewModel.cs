@@ -31,7 +31,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         private readonly IMeasurementRepository _measurementRepository;
         private readonly IDateTimeService _dateTimeService;
 
-        public ChartValues<double> ForceValues { get; set; } = new();
+        public ChartValues<MeasuredValue> MeasuredValues { get; set; } = new();
 
         public override string Title => string.IsNullOrWhiteSpace(Measurement.Title) ? "(New measurement)" : Measurement.Title;
 
@@ -109,7 +109,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             StopMeasurementCommand = new AsyncRelayCommand(StopMeasurement, () => _myodamManager.IsCurrentlyMeasuring);
             CleanRecordedDataCommand = new RelayCommand(CleanRecordedData, () => !_myodamManager.IsCurrentlyMeasuring);
 
-            ForceValues.CollectionChanged += OnForceValuesChanged; // letting ComboBox.IsDisabled know that collection changed. Required due to the way ChartValues work
+            MeasuredValues.CollectionChanged += OnForceValuesChanged; // letting ComboBox.IsDisabled know that collection changed. Required due to the way ChartValues work
 
             _myodamManager.MyodamAvailabilityChanged += OnMyodamStatusChanged;
             _myodamManager.MeasurementStatusChanged += OnMeasurementStatusChanged;
@@ -124,7 +124,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             StimulationParametersVm.PropertyChanged -= OnPropertyChangedEventHandler;
             PropertyChanged -= OnPropertyChangedEventHandler;
 
-            ForceValues.CollectionChanged -= OnForceValuesChanged;
+            MeasuredValues.CollectionChanged -= OnForceValuesChanged;
             _myodamManager.MyodamAvailabilityChanged -= OnMyodamStatusChanged;
             _myodamManager.MeasurementStatusChanged -= OnMeasurementStatusChanged;
 
@@ -147,7 +147,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         private void OnForceValuesChanged(object? o, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
         {
-            OnPropertyChanged(nameof(ForceValues));
+            OnPropertyChanged(nameof(MeasuredValues));
         }
 
         private void OnMeasurementStatusChanged(object? sender, EventArgs e)
@@ -169,14 +169,14 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         private async void CleanRecordedData()
         {
-            if (ForceValues.Count <= 0) return;
+            if (MeasuredValues.Count <= 0) return;
 
             var result = await MessageDialogService.ShowOkCancelDialogAsync(
                 "Are you sure you want to remove measurement data?",
                 "Delete data?");
             if (result == MessageDialogResult.OK)
             {
-                ForceValues.Clear();
+                MeasuredValues.Clear();
             }
         }
 
@@ -195,7 +195,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             MechanismParametersVm = new MechanismParametersViewModel(new MechanismParameters(Measurement.AdjustmentsDuringMeasurement), _mapper);
             MechanismParametersVm.PropertyChanged += OnPropertyChangedEventHandler;
 
-            ForceValues.AddRange(Measurement.ForceData?.Select(v => v.Value) ?? Array.Empty<double>());
+            MeasuredValues.AddRange(Measurement.ForceData);
             Id = measurementId;
 
             PropertyChanged += OnPropertyChangedEventHandler;
@@ -220,7 +220,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
                 "Start measurement?");
             if (result != MessageDialogResult.OK) return;
 
-            if (ForceValues.Count > 0)
+            if (MeasuredValues.Count > 0)
             {
                 result = await MessageDialogService.ShowOkCancelDialogAsync(
                     "Measurement already contains data. Starting a new measurement will erase the existing data. Do you want to continue?",
@@ -228,7 +228,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
                 if (result != MessageDialogResult.OK) return;
             }
 
-            ForceValues.Clear();
+            MeasuredValues.Clear();
             Date = _dateTimeService.Now;
             _myodamManager.MyodamDevice!.NewValueReceived += OnNewValueReceived;
             _myodamManager.MyodamDevice!.MeasurementFinished += OnMeasurementFinished;
@@ -242,7 +242,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         private void OnNewValueReceived(object? _, MeasuredValue value)
         {
-            ForceValues.Add(value.Value);
+            MeasuredValues.Add(value);
         }
 
         public async Task StopMeasurement()
@@ -273,9 +273,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         protected override async void OnSaveExecute()
         {
-            Measurement.ForceData = ForceValues
-                .Select((val, index) => new MeasuredValue(val, TimeSpan.FromMilliseconds(index)))
-                .ToArray();
+            Measurement.ForceData = MeasuredValues.ToArray();
             await _measurementRepository.SaveAsync();
             HasChanges = _measurementRepository.HasChanges();
             Id = Measurement.Id;
