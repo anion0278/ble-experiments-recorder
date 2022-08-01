@@ -12,6 +12,7 @@ public class BleRecorderDevice // TODO Extract inteface
     private readonly IBleDeviceHandler _bleDeviceHandler;
     private readonly IBleRecorderMessageParser _messageParser;
     private bool _isCurrentlyMeasuring;
+    private TimeSpan _requestInterval = TimeSpan.FromMilliseconds(100);
     private System.Timers.Timer _outboundDataTimer;
     private Percentage _stimulatorBattery;
     private Percentage _controllerBattery;
@@ -22,9 +23,9 @@ public class BleRecorderDevice // TODO Extract inteface
     public event EventHandler? MeasurementStatusChanged;
     public event EventHandler? BatteryStatusChanged;
 
-    public StimulationParameters CurrentParameters { get; set; }
+    private long? _firstTimeStamp;
 
-    public MechanismParameters MechanismParameters { get; set; }
+    public StimulationParameters CurrentParameters { get; set; }
 
     public Percentage StimulatorBattery
     {
@@ -75,7 +76,7 @@ public class BleRecorderDevice // TODO Extract inteface
         _bleDeviceHandler.DataReceived += BleDeviceHandlerDataReceived;
         _bleDeviceHandler.DeviceStatusChanged += BleDeviceStatusChanged;
 
-        _outboundDataTimer = new System.Timers.Timer(TimeSpan.FromMilliseconds(100).TotalMilliseconds);
+        _outboundDataTimer = new System.Timers.Timer(_requestInterval.TotalMilliseconds);
         _outboundDataTimer.Elapsed += OnTimerTimeElapsed;
         _outboundDataTimer.Start();
 
@@ -114,9 +115,11 @@ public class BleRecorderDevice // TODO Extract inteface
 
         if (IsCurrentlyMeasuring)
         {
+            _firstTimeStamp ??= DateTimeOffset.Now.ToUnixTimeMilliseconds(); // temp, remove
             NewValueReceived?.Invoke(
                 this,
-                new MeasuredValue(reply.SensorValue, reply.Timestamp));
+                new MeasuredValue(new Random().NextDouble() * 20, //reply.SensorValue
+                    TimeSpan.FromMilliseconds(DateTimeOffset.Now.ToUnixTimeMilliseconds() - _firstTimeStamp.Value))); // TODO change when BLE part is ready: reply.Timestamp
         }
     }
 
@@ -133,6 +136,7 @@ public class BleRecorderDevice // TODO Extract inteface
 
     public async Task StopMeasurement()
     {
+        _firstTimeStamp = null;
         var msg = new BleRecorderRequestMessage(
             CurrentParameters, 
             MeasurementType.MaximumContraction,

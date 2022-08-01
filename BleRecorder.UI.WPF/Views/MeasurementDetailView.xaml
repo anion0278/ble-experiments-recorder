@@ -11,6 +11,7 @@
              xmlns:extensions="clr-namespace:BleRecorder.UI.WPF.Extensions"
              xmlns:System="clr-namespace:System;assembly=System.Runtime"
              xmlns:views="clr-namespace:BleRecorder.UI.WPF.Views"
+             xmlns:resouces="clr-namespace:BleRecorder.UI.WPF.Views.Resouces"
              mc:Ignorable="d"
              d:DesignHeight="800" d:DesignWidth="600" 
              d:DataContext="{d:DesignInstance viewModels:MeasurementDetailViewModel, IsDesignTimeCreatable=True}">
@@ -21,7 +22,7 @@
             <Setter Property="Width" Value="160"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="IsEnabled" Value="{Binding ForceValues,Mode=OneWay, Converter={StaticResource measuredDataLengthToBooleanConverter}}"/>
+            <Setter Property="IsEnabled" Value="{Binding MeasuredValues,Mode=OneWay, Converter={StaticResource measuredDataLengthToBooleanConverter}}"/>
             <Setter Property="ItemTemplate">
                 <Setter.Value>
                     <DataTemplate>
@@ -58,6 +59,13 @@
                 <x:Type TypeName="testSubject:PositionDuringMeasurement"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
+
+        <resouces:ChartPointMapper x:Key="chartPointMapper" />
+        <!--<ObjectDataProvider x:Key="ChartPointMapper" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="testSubject:PositionDuringMeasurement"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>-->
     </UserControl.Resources>
 
     <ScrollViewer Padding="10">
@@ -69,7 +77,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -119,7 +127,7 @@
 
             <Expander Grid.Row="5" Margin="0  10" Header="Settings for this measurement" mah:ControlsHelper.ContentCharacterCasing="Normal"
                       IsExpanded="{Binding Id, Mode=OneTime, Converter={StaticResource idToBooleanConverter}}">
-                <Grid IsEnabled="{Binding ForceValues, Converter={StaticResource measuredDataLengthToBooleanConverter}}">
+                <Grid IsEnabled="{Binding MeasuredValues, Converter={StaticResource measuredDataLengthToBooleanConverter}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition />
@@ -129,28 +137,31 @@
                 </Grid>
             </Expander>
 
-            <Label Grid.Row="6" Content="Measured data" />
+            <!--<Label Grid.Row="6" Content="Measured data" />-->
 
-            <livecharts:CartesianChart Grid.Row="7" DisableAnimations="True" Height="230" Margin="10 0 -35 0">
-                <livecharts:CartesianChart.AxisY>
-                    <livecharts:Axis MaxValue="120" MinValue="0" Title="Contraction Force [N]" />
-                </livecharts:CartesianChart.AxisY>
+            <Expander Grid.Row="7" Header="Measured data" mah:ControlsHelper.ContentCharacterCasing="Normal" IsExpanded="True">
+                <livecharts:CartesianChart Foreground="{StaticResource MainThemeColorAccent}"  DisableAnimations="True" Height="230" Margin="10 10 10 0">
+                    <livecharts:CartesianChart.AxisY>
+                        <livecharts:Axis MaxValue="120" MinValue="0" Title="Contraction Force [N]" />
+                    </livecharts:CartesianChart.AxisY>
 
-                <livecharts:CartesianChart.AxisX>
-                    <livecharts:Axis Title="Time [s]" />
-                </livecharts:CartesianChart.AxisX>
+                    <livecharts:CartesianChart.AxisX>
+                        <livecharts:Axis MinValue="0" Title="Time [s]" />
+                    </livecharts:CartesianChart.AxisX>
 
-                <livecharts:CartesianChart.SeriesColors>
-                    <livecharts:ColorsCollection>
-                        <Color>Aqua</Color>
-                        <Color R="50" G="40" B="130" />
-                    </livecharts:ColorsCollection>
-                </livecharts:CartesianChart.SeriesColors >
+                    <livecharts:CartesianChart.SeriesColors>
+                        <livecharts:ColorsCollection>
+                            <Color>Aqua</Color>
+                            <Color R="50" G="40" B="130" />
+                        </livecharts:ColorsCollection>
+                    </livecharts:CartesianChart.SeriesColors>
 
-                <livecharts:CartesianChart.Series>
-                    <livecharts:LineSeries Values="{Binding ForceValues}"/>
-                </livecharts:CartesianChart.Series>
-            </livecharts:CartesianChart>
+                    <livecharts:CartesianChart.Series>
+                        <livecharts:LineSeries Title="Measured force" Values="{Binding MeasuredValues}"
+                                           Configuration="{StaticResource chartPointMapper}"/>
+                    </livecharts:CartesianChart.Series>
+                </livecharts:CartesianChart>
+            </Expander>
 
             <Grid Grid.Row="8" >
                 <Grid.ColumnDefinitions>
