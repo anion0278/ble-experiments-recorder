@@ -58,6 +58,7 @@
             </Button>
         </DataTemplate>
     </UserControl.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="300"/>
@@ -127,12 +128,12 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
 
-                    <Label Grid.Row="0" Grid.Column="0"  Content="Unit Battery [%]:" VerticalAlignment="Center"/>
+                    <Label Grid.Row="0" Grid.Column="0"  Content="Unit Battery:" VerticalAlignment="Center"/>
                     <ProgressBar Grid.Row="0" Grid.Column="1" 
                                  d:Value ="80"
                                  Value="{Binding StimulatorBatteryPercentage, Mode=OneWay}" />
 
-                    <Label Grid.Row="1" Grid.Column="0"  Content="Device Battery [%]:" VerticalAlignment="Center"/>
+                    <Label Grid.Row="1" Grid.Column="0"  Content="Device Battery:" VerticalAlignment="Center"/>
                     <ProgressBar Grid.Row="1" Grid.Column="1"
                                  Value="{Binding ControllerBatteryPercentage, Mode=OneWay}"/>
 

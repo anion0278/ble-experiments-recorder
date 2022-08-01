@@ -8,13 +8,85 @@
              xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:views="clr-namespace:BleRecorder.UI.WPF.Views"
+             xmlns:testSubject="clr-namespace:BleRecorder.Models.TestSubject;assembly=BleRecorder.Models"
              mc:Ignorable="d" 
-             d:DesignHeight="500" d:DesignWidth="600"
+             d:DesignHeight="500" d:DesignWidth="900"
              d:DataContext="{d:DesignInstance viewModels:TestSubjectDetailViewModel, d:IsDesignTimeCreatable=True}">
+    <UserControl.Resources>
+        <GroupStyle x:Key="MeasurementDataGridGroupStyle">
+            <GroupStyle.Panel>
+                <ItemsPanelTemplate>
+                    <DataGridRowsPresenter/>
+                </ItemsPanelTemplate>
+            </GroupStyle.Panel>
+            <GroupStyle.ContainerStyle>
+                <Style TargetType="{x:Type GroupItem}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type GroupItem}">
+                                <Expander IsExpanded="True" BorderThickness="0" Background="DarkSlateBlue" IsTabStop="False" Style="{x:Null}">
+                                    <Expander.Header>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock FontSize="11" FontStyle="Italic" Foreground="White">
+                                                <TextBlock.Text>
+                                                    <MultiBinding StringFormat="Grouped by measurement type: {0}, Items: {1}">
+                                                        <Binding Path="Name" />
+                                                        <Binding Path="ItemCount" />
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Expander.Header>
+                                    <ItemsPresenter />
+                                </Expander>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </GroupStyle.ContainerStyle>
+            <GroupStyle.HeaderTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal" >
+                        <TextBlock Text="{Binding Type}" />
+                    </StackPanel>
+                </DataTemplate>
+            </GroupStyle.HeaderTemplate>
+        </GroupStyle>
+
+        <Style TargetType="DataGrid" BasedOn="{StaticResource {x:Type DataGrid}}">
+            <Setter Property="CellStyle">
+                <Setter.Value>
+                    <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource {x:Type DataGridCell}}">
+                        <Style.Triggers>
+                            <Trigger Property="DataGridCell.IsSelected" Value="True">
+                                <Setter Property="Background" Value="DodgerBlue" />
+                                <Setter Property="BorderThickness" Value="0" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="RowStyle">
+                <Setter.Value>
+                    <Style TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource {x:Type DataGridRow}}">
+                        <EventSetter Event="PreviewMouseDoubleClick" Handler="Row_PreviewMouseDoubleClick" />
+                    </Style>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderThickness"  Value="2"/>
+            <Setter Property="IsSynchronizedWithCurrentItem"  Value="True"/>
+            <Setter Property="SelectionUnit"  Value="FullRow"/>
+            <Setter Property="AutoGenerateColumns"  Value="False"/>
+            <Setter Property="RowHeaderWidth"  Value="0"/>
+            <Setter Property="CanUserAddRows"  Value="False"/>
+            <Setter Property="CanUserDeleteRows"  Value="False"/>
+            <Setter Property="MinHeight"  Value="100"/>
+        </Style>
+    </UserControl.Resources>
+
     <ScrollViewer Padding="10">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -49,7 +121,7 @@
                 </Grid>
             </Expander>
 
-            <DockPanel Grid.Row="8" >
+            <DockPanel Grid.Row="7" >
                 <StackPanel DockPanel.Dock="Right">
                     <Button Content="Add" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
                         Command="{Binding AddMeasurementCommand}" CommandParameter=""/>
@@ -58,81 +130,29 @@
                     <Button Content="Remove" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
                         Command="{Binding RemoveMeasurementCommand}"/>
                 </StackPanel>
-                <DataGrid x:Name="MeasurementsGrid" BorderThickness="2" IsSynchronizedWithCurrentItem="True"
-                      SelectionMode="Single" SelectionUnit="FullRow"
-                      ItemsSource="{Binding Measurements}" 
-                      AutoGenerateColumns="False" RowHeaderWidth="0"
-                      CanUserAddRows="False" CanUserDeleteRows="False"
-                      MinHeight="100">
-                    <DataGrid.CellStyle>
-                        <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource {x:Type DataGridCell}}">
-                            <Style.Triggers>
-                                <Trigger Property="DataGridCell.IsSelected" Value="True">
-                                    <Setter Property="Background" Value="DodgerBlue" />
-                                    <Setter Property="BorderThickness" Value="0" />
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </DataGrid.CellStyle>
-                    <DataGrid.RowStyle>
-                        <Style TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource {x:Type DataGridRow}}">
-                            <EventSetter Event="PreviewMouseDoubleClick" Handler="Row_PreviewMouseDoubleClick" />
-                        </Style>
-                    </DataGrid.RowStyle>
+
+                <DataGrid x:Name="MeasurementsGrid" 
+                          ItemsSource="{Binding Measurements}">
                     <DataGrid.GroupStyle>
-                        <GroupStyle>
-                            <GroupStyle.Panel>
-                                <ItemsPanelTemplate>
-                                    <DataGridRowsPresenter/>
-                                </ItemsPanelTemplate>
-                            </GroupStyle.Panel>
-                            <GroupStyle.ContainerStyle>
-                                <Style TargetType="{x:Type GroupItem}">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="{x:Type GroupItem}">
-                                                <Expander IsExpanded="True" BorderThickness="0" Background="DarkSlateBlue" IsTabStop="False" Style="{x:Null}">
-                                                    <Expander.Header>
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <TextBlock FontSize="11" FontStyle="Italic" Foreground="White">
-                                                                <TextBlock.Text>
-                                                                    <MultiBinding StringFormat="Grouped by measurement type: {0}, Items: {1}">
-                                                                        <Binding Path="Name" />
-                                                                        <Binding Path="ItemCount" />
-                                                                    </MultiBinding>
-                                                                </TextBlock.Text>
-                                                            </TextBlock>
-                                                        </StackPanel>
-                                                    </Expander.Header>
-                                                    <ItemsPresenter />
-                                                </Expander>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </GroupStyle.ContainerStyle>
-                            <GroupStyle.HeaderTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal" >
-                                        <TextBlock Text="{Binding Type}" />
-                                    </StackPanel>
-                                </DataTemplate>
-                            </GroupStyle.HeaderTemplate>
-                        </GroupStyle>
+                        <StaticResource ResourceKey="MeasurementDataGridGroupStyle" />
                     </DataGrid.GroupStyle>
 
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Measurement title" Width="*" IsReadOnly="True"
                                         Binding="{Binding Title}"/>
-                        <DataGridTextColumn Header="Type" Width="180"  IsReadOnly="True"
-                                        Binding="{Binding Type}"/>
-                        <DataGridTextColumn Header="Experiment Date" Width="200" IsReadOnly="True"
+                        <DataGridTextColumn Header="Type" Width="150"  IsReadOnly="True"
+                                        Binding="{Binding Type, Converter={StaticResource enumDescriptionConverter}}"/>
+                        <DataGridTextColumn Header="Site" Width="60" IsReadOnly="True"
+                                            Binding="{Binding SiteDuringMeasurement, Converter={StaticResource enumDescriptionConverter}}"/>
+                        <DataGridTextColumn Header="Type" Width="60"  IsReadOnly="True"
+                                            Binding="{Binding PositionDuringMeasurement, Converter={StaticResource enumDescriptionConverter}}"/>
+                        <DataGridTextColumn Header="Experiment Date" Width="150" IsReadOnly="True"
                                         Binding="{Binding Date, StringFormat='{}{0:dd MMM. yyyy, HH:mm}', TargetNullValue='Not completed'}"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </DockPanel>
 
-            <StackPanel Grid.Row="9" Orientation="Horizontal">
+            <StackPanel Grid.Row="8" Orientation="Horizontal">
                 <Button Content="Save Subject" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
                     Command="{Binding SaveCommand}"/>
                 <Button Content="Delete Subject" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"

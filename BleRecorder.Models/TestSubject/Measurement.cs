@@ -15,7 +15,7 @@ public class Measurement
 
     public MeasurementType Type { get; set; }
 
-    public MeasurementPosition PositionDuringMeasurement { get; set; }
+    public PositionDuringMeasurement PositionDuringMeasurement { get; set; }
 
     public MeasurementSite SiteDuringMeasurement { get; set; }
 

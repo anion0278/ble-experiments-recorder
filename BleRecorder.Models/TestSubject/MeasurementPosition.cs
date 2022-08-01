@@ -1,8 +1,11 @@
-﻿namespace BleRecorder.Models.TestSubject;
+﻿using System.ComponentModel;
 
-public enum MeasurementPosition
+namespace BleRecorder.Models.TestSubject;
+
+public enum PositionDuringMeasurement
 {
-    Undefined,
+    [Description("Seated")]
     Seated,
+    [Description("Standing")]
     Standing
 }

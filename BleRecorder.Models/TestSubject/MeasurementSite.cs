@@ -1,8 +1,11 @@
-﻿namespace BleRecorder.Models.TestSubject;
+﻿using System.ComponentModel;
+
+namespace BleRecorder.Models.TestSubject;
 
 public enum MeasurementSite
 {
-    Undefined,
+    [Description("Left hand")]
     LeftHand,
+    [Description("Right hand")]
     RightHand
 }

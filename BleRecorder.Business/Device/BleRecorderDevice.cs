@@ -24,7 +24,7 @@ public class BleRecorderDevice // TODO Extract inteface
 
     public StimulationParameters CurrentParameters { get; set; }
 
-    public MechanismParameters Mechanism { get; set; }
+    public MechanismParameters MechanismParameters { get; set; }
 
     public Percentage StimulatorBattery
     {
@@ -67,8 +67,7 @@ public class BleRecorderDevice // TODO Extract inteface
         }
     }
 
-    public BleRecorderDevice(BleRecorderManager bleRecorderManager, IBleDeviceHandler bleDeviceHandler,
-        IBleRecorderMessageParser messageParser)
+    public BleRecorderDevice(BleRecorderManager bleRecorderManager, IBleDeviceHandler bleDeviceHandler, IBleRecorderMessageParser messageParser)
     {
         _bleRecorderManager = bleRecorderManager;
         _bleDeviceHandler = bleDeviceHandler;
@@ -124,7 +123,8 @@ public class BleRecorderDevice // TODO Extract inteface
     // We always send up-to-date parameters in order to make sure that stimulation is correct even if the device has restarted in meantime
     public async Task StartMeasurement()
     {
-        await SendMsg(new BleRecorderRequestMessage(_bleRecorderManager.CurrentStimulationParameters, 
+        await SendMsg(new BleRecorderRequestMessage(
+            CurrentParameters, 
             MeasurementType.MaximumContraction, 
             true));
         IsCurrentlyMeasuring = true;
@@ -132,7 +132,8 @@ public class BleRecorderDevice // TODO Extract inteface
 
     public async Task StopMeasurement()
     {
-        var msg = new BleRecorderRequestMessage(_bleRecorderManager.CurrentStimulationParameters, 
+        var msg = new BleRecorderRequestMessage(
+            CurrentParameters, 
             MeasurementType.MaximumContraction,
             false);
         await SendMsg(msg);
