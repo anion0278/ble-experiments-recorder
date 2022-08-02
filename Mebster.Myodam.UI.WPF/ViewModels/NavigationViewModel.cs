@@ -22,11 +22,12 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
     {
         private readonly ITestSubjectRepository _testSubjectRepository;
         private readonly IMessenger _messenger;
+        private readonly IMessageDialogService _dialogService;
         private readonly IMyodamManager _myodamManager;
 
         public ObservableCollection<NavigationItemViewModel> TestSubjects { get; } = new();
 
-        public IAsyncRelayCommand ConnectMyodamCommand { get; }
+        public IAsyncRelayCommand ChangeMyodamConnectionCommand { get; }
 
         public MyodamAvailabilityStatus MyodamAvailability => _myodamManager.MyodamAvailability;
 
@@ -43,13 +44,15 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         public NavigationViewModel(
             ITestSubjectRepository testSubjectRepository,
             IMessenger messenger, 
+            IMessageDialogService dialogService,
             IMyodamManager myodamManager, 
             IAsyncRelayCommandFactory asyncCommandFactory)
         {
-            ConnectMyodamCommand = asyncCommandFactory.Create(ConnectMyodam, CanConnectMyodam);
+            ChangeMyodamConnectionCommand = asyncCommandFactory.Create(ChangeMyodamConnection, CanChangeMyodamConnection);
 
             _testSubjectRepository = testSubjectRepository;
             _messenger = messenger;
+            _dialogService = dialogService;
             _myodamManager = myodamManager;
 
             _myodamManager.MyodamAvailabilityChanged += OnMyodamAvailabilityChanged;
@@ -68,17 +71,29 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         private void OnMyodamAvailabilityChanged(object? o, EventArgs eventArgs)
         {
             OnMyodamPropertyChanged(this, EventArgs.Empty);
-            ViewSynchronizationContext.Send(_ => ConnectMyodamCommand.NotifyCanExecuteChanged(), null);
+            ViewSynchronizationContext.Send(_ => ChangeMyodamConnectionCommand.NotifyCanExecuteChanged(), null);
         }
 
-        private bool CanConnectMyodam()
+        private bool CanChangeMyodamConnection()
         {
             return MyodamAvailability != MyodamAvailabilityStatus.DisconnectedUnavailable;
         }
 
-        public async Task ConnectMyodam()
+        public async Task ChangeMyodamConnection()
         {
-            await _myodamManager.ConnectMyodam();
+            if (_myodamManager.IsCurrentlyMeasuring)
+            {
+                var result = await _dialogService.ShowOkCancelDialogAsync(
+                    "Measurement is currently running. Are you sure you want to stop the measurement and disconnect from device?",
+                    "Disconnect from device?");
+                if (result != MessageDialogResult.OK) return;
+            }
+            if (_myodamManager.MyodamDevice != null && _myodamManager.MyodamDevice.IsConnected)
+            {
+                await _myodamManager.MyodamDevice.Disconnect();
+                await Task.Delay(TimeSpan.FromSeconds(2));
+            }
+            else await _myodamManager.ConnectMyodam();
         }
 
         public async Task LoadAsync()
