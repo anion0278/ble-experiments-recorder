@@ -41,9 +41,15 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <Label Style="{x:Null}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Center" 
-                       Foreground="{StaticResource MebsterColor}" FontWeight="Bold"
-                       Content="{Binding Path=(resouces:AttachedText.Text), RelativeSource={RelativeSource TemplatedParent}}" />
+                <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Margin="3"
+                            HorizontalAlignment="Center" Orientation="Horizontal">
+                    <TextBlock Style="{x:Null}"  HorizontalAlignment="Center" 
+                           Foreground="{TemplateBinding Foreground}" FontWeight="Bold"
+                           Text="{Binding Path=(resouces:AttachedText.Text), RelativeSource={RelativeSource TemplatedParent}}" />
+                    <TextBlock Style="{x:Null}" Foreground="{TemplateBinding Foreground}"
+                           HorizontalAlignment="Center" Margin="3 0 0 0" FontWeight="Bold"
+                           Text="{Binding Path=Value, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" />
+                </StackPanel>
 
                 <Label Grid.Row="1" Grid.Column="0" 
                        Content="{TemplateBinding Minimum}"/>
@@ -54,9 +60,9 @@
                         TickFrequency="{TemplateBinding TickFrequency}"
                         Minimum="{TemplateBinding Minimum}"
                         Maximum="{TemplateBinding Maximum}"
-                        Foreground="{StaticResource MebsterColor}"
+                        Foreground="{TemplateBinding Foreground}"
                         Style="{StaticResource {x:Type Slider}}"
-                        Height="15" TickPlacement="Both" IsSnapToTickEnabled="True" AutoToolTipPlacement="BottomRight"/>
+                        Height="15" TickPlacement="Both" IsSnapToTickEnabled="True"/>
                 <Label Grid.Row="1" Grid.Column="2" 
                        Content="{TemplateBinding Maximum}"/>
 
@@ -65,6 +71,7 @@
         <Style TargetType="Slider" BasedOn="{StaticResource {x:Type Slider}}">
             <Setter Property="VerticalAlignment" Value="Top"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Foreground" Value="{StaticResource MebsterColor}"/>
             <Setter Property="Template" Value="{StaticResource SliderWithLabels}"/>
         </Style>
     </UserControl.Resources>
@@ -124,7 +131,7 @@
                 Value = "{Binding AnkleAxisZ}" 
                 resouces:AttachedText.Text="Ankle Z-axis:"
                 resouces:AttachedRotation.Rotated="True"
-                Width = "80" Margin="171,318,59,34" RenderTransformOrigin="0.5,0.5" >
+                Width = "100" RenderTransformOrigin="0.5,0.5" Margin="167,327,0,0" >
             <Slider.RenderTransform>
                 <TransformGroup>
                     <RotateTransform Angle="-90"/>
@@ -137,6 +144,6 @@
                 TickFrequency="{Binding Model.AnkleAxisY.Step}"
                 Value = "{Binding AnkleAxisY}"
                 resouces:AttachedText.Text="Ankle Y-axis:"
-                Width = "150" Margin="50,352,0,0" />
+                Width = "150" Margin="24,352,0,0" />
     </Grid>
 </UserControl>

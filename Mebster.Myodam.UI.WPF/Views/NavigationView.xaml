@@ -73,7 +73,7 @@
             <RowDefinition Height="300"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <GroupBox Header="Test subjects" Margin="3 0 0 3" mah:ControlsHelper.ContentCharacterCasing="Normal">
+        <GroupBox Header="Test subjects" Margin="0 0 0 3" mah:ControlsHelper.ContentCharacterCasing="Normal">
             <ScrollViewer VerticalScrollBarVisibility="Auto"
                   HorizontalScrollBarVisibility="Auto">
                 <ItemsControl ItemsSource="{Binding TestSubjects}"
@@ -82,7 +82,7 @@
                     Margin="10"/>
             </ScrollViewer>
         </GroupBox>
-        <GroupBox Grid.Row="1" Header="Device status" Margin="3 0 0 3" mah:ControlsHelper.ContentCharacterCasing="Normal">
+        <GroupBox Grid.Row="1" Header="Device status" mah:ControlsHelper.ContentCharacterCasing="Normal">
             <StackPanel>
                 <Button Command="{Binding ChangeMyodamConnectionCommand}" FontSize="14"
                         IsEnabled="{Binding ChangeMyodamConnectionCommand.IsRunning, Converter={StaticResource inverseBooleanConverter}}">

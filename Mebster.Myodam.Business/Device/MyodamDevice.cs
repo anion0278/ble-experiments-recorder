@@ -62,7 +62,6 @@ public class MyodamDevice // TODO Extract inteface
             if (_isCurrentlyMeasuring == value) return;
 
             _isCurrentlyMeasuring = value;
-            Debug.Print("Fired change:" + _isCurrentlyMeasuring);
             MeasurementStatusChanged?.Invoke(this, EventArgs.Empty);
         }
     }
@@ -111,6 +110,7 @@ public class MyodamDevice // TODO Extract inteface
         var reply = _messageParser.ParseReply(data);
         StimulatorBattery = reply.StimulatorBattery;
         ControllerBattery = reply.ControllerBattery;
+        if (reply.MeasurementStatus == MyodamMeasurement.Idle) IsCurrentlyMeasuring = false;
 
         if (!IsCurrentlyMeasuring) return;
 
