@@ -1,4 +1,5 @@
-﻿using BleRecorder.Business.Exception;
+﻿using System.Diagnostics;
+using BleRecorder.Business.Exception;
 using BleRecorder.Infrastructure.Bluetooth;
 using BleRecorder.Models.Device;
 
@@ -68,14 +69,7 @@ public class BleRecorderManager : IBleRecorderManager
 
     public async Task ConnectBleRecorder()
     {
-        if (BleRecorderDevice != null)
-        {
-            BleRecorderDevice.ConnectionStatusChanged -= OnConnectionStatusChanged;
-            BleRecorderDevice.MeasurementStatusChanged -= OnMeasurementStatusChanged;
-            BleRecorderDevice.BatteryStatusChanged -= OnDeviceStatusChanged;
-            BleRecorderDevice.Disconnect();
-            BleRecorderDevice = null;
-        }
+        if (BleRecorderDevice != null) OnDeviceDisconnection();
 
         var bleRecorderDevices = _bluetoothManager.AvailableBleDevices.Where(IsBleRecorderDevice).ToArray();
 
@@ -96,10 +90,19 @@ public class BleRecorderManager : IBleRecorderManager
         BleRecorderAvailability = BleRecorderAvailabilityStatus.Connected;
         BleRecorderDevice.ConnectionStatusChanged += OnConnectionStatusChanged;
         BleRecorderDevice.MeasurementStatusChanged += OnMeasurementStatusChanged;
-        BleRecorderDevice.BatteryStatusChanged += OnDeviceStatusChanged;
+        BleRecorderDevice.BatteryStatusChanged += OnDevicePropertyChanged;
     }
 
-    private void OnDeviceStatusChanged(object? sender, EventArgs e)
+    private void OnDeviceDisconnection()
+    {
+        BleRecorderDevice!.ConnectionStatusChanged -= OnConnectionStatusChanged;
+        BleRecorderDevice.MeasurementStatusChanged -= OnMeasurementStatusChanged;
+        BleRecorderDevice.BatteryStatusChanged -= OnDevicePropertyChanged;
+        BleRecorderDevice = null;
+        BleRecorderAvailability = BleRecorderAvailabilityStatus.DisconnectedUnavailable;
+    }
+
+    private void OnDevicePropertyChanged(object? sender, EventArgs e)
     {
         DevicePropertyChanged?.Invoke(this, EventArgs.Empty);
     }
@@ -113,7 +116,7 @@ public class BleRecorderManager : IBleRecorderManager
     {
         if (BleRecorderDevice != null && !BleRecorderDevice.IsConnected)
         {
-            BleRecorderAvailabilityChanged?.Invoke(this, EventArgs.Empty);
+            OnDeviceDisconnection();
         }
     }
 }

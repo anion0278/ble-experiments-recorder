@@ -32,7 +32,7 @@
             </Setter>
             <Style.Triggers>
                 <Trigger Property="IsEnabled" Value="False">
-                    <Setter Property="ToolTip" Value="Measurement parameters can only be changed if the measurement data is empty."></Setter>
+                    <Setter Property="ToolTip" Value="Measurement parameters can be changed only if the measurement data is empty."></Setter>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -61,11 +61,6 @@
         </ObjectDataProvider>
 
         <resouces:ChartPointMapper x:Key="chartPointMapper" />
-        <!--<ObjectDataProvider x:Key="ChartPointMapper" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
-            <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="testSubject:PositionDuringMeasurement"/>
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>-->
     </UserControl.Resources>
 
     <ScrollViewer Padding="10">
@@ -125,8 +120,19 @@
                           ItemsSource="{Binding Source={StaticResource PositionDuringMeasurementEnum}}" />
             </Grid>
 
-            <Expander Grid.Row="5" Margin="0  10" Header="Settings for this measurement" mah:ControlsHelper.ContentCharacterCasing="Normal"
+            <Expander Grid.Row="5" Margin="0  10"  mah:ControlsHelper.ContentCharacterCasing="Normal"
                       IsExpanded="{Binding Id, Mode=OneTime, Converter={StaticResource idToBooleanConverter}}">
+                <Expander.Style>
+                    <Style TargetType="Expander" BasedOn="{StaticResource {x:Type Expander}}">
+                        <Setter Property="Header" Value="Settings for this measurement"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding MeasuredValues, Converter={StaticResource measuredDataLengthToBooleanConverter}}"
+                                         Value="false">
+                                <Setter Property="Header" Value="Settings for this measurement (can be changed only if the measurement data is empty)"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Expander.Style>
                 <Grid IsEnabled="{Binding MeasuredValues, Converter={StaticResource measuredDataLengthToBooleanConverter}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />

@@ -62,11 +62,12 @@ namespace BleRecorder.UI.WPF.ViewModels
         {
             OnPropertyChanged(nameof(ControllerBatteryPercentage));
             OnPropertyChanged(nameof(StimulatorBatteryPercentage));
+            OnPropertyChanged(nameof(BleRecorderAvailability));
         }
 
         private void OnBleRecorderAvailabilityChanged(object? o, EventArgs eventArgs)
         {
-            OnPropertyChanged(nameof(BleRecorderAvailability));
+            OnBleRecorderPropertyChanged(this, EventArgs.Empty);
             ViewSynchronizationContext.Send(_ => ConnectBleRecorderCommand.NotifyCanExecuteChanged(), null);
         }
 

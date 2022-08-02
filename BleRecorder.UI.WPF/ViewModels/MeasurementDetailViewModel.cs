@@ -178,6 +178,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             {
                 MeasuredValues.Clear();
             }
+            UpdateMeasurementForceData();
         }
 
         public override async Task LoadAsync(int measurementId, object argsData)
@@ -232,7 +233,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             Date = _dateTimeService.Now;
             _bleRecorderManager.BleRecorderDevice!.NewValueReceived += OnNewValueReceived;
             _bleRecorderManager.BleRecorderDevice!.MeasurementFinished += OnMeasurementFinished;
-            await _bleRecorderManager.BleRecorderDevice.StartMeasurement(Measurement.ParametersDuringMeasurement!);
+            await _bleRecorderManager.BleRecorderDevice.StartMeasurement(Measurement.ParametersDuringMeasurement!, Type);
         }
 
         private void OnMeasurementFinished(object? _, EventArgs value)
@@ -273,11 +274,17 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         protected override async void OnSaveExecute()
         {
-            Measurement.ForceData = MeasuredValues.ToArray();
+            UpdateMeasurementForceData();
             await _measurementRepository.SaveAsync();
             HasChanges = _measurementRepository.HasChanges();
             Id = Measurement.Id;
             RaiseDetailSavedEvent(Measurement.Id, Measurement.Title);
+        }
+
+        private void UpdateMeasurementForceData()
+        {
+            Measurement.ForceData = MeasuredValues.ToArray();
+            OnPropertyChanged(nameof(MeasuredValues));
         }
 
         protected override bool OnSaveCanExecute()

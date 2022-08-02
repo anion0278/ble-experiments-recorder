@@ -53,8 +53,10 @@ namespace BleRecorder.Infrastructure.Bluetooth
         {
             foreach (var availableBleDevice in AvailableBleDevices.ToArray())
             {
-                if (_dateTimeService.Now - availableBleDevice.LatestTimestamp > _advertisementWatchdogTimeout)
+                var now = _dateTimeService.Now;
+                if (now - availableBleDevice.LatestTimestamp > _advertisementWatchdogTimeout)
                 {
+                    Debug.Print($"Advertisement interval timeout: {now - availableBleDevice.LatestTimestamp}");
                     AvailableBleDevices.Remove(availableBleDevice);
                 }
             }
@@ -70,6 +72,11 @@ namespace BleRecorder.Infrastructure.Bluetooth
 
         private void BleWatcher_Received(BluetoothLEAdvertisementWatcher sender, BluetoothLEAdvertisementReceivedEventArgs args)
         {
+            foreach (var disposedDevice in AvailableBleDevices.Where(d=>d.IsDisposed))
+            {
+                AvailableBleDevices.Remove(disposedDevice);
+            }
+
             var existing = AvailableBleDevices.SingleOrDefault(d => d.Address == args.BluetoothAddress);
             if (existing == null)
             {

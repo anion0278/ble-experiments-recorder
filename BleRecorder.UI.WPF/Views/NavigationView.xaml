@@ -17,11 +17,20 @@
                              Value="{Binding Path=Value,
                                 RelativeSource={RelativeSource TemplatedParent}, 
                                 TargetNullValue=0, FallbackValue=0, Mode=TwoWay}" />
-                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" 
-                           FontWeight="Bold" Foreground="White"
-                           Text="{Binding Path=Value, StringFormat='{}{0}%',
-                                RelativeSource={RelativeSource TemplatedParent}, 
-                                TargetNullValue='Unknown', Mode=TwoWay}" />
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"  FontWeight="Bold" Foreground="White">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                            <Setter Property="Text" Value="Unknown"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding BleRecorderAvailability}" 
+                                             Value="{x:Static device:BleRecorderAvailabilityStatus.Connected}" >
+                                    <Setter Property="Text" Value="{Binding Path=Value, StringFormat='{}{0}%',
+                                        RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
             </Grid>
         </ControlTemplate>
 
