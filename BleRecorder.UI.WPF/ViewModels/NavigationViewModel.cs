@@ -22,11 +22,12 @@ namespace BleRecorder.UI.WPF.ViewModels
     {
         private readonly ITestSubjectRepository _testSubjectRepository;
         private readonly IMessenger _messenger;
+        private readonly IMessageDialogService _dialogService;
         private readonly IBleRecorderManager _bleRecorderManager;
 
         public ObservableCollection<NavigationItemViewModel> TestSubjects { get; } = new();
 
-        public IAsyncRelayCommand ConnectBleRecorderCommand { get; }
+        public IAsyncRelayCommand ChangeBleRecorderConnectionCommand { get; }
 
         public BleRecorderAvailabilityStatus BleRecorderAvailability => _bleRecorderManager.BleRecorderAvailability;
 
@@ -43,13 +44,15 @@ namespace BleRecorder.UI.WPF.ViewModels
         public NavigationViewModel(
             ITestSubjectRepository testSubjectRepository,
             IMessenger messenger, 
+            IMessageDialogService dialogService,
             IBleRecorderManager bleRecorderManager, 
             IAsyncRelayCommandFactory asyncCommandFactory)
         {
-            ConnectBleRecorderCommand = asyncCommandFactory.Create(ConnectBleRecorder, CanConnectBleRecorder);
+            ChangeBleRecorderConnectionCommand = asyncCommandFactory.Create(ChangeBleRecorderConnection, CanChangeBleRecorderConnection);
 
             _testSubjectRepository = testSubjectRepository;
             _messenger = messenger;
+            _dialogService = dialogService;
             _bleRecorderManager = bleRecorderManager;
 
             _bleRecorderManager.BleRecorderAvailabilityChanged += OnBleRecorderAvailabilityChanged;
@@ -68,17 +71,29 @@ namespace BleRecorder.UI.WPF.ViewModels
         private void OnBleRecorderAvailabilityChanged(object? o, EventArgs eventArgs)
         {
             OnBleRecorderPropertyChanged(this, EventArgs.Empty);
-            ViewSynchronizationContext.Send(_ => ConnectBleRecorderCommand.NotifyCanExecuteChanged(), null);
+            ViewSynchronizationContext.Send(_ => ChangeBleRecorderConnectionCommand.NotifyCanExecuteChanged(), null);
         }
 
-        private bool CanConnectBleRecorder()
+        private bool CanChangeBleRecorderConnection()
         {
             return BleRecorderAvailability != BleRecorderAvailabilityStatus.DisconnectedUnavailable;
         }
 
-        public async Task ConnectBleRecorder()
+        public async Task ChangeBleRecorderConnection()
         {
-            await _bleRecorderManager.ConnectBleRecorder();
+            if (_bleRecorderManager.IsCurrentlyMeasuring)
+            {
+                var result = await _dialogService.ShowOkCancelDialogAsync(
+                    "Measurement is currently running. Are you sure you want to stop the measurement and disconnect from device?",
+                    "Disconnect from device?");
+                if (result != MessageDialogResult.OK) return;
+            }
+            if (_bleRecorderManager.BleRecorderDevice != null && _bleRecorderManager.BleRecorderDevice.IsConnected)
+            {
+                await _bleRecorderManager.BleRecorderDevice.Disconnect();
+                await Task.Delay(TimeSpan.FromSeconds(2));
+            }
+            else await _bleRecorderManager.ConnectBleRecorder();
         }
 
         public async Task LoadAsync()

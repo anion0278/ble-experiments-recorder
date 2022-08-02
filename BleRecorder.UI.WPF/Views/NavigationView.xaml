@@ -84,8 +84,8 @@
         </GroupBox>
         <GroupBox Grid.Row="1" Header="Device status" Margin="3 0 0 3" mah:ControlsHelper.ContentCharacterCasing="Normal">
             <StackPanel>
-                <Button Command="{Binding ConnectBleRecorderCommand}" FontSize="14"
-                        IsEnabled="{Binding ConnectBleRecorderCommand.IsRunning, Converter={StaticResource inverseBooleanConverter}}">
+                <Button Command="{Binding ChangeBleRecorderConnectionCommand}" FontSize="14"
+                        IsEnabled="{Binding ChangeBleRecorderConnectionCommand.IsRunning, Converter={StaticResource inverseBooleanConverter}}">
                     <Button.Content>
                         <StackPanel Orientation="Horizontal">
                             <mah:ProgressRing Foreground="Azure" 
@@ -95,7 +95,7 @@
                                         <Setter Property="IsActive" Value="False" />
                                         <Setter Property="Visibility" Value="Collapsed" />
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding ConnectBleRecorderCommand.IsRunning}" Value="True">
+                                            <DataTrigger Binding="{Binding ChangeBleRecorderConnectionCommand.IsRunning}" Value="True">
                                                 <Setter Property="IsActive" Value="True"/>
                                                 <Setter Property="Visibility" Value="Visible"/>
                                             </DataTrigger>
@@ -108,12 +108,19 @@
                                     <Style TargetType="TextBlock">
                                         <Setter Property="Text" Value="Connect" />
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding ConnectBleRecorderCommand.IsRunning}" Value="True" >
+                                            <DataTrigger Binding="{Binding ChangeBleRecorderConnectionCommand.IsRunning}" Value="True" >
                                                 <Setter Property="Text" Value="Connecting..."></Setter>
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding BleRecorderAvailability}" Value="{x:Static device:BleRecorderAvailabilityStatus.Connected}" >
-                                                <Setter Property="Text" Value="Reconnect"></Setter>
+                                                <Setter Property="Text" Value="Disconnect"></Setter>
                                             </DataTrigger>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding ChangeBleRecorderConnectionCommand.IsRunning}" Value="True"  />
+                                                    <Condition Binding="{Binding BleRecorderAvailability}" Value="{x:Static device:BleRecorderAvailabilityStatus.DisconnectedUnavailable}"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="Text" Value="Disconnecting..." />
+                                            </MultiDataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </TextBlock.Style>
@@ -122,32 +129,35 @@
                     </Button.Content>
                 </Button>
 
-                <StackPanel Orientation="Horizontal">
-                    <Label Content="Status: "/>
-                    <Label Content="{Binding BleRecorderAvailability, Converter={StaticResource enumDescriptionConverter}}" FontWeight="Bold"/>
-                </StackPanel>
-                <!--<GroupBox Header="Stimulation Parameters" Style="{x:Null}" Margin="5" IsEnabled="True">-->
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition/>
+                        <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
 
-                    <Label Grid.Row="0" Grid.Column="0"  Content="Unit Battery:" VerticalAlignment="Center"/>
-                    <ProgressBar Grid.Row="0" Grid.Column="1" 
+                    <Label Grid.Row="0" Grid.Column="0" Content="Status: "/>
+                    <Label Grid.Row="0" Grid.Column="1" FontWeight="Bold" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">
+                        <Label.Content>
+                            <TextBlock TextWrapping="Wrap"
+                                Text="{Binding BleRecorderAvailability, Converter={StaticResource enumDescriptionConverter}}"/>
+                        </Label.Content>
+                    </Label>
+
+                    <Label Grid.Row="1" Grid.Column="0"  Content="Unit Battery:" VerticalAlignment="Center"/>
+                    <ProgressBar Grid.Row="1" Grid.Column="1" 
                                  d:Value ="80"
                                  Value="{Binding StimulatorBatteryPercentage, Mode=OneWay}" />
 
-                    <Label Grid.Row="1" Grid.Column="0"  Content="Device Battery:" VerticalAlignment="Center"/>
-                    <ProgressBar Grid.Row="1" Grid.Column="1"
+                    <Label Grid.Row="2" Grid.Column="0"  Content="Device Battery:" VerticalAlignment="Center"/>
+                    <ProgressBar Grid.Row="2" Grid.Column="1"
                                  Value="{Binding ControllerBatteryPercentage, Mode=OneWay}"/>
 
                 </Grid>
-                <!--</GroupBox>-->
             </StackPanel>
         </GroupBox>
     </Grid>

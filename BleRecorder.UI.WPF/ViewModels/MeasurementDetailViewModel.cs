@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Data;
@@ -131,7 +132,6 @@ namespace BleRecorder.UI.WPF.ViewModels
             if (_bleRecorderManager.BleRecorderDevice != null)
             {
                 _bleRecorderManager.BleRecorderDevice.NewValueReceived -= OnNewValueReceived;
-                _bleRecorderManager.BleRecorderDevice.MeasurementFinished -= OnMeasurementFinished;
             }
 
             Messenger.Unregister<AfterDetailSavedEventArgs>(this);
@@ -152,9 +152,18 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         private void OnMeasurementStatusChanged(object? sender, EventArgs e)
         {
-            StartMeasurementCommand.NotifyCanExecuteChanged();
-            StopMeasurementCommand.NotifyCanExecuteChanged();
-            CleanRecordedDataCommand.NotifyCanExecuteChanged();
+            ViewSynchronizationContext.Send(_ =>
+            {
+                StartMeasurementCommand.NotifyCanExecuteChanged();
+                StopMeasurementCommand.NotifyCanExecuteChanged();
+                CleanRecordedDataCommand.NotifyCanExecuteChanged();
+                if (_bleRecorderManager.IsCurrentlyMeasuring) return;
+
+                StopMeasurementCommand.NotifyCanExecuteChanged();
+                if (_bleRecorderManager.BleRecorderDevice is not null && _bleRecorderManager.BleRecorderDevice.IsConnected) return;
+
+                MessageDialogService.ShowInfoDialogAsync("Measurement interrupted due to device disconnection!");
+            }, null);
         }
 
         private bool StartMeasurementCanExecute()
@@ -191,7 +200,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             Measurement.ParametersDuringMeasurement ??= (StimulationParameters)ts.CustomizedParameters.Clone();
             StimulationParametersVm = new StimulationParametersViewModel(Measurement.ParametersDuringMeasurement);
             StimulationParametersVm.PropertyChanged += OnPropertyChangedEventHandler;
-            
+
             Measurement.AdjustmentsDuringMeasurement ??= (DeviceMechanicalAdjustments)ts.CustomizedAdjustments.Clone();
             MechanismParametersVm = new MechanismParametersViewModel(new MechanismParameters(Measurement.AdjustmentsDuringMeasurement), _mapper);
             MechanismParametersVm.PropertyChanged += OnPropertyChangedEventHandler;
@@ -208,8 +217,8 @@ namespace BleRecorder.UI.WPF.ViewModels
             var newMeasurement = new Measurement
             {
                 ForceData = new List<MeasuredValue>(),
+                TestSubject = (await _measurementRepository.GetTestSubjectById(correspondingTestSubject.Id))!
             };
-            newMeasurement.TestSubject = (await _measurementRepository.GetTestSubjectById(correspondingTestSubject.Id))!;
             _measurementRepository.Add(newMeasurement);
             return newMeasurement;
         }
@@ -232,13 +241,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             MeasuredValues.Clear();
             Date = _dateTimeService.Now;
             _bleRecorderManager.BleRecorderDevice!.NewValueReceived += OnNewValueReceived;
-            _bleRecorderManager.BleRecorderDevice!.MeasurementFinished += OnMeasurementFinished;
             await _bleRecorderManager.BleRecorderDevice.StartMeasurement(Measurement.ParametersDuringMeasurement!, Type);
-        }
-
-        private void OnMeasurementFinished(object? _, EventArgs value)
-        {
-            MessageDialogService.ShowInfoDialogAsync("Measurement finished.");
         }
 
         private void OnNewValueReceived(object? _, MeasuredValue value)
@@ -296,8 +299,10 @@ namespace BleRecorder.UI.WPF.ViewModels
         {
             if (HasChanges || _bleRecorderManager.IsCurrentlyMeasuring)
             {
-                var result = await MessageDialogService.ShowOkCancelDialogAsync(
-                    "You made changes or measurement is currently running. Do you want to close this item and stop measurement?", "Question");
+                string message = _bleRecorderManager.IsCurrentlyMeasuring
+                    ? "Measurement is currently running. Do you want to close this item and stop measurement?"
+                    : "Do you want to discard all unsaved changes and close this item?";
+                var result = await MessageDialogService.ShowOkCancelDialogAsync(message, "Closing tab");
                 if (result == MessageDialogResult.Cancel) return false;
             }
             await StopMeasurement();
