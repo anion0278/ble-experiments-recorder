@@ -14,7 +14,7 @@
         TextOptions.TextFormattingMode="Display"
         TextOptions.TextRenderingMode="ClearType"
         d:DataContext="{d:DesignInstance viewModel:MainViewModel, d:IsDesignTimeCreatable=True}">
-    <Grid>
+    <Grid Margin="3">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
