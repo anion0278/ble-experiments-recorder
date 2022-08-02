@@ -16,9 +16,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         public ICommand OpenDetailViewCommand { get; }
 
-        public NavigationItemViewModel(int id, string displayMember,
-            string detailViewModelName,
-            IMessenger messenger)
+        public NavigationItemViewModel(int id, string displayMember, string detailViewModelName, IMessenger messenger)
         {
             _messenger = messenger;
             Id = id;
@@ -29,8 +27,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         private void OnOpenDetailViewExecute()
         {
-            _messenger.Send(
-              new OpenDetailViewEventArgs
+            _messenger.Send(new OpenDetailViewEventArgs
               {
                   Id = Id,
                   ViewModelName = _detailViewModelName

@@ -23,6 +23,7 @@ public class BleDeviceHandler : IBleDeviceHandler
     private TimeSpan _hearbeatWatchdogInterval = TimeSpan.FromSeconds(0.4);
     private TimeSpan _hearbeatTimeout = TimeSpan.FromSeconds(1.4);
     private bool _isConnected;
+    private readonly object _syncRoot = new();
 
     public bool IsDisposed { get; private set; }
     public ulong Address { get; set; }
@@ -93,6 +94,7 @@ public class BleDeviceHandler : IBleDeviceHandler
         var ts = _dateTimeService.Now;
         if (ts - LatestTimestamp < _hearbeatTimeout) return;
 
+        Debug.Print("Disconnect watchdog");
         Disconnect();
     }
 
@@ -101,6 +103,7 @@ public class BleDeviceHandler : IBleDeviceHandler
         switch (sender.ConnectionStatus) // we cannot rely on this prop, since its not updated when the device is disconnected "externally"
         {
             case BluetoothConnectionStatus.Disconnected:
+                Debug.Print("Disconnect switch");
                 Disconnect();
                 break;
             case BluetoothConnectionStatus.Connected:
@@ -136,30 +139,32 @@ public class BleDeviceHandler : IBleDeviceHandler
 
     public void Dispose()
     {
-        IsConnected = false;
-        IsDisposed = true;
-        _heartbeatWatchdog.Stop();
-        _heartbeatWatchdog.Dispose();
-        //https://stackoverflow.com/questions/39599252/windows-ble-uwp-disconnect
-
-        if (_rxCharacteristic != null)
+        lock (_syncRoot)
         {
-            _rxCharacteristic.ValueChanged -= Uart_ReceivedData;
-            _rxCharacteristic.Service.Dispose();
-            _rxCharacteristic = null;
-        }
+            if (IsDisposed) return;
 
-        if (_txCharacteristic != null)
-        {
-            _txCharacteristic.Service.Dispose();
-            _txCharacteristic = null;
-        }
+            Debug.Print("Disposing");
+            IsConnected = false;
+            IsDisposed = true;
+            _heartbeatWatchdog.Stop();
+            _heartbeatWatchdog.Dispose();
+            //https://stackoverflow.com/questions/39599252/windows-ble-uwp-disconnect
 
-        if (_device != null)
-        {
-            _device.ConnectionStatusChanged -= BleDeviceOnConnectionStatusChanged;
-            _device?.Dispose();
-            _device = null;
+            if (_rxCharacteristic != null)
+            {
+                _rxCharacteristic.ValueChanged -= Uart_ReceivedData;
+                _rxCharacteristic.Service.Dispose(); // RX and TX share the same service! so only one dispose is needed
+                _rxCharacteristic = null;
+                _txCharacteristic = null;
+            }
+
+            if (_device != null)
+            {
+                _device.ConnectionStatusChanged -= BleDeviceOnConnectionStatusChanged;
+                _device?.Dispose();
+                _device = null;
+            }
+            Debug.Print("Disposed");
         }
     }
 }

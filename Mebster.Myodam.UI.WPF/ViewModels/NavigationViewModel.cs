@@ -62,11 +62,12 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         {
             OnPropertyChanged(nameof(ControllerBatteryPercentage));
             OnPropertyChanged(nameof(StimulatorBatteryPercentage));
+            OnPropertyChanged(nameof(MyodamAvailability));
         }
 
         private void OnMyodamAvailabilityChanged(object? o, EventArgs eventArgs)
         {
-            OnPropertyChanged(nameof(MyodamAvailability));
+            OnMyodamPropertyChanged(this, EventArgs.Empty);
             ViewSynchronizationContext.Send(_ => ConnectMyodamCommand.NotifyCanExecuteChanged(), null);
         }
 

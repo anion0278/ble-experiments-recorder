@@ -1,4 +1,5 @@
-﻿using Mebster.Myodam.Business.Exception;
+﻿using System.Diagnostics;
+using Mebster.Myodam.Business.Exception;
 using Mebster.Myodam.Infrastructure.Bluetooth;
 using Mebster.Myodam.Models.Device;
 
@@ -68,14 +69,7 @@ public class MyodamManager : IMyodamManager
 
     public async Task ConnectMyodam()
     {
-        if (MyodamDevice != null)
-        {
-            MyodamDevice.ConnectionStatusChanged -= OnConnectionStatusChanged;
-            MyodamDevice.MeasurementStatusChanged -= OnMeasurementStatusChanged;
-            MyodamDevice.BatteryStatusChanged -= OnDeviceStatusChanged;
-            MyodamDevice.Disconnect();
-            MyodamDevice = null;
-        }
+        if (MyodamDevice != null) OnDeviceDisconnection();
 
         var myodamDevices = _bluetoothManager.AvailableBleDevices.Where(IsMyodamDevice).ToArray();
 
@@ -96,10 +90,19 @@ public class MyodamManager : IMyodamManager
         MyodamAvailability = MyodamAvailabilityStatus.Connected;
         MyodamDevice.ConnectionStatusChanged += OnConnectionStatusChanged;
         MyodamDevice.MeasurementStatusChanged += OnMeasurementStatusChanged;
-        MyodamDevice.BatteryStatusChanged += OnDeviceStatusChanged;
+        MyodamDevice.BatteryStatusChanged += OnDevicePropertyChanged;
     }
 
-    private void OnDeviceStatusChanged(object? sender, EventArgs e)
+    private void OnDeviceDisconnection()
+    {
+        MyodamDevice!.ConnectionStatusChanged -= OnConnectionStatusChanged;
+        MyodamDevice.MeasurementStatusChanged -= OnMeasurementStatusChanged;
+        MyodamDevice.BatteryStatusChanged -= OnDevicePropertyChanged;
+        MyodamDevice = null;
+        MyodamAvailability = MyodamAvailabilityStatus.DisconnectedUnavailable;
+    }
+
+    private void OnDevicePropertyChanged(object? sender, EventArgs e)
     {
         DevicePropertyChanged?.Invoke(this, EventArgs.Empty);
     }
@@ -113,7 +116,7 @@ public class MyodamManager : IMyodamManager
     {
         if (MyodamDevice != null && !MyodamDevice.IsConnected)
         {
-            MyodamAvailabilityChanged?.Invoke(this, EventArgs.Empty);
+            OnDeviceDisconnection();
         }
     }
 }
