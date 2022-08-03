@@ -76,7 +76,7 @@
         <GroupBox Header="Test subjects" Margin="0 0 0 3" mah:ControlsHelper.ContentCharacterCasing="Normal">
             <ScrollViewer VerticalScrollBarVisibility="Auto"
                   HorizontalScrollBarVisibility="Auto">
-                <ItemsControl ItemsSource="{Binding TestSubjects}"
+                <ItemsControl ItemsSource="{Binding _testSubjectsNavigationItems}"
                     ItemContainerStyle="{StaticResource NavigationItemContainerStyle}"
                     ItemTemplate="{StaticResource NavigationItemTemplate}"
                     Margin="10"/>

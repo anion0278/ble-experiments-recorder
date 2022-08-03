@@ -8,11 +8,12 @@
         xmlns:viewModel="clr-namespace:BleRecorder.UI.WPF.ViewModels"
         xmlns:views="clr-namespace:BleRecorder.UI.WPF.Views"
         mc:Ignorable="d"
-        Title="BleRecorder GUI" 
+        Title="{Binding AppVersion, StringFormat='{}Aggregator GUI v{0}'}" 
         Width="1000" Height="700"
         MinWidth="800" MinHeight="600" 
         TextOptions.TextFormattingMode="Display"
         TextOptions.TextRenderingMode="ClearType"
+        TitleCharacterCasing="Normal"
         d:DataContext="{d:DesignInstance viewModel:MainViewModel, d:IsDesignTimeCreatable=True}">
     <Grid Margin="3">
         <Grid.RowDefinitions>
@@ -23,10 +24,6 @@
             <ColumnDefinition Width="0.38*"/>
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <Menu Grid.Row="0" Grid.ColumnSpan="2" >
-            <MenuItem Header="+ Add new test subject" 
-                      Command="{Binding CreateNewDetailCommand}" />
-        </Menu>
         <views:NavigationView Grid.Row="1" Grid.Column="0" DataContext="{Binding NavigationViewModel}"/>
         <TabControl Grid.Row="1" Grid.Column="1" 
                 ItemsSource="{Binding DetailViewModels}"
