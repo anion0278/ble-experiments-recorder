@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -29,14 +30,13 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             await NavigationViewModel.LoadAsync();
         }
 
-        public ICommand CreateNewDetailCommand { get; }
-
         public ICommand OpenSingleDetailViewCommand { get; }
 
         public INavigationViewModel NavigationViewModel { get; }
 
         public ObservableCollection<IDetailViewModel> DetailViewModels { get; }
 
+        public string AppVersion => Assembly.GetExecutingAssembly().GetName().Version!.ToString(3);
 
         public IDetailViewModel SelectedDetailViewModel
         {
@@ -77,7 +77,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             _messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
             _messenger.Register<AfterDetailClosedEventArgs>(this, (s, e) => AfterDetailClosed(e));
 
-            CreateNewDetailCommand = new RelayCommand(OnCreateNewDetailExecute);
             OpenSingleDetailViewCommand = new RelayCommand(OnOpenSingleDetailViewExecute);
 
             NavigationViewModel = navigationViewModel;
@@ -96,15 +95,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             }
 
             SelectedDetailViewModel = detailViewModel;
-        }
-
-        private void OnCreateNewDetailExecute()
-        {
-            OnOpenDetailView(new OpenDetailViewEventArgs
-            {
-                Id = -999,
-                ViewModelName = nameof(TestSubjectDetailViewModel)
-            });
         }
 
         private void OnOpenSingleDetailViewExecute()

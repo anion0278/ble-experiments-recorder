@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Mebster.Myodam.Business.Device;
@@ -15,6 +17,7 @@ using Mebster.Myodam.UI.WPF.Event;
 using Mebster.Myodam.UI.WPF.Views.Services;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
+using Swordfish.NET.Collections.Auxiliary;
 
 namespace Mebster.Myodam.UI.WPF.ViewModels
 {
@@ -25,7 +28,8 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         private readonly IMessageDialogService _dialogService;
         private readonly IMyodamManager _myodamManager;
 
-        public ObservableCollection<NavigationItemViewModel> TestSubjects { get; } = new();
+        public ObservableCollection<NavigationItemViewModel> _testSubjectsNavigationItems { get; } = new();
+        public ListCollectionView TestSubjectsNavigationItems { get; } 
 
         public IAsyncRelayCommand ChangeMyodamConnectionCommand { get; }
 
@@ -59,6 +63,9 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             _myodamManager.DevicePropertyChanged += OnMyodamPropertyChanged;
             _messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
             _messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
+
+            TestSubjectsNavigationItems = (ListCollectionView)CollectionViewSource.GetDefaultView(_testSubjectsNavigationItems);
+            TestSubjectsNavigationItems.CustomSort = new NavigationAddItemViewModelRelationalComparer();
         }
 
         private void OnMyodamPropertyChanged(object? sender, EventArgs e)
@@ -98,19 +105,10 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         public async Task LoadAsync()
         {
-            // TODO check, refactor
-            var lookup = (await _testSubjectRepository.GetAllAsync())
-                .Select(ts => new LookupItem { Id = ts.Id, DisplayMember = ts.FullName })
-                .ToArray();
-            TestSubjects.Clear();
-            foreach (var item in lookup)
-            {
-                TestSubjects.Add(new NavigationItemViewModel(
-                    item.Id, 
-                    item.DisplayMember, 
-                    nameof(TestSubjectDetailViewModel), 
-                    _messenger));
-            }
+            var items = (await _testSubjectRepository.GetAllAsync())
+                .Select(ts => new NavigationItemViewModel(ts.Id, ts.FullName, _messenger));
+            _testSubjectsNavigationItems.AddRange(items);
+            _testSubjectsNavigationItems.Add(new NavigationAddItemViewModel(_messenger));
         }
 
 
@@ -119,7 +117,11 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             switch (args.ViewModelName)
             {
                 case nameof(TestSubjectDetailViewModel):
-                    AfterDetailDeleted(TestSubjects, args);
+                    var item = _testSubjectsNavigationItems.SingleOrDefault(f => f.Id == args.Id);
+                    if (item != null)
+                    {
+                        _testSubjectsNavigationItems.Remove(item);
+                    }
                     break;
             }
         }
@@ -129,32 +131,16 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             switch (args.ViewModelName)
             {
                 case nameof(TestSubjectDetailViewModel):
-                    AfterDetailSaved(TestSubjects, args);
+                    var lookupItem = _testSubjectsNavigationItems.SingleOrDefault(l => l.Id == args.Id);
+                    if (lookupItem == null)
+                    {
+                        _testSubjectsNavigationItems.Add(new NavigationItemViewModel(args.Id, args.DisplayMember, _messenger));
+                    }
+                    else
+                    {
+                        lookupItem.DisplayMember = args.DisplayMember;
+                    }
                     break;
-            }
-        }
-
-        private void AfterDetailDeleted(ObservableCollection<NavigationItemViewModel> items, AfterDetailDeletedEventArgs args)
-        {
-            var item = items.SingleOrDefault(f => f.Id == args.Id);
-            if (item != null)
-            {
-                items.Remove(item);
-            }
-        }
-
-        private void AfterDetailSaved(ObservableCollection<NavigationItemViewModel> items, AfterDetailSavedEventArgs args)
-        {
-            var lookupItem = items.SingleOrDefault(l => l.Id == args.Id);
-            if (lookupItem == null)
-            {
-                items.Add(new NavigationItemViewModel(args.Id, args.DisplayMember,
-                  args.ViewModelName,
-                  _messenger));
-            }
-            else
-            {
-                lookupItem.DisplayMember = args.DisplayMember;
             }
         }
     }

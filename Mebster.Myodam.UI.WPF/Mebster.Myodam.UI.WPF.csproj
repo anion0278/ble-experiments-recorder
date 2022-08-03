@@ -14,6 +14,14 @@
 		<AssemblyName>MyodamGUI</AssemblyName>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+	</PropertyGroup>
+
 	<ItemGroup>
 	  <None Remove="Assets\myodam_mechanical_adjustment.png" />
 	  <None Remove="Assets\splashScreen.png" />
