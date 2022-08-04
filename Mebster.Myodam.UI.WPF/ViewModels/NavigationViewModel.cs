@@ -41,8 +41,13 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         /// <summary>
         /// Design-time ctor
         /// </summary>
-        public NavigationViewModel()
+        [Obsolete("Design-time only!")]
+        public NavigationViewModel(TestSubject testSubject)
         {
+            TestSubjectsNavigationItems = (ListCollectionView)CollectionViewSource.GetDefaultView(_testSubjectsNavigationItems);
+            TestSubjectsNavigationItems.CustomSort = new NavigationAddItemViewModelRelationalComparer();
+            _testSubjectsNavigationItems.Add(new NavigationItemViewModel(testSubject.Id, testSubject.FullName, null!));
+            _testSubjectsNavigationItems.Add(new NavigationAddItemViewModel(null!));
         }
 
         public NavigationViewModel(

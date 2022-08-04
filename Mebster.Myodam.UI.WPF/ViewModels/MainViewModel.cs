@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Input;
 using Autofac.Features.Indexed;
 using Mebster.Myodam.Business.Device;
+using Mebster.Myodam.Models.TestSubject;
 using Mebster.Myodam.UI.WPF.Event;
 using Mebster.Myodam.UI.WPF.Views.Services;
 using Microsoft.Toolkit.Mvvm.Input;
@@ -56,8 +57,14 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         /// <summary>
         /// Design-time ctor
         /// </summary>
+        [Obsolete("Design-time only!")]
         public MainViewModel()
         {
+            var ts = new TestSubject() { FirstName = "Subject", LastName = "Name", Notes = "Notes:\n   * Note1\n   * Note2" };
+            DetailViewModels = new ObservableCollection<IDetailViewModel>();
+            DetailViewModels.Add(new TestSubjectDetailViewModel() { Model = ts });
+
+            NavigationViewModel = new NavigationViewModel(ts);
         }
 
         public MainViewModel(INavigationViewModel navigationViewModel,
