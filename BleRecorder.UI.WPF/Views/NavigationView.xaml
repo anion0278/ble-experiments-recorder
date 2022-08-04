@@ -7,8 +7,9 @@
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:device1="clr-namespace:BleRecorder.Business.Device;assembly=BleRecorder.Business"
              xmlns:viewModels="clr-namespace:BleRecorder.UI.WPF.ViewModels"
+             xmlns:views="clr-namespace:BleRecorder.UI.WPF.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="600" d:DesignWidth="300"
+             d:DesignHeight="700" d:DesignWidth="380"
              d:DataContext="{d:DesignInstance viewModels:NavigationViewModel, IsDesignTimeCreatable=True}">
     <UserControl.Resources>
         <ControlTemplate x:Key="PercentageBar" TargetType="ProgressBar">
@@ -70,8 +71,8 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="300"/>
             <RowDefinition/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <GroupBox Header="Test subjects" Margin="0 0 0 3" mah:ControlsHelper.ContentCharacterCasing="Normal">
             <ScrollViewer VerticalScrollBarVisibility="Auto"
@@ -83,13 +84,27 @@
             </ScrollViewer>
         </GroupBox>
         <GroupBox Grid.Row="1" Header="Device status" mah:ControlsHelper.ContentCharacterCasing="Normal">
-            <StackPanel>
-                <Button Command="{Binding ChangeBleRecorderConnectionCommand}" FontSize="14"
-                        IsEnabled="{Binding ChangeBleRecorderConnectionCommand.IsRunning, Converter={StaticResource inverseBooleanConverter}}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Row="0" Grid.ColumnSpan="2" Command="{Binding ChangeBleRecorderConnectionCommand}" FontSize="14"
+                    IsEnabled="{Binding ChangeBleRecorderConnectionCommand.IsRunning, Converter={StaticResource inverseBooleanConverter}}">
                     <Button.Content>
                         <StackPanel Orientation="Horizontal">
-                            <mah:ProgressRing Foreground="Azure" 
-                                              Height="5" Width="5" Padding="0" Margin="0 0 5 0">
+                            <mah:ProgressRing Foreground="White" MinHeight="15" MinWidth="15" Height="15" Width="15" 
+                                              Padding="0" Margin="0 0 5 0">
                                 <mah:ProgressRing.Style>
                                     <Style TargetType="mah:ProgressRing">
                                         <Setter Property="IsActive" Value="False" />
@@ -129,36 +144,26 @@
                     </Button.Content>
                 </Button>
 
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-
-                    <Label Grid.Row="0" Grid.Column="0" Content="Status: "/>
-                    <Label Grid.Row="0" Grid.Column="1" FontWeight="Bold" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">
-                        <Label.Content>
-                            <TextBlock TextWrapping="Wrap"
+                <Label Grid.Row="1" Grid.Column="0" Content="Status: "/>
+                <Label Grid.Row="1" Grid.Column="1" FontWeight="Bold" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">
+                    <Label.Content>
+                        <TextBlock TextWrapping="Wrap"
                                 Text="{Binding BleRecorderAvailability, Converter={StaticResource enumDescriptionConverter}}"/>
-                        </Label.Content>
-                    </Label>
+                    </Label.Content>
+                </Label>
 
-                    <Label Grid.Row="1" Grid.Column="0"  Content="Unit Battery:" VerticalAlignment="Center"/>
-                    <ProgressBar Grid.Row="1" Grid.Column="1" 
+                <Label Grid.Row="2" Grid.Column="0"  Content="Unit Battery:" VerticalAlignment="Center"/>
+                <ProgressBar Grid.Row="2" Grid.Column="1" 
                                  d:Value ="80"
                                  Value="{Binding StimulatorBatteryPercentage, Mode=OneWay}" />
 
-                    <Label Grid.Row="2" Grid.Column="0"  Content="Device Battery:" VerticalAlignment="Center"/>
-                    <ProgressBar Grid.Row="2" Grid.Column="1"
+                <Label Grid.Row="3" Grid.Column="0"  Content="Device Battery:" VerticalAlignment="Center"/>
+                <ProgressBar Grid.Row="3" Grid.Column="1"
                                  Value="{Binding ControllerBatteryPercentage, Mode=OneWay}"/>
 
-                </Grid>
-            </StackPanel>
+                <views:DeviceCalibrationView Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Bottom" Margin="0 10 0 0"
+                                                 DataContext="{Binding DeviceCalibrationVm}"/>
+            </Grid>
         </GroupBox>
     </Grid>
 </UserControl>

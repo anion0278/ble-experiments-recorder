@@ -16,7 +16,7 @@ using BleRecorder.Models.Device;
 using BleRecorder.Models.TestSubject;
 using BleRecorder.UI.WPF.Data.Repositories;
 using BleRecorder.UI.WPF.Event;
-using BleRecorder.UI.WPF.Views.Services;
+using BleRecorder.UI.WPF.ViewModels.Services;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;

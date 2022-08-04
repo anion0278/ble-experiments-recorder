@@ -14,7 +14,7 @@ using BleRecorder.Models.Device;
 using BleRecorder.Models.TestSubject;
 using BleRecorder.UI.WPF.Data.Repositories;
 using BleRecorder.UI.WPF.Event;
-using BleRecorder.UI.WPF.Views.Services;
+using BleRecorder.UI.WPF.ViewModels.Services;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using Swordfish.NET.Collections.Auxiliary;
@@ -37,6 +37,8 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         public int StimulatorBatteryPercentage => (int)(_bleRecorderManager.BleRecorderDevice?.StimulatorBattery.Value ?? 0);
         public int ControllerBatteryPercentage => (int)(_bleRecorderManager.BleRecorderDevice?.ControllerBattery.Value ?? 0);
+
+        public DeviceCalibrationViewModel DeviceCalibrationVm { get; private set; }
 
         /// <summary>
         /// Design-time ctor
@@ -66,11 +68,15 @@ namespace BleRecorder.UI.WPF.ViewModels
 
             _bleRecorderManager.BleRecorderAvailabilityChanged += OnBleRecorderAvailabilityChanged;
             _bleRecorderManager.DevicePropertyChanged += OnBleRecorderPropertyChanged;
+            _bleRecorderManager.MeasurementStatusChanged += OnBleRecorderAvailabilityChanged; // yes, same handler
             _messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
             _messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
 
             TestSubjectsNavigationItems = (ListCollectionView)CollectionViewSource.GetDefaultView(_testSubjectsNavigationItems);
             TestSubjectsNavigationItems.CustomSort = new NavigationAddItemViewModelRelationalComparer();
+
+            // TODO get device calibration from BleRecorderManager and DeviceCalibrationViewModel from IoC
+            DeviceCalibrationVm = new DeviceCalibrationViewModel(new DeviceCalibration(), _bleRecorderManager, asyncCommandFactory, _dialogService);
         }
 
         private void OnBleRecorderPropertyChanged(object? sender, EventArgs e)
@@ -88,7 +94,7 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         private bool CanChangeBleRecorderConnection()
         {
-            return BleRecorderAvailability != BleRecorderAvailabilityStatus.DisconnectedUnavailable;
+            return BleRecorderAvailability != BleRecorderAvailabilityStatus.DisconnectedUnavailable && !_bleRecorderManager.IsCurrentlyMeasuring;
         }
 
         public async Task ChangeBleRecorderConnection()
@@ -115,7 +121,6 @@ namespace BleRecorder.UI.WPF.ViewModels
             _testSubjectsNavigationItems.AddRange(items);
             _testSubjectsNavigationItems.Add(new NavigationAddItemViewModel(_messenger));
         }
-
 
         private void AfterDetailDeleted(AfterDetailDeletedEventArgs args) // TODO refactoring!
         {

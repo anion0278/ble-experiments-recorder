@@ -48,6 +48,7 @@
                         <Setter Property="Margin" Value="3"/>
                     </Style>
 
+
                     <!--<Style TargetType="GroupBox"  BasedOn="{StaticResource {x:Type GroupBox}}">
                         <Setter Property="FontSize" Value="12"/>
                         <Setter Property="FontWeight" Value="Bold"/>
@@ -57,6 +58,7 @@
                     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                         <Setter Property="FontSize" Value="14"/>
                         <Setter Property="Margin" Value="0 0 0 12"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
                         <Setter Property="Validation.ErrorTemplate">
                             <Setter.Value>
                                 <ControlTemplate>
@@ -74,8 +76,10 @@
                             </Trigger>
                         </Style.Triggers>
                     </Style>
+
                     <Style TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
                         <Setter Property="Foreground" Value="#CCCCCC"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
                     </Style>
                     <!-- EndRegion -->
 

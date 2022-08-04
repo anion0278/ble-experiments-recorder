@@ -7,12 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BleRecorder.Infrastructure\BleRecorder.Infrastructure.csproj" />
-    <ProjectReference Include="..\BleRecorder.Models\BleRecorder.Models.csproj" />
+    <PackageReference Include="Nito.AsyncEx" Version="5.1.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Exception\" />
+    <ProjectReference Include="..\BleRecorder.Infrastructure\BleRecorder.Infrastructure.csproj" />
+    <ProjectReference Include="..\BleRecorder.Models\BleRecorder.Models.csproj" />
   </ItemGroup>
 
 </Project>

@@ -8,8 +8,8 @@ using BleRecorder.Models.Device;
 using BleRecorder.UI.WPF.Data.Repositories;
 using BleRecorder.UI.WPF.Exception;
 using BleRecorder.UI.WPF.ViewModels;
+using BleRecorder.UI.WPF.ViewModels.Services;
 using BleRecorder.UI.WPF.Views;
-using BleRecorder.UI.WPF.Views.Services;
 using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace BleRecorder.UI.WPF.Startup

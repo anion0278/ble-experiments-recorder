@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using BleRecorder.UI.WPF.Exception;
 using Microsoft.Toolkit.Mvvm.Input;
 
-namespace BleRecorder.UI.WPF.Views.Services;
+namespace BleRecorder.UI.WPF.ViewModels.Services;
 
 /// <summary>
 /// Factory for creating <see cref="AsyncRelayCommand"/>s with exception handling.

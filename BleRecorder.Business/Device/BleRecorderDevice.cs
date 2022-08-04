@@ -1,6 +1,8 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Timers;
+using BleRecorder.Business.Exception;
 using BleRecorder.Models.Device;
 using BleRecorder.Models.TestSubject;
 
@@ -62,6 +64,10 @@ public class BleRecorderDevice // TODO Extract inteface
             if (_isCurrentlyMeasuring == value) return;
 
             _isCurrentlyMeasuring = value;
+
+            if (!value) _firstTimeStamp = null;
+            else _firstTimeStamp ??= DateTimeOffset.Now.ToUnixTimeMilliseconds(); // temp, remove
+
             MeasurementStatusChanged?.Invoke(this, EventArgs.Empty);
         }
     }
@@ -114,16 +120,28 @@ public class BleRecorderDevice // TODO Extract inteface
 
         if (!IsCurrentlyMeasuring) return;
 
-        _firstTimeStamp ??= DateTimeOffset.Now.ToUnixTimeMilliseconds(); // temp, remove
         NewValueReceived?.Invoke(
             this,
             new MeasuredValue(new Random().NextDouble() * 20, //reply.SensorValue
                 TimeSpan.FromMilliseconds(DateTimeOffset.Now.ToUnixTimeMilliseconds() - _firstTimeStamp.Value))); // TODO change when BLE part is ready: reply.Timestamp
     }
 
+
+    public async Task<double> GetSensorCalibrationValue()
+    {
+        var calibrator = new Calibrator();
+
+        IsCurrentlyMeasuring = true;
+        var value = await calibrator.GetCalibrationValue(this);
+        IsCurrentlyMeasuring = false;
+        return value;
+    }
+
     // We always send up-to-date parameters in order to make sure that stimulation is correct even if the device has restarted in meantime
     public async Task StartMeasurement(StimulationParameters parameters, MeasurementType measurementType)
     {
+        if (IsCurrentlyMeasuring) throw new MeasurementIsAlreadyActiveException();
+
         CurrentParameters = parameters;
         await SendMsg(new BleRecorderRequestMessage(
             CurrentParameters,
@@ -134,7 +152,6 @@ public class BleRecorderDevice // TODO Extract inteface
 
     public async Task StopMeasurement()
     {
-        _firstTimeStamp = null;
         var msg = new BleRecorderRequestMessage(
             CurrentParameters,
             MeasurementType.MaximumContraction,

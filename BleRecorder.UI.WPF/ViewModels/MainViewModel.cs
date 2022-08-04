@@ -11,7 +11,7 @@ using Autofac.Features.Indexed;
 using BleRecorder.Business.Device;
 using BleRecorder.Models.TestSubject;
 using BleRecorder.UI.WPF.Event;
-using BleRecorder.UI.WPF.Views.Services;
+using BleRecorder.UI.WPF.ViewModels.Services;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 

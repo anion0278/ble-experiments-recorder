@@ -16,7 +16,7 @@ using BleRecorder.Models.Device;
 using BleRecorder.Models.TestSubject;
 using BleRecorder.UI.WPF.Data.Repositories;
 using BleRecorder.UI.WPF.Event;
-using BleRecorder.UI.WPF.Views.Services;
+using BleRecorder.UI.WPF.ViewModels.Services;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using PropertyChanged;
@@ -129,11 +129,6 @@ namespace BleRecorder.UI.WPF.ViewModels
             _bleRecorderManager.BleRecorderAvailabilityChanged -= OnBleRecorderStatusChanged;
             _bleRecorderManager.MeasurementStatusChanged -= OnMeasurementStatusChanged;
 
-            if (_bleRecorderManager.BleRecorderDevice != null)
-            {
-                _bleRecorderManager.BleRecorderDevice.NewValueReceived -= OnNewValueReceived;
-            }
-
             Messenger.Unregister<AfterDetailSavedEventArgs>(this);
             Messenger.Unregister<AfterDetailDeletedEventArgs>(this);
         }
@@ -152,6 +147,12 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         private void OnMeasurementStatusChanged(object? sender, EventArgs e)
         {
+            // TODO solve case when device is null (was already disconnected and may cause memory leak)
+            if (!_bleRecorderManager.IsCurrentlyMeasuring && _bleRecorderManager.BleRecorderDevice != null) //_bleRecorderManager.BleRecorderDevice != null
+            {
+                _bleRecorderManager.BleRecorderDevice.NewValueReceived -= OnNewValueReceived;
+            }
+
             ViewSynchronizationContext.Send(_ =>
             {
                 StartMeasurementCommand.NotifyCanExecuteChanged();

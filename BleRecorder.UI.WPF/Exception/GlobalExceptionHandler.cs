@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Transactions;
-using BleRecorder.UI.WPF.Views.Services;
+using BleRecorder.UI.WPF.ViewModels.Services;
 
 namespace BleRecorder.UI.WPF.Exception;
 
