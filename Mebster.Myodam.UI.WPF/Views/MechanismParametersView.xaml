@@ -25,6 +25,7 @@
                             </Setter>
                             <Setter Property="Padding" Value="0"/>
                         </DataTrigger>
+                    
                     </Style.Triggers>
                 </Style>
             </ControlTemplate.Resources>
@@ -73,6 +74,12 @@
             <Setter Property="HorizontalAlignment" Value="Left"/>
             <Setter Property="Foreground" Value="{StaticResource MebsterColor}"/>
             <Setter Property="Template" Value="{StaticResource SliderWithLabels}"/>
+            <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="ToolTip" Value="Measurement parameters can be changed only if the measurement data is empty."/>
+                </Trigger>
+            </Style.Triggers>
         </Style>
     </UserControl.Resources>
 
