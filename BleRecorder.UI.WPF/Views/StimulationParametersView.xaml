@@ -8,6 +8,25 @@
              xmlns:device="clr-namespace:BleRecorder.Models.Device;assembly=BleRecorder.Models"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="300">
+    <UserControl.Resources>
+        <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+            <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="ToolTip" Value="Measurement parameters can be changed only if the measurement data is empty."></Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="mah:NumericUpDown" BasedOn="{StaticResource {x:Type mah:NumericUpDown}}">
+            <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="ToolTip" Value="Measurement parameters can be changed only if the measurement data is empty."></Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
