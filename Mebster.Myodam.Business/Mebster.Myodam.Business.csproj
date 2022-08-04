@@ -7,12 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Mebster.Myodam.Infrastructure\Mebster.Myodam.Infrastructure.csproj" />
-    <ProjectReference Include="..\Mebster.Myodam.Models\Mebster.Myodam.Models.csproj" />
+    <PackageReference Include="Nito.AsyncEx" Version="5.1.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Exception\" />
+    <ProjectReference Include="..\Mebster.Myodam.Infrastructure\Mebster.Myodam.Infrastructure.csproj" />
+    <ProjectReference Include="..\Mebster.Myodam.Models\Mebster.Myodam.Models.csproj" />
   </ItemGroup>
 
 </Project>

@@ -11,7 +11,7 @@ using Autofac.Features.Indexed;
 using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.Models.TestSubject;
 using Mebster.Myodam.UI.WPF.Event;
-using Mebster.Myodam.UI.WPF.Views.Services;
+using Mebster.Myodam.UI.WPF.ViewModels.Services;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 

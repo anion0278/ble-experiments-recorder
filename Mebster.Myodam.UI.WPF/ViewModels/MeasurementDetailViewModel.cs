@@ -16,7 +16,7 @@ using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.Models.TestSubject;
 using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.Event;
-using Mebster.Myodam.UI.WPF.Views.Services;
+using Mebster.Myodam.UI.WPF.ViewModels.Services;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using PropertyChanged;
@@ -129,11 +129,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             _myodamManager.MyodamAvailabilityChanged -= OnMyodamStatusChanged;
             _myodamManager.MeasurementStatusChanged -= OnMeasurementStatusChanged;
 
-            if (_myodamManager.MyodamDevice != null)
-            {
-                _myodamManager.MyodamDevice.NewValueReceived -= OnNewValueReceived;
-            }
-
             Messenger.Unregister<AfterDetailSavedEventArgs>(this);
             Messenger.Unregister<AfterDetailDeletedEventArgs>(this);
         }
@@ -152,6 +147,12 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         private void OnMeasurementStatusChanged(object? sender, EventArgs e)
         {
+            // TODO solve case when device is null (was already disconnected and may cause memory leak)
+            if (!_myodamManager.IsCurrentlyMeasuring && _myodamManager.MyodamDevice != null) //_myodamManager.MyodamDevice != null
+            {
+                _myodamManager.MyodamDevice.NewValueReceived -= OnNewValueReceived;
+            }
+
             ViewSynchronizationContext.Send(_ =>
             {
                 StartMeasurementCommand.NotifyCanExecuteChanged();

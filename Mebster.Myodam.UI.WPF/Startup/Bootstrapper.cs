@@ -8,8 +8,8 @@ using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.Exception;
 using Mebster.Myodam.UI.WPF.ViewModels;
+using Mebster.Myodam.UI.WPF.ViewModels.Services;
 using Mebster.Myodam.UI.WPF.Views;
-using Mebster.Myodam.UI.WPF.Views.Services;
 using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace Mebster.Myodam.UI.WPF.Startup

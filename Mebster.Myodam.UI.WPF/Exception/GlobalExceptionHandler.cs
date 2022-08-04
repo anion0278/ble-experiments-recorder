@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Transactions;
-using Mebster.Myodam.UI.WPF.Views.Services;
+using Mebster.Myodam.UI.WPF.ViewModels.Services;
 
 namespace Mebster.Myodam.UI.WPF.Exception;
 

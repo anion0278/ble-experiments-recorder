@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Mebster.Myodam.UI.WPF.Views.Services
+namespace Mebster.Myodam.UI.WPF.ViewModels.Services
 {
   public interface IMessageDialogService
   {

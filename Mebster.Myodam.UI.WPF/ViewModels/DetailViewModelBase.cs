@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Mebster.Myodam.UI.WPF.Event;
-using Mebster.Myodam.UI.WPF.Views.Services;
+using Mebster.Myodam.UI.WPF.ViewModels.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
