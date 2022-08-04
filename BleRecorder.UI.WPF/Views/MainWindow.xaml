@@ -14,6 +14,7 @@
         TextOptions.TextFormattingMode="Display"
         TextOptions.TextRenderingMode="ClearType"
         TitleCharacterCasing="Normal"
+        d:Background="Transparent"
         d:DataContext="{d:DesignInstance viewModel:MainViewModel, d:IsDesignTimeCreatable=True}">
     <Grid Margin="3">
         <Grid.ColumnDefinitions>

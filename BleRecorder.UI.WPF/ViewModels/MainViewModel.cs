@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Input;
 using Autofac.Features.Indexed;
 using BleRecorder.Business.Device;
+using BleRecorder.Models.TestSubject;
 using BleRecorder.UI.WPF.Event;
 using BleRecorder.UI.WPF.Views.Services;
 using Microsoft.Toolkit.Mvvm.Input;
@@ -56,8 +57,14 @@ namespace BleRecorder.UI.WPF.ViewModels
         /// <summary>
         /// Design-time ctor
         /// </summary>
+        [Obsolete("Design-time only!")]
         public MainViewModel()
         {
+            var ts = new TestSubject() { FirstName = "Subject", LastName = "Name", Notes = "Notes:\n   * Note1\n   * Note2" };
+            DetailViewModels = new ObservableCollection<IDetailViewModel>();
+            DetailViewModels.Add(new TestSubjectDetailViewModel() { Model = ts });
+
+            NavigationViewModel = new NavigationViewModel(ts);
         }
 
         public MainViewModel(INavigationViewModel navigationViewModel,
