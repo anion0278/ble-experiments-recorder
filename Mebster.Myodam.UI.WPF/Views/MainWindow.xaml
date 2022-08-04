@@ -16,77 +16,87 @@
         TitleCharacterCasing="Normal"
         d:DataContext="{d:DesignInstance viewModel:MainViewModel, d:IsDesignTimeCreatable=True}">
     <Grid Margin="3">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.38*"/>
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <views:NavigationView Grid.Row="1" Grid.Column="0" DataContext="{Binding NavigationViewModel}"/>
-        <TabControl Grid.Row="1" Grid.Column="1" 
+        <views:NavigationView Grid.Column="0" DataContext="{Binding NavigationViewModel}"/>
+        <TabControl Grid.Column="1" VerticalAlignment="Stretch" 
                 ItemsSource="{Binding DetailViewModels}"
                 SelectedItem="{Binding SelectedDetailViewModel, Mode=TwoWay, ValidatesOnNotifyDataErrors=False}">
+            <TabControl.Template>
+                <ControlTemplate TargetType="TabControl">
+                    <Grid SnapsToDevicePixels="true" KeyboardNavigation.TabNavigation="Local" HorizontalAlignment="Stretch" Margin="2 0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <WrapPanel x:Name="HeaderPanel" HorizontalAlignment="Stretch" VerticalAlignment="Top" IsItemsHost="true"
+                                   Grid.Row="0" KeyboardNavigation.TabIndex="1" />
+                        <ContentPresenter Grid.Row="1" x:Name="PART_SelectedContentHost" ContentSource="SelectedContent" Margin="10" />
+                    </Grid>
+                </ControlTemplate>
+            </TabControl.Template>
             <TabControl.ItemContainerStyle>
                 <Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
                     <Setter Property="Background" Value="DarkSlateBlue"/>
-                    <Setter Property="BorderBrush" Value="Transparent"/>
-                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate>
+                                <Border Margin="2" Padding="4 2 4 2" Background="{TemplateBinding Background}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{Binding Title}" FontSize="14" >
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Path=IsSelected, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" Value="True">
+                                                            <Setter Property="TextDecorations" Value="Underline"/>
+                                                            <Setter Property="FontWeight" Value="Medium"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+
+                                        <TextBlock Grid.Column="1" Text="[changed]" Margin="3 -4 0 0" Padding="0" FontSize="8" 
+                                                   Visibility="{Binding HasChanges, Converter={StaticResource booleanToVisibilityConverter}}"/>
+                                        <Button Grid.Column="2" HorizontalAlignment="Right" Content="x" Background="Transparent" 
+                                                Margin="3 -5 0 0" Padding="0" FontSize="16"
+                                                Foreground="Silver" FontWeight="Bold" ToolTip="Close tab"
+                                                Command="{Binding CloseDetailViewCommand}">
+                                            <Button.Style>
+                                                <Style TargetType="Button">
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="Button">
+                                                                <Grid Background="{TemplateBinding Background}">
+                                                                    <ContentPresenter />
+                                                                </Grid>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+                                    </Grid>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
                     <Style.Triggers>
                         <Trigger Property="IsSelected" Value="True">
                             <Setter Property="FontWeight" Value="UltraBold" />
-                            
+
                             <Setter Property="Background" Value="DodgerBlue"/>
                         </Trigger>
                     </Style.Triggers>
                 </Style>
             </TabControl.ItemContainerStyle>
-            <TabControl.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0" Orientation="Horizontal">
-                            <TextBlock Text="{Binding Title}" FontSize="14" Foreground="White">
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Path=IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type TabItem}}}" Value="True">
-                                                <Setter Property="TextDecorations" Value="Underline"/>
-                                                <Setter Property="FontWeight" Value="Medium"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-
-                            <TextBlock Text="[changed]" Margin="3 -4 0 0" Padding="0" FontSize="8" Foreground="LightGray" 
-                                       Visibility="{Binding HasChanges, Converter={StaticResource booleanToVisibilityConverter}}"/>
-                        </StackPanel>
-                        <Button Grid.Column="1" HorizontalAlignment="Right" Content="x" Background="Transparent" 
-                                Margin="3 -5 0 0" Padding="0" FontSize="16"
-                                Foreground="MidnightBlue" FontWeight="Bold" ToolTip="Close tab"
-                                Command="{Binding CloseDetailViewCommand}">
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Grid Background="{TemplateBinding Background}">
-                                                    <ContentPresenter />
-                                                </Grid>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                    </Grid>
-                </DataTemplate>
-            </TabControl.ItemTemplate>
         </TabControl>
     </Grid>
 </mah:MetroWindow>
