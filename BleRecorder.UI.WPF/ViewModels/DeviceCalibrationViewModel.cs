@@ -6,7 +6,7 @@ using Microsoft.Toolkit.Mvvm.Input;
 
 namespace BleRecorder.UI.WPF.ViewModels;
 
-public class DeviceCalibrationViewModel: ViewModelBase
+public class DeviceCalibrationViewModel : ViewModelBase
 {
     private readonly DeviceCalibration _model;
     private readonly IBleRecorderManager _bleRecorderManager;
@@ -35,9 +35,9 @@ public class DeviceCalibrationViewModel: ViewModelBase
     public DeviceCalibrationViewModel() { }
 
     public DeviceCalibrationViewModel(
-        DeviceCalibration model, 
-        IBleRecorderManager bleRecorderManager, 
-        IAsyncRelayCommandFactory asyncCommandFactory, 
+        DeviceCalibration model,
+        IBleRecorderManager bleRecorderManager,
+        IAsyncRelayCommandFactory asyncCommandFactory,
         IMessageDialogService dialogService)
     {
         _model = model;
@@ -57,9 +57,9 @@ public class DeviceCalibrationViewModel: ViewModelBase
     private async Task CalibrateNominalLoadSensorValue()
     {
         var result = await _dialogService.ShowOkCancelDialogAsync(
-            "Are you sure you want to perform calibration without load? This will erase the previous value.",
+            "Are you sure you want to perform calibration without load? This will erase the current value.",
             "Start calibration without load?");
-        if (result != MessageDialogResult.OK) return;
+        if (result != MessageDialogResult.OK) { return; }
 
         NominalLoadSensorValue = await _bleRecorderManager.BleRecorderDevice!.GetSensorCalibrationValue();
         NotifyCalibrationCommandsCanExecuteChanged();
@@ -68,7 +68,7 @@ public class DeviceCalibrationViewModel: ViewModelBase
     private async Task CalibrateNoLoadSensorValue()
     {
         var result = await _dialogService.ShowOkCancelDialogAsync(
-            "Are you sure you want to perform calibration with nominal load? This will erase the previous value.",
+            "Are you sure you want to perform calibration with nominal load? This will erase the current value.",
             "Start calibration with nominal load?");
         if (result != MessageDialogResult.OK) return;
 
@@ -78,15 +78,17 @@ public class DeviceCalibrationViewModel: ViewModelBase
 
     private void NotifyCalibrationCommandsCanExecuteChanged()
     {
-        CalibrateNoLoadSensorValueCommand.NotifyCanExecuteChanged();
-        CalibrateNominalLoadSensorValueCommand.NotifyCanExecuteChanged();
+        ViewSynchronizationContext.Send(_ => 
+            {
+                CalibrateNoLoadSensorValueCommand.NotifyCanExecuteChanged();
+                CalibrateNominalLoadSensorValueCommand.NotifyCanExecuteChanged();
+            }, null);
     }
 
     private bool CanCalibrateExecute()
     {
-        return !CalibrateNoLoadSensorValueCommand.IsRunning 
-               && !CalibrateNominalLoadSensorValueCommand.IsRunning 
-               && _bleRecorderManager.BleRecorderAvailability == BleRecorderAvailabilityStatus.Connected
-               && !_bleRecorderManager.IsCurrentlyMeasuring;
+        return _bleRecorderManager.BleRecorderAvailability == BleRecorderAvailabilityStatus.Connected && !_bleRecorderManager.IsCurrentlyMeasuring;
+        //!CalibrateNoLoadSensorValueCommand.IsRunning
+        //&& !CalibrateNominalLoadSensorValueCommand.IsRunning
     }
 }

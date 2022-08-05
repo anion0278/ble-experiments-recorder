@@ -21,7 +21,7 @@ public class BleDeviceHandler : IBleDeviceHandler
     private GattCharacteristic? _txCharacteristic;
     private readonly System.Timers.Timer _heartbeatWatchdog; // thread-safe timer
     private TimeSpan _hearbeatWatchdogInterval = TimeSpan.FromSeconds(0.4);
-    private TimeSpan _hearbeatTimeout = TimeSpan.FromSeconds(1.4);
+    private TimeSpan _hearbeatTimeout = TimeSpan.FromSeconds(1.0);
     private bool _isConnected;
     private readonly object _syncRoot = new();
 

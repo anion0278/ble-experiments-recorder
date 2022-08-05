@@ -14,7 +14,6 @@ public class BleRecorderDevice // TODO Extract inteface
     private readonly IBleDeviceHandler _bleDeviceHandler;
     private readonly IBleRecorderMessageParser _messageParser;
     private bool _isCurrentlyMeasuring;
-    private readonly TimeSpan _requestInterval = TimeSpan.FromMilliseconds(100);
     private System.Timers.Timer _outboundDataTimer;
     private Percentage _stimulatorBattery;
     private Percentage _controllerBattery;
@@ -25,6 +24,8 @@ public class BleRecorderDevice // TODO Extract inteface
     public event EventHandler? ConnectionStatusChanged;
     public event EventHandler? MeasurementStatusChanged;
     public event EventHandler? BatteryStatusChanged;
+
+    public TimeSpan DataRequestInterval { get; } = TimeSpan.FromMilliseconds(100);
 
     public StimulationParameters CurrentParameters
     {
@@ -80,7 +81,7 @@ public class BleRecorderDevice // TODO Extract inteface
         _bleDeviceHandler.DataReceived += BleDeviceHandlerDataReceived;
         _bleDeviceHandler.DeviceStatusChanged += BleDeviceStatusChanged;
 
-        _outboundDataTimer = new System.Timers.Timer(_requestInterval.TotalMilliseconds);
+        _outboundDataTimer = new System.Timers.Timer(DataRequestInterval.TotalMilliseconds);
         _outboundDataTimer.Elapsed += OnTimerTimeElapsed;
         _outboundDataTimer.Start();
 
@@ -132,9 +133,16 @@ public class BleRecorderDevice // TODO Extract inteface
         var calibrator = new Calibrator();
 
         IsCurrentlyMeasuring = true;
-        var value = await calibrator.GetCalibrationValue(this);
-        IsCurrentlyMeasuring = false;
-        return value;
+        try
+        {
+            var value = await calibrator.GetCalibrationValue(this);
+            IsCurrentlyMeasuring = false;
+            return value;
+        }
+        finally
+        {
+            IsCurrentlyMeasuring = false;
+        }
     }
 
     // We always send up-to-date parameters in order to make sure that stimulation is correct even if the device has restarted in meantime
