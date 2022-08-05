@@ -22,9 +22,9 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <views:NavigationView Grid.Column="0" DataContext="{Binding NavigationViewModel}"/>
-        <TabControl Grid.Column="1" VerticalAlignment="Stretch" 
+        <TabControl Grid.Column="1" VerticalAlignment="Stretch" IsSynchronizedWithCurrentItem="True"
                 ItemsSource="{Binding DetailViewModels}"
-                SelectedItem="{Binding SelectedDetailViewModel, Mode=TwoWay, ValidatesOnNotifyDataErrors=False}">
+                SelectedItem="{Binding SelectedDetailViewModel}">
             <TabControl.Template>
                 <ControlTemplate TargetType="TabControl">
                     <Grid SnapsToDevicePixels="true" KeyboardNavigation.TabNavigation="Local" HorizontalAlignment="Stretch" Margin="2 0">

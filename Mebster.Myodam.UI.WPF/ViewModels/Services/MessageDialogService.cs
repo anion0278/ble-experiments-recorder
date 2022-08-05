@@ -28,5 +28,10 @@ namespace Mebster.Myodam.UI.WPF.ViewModels.Services
             await MetroWindow.ShowMessageAsync("Info", text);
         }
 
+        public void ShowInfoDialog(string text)
+        {
+            MetroWindow.ShowModalMessageExternal("Info", text);
+        }
+
     }
 }

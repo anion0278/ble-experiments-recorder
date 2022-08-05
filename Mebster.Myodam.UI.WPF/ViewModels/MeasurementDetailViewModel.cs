@@ -91,16 +91,16 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         /// <summary>
         /// Design-time ctor    
         /// </summary>
-        public MeasurementDetailViewModel() : base(null!, null!)
+        public MeasurementDetailViewModel() : base(null!, null!, null!)
         {
         }
 
         public MeasurementDetailViewModel(IMessenger messenger,
-            IMessageDialogService messageDialogService,
+            IMessageDialogService dialogService,
             IMyodamManager myodamManager,
             IMapper mapper,
             IMeasurementRepository measurementRepository,
-            IDateTimeService dateTimeService) : base(messenger, messageDialogService)
+            IDateTimeService dateTimeService) : base(messenger, dialogService, myodamManager)
         {
             _myodamManager = myodamManager;
             _mapper = mapper;

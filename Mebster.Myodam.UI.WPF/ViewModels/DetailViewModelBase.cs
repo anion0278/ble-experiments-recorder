@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.UI.WPF.Event;
 using Mebster.Myodam.UI.WPF.ViewModels.Services;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         private bool _hasChanges;
         protected readonly IMessenger Messenger;
         protected readonly IMessageDialogService MessageDialogService;
+        private readonly IMyodamManager _myodamManager;
 
         public abstract Task LoadAsync(int measurementId, object argsData);
 
@@ -39,10 +41,14 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             }
         }
 
-        protected DetailViewModelBase(IMessenger messenger, IMessageDialogService messageDialogService)
+        protected DetailViewModelBase(
+            IMessenger messenger, 
+            IMessageDialogService messageDialogService,
+            IMyodamManager myodamManager)
         {
             Messenger = messenger;
             MessageDialogService = messageDialogService;
+            _myodamManager = myodamManager;
             SaveCommand = new RelayCommand(OnSaveExecute, OnSaveCanExecute);
             DeleteCommand = new RelayCommand(OnDeleteExecute);
             CloseDetailViewCommand = new RelayCommand(OnCloseDetailViewExecute);

@@ -2,10 +2,12 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 using Autofac.Features.Indexed;
 using Mebster.Myodam.Business.Device;
@@ -22,20 +24,17 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         private int nextNewItemId = 0;
         private readonly IMessenger _messenger;
         private readonly IMyodamManager _myodamManager;
-        private readonly IMessageDialogService _messageDialogService;
+        private readonly IMessageDialogService _dialogService;
         private readonly IIndex<string, IDetailViewModel> _detailViewModelCreator; // TODO change
         private IDetailViewModel _selectedDetailViewModel;
-
-        public async Task LoadAsync()
-        {
-            await NavigationViewModel.LoadAsync();
-        }
+        private readonly ObservableCollection<IDetailViewModel> _detailViewModels = new();
 
         public ICommand OpenSingleDetailViewCommand { get; }
 
         public INavigationViewModel NavigationViewModel { get; }
 
-        public ObservableCollection<IDetailViewModel> DetailViewModels { get; }
+
+        public ICollectionView DetailViewModels { get; }
 
         public string AppVersion => Assembly.GetExecutingAssembly().GetName().Version!.ToString(3);
 
@@ -44,15 +43,16 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             get => _selectedDetailViewModel;
             set
             {
-                if (_myodamManager.IsCurrentlyMeasuring)
+                if (_selectedDetailViewModel == value
+                    || (_myodamManager.IsCurrentlyMeasuring && !_myodamManager.MyodamDevice!.IsCalibrating))
                 {
-                    //_messageDialogService.ShowInfoDialogAsync("Please, stop the measurement first.").Result();
-                    MessageBox.Show("Please, stop the measurement first."); // TODO SOLVE!
+                    _dialogService.ShowInfoDialog("Please, finish measurement first.");
                     return;
                 }
                 _selectedDetailViewModel = value;
             }
-        } // TODO replace with collection view
+        } 
+
 
         /// <summary>
         /// Design-time ctor
@@ -61,8 +61,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         public MainViewModel()
         {
             var ts = new TestSubject() { FirstName = "Subject", LastName = "Name", Notes = "Notes:\n   * Note1\n   * Note2" };
-            DetailViewModels = new ObservableCollection<IDetailViewModel>();
-            DetailViewModels.Add(new TestSubjectDetailViewModel() { Model = ts });
+            _detailViewModels.Add(new TestSubjectDetailViewModel() { Model = ts });
 
             NavigationViewModel = new NavigationViewModel(ts);
         }
@@ -71,14 +70,14 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             IIndex<string, IDetailViewModel> detailViewModelCreator,
             IMessenger messenger,
             IMyodamManager myodamManager,
-            IMessageDialogService messageDialogService)
+            IMessageDialogService dialogService)
         {
             _messenger = messenger;
             _myodamManager = myodamManager;
             _detailViewModelCreator = detailViewModelCreator;
-            _messageDialogService = messageDialogService;
+            _dialogService = dialogService;
 
-            DetailViewModels = new ObservableCollection<IDetailViewModel>();
+            DetailViewModels = CollectionViewSource.GetDefaultView(_detailViewModels);
 
             _messenger.Register<OpenDetailViewEventArgs>(this, (s, e) => OnOpenDetailView(e));
             _messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
@@ -89,19 +88,30 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             NavigationViewModel = navigationViewModel;
         }
 
+        public async Task LoadAsync()
+        {
+            await NavigationViewModel.LoadAsync();
+        }
+
         private async void OnOpenDetailView(OpenDetailViewEventArgs args)
         {
-            var detailViewModel = DetailViewModels
+            if (_myodamManager.IsCurrentlyMeasuring)
+            {
+                await _dialogService.ShowInfoDialogAsync("Please, finish measurement first.");
+                return;
+            }
+
+            var detailViewModel = _detailViewModels
               .SingleOrDefault(vm => vm.Id == args.Id && vm.GetType().Name == args.ViewModelName);
 
             if (detailViewModel == null)
             {
                 detailViewModel = _detailViewModelCreator[args.ViewModelName];
                 await detailViewModel.LoadAsync(args.Id, args.Data);
-                DetailViewModels.Add(detailViewModel);
+                _detailViewModels.Add(detailViewModel);
             }
 
-            SelectedDetailViewModel = detailViewModel;
+            DetailViewModels.MoveCurrentTo(detailViewModel);
         }
 
         private void OnOpenSingleDetailViewExecute()
@@ -125,10 +135,17 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         private void RemoveDetailViewModel(int id, string viewModelName)
         {
-            var detailViewModel = DetailViewModels
+            // TODO forbid removing tab during measurement
+            //if (_myodamManager.IsCurrentlyMeasuring)
+            //{
+            //    await _dialogService.ShowInfoDialogAsync("Please finish measurement first.");
+            //    return;
+            //}
+
+            var detailViewModel = _detailViewModels
                    .Single(vm => vm.Id == id && vm.GetType().Name == viewModelName);
 
-            DetailViewModels.Remove(detailViewModel);
+            _detailViewModels.Remove(detailViewModel);
         }
     }
 }

@@ -27,8 +27,8 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         private readonly IMessenger _messenger;
         private readonly IMessageDialogService _dialogService;
         private readonly IMyodamManager _myodamManager;
+        private readonly ObservableCollection<NavigationItemViewModel> _testSubjectsNavigationItems = new();
 
-        public ObservableCollection<NavigationItemViewModel> _testSubjectsNavigationItems { get; } = new();
         public ListCollectionView TestSubjectsNavigationItems { get; } 
 
         public IAsyncRelayCommand ChangeMyodamConnectionCommand { get; }
@@ -38,7 +38,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         public int StimulatorBatteryPercentage => (int)(_myodamManager.MyodamDevice?.StimulatorBattery.Value ?? 0);
         public int ControllerBatteryPercentage => (int)(_myodamManager.MyodamDevice?.ControllerBattery.Value ?? 0);
 
-        public IDeviceCalibrationViewModel DeviceCalibrationVm { get; private set; }
+        public IDeviceCalibrationViewModel DeviceCalibrationVm { get; }
 
         /// <summary>
         /// Design-time ctor

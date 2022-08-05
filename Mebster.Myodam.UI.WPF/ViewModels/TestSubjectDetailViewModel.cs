@@ -74,7 +74,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         /// <summary>
         /// Design-time ctor
         /// </summary>
-        public TestSubjectDetailViewModel() : base(null, null)
+        public TestSubjectDetailViewModel() : base(null!, null!, null!)
         {
             _measurements = new ObservableCollection<Measurement>() { new Measurement() {Title = "Measurement 1"}};
             Measurements = CollectionViewSource.GetDefaultView(_measurements);
@@ -85,8 +85,9 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             IMeasurementRepository measurementRepository,
             IMessenger messenger,
             IMapper mapper,
+            IMyodamManager myodamManager,
             IMessageDialogService messageDialogService)
-          : base(messenger, messageDialogService)
+          : base(messenger, messageDialogService, myodamManager)
         {
             _testSubjectRepository = testSubjectRepository;
             _measurementRepository = measurementRepository;
