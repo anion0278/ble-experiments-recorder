@@ -8,25 +8,6 @@
              xmlns:device="clr-namespace:BleRecorder.Models.Device;assembly=BleRecorder.Models"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="300">
-    <UserControl.Resources>
-        <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
-            <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
-            <Style.Triggers>
-                <Trigger Property="IsEnabled" Value="False">
-                    <Setter Property="ToolTip" Value="Measurement parameters can be changed only if the measurement data is empty."></Setter>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-        <Style TargetType="mah:NumericUpDown" BasedOn="{StaticResource {x:Type mah:NumericUpDown}}">
-            <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
-            <Style.Triggers>
-                <Trigger Property="IsEnabled" Value="False">
-                    <Setter Property="ToolTip" Value="Measurement parameters can be changed only if the measurement data is empty."></Setter>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-    </UserControl.Resources>
-
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -45,23 +26,23 @@
                HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
         <Label Grid.Row="1" Grid.Column="0" Content="Current [mA]:"  VerticalAlignment="Center"/>
-        <mah:NumericUpDown Grid.Row="1" Grid.Column="1" 
+        <mah:NumericUpDown Grid.Row="1" Grid.Column="1" Style="{StaticResource MeasurementParamNumericBox}"
                            Interval="10" Minimum="1" Maximum="100"
                            Value="{Binding CurrentMilliAmps}" />
 
         <Label Grid.Row="2" Grid.Column="0"  Content="Frequency [Hz]:" VerticalAlignment="Center"/>
-        <mah:NumericUpDown Grid.Row="2" Grid.Column="1" 
+        <mah:NumericUpDown Grid.Row="2" Grid.Column="1"  Style="{StaticResource MeasurementParamNumericBox}"
                            Interval="5" Minimum="1" Maximum="100"
                            Value="{Binding FrequencyHz}" />
 
         <Label Grid.Row="3" Grid.Column="0"  Content="Stimulation time [s]:" VerticalAlignment="Center"/>
-        <mah:NumericUpDown Grid.Row="3" Grid.Column="1" 
+        <mah:NumericUpDown Grid.Row="3" Grid.Column="1"  Style="{StaticResource MeasurementParamNumericBox}"
                            Interval="1" Minimum="1" Maximum="10"
                            Value="{Binding StimulationTimeSeconds}" />
 
         <Label Grid.Row="4" Grid.Column="0"  Content="Pulse [us]:"  VerticalAlignment="Center"/>
         <ComboBox Grid.Row="4" Grid.Column="1" 
-                  DisplayMemberPath="Value"
+                  DisplayMemberPath="Value" Style="{StaticResource MeasurementParamComboBox}"
                   SelectedItem="{Binding PulseWidthMicroSeconds}"
                   ItemsSource="{x:Static device:StimulationPulseWidth.AvailableOptions}"/>
     </Grid>
