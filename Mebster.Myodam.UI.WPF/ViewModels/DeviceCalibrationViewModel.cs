@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.UI.WPF.Data.Repositories;
@@ -9,8 +10,8 @@ namespace Mebster.Myodam.UI.WPF.ViewModels;
 
 public interface IDeviceCalibrationViewModel
 {
-    double NoLoadSensorValue { get; set; }
-    double NominalLoadSensorValue { get; set; }
+    string NoLoadSensorValue { get; set; }
+    string NominalLoadSensorValue { get; set; }
     bool IsCalibrationRunning { get; }
     IAsyncRelayCommand CalibrateNoLoadSensorValueCommand { get; }
     IAsyncRelayCommand CalibrateNominalLoadSensorValueCommand { get; }
@@ -26,16 +27,32 @@ public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewM
 
     public DeviceCalibration Model { get; private set; } = new(); // must be public prop
 
-    public double NoLoadSensorValue
+    [Required]
+    public string NoLoadSensorValue
     {
-        get => Model.NoLoadSensorValue;
-        set => Model.NoLoadSensorValue = value;
+        get => Model.NoLoadSensorValue.ToString();
+        set
+        {
+            if (!double.TryParse(value, out var parsedValue)) return;
+            if (parsedValue < 0) return;
+
+            Model.NoLoadSensorValue = parsedValue;
+            _deviceCalibrationRepository.Save();
+        }
     }
 
-    public double NominalLoadSensorValue
+    [Required]
+    public string NominalLoadSensorValue
     {
-        get => Model.NominalLoadSensorValue;
-        set => Model.NominalLoadSensorValue = value;
+        get => Model.NominalLoadSensorValue.ToString();
+        set
+        {
+            if (!double.TryParse(value, out var parsedValue)) return;
+            if (parsedValue < 0) return;
+
+            Model.NominalLoadSensorValue = parsedValue;
+            _deviceCalibrationRepository.Save();
+        }
     }
 
     public bool IsCalibrationRunning => CalibrateNoLoadSensorValueCommand.IsRunning || CalibrateNominalLoadSensorValueCommand.IsRunning;
@@ -80,8 +97,7 @@ public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewM
             "Start calibration with nominal load?");
         if (result != MessageDialogResult.OK) return;
 
-        NoLoadSensorValue = await _myodamManager.MyodamDevice!.GetSensorCalibrationValue();
-        await _deviceCalibrationRepository.SaveAsync();
+        NoLoadSensorValue = (await _myodamManager.MyodamDevice!.GetSensorCalibrationValue()).ToString();
         NotifyCalibrationCommandsCanExecuteChanged();
     }
 
@@ -92,8 +108,7 @@ public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewM
             "Start calibration without load?");
         if (result != MessageDialogResult.OK) { return; }
 
-        NominalLoadSensorValue = await _myodamManager.MyodamDevice!.GetSensorCalibrationValue();
-        await _deviceCalibrationRepository.SaveAsync();
+        NominalLoadSensorValue = (await _myodamManager.MyodamDevice!.GetSensorCalibrationValue()).ToString();
         NotifyCalibrationCommandsCanExecuteChanged();
     }
 
@@ -109,7 +124,5 @@ public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewM
     private bool CanCalibrateExecute()
     {
         return _myodamManager.MyodamAvailability == MyodamAvailabilityStatus.Connected && !_myodamManager.IsCurrentlyMeasuring;
-        //!CalibrateNoLoadSensorValueCommand.IsRunning
-        //&& !CalibrateNominalLoadSensorValueCommand.IsRunning
     }
 }
