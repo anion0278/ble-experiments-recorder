@@ -24,28 +24,26 @@ namespace BleRecorder.UI.WPF.Startup
             builder.RegisterInstance<IMessenger>(WeakReferenceMessenger.Default);
             builder.RegisterInstance<IMapper>(SetupMapper());
 
-            builder.RegisterType<ExperimentsDbContext>().AsSelf();
-
             builder.RegisterType<MainWindow>().AsSelf();
-
-            builder.RegisterType<MessageDialogService>().As<IMessageDialogService>();
-
             builder.RegisterType<MainViewModel>().AsSelf();
             builder.RegisterType<NavigationViewModel>().As<INavigationViewModel>();
             builder.RegisterType<TestSubjectDetailViewModel>().Keyed<IDetailViewModel>(nameof(TestSubjectDetailViewModel));
             builder.RegisterType<MeasurementDetailViewModel>().Keyed<IDetailViewModel>(nameof(MeasurementDetailViewModel));
+            builder.RegisterType<DeviceCalibrationViewModel>().As<IDeviceCalibrationViewModel>();
 
-            builder.RegisterType<GlobalExceptionHandler>().As<IGlobalExceptionHandler>();
-            builder.RegisterType<AsyncRelayCommandFactory>().As<IAsyncRelayCommandFactory>();
-            builder.RegisterType<DateTimeService>().As<IDateTimeService>();
+            builder.RegisterType<MessageDialogService>().As<IMessageDialogService>().SingleInstance();
+            builder.RegisterType<GlobalExceptionHandler>().As<IGlobalExceptionHandler>().SingleInstance();
+            builder.RegisterType<AsyncRelayCommandFactory>().As<IAsyncRelayCommandFactory>().SingleInstance();
+            builder.RegisterType<DateTimeService>().As<IDateTimeService>().SingleInstance();
 
-            builder.RegisterType<BluetoothManager>().As<IBluetoothManager>();
-            builder.RegisterType<BleRecorderMessageParser>().As<IBleRecorderMessageParser>();
+            builder.RegisterType<BluetoothManager>().As<IBluetoothManager>().SingleInstance();
+            builder.RegisterType<BleRecorderMessageParser>().As<IBleRecorderMessageParser>().SingleInstance();
             builder.RegisterType<BleRecorderManager>().As<IBleRecorderManager>().SingleInstance();
 
+            builder.RegisterType<ExperimentsDbContext>().AsSelf();
             builder.RegisterType<TestSubjectRepository>().As<ITestSubjectRepository>();
             builder.RegisterType<MeasurementRepository>().As<IMeasurementRepository>();
-            //builder.RegisterType<StimulationParametersRepository>().As<IStimulationParametersRepository>();
+            builder.RegisterType<DeviceCalibrationRepository>().As<IDeviceCalibrationRepository>();
 
             return builder.Build();
         }

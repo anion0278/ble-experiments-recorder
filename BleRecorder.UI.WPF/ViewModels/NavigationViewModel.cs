@@ -38,7 +38,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         public int StimulatorBatteryPercentage => (int)(_bleRecorderManager.BleRecorderDevice?.StimulatorBattery.Value ?? 0);
         public int ControllerBatteryPercentage => (int)(_bleRecorderManager.BleRecorderDevice?.ControllerBattery.Value ?? 0);
 
-        public DeviceCalibrationViewModel DeviceCalibrationVm { get; private set; }
+        public IDeviceCalibrationViewModel DeviceCalibrationVm { get; private set; }
 
         /// <summary>
         /// Design-time ctor
@@ -56,7 +56,8 @@ namespace BleRecorder.UI.WPF.ViewModels
             ITestSubjectRepository testSubjectRepository,
             IMessenger messenger, 
             IMessageDialogService dialogService,
-            IBleRecorderManager bleRecorderManager, 
+            IBleRecorderManager bleRecorderManager,
+            IDeviceCalibrationViewModel deviceCalibrationViewModel,
             IAsyncRelayCommandFactory asyncCommandFactory)
         {
             ChangeBleRecorderConnectionCommand = asyncCommandFactory.Create(ChangeBleRecorderConnection, CanChangeBleRecorderConnection);
@@ -65,6 +66,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             _messenger = messenger;
             _dialogService = dialogService;
             _bleRecorderManager = bleRecorderManager;
+            DeviceCalibrationVm = deviceCalibrationViewModel;
 
             _bleRecorderManager.BleRecorderAvailabilityChanged += OnBleRecorderAvailabilityChanged;
             _bleRecorderManager.DevicePropertyChanged += OnBleRecorderPropertyChanged;
@@ -74,9 +76,6 @@ namespace BleRecorder.UI.WPF.ViewModels
 
             TestSubjectsNavigationItems = (ListCollectionView)CollectionViewSource.GetDefaultView(_testSubjectsNavigationItems);
             TestSubjectsNavigationItems.CustomSort = new NavigationAddItemViewModelRelationalComparer();
-
-            // TODO get device calibration from BleRecorderManager and DeviceCalibrationViewModel from IoC
-            DeviceCalibrationVm = new DeviceCalibrationViewModel(new DeviceCalibration(), _bleRecorderManager, asyncCommandFactory, _dialogService);
         }
 
         private void OnBleRecorderPropertyChanged(object? sender, EventArgs e)
@@ -120,6 +119,8 @@ namespace BleRecorder.UI.WPF.ViewModels
                 .Select(ts => new NavigationItemViewModel(ts.Id, ts.FullName, _messenger));
             _testSubjectsNavigationItems.AddRange(items);
             _testSubjectsNavigationItems.Add(new NavigationAddItemViewModel(_messenger));
+
+            await DeviceCalibrationVm.LoadAsync();
         }
 
         private void AfterDetailDeleted(AfterDetailDeletedEventArgs args) // TODO refactoring!
