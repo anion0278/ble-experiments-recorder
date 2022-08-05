@@ -86,10 +86,10 @@ namespace BleRecorder.UI.WPF.ViewModels
             IMessenger messenger,
             IMapper mapper,
             IBleRecorderManager bleRecorderManager,
-            IMessageDialogService messageDialogService)
-          : base(messenger, messageDialogService, bleRecorderManager)
+            IMessageDialogService dialogService)
+          : base(messenger, dialogService, bleRecorderManager)
         {
-            _testSubjectRepository = testSubjectRepository;
+            _testSubjectRepository = testSubjectRepository; // TODO possible refactoring - this is main repo for VM, abstract it along with related methods
             _measurementRepository = measurementRepository;
             _mapper = mapper;
 
@@ -164,7 +164,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         {
             if (await _testSubjectRepository.GetByIdAsync(Id) == null || HasChanges)
             {
-                await MessageDialogService.ShowInfoDialogAsync(
+                await DialogService.ShowInfoDialogAsync(
                     "Test subject is not saved. Save changes before adding measurements.");
                 return;
             }
@@ -197,6 +197,13 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         protected override async void OnSaveExecute()
         {
+            if ((await _testSubjectRepository.GetAllAsync()) // TODO replace getAll with customized query
+                .Any(ts => ts.FullName == Model.FullName && ts.Id != Model.Id))
+            {
+                await DialogService.ShowInfoDialogAsync($"A test subject with name '{Model.FullName}' already exists. Please change the name.");
+                return;
+            }
+
             await _testSubjectRepository.SaveAsync();
             Id = Model.Id;
             HasChanges = false;
@@ -211,7 +218,7 @@ namespace BleRecorder.UI.WPF.ViewModels
                 return;
             }
 
-            var result = await MessageDialogService.ShowOkCancelDialogAsync(
+            var result = await DialogService.ShowOkCancelDialogAsync(
                 $"Do you really want to delete the test subject {Title} and all related measurements?", "Confirmation is required");
             if (result != MessageDialogResult.OK) return;
 

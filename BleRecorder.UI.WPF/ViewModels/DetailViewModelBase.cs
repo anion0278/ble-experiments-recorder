@@ -15,7 +15,7 @@ namespace BleRecorder.UI.WPF.ViewModels
     {
         private bool _hasChanges;
         protected readonly IMessenger Messenger;
-        protected readonly IMessageDialogService MessageDialogService;
+        protected readonly IMessageDialogService DialogService;
         private readonly IBleRecorderManager _bleRecorderManager;
 
         public abstract Task LoadAsync(int measurementId, object argsData);
@@ -43,11 +43,11 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         protected DetailViewModelBase(
             IMessenger messenger, 
-            IMessageDialogService messageDialogService,
+            IMessageDialogService dialogService,
             IBleRecorderManager bleRecorderManager)
         {
             Messenger = messenger;
-            MessageDialogService = messageDialogService;
+            DialogService = dialogService;
             _bleRecorderManager = bleRecorderManager;
             SaveCommand = new RelayCommand(OnSaveExecute, OnSaveCanExecute);
             DeleteCommand = new RelayCommand(OnDeleteExecute, OnDeleteCanExecute);
@@ -111,7 +111,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         {
             if (!HasChanges) return true;
 
-            var result = await MessageDialogService.ShowOkCancelDialogAsync(
+            var result = await DialogService.ShowOkCancelDialogAsync(
                 "Close this item? Changes will be lost.", "Question");
             return result == MessageDialogResult.OK;
         }
