@@ -38,7 +38,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         public int StimulatorBatteryPercentage => (int)(_myodamManager.MyodamDevice?.StimulatorBattery.Value ?? 0);
         public int ControllerBatteryPercentage => (int)(_myodamManager.MyodamDevice?.ControllerBattery.Value ?? 0);
 
-        public DeviceCalibrationViewModel DeviceCalibrationVm { get; private set; }
+        public IDeviceCalibrationViewModel DeviceCalibrationVm { get; private set; }
 
         /// <summary>
         /// Design-time ctor
@@ -56,7 +56,8 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             ITestSubjectRepository testSubjectRepository,
             IMessenger messenger, 
             IMessageDialogService dialogService,
-            IMyodamManager myodamManager, 
+            IMyodamManager myodamManager,
+            IDeviceCalibrationViewModel deviceCalibrationViewModel,
             IAsyncRelayCommandFactory asyncCommandFactory)
         {
             ChangeMyodamConnectionCommand = asyncCommandFactory.Create(ChangeMyodamConnection, CanChangeMyodamConnection);
@@ -65,6 +66,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             _messenger = messenger;
             _dialogService = dialogService;
             _myodamManager = myodamManager;
+            DeviceCalibrationVm = deviceCalibrationViewModel;
 
             _myodamManager.MyodamAvailabilityChanged += OnMyodamAvailabilityChanged;
             _myodamManager.DevicePropertyChanged += OnMyodamPropertyChanged;
@@ -74,9 +76,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
             TestSubjectsNavigationItems = (ListCollectionView)CollectionViewSource.GetDefaultView(_testSubjectsNavigationItems);
             TestSubjectsNavigationItems.CustomSort = new NavigationAddItemViewModelRelationalComparer();
-
-            // TODO get device calibration from MyodamManager and DeviceCalibrationViewModel from IoC
-            DeviceCalibrationVm = new DeviceCalibrationViewModel(new DeviceCalibration(), _myodamManager, asyncCommandFactory, _dialogService);
         }
 
         private void OnMyodamPropertyChanged(object? sender, EventArgs e)
@@ -120,6 +119,8 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
                 .Select(ts => new NavigationItemViewModel(ts.Id, ts.FullName, _messenger));
             _testSubjectsNavigationItems.AddRange(items);
             _testSubjectsNavigationItems.Add(new NavigationAddItemViewModel(_messenger));
+
+            await DeviceCalibrationVm.LoadAsync();
         }
 
         private void AfterDetailDeleted(AfterDetailDeletedEventArgs args) // TODO refactoring!
