@@ -29,5 +29,6 @@ public class MeasurementRepository : GenericRepository<Measurement, ExperimentsD
     public async Task ReloadTestSubjectAsync(TestSubject testSubject)
     {
         await Context.Entry(testSubject).ReloadAsync();
+        await Context.Entry(testSubject).Collection(ts => ts.Measurements).LoadAsync();
     }
 }
