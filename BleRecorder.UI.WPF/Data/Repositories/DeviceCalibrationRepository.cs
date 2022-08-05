@@ -11,6 +11,10 @@ public class DeviceCalibrationRepository : GenericRepository<DeviceCalibration, 
     {
     }
 
+    public void Save()
+    {
+        Context.SaveChanges();
+    }
 }
 
 public interface IDeviceCalibrationRepository
@@ -22,4 +26,5 @@ public interface IDeviceCalibrationRepository
     Task<IEnumerable<DeviceCalibration>> GetAllAsync();
 
     Task SaveAsync();
+    void Save();
 }

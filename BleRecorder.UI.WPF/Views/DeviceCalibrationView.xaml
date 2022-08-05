@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:BleRecorder.UI.WPF.Views"
+             xmlns:res="clr-namespace:BleRecorder.UI.WPF.Views.Resouces"
              xmlns:viewModels="clr-namespace:BleRecorder.UI.WPF.ViewModels"
              xmlns:extensions="clr-namespace:BleRecorder.UI.WPF.Extensions"
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
@@ -28,8 +29,8 @@
                HorizontalAlignment="Center" FontWeight="Bold" FontSize="14"/>
 
         <Label Grid.Row="1" Grid.Column="0" Content="No load value:"/>
-        <TextBox Grid.Row="1" Grid.Column="1" Margin="5" MaxLength="5" HorizontalContentAlignment="Center" FontWeight="Bold" FontSize="12"
-                 Text="{Binding NoLoadSensorValue}"/>
+        <TextBox Grid.Row="1" Grid.Column="1" Margin="5" MaxLength="18" HorizontalContentAlignment="Center" FontWeight="Bold" FontSize="12"
+                            Text="{Binding NoLoadSensorValue, TargetNullValue=''}"/>
         <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"   Width="NaN" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
                 Margin="5 0"
                 Command="{Binding CalibrateNoLoadSensorValueCommand}">
@@ -67,8 +68,8 @@
         </Button>
 
         <Label Grid.Row="4" Grid.Column="0" Content="Nominal load value:"/>
-        <TextBox Grid.Row="4" Grid.Column="1" Margin="5" MaxLength="5" HorizontalContentAlignment="Center" FontWeight="Bold" FontSize="12"
-                 Text="{Binding NominalLoadSensorValue}"/>
+        <TextBox Grid.Row="4" Grid.Column="1" Margin="5" MaxLength="18" HorizontalContentAlignment="Center" FontWeight="Bold" FontSize="12"
+                 Text="{Binding NominalLoadSensorValue, TargetNullValue=''}"/>
         <Button Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Width="NaN" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
                 Margin="5 0 5 10"
                 Command="{Binding CalibrateNominalLoadSensorValueCommand}">

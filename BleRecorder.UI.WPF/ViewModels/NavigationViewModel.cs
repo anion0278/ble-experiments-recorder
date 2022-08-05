@@ -44,6 +44,14 @@ namespace BleRecorder.UI.WPF.ViewModels
         /// Design-time ctor
         /// </summary>
         [Obsolete("Design-time only!")]
+        public NavigationViewModel()
+        {
+        }
+
+        /// <summary>
+        /// Design-time ctor
+        /// </summary>
+        [Obsolete("Design-time only!")]
         public NavigationViewModel(TestSubject testSubject)
         {
             TestSubjectsNavigationItems = (ListCollectionView)CollectionViewSource.GetDefaultView(_testSubjectsNavigationItems);
