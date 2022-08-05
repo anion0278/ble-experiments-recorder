@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using BleRecorder.Business.Device;
 using BleRecorder.UI.WPF.Event;
 using BleRecorder.UI.WPF.ViewModels.Services;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         private bool _hasChanges;
         protected readonly IMessenger Messenger;
         protected readonly IMessageDialogService MessageDialogService;
+        private readonly IBleRecorderManager _bleRecorderManager;
 
         public abstract Task LoadAsync(int measurementId, object argsData);
 
@@ -39,10 +41,14 @@ namespace BleRecorder.UI.WPF.ViewModels
             }
         }
 
-        protected DetailViewModelBase(IMessenger messenger, IMessageDialogService messageDialogService)
+        protected DetailViewModelBase(
+            IMessenger messenger, 
+            IMessageDialogService messageDialogService,
+            IBleRecorderManager bleRecorderManager)
         {
             Messenger = messenger;
             MessageDialogService = messageDialogService;
+            _bleRecorderManager = bleRecorderManager;
             SaveCommand = new RelayCommand(OnSaveExecute, OnSaveCanExecute);
             DeleteCommand = new RelayCommand(OnDeleteExecute);
             CloseDetailViewCommand = new RelayCommand(OnCloseDetailViewExecute);

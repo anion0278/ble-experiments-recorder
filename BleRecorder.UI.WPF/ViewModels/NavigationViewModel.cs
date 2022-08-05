@@ -27,8 +27,8 @@ namespace BleRecorder.UI.WPF.ViewModels
         private readonly IMessenger _messenger;
         private readonly IMessageDialogService _dialogService;
         private readonly IBleRecorderManager _bleRecorderManager;
+        private readonly ObservableCollection<NavigationItemViewModel> _testSubjectsNavigationItems = new();
 
-        public ObservableCollection<NavigationItemViewModel> _testSubjectsNavigationItems { get; } = new();
         public ListCollectionView TestSubjectsNavigationItems { get; } 
 
         public IAsyncRelayCommand ChangeBleRecorderConnectionCommand { get; }
@@ -38,7 +38,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         public int StimulatorBatteryPercentage => (int)(_bleRecorderManager.BleRecorderDevice?.StimulatorBattery.Value ?? 0);
         public int ControllerBatteryPercentage => (int)(_bleRecorderManager.BleRecorderDevice?.ControllerBattery.Value ?? 0);
 
-        public IDeviceCalibrationViewModel DeviceCalibrationVm { get; private set; }
+        public IDeviceCalibrationViewModel DeviceCalibrationVm { get; }
 
         /// <summary>
         /// Design-time ctor

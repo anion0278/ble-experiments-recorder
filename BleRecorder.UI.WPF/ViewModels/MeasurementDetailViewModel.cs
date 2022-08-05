@@ -91,16 +91,16 @@ namespace BleRecorder.UI.WPF.ViewModels
         /// <summary>
         /// Design-time ctor    
         /// </summary>
-        public MeasurementDetailViewModel() : base(null!, null!)
+        public MeasurementDetailViewModel() : base(null!, null!, null!)
         {
         }
 
         public MeasurementDetailViewModel(IMessenger messenger,
-            IMessageDialogService messageDialogService,
+            IMessageDialogService dialogService,
             IBleRecorderManager bleRecorderManager,
             IMapper mapper,
             IMeasurementRepository measurementRepository,
-            IDateTimeService dateTimeService) : base(messenger, messageDialogService)
+            IDateTimeService dateTimeService) : base(messenger, dialogService, bleRecorderManager)
         {
             _bleRecorderManager = bleRecorderManager;
             _mapper = mapper;

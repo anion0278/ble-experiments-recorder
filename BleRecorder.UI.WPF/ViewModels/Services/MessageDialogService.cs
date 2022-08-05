@@ -28,5 +28,10 @@ namespace BleRecorder.UI.WPF.ViewModels.Services
             await MetroWindow.ShowMessageAsync("Info", text);
         }
 
+        public void ShowInfoDialog(string text)
+        {
+            MetroWindow.ShowModalMessageExternal("Info", text);
+        }
+
     }
 }
