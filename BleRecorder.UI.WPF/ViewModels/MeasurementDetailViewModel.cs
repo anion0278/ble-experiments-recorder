@@ -122,8 +122,12 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         private bool StopMeasurementCanExecute()
         {
-            Debug.Print((_bleRecorderManager.IsCurrentlyMeasuring && _bleRecorderManager.BleRecorderDevice!.IsCalibrating).ToString());
             return _bleRecorderManager.IsCurrentlyMeasuring && !_bleRecorderManager.BleRecorderDevice!.IsCalibrating;
+        }
+
+        protected override bool OnDeleteCanExecute()
+        {
+            return !StopMeasurementCanExecute();
         }
 
         protected override void UnsubscribeOnClosing()
@@ -165,6 +169,7 @@ namespace BleRecorder.UI.WPF.ViewModels
                 StartMeasurementCommand.NotifyCanExecuteChanged();
                 StopMeasurementCommand.NotifyCanExecuteChanged();
                 CleanRecordedDataCommand.NotifyCanExecuteChanged();
+                DeleteCommand.NotifyCanExecuteChanged();
                 if (_bleRecorderManager.IsCurrentlyMeasuring) return;
 
                 StopMeasurementCommand.NotifyCanExecuteChanged();

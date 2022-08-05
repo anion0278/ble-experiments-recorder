@@ -22,7 +22,7 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         public IRelayCommand SaveCommand { get; }
 
-        public ICommand DeleteCommand { get; }
+        public IRelayCommand DeleteCommand { get; }
 
         public ICommand CloseDetailViewCommand { get; }
 
@@ -50,8 +50,13 @@ namespace BleRecorder.UI.WPF.ViewModels
             MessageDialogService = messageDialogService;
             _bleRecorderManager = bleRecorderManager;
             SaveCommand = new RelayCommand(OnSaveExecute, OnSaveCanExecute);
-            DeleteCommand = new RelayCommand(OnDeleteExecute);
+            DeleteCommand = new RelayCommand(OnDeleteExecute, OnDeleteCanExecute);
             CloseDetailViewCommand = new RelayCommand(OnCloseDetailViewExecute);
+        }
+
+        protected virtual bool OnDeleteCanExecute()
+        {
+            return true;
         }
 
         protected abstract void OnDeleteExecute();

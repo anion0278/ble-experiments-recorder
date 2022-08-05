@@ -29,10 +29,13 @@
                HorizontalAlignment="Center" FontWeight="Bold" FontSize="14"/>
 
         <Label Grid.Row="1" Grid.Column="0" Content="No load value:"/>
-        <TextBox Grid.Row="1" Grid.Column="1" Margin="5" MaxLength="18" HorizontalContentAlignment="Center" FontWeight="Bold" FontSize="12"
-                            Text="{Binding NoLoadSensorValue, TargetNullValue=''}"/>
-        <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"   Width="NaN" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
-                Margin="5 0"
+        <TextBox Grid.Row="1" Grid.Column="1" 
+                 Margin="5" MaxLength="18" HorizontalContentAlignment="Center" 
+                 FontWeight="Bold" FontSize="12"
+                 IsEnabled="{Binding Path=IsEnabled, ElementName=NoLoadButton}"
+                 Text="{Binding NoLoadSensorValue, TargetNullValue=''}"/>
+        <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" x:Name="NoLoadButton"
+                Width="NaN" Margin="5 0" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
                 Command="{Binding CalibrateNoLoadSensorValueCommand}">
             <Button.Content>
                 <StackPanel Orientation="Horizontal">
@@ -68,10 +71,13 @@
         </Button>
 
         <Label Grid.Row="4" Grid.Column="0" Content="Nominal load value:"/>
-        <TextBox Grid.Row="4" Grid.Column="1" Margin="5" MaxLength="18" HorizontalContentAlignment="Center" FontWeight="Bold" FontSize="12"
+        <TextBox Grid.Row="4" Grid.Column="1" 
+                 Margin="5" MaxLength="18" HorizontalContentAlignment="Center" 
+                 FontWeight="Bold" FontSize="12" 
+                 IsEnabled="{Binding Path=IsEnabled, ElementName=NominalLoadButton}"
                  Text="{Binding NominalLoadSensorValue, TargetNullValue=''}"/>
-        <Button Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Width="NaN" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
-                Margin="5 0 5 10"
+        <Button Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" x:Name="NominalLoadButton"
+                Width="NaN" Margin="5 0 5 10" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
                 Command="{Binding CalibrateNominalLoadSensorValueCommand}">
             <Button.Content>
                 <StackPanel Orientation="Horizontal">

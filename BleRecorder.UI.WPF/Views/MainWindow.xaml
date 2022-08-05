@@ -24,7 +24,7 @@
         <views:NavigationView Grid.Column="0" DataContext="{Binding NavigationViewModel}"/>
         <TabControl Grid.Column="1" VerticalAlignment="Stretch" IsSynchronizedWithCurrentItem="True"
                 ItemsSource="{Binding DetailViewModels}"
-                SelectedItem="{Binding SelectedDetailViewModel}">
+                SelectedItem="{Binding SelectedDetailViewModel, ValidatesOnNotifyDataErrors=False}">
             <TabControl.Template>
                 <ControlTemplate TargetType="TabControl">
                     <Grid SnapsToDevicePixels="true" KeyboardNavigation.TabNavigation="Local" HorizontalAlignment="Stretch" Margin="2 0">
