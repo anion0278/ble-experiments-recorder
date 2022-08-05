@@ -97,6 +97,24 @@
                         <Setter Property="AcceptsReturn" Value="true"/>
                     </Style>
 
+                    <Style x:Key="MeasurementParamComboBox" TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+                        <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="ToolTip" Value="Measurement parameters can be changed only if the measurement data is empty."></Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+
+                    <Style x:Key="MeasurementParamNumericBox" TargetType="mah:NumericUpDown" BasedOn="{StaticResource {x:Type mah:NumericUpDown}}">
+                        <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="ToolTip" Value="Measurement parameters can be changed only if the measurement data is empty."></Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+
                     <SolidColorBrush x:Key="MebsterColor" Color="#322882"/>
 
                 </ResourceDictionary>

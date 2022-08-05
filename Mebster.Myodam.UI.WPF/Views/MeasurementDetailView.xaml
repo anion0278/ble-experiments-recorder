@@ -16,8 +16,7 @@
              d:DesignHeight="800" d:DesignWidth="800" 
              d:DataContext="{d:DesignInstance viewModels:MeasurementDetailViewModel, IsDesignTimeCreatable=True}">
     <UserControl.Resources>
-        <Style x:Key="MeasurementParamComboBoxStyle" TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
-            <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
+        <Style x:Key="MeasurementParamComboBoxStyle" TargetType="ComboBox" BasedOn="{StaticResource MeasurementParamComboBox}">
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
             <Setter Property="Width" Value="160"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -30,11 +29,6 @@
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsEnabled" Value="False">
-                    <Setter Property="ToolTip" Value="Measurement parameters can be changed only if the measurement data is empty."></Setter>
-                </Trigger>
-            </Style.Triggers>
         </Style>
 
         <Style TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
@@ -108,15 +102,18 @@
                            Content="{Binding Date, TargetNullValue='Not measured yet'}" />
 
                 <Label Grid.Row="2" Grid.Column="0"  Content="Measurement type:" />
-                <ComboBox Grid.Row="2" Grid.Column="1" SelectedItem="{Binding Type}" Style="{StaticResource MeasurementParamComboBoxStyle}"
+                <ComboBox Grid.Row="2" Grid.Column="1" 
+                          SelectedItem="{Binding Type}" Style="{StaticResource MeasurementParamComboBoxStyle}"
                           ItemsSource="{Binding Source={StaticResource MeasurementTypeEnum}}" />
 
                 <Label Grid.Row="3" Grid.Column="0"  Content="Measurement site:" />
-                <ComboBox Grid.Row="3" Grid.Column="1" SelectedItem="{Binding Site}" Style="{StaticResource MeasurementParamComboBoxStyle}"
+                <ComboBox Grid.Row="3" Grid.Column="1" 
+                          SelectedItem="{Binding Site}" Style="{StaticResource MeasurementParamComboBoxStyle}"
                           ItemsSource="{Binding Source={StaticResource MeasurementSiteEnum}}" />
 
                 <Label Grid.Row="4" Grid.Column="0"  Content="Test subject position:" />
-                <ComboBox Grid.Row="4" Grid.Column="1" SelectedItem="{Binding Position}" Style="{StaticResource MeasurementParamComboBoxStyle}"
+                <ComboBox Grid.Row="4" Grid.Column="1" 
+                          SelectedItem="{Binding Position}" Style="{StaticResource MeasurementParamComboBoxStyle}"
                           ItemsSource="{Binding Source={StaticResource PositionDuringMeasurementEnum}}" />
             </Grid>
 
@@ -142,8 +139,6 @@
                     <views:StimulationParametersView Grid.Column="1" HorizontalAlignment="Center" DataContext="{Binding StimulationParametersVm}" />
                 </Grid>
             </Expander>
-
-            <!--<Label Grid.Row="6" Content="Measured data" />-->
 
             <Expander Grid.Row="7" Header="Measured data" mah:ControlsHelper.ContentCharacterCasing="Normal" IsExpanded="True">
                 <Grid>
