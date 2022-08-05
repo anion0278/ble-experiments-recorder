@@ -17,6 +17,7 @@ using Mebster.Myodam.Models.TestSubject;
 using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.Event;
 using Mebster.Myodam.UI.WPF.ViewModels.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using PropertyChanged;
@@ -107,7 +108,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             _dateTimeService = dateTimeService;
 
             StartMeasurementCommand = new AsyncRelayCommand(StartMeasurement, StartMeasurementCanExecute);
-            StopMeasurementCommand = new AsyncRelayCommand(StopMeasurement, () => _myodamManager.IsCurrentlyMeasuring);
+            StopMeasurementCommand = new AsyncRelayCommand(StopMeasurement, StopMeasurementCanExecute);
             CleanRecordedDataCommand = new RelayCommand(CleanRecordedData, () => !_myodamManager.IsCurrentlyMeasuring);
 
             MeasuredValues.CollectionChanged += OnForceValuesChanged; // letting ComboBox.IsDisabled know that collection changed. Required due to the way ChartValues work
@@ -117,6 +118,12 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
             Messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
             Messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
+        }
+
+        private bool StopMeasurementCanExecute()
+        {
+            Debug.Print((_myodamManager.IsCurrentlyMeasuring && _myodamManager.MyodamDevice!.IsCalibrating).ToString());
+            return _myodamManager.IsCurrentlyMeasuring && !_myodamManager.MyodamDevice!.IsCalibrating;
         }
 
         protected override void UnsubscribeOnClosing()

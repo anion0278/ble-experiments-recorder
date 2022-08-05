@@ -57,6 +57,8 @@ public class MyodamDevice // TODO Extract inteface
 
     public bool IsConnected => _bleDeviceHandler.IsConnected;
 
+    public bool IsCalibrating { get; private set; }
+
     public bool IsCurrentlyMeasuring
     {
         get => _isCurrentlyMeasuring;
@@ -132,16 +134,19 @@ public class MyodamDevice // TODO Extract inteface
     {
         var calibrator = new Calibrator();
 
+        IsCalibrating = true;
         IsCurrentlyMeasuring = true;
         try
         {
             var value = await calibrator.GetCalibrationValue(this);
             IsCurrentlyMeasuring = false;
+            IsCalibrating = false;
             return value;
         }
         finally
         {
             IsCurrentlyMeasuring = false;
+            IsCalibrating = false;
         }
     }
 
