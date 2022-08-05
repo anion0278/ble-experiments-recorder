@@ -122,8 +122,12 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         private bool StopMeasurementCanExecute()
         {
-            Debug.Print((_myodamManager.IsCurrentlyMeasuring && _myodamManager.MyodamDevice!.IsCalibrating).ToString());
             return _myodamManager.IsCurrentlyMeasuring && !_myodamManager.MyodamDevice!.IsCalibrating;
+        }
+
+        protected override bool OnDeleteCanExecute()
+        {
+            return !StopMeasurementCanExecute();
         }
 
         protected override void UnsubscribeOnClosing()
@@ -165,6 +169,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
                 StartMeasurementCommand.NotifyCanExecuteChanged();
                 StopMeasurementCommand.NotifyCanExecuteChanged();
                 CleanRecordedDataCommand.NotifyCanExecuteChanged();
+                DeleteCommand.NotifyCanExecuteChanged();
                 if (_myodamManager.IsCurrentlyMeasuring) return;
 
                 StopMeasurementCommand.NotifyCanExecuteChanged();
