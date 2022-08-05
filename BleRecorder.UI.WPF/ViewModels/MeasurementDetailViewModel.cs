@@ -17,6 +17,7 @@ using BleRecorder.Models.TestSubject;
 using BleRecorder.UI.WPF.Data.Repositories;
 using BleRecorder.UI.WPF.Event;
 using BleRecorder.UI.WPF.ViewModels.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using PropertyChanged;
@@ -107,7 +108,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             _dateTimeService = dateTimeService;
 
             StartMeasurementCommand = new AsyncRelayCommand(StartMeasurement, StartMeasurementCanExecute);
-            StopMeasurementCommand = new AsyncRelayCommand(StopMeasurement, () => _bleRecorderManager.IsCurrentlyMeasuring);
+            StopMeasurementCommand = new AsyncRelayCommand(StopMeasurement, StopMeasurementCanExecute);
             CleanRecordedDataCommand = new RelayCommand(CleanRecordedData, () => !_bleRecorderManager.IsCurrentlyMeasuring);
 
             MeasuredValues.CollectionChanged += OnForceValuesChanged; // letting ComboBox.IsDisabled know that collection changed. Required due to the way ChartValues work
@@ -117,6 +118,12 @@ namespace BleRecorder.UI.WPF.ViewModels
 
             Messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
             Messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
+        }
+
+        private bool StopMeasurementCanExecute()
+        {
+            Debug.Print((_bleRecorderManager.IsCurrentlyMeasuring && _bleRecorderManager.BleRecorderDevice!.IsCalibrating).ToString());
+            return _bleRecorderManager.IsCurrentlyMeasuring && !_bleRecorderManager.BleRecorderDevice!.IsCalibrating;
         }
 
         protected override void UnsubscribeOnClosing()
