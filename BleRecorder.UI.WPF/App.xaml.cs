@@ -15,6 +15,11 @@ using BleRecorder.DataAccess;
 using BleRecorder.UI.WPF.Exception;
 using BleRecorder.UI.WPF.Startup;
 using BleRecorder.UI.WPF.Views;
+using Microsoft.AppCenter;
+using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
+using Microsoft.Extensions.Configuration;
+
 
 namespace BleRecorder.UI.WPF
 {

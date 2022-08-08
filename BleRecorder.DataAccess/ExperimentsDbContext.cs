@@ -4,7 +4,7 @@ using BleRecorder.Models.TestSubject;
 using Microsoft.EntityFrameworkCore;
 
 namespace BleRecorder.DataAccess;
-public class ExperimentsDbContext : DbContext
+public sealed class ExperimentsDbContext : DbContext
 {
     public DbSet<TestSubject> TestSubjects { get; set; }
     public DbSet<Measurement> Measurements { get; set; }
