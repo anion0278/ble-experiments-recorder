@@ -84,6 +84,7 @@ public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewM
     public async Task LoadAsync()
     {
         Model = (await _deviceCalibrationRepository.GetByIdAsync(1))!;
+        _bleRecorderManager.Calibration = Model;
     }
 
     //public void Unsubscribe() // TODO 

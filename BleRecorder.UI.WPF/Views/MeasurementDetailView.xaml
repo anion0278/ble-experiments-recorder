@@ -146,7 +146,7 @@
                         <RowDefinition/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <livecharts:CartesianChart Foreground="{StaticResource MainThemeColorAccent}"  
+                    <livecharts:CartesianChart Foreground="{StaticResource MainThemeColorAccent}" 
                                                DisableAnimations="True" MinHeight="230" Margin="10 10 10 0">
                         <livecharts:CartesianChart.AxisY>
                             <livecharts:Axis MinValue="0" Title="Contraction Force [N]" />

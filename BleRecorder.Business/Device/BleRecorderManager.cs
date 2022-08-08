@@ -11,6 +11,7 @@ public interface IBleRecorderManager
     event EventHandler? MeasurementStatusChanged;
     event EventHandler? DevicePropertyChanged;
     BleRecorderDevice? BleRecorderDevice { get; }
+    DeviceCalibration Calibration { get; set; }
     StimulationParameters CurrentStimulationParameters { get; set; }
     BleRecorderAvailabilityStatus BleRecorderAvailability { get; }
     bool IsCurrentlyMeasuring { get; }
@@ -40,6 +41,8 @@ public class BleRecorderManager : IBleRecorderManager
             BleRecorderAvailabilityChanged?.Invoke(this, EventArgs.Empty);
         }
     }
+
+    public DeviceCalibration Calibration { get; set; }
 
     public bool IsCurrentlyMeasuring => (BleRecorderDevice?.IsCurrentlyMeasuring ?? false) || (BleRecorderDevice?.IsCalibrating ?? false);
 

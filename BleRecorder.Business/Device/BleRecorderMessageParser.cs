@@ -23,7 +23,7 @@ public class BleRecorderMessageParser : IBleRecorderMessageParser
         {
             return new BleRecorderReplyMessage(
                 TimeSpan.FromMilliseconds(timestamp),
-                sensorValue / 2.0,
+                sensorValue,
                 controllerBattery,
                 stimulatorBattery,
                 (BleRecorderError)errorCode!,

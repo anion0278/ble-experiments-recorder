@@ -132,7 +132,7 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         protected override void UnsubscribeOnClosing()
         {
-            if (_bleRecorderManager.BleRecorderDevice != null) _bleRecorderManager.BleRecorderDevice!.NewValueReceived += OnNewValueReceived;
+            if (_bleRecorderManager.BleRecorderDevice != null) _bleRecorderManager.BleRecorderDevice.NewValueReceived -= OnNewValueReceived;
 
             MechanismParametersVm.PropertyChanged -= OnPropertyChangedEventHandler;
             StimulationParametersVm.PropertyChanged -= OnPropertyChangedEventHandler;
@@ -256,14 +256,18 @@ namespace BleRecorder.UI.WPF.ViewModels
 
             MeasuredValues.Clear();
             Date = _dateTimeService.Now;
-            _bleRecorderManager.BleRecorderDevice!.NewValueReceived -= OnNewValueReceived;
+            _bleRecorderManager.BleRecorderDevice!.NewValueReceived -= OnNewValueReceived; // making sure that it is not subscribed multiple times
             _bleRecorderManager.BleRecorderDevice!.NewValueReceived += OnNewValueReceived;
             await _bleRecorderManager.BleRecorderDevice.StartMeasurement(Model.ParametersDuringMeasurement!, Type);
         }
 
-        private void OnNewValueReceived(object? _, MeasuredValue value)
+        private void OnNewValueReceived(object? _, MeasuredValue sensorMeasuredValue)
         {
-            MeasuredValues.Add(value);
+            var forceValue = sensorMeasuredValue with
+            {
+                Value = sensorMeasuredValue.Value / _bleRecorderManager.Calibration.NoLoadSensorValue
+            };
+            MeasuredValues.Add(forceValue);
         }
 
         public async Task StopMeasurement()

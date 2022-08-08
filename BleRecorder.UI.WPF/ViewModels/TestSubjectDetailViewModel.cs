@@ -140,7 +140,6 @@ namespace BleRecorder.UI.WPF.ViewModels
         private void OnPropertyChangedEventHandler(object? o, PropertyChangedEventArgs propertyChangedEventArgs)
         {
             MechanismParametersVm.CopyAdjustmentValuesTo(Model.CustomizedAdjustments);
-
             HasChanges = _testSubjectRepository.HasChanges();
         }
 
