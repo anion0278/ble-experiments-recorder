@@ -23,7 +23,7 @@ public class MyodamMessageParser : IMyodamMessageParser
         {
             return new MyodamReplyMessage(
                 TimeSpan.FromMilliseconds(timestamp),
-                sensorValue / 2.0,
+                sensorValue,
                 controllerBattery,
                 stimulatorBattery,
                 (MyodamError)errorCode!,

@@ -132,7 +132,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         protected override void UnsubscribeOnClosing()
         {
-            if (_myodamManager.MyodamDevice != null) _myodamManager.MyodamDevice!.NewValueReceived += OnNewValueReceived;
+            if (_myodamManager.MyodamDevice != null) _myodamManager.MyodamDevice.NewValueReceived -= OnNewValueReceived;
 
             MechanismParametersVm.PropertyChanged -= OnPropertyChangedEventHandler;
             StimulationParametersVm.PropertyChanged -= OnPropertyChangedEventHandler;
@@ -256,14 +256,18 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
             MeasuredValues.Clear();
             Date = _dateTimeService.Now;
-            _myodamManager.MyodamDevice!.NewValueReceived -= OnNewValueReceived;
+            _myodamManager.MyodamDevice!.NewValueReceived -= OnNewValueReceived; // making sure that it is not subscribed multiple times
             _myodamManager.MyodamDevice!.NewValueReceived += OnNewValueReceived;
             await _myodamManager.MyodamDevice.StartMeasurement(Model.ParametersDuringMeasurement!, Type);
         }
 
-        private void OnNewValueReceived(object? _, MeasuredValue value)
+        private void OnNewValueReceived(object? _, MeasuredValue sensorMeasuredValue)
         {
-            MeasuredValues.Add(value);
+            var forceValue = sensorMeasuredValue with
+            {
+                Value = sensorMeasuredValue.Value / _myodamManager.Calibration.NoLoadSensorValue
+            };
+            MeasuredValues.Add(forceValue);
         }
 
         public async Task StopMeasurement()

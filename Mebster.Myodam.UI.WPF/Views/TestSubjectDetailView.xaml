@@ -76,6 +76,7 @@
             <Setter Property="BorderThickness"  Value="2"/>
             <Setter Property="IsSynchronizedWithCurrentItem"  Value="True"/>
             <Setter Property="SelectionUnit"  Value="FullRow"/>
+            <Setter Property="SelectionMode"  Value="Single"/>
             <Setter Property="AutoGenerateColumns"  Value="False"/>
             <Setter Property="RowHeaderWidth"  Value="0"/>
             <Setter Property="CanUserAddRows"  Value="False"/>
@@ -132,7 +133,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <DataGrid x:Name="MeasurementsGrid"  
+                <DataGrid x:Name="MeasurementsGrid" IsSynchronizedWithCurrentItem="True"
                           ItemsSource="{Binding Measurements}">
                     <DataGrid.GroupStyle>
                         <StaticResource ResourceKey="MeasurementDataGridGroupStyle" />

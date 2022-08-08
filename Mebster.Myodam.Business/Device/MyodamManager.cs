@@ -11,6 +11,7 @@ public interface IMyodamManager
     event EventHandler? MeasurementStatusChanged;
     event EventHandler? DevicePropertyChanged;
     MyodamDevice? MyodamDevice { get; }
+    DeviceCalibration Calibration { get; set; }
     StimulationParameters CurrentStimulationParameters { get; set; }
     MyodamAvailabilityStatus MyodamAvailability { get; }
     bool IsCurrentlyMeasuring { get; }
@@ -40,6 +41,8 @@ public class MyodamManager : IMyodamManager
             MyodamAvailabilityChanged?.Invoke(this, EventArgs.Empty);
         }
     }
+
+    public DeviceCalibration Calibration { get; set; }
 
     public bool IsCurrentlyMeasuring => (MyodamDevice?.IsCurrentlyMeasuring ?? false) || (MyodamDevice?.IsCalibrating ?? false);
 
