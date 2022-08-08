@@ -26,7 +26,7 @@ public class StimulationParameters :ICloneable
             10,
             50,
             StimulationPulseWidth.AvailableOptions[0],
-            TimeSpan.FromSeconds(5)) { Id = id };
+            TimeSpan.FromSeconds(10)) { Id = id };
     }
 
     public object Clone()

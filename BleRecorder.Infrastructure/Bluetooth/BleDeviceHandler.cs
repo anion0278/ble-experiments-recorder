@@ -94,7 +94,6 @@ public class BleDeviceHandler : IBleDeviceHandler
         var ts = _dateTimeService.Now;
         if (ts - LatestTimestamp < _hearbeatTimeout) return;
 
-        Debug.Print("Disconnect watchdog");
         Disconnect();
     }
 
@@ -103,7 +102,6 @@ public class BleDeviceHandler : IBleDeviceHandler
         switch (sender.ConnectionStatus) // we cannot rely on this prop, since its not updated when the device is disconnected "externally"
         {
             case BluetoothConnectionStatus.Disconnected:
-                Debug.Print("Disconnect switch");
                 Disconnect();
                 break;
             case BluetoothConnectionStatus.Connected:
@@ -115,11 +113,12 @@ public class BleDeviceHandler : IBleDeviceHandler
     private void Uart_ReceivedData(GattCharacteristic sender, GattValueChangedEventArgs args)
     {
         LatestTimestamp = _dateTimeService.Now;
-        Debug.Print(LatestTimestamp.ToString());
+        //Debug.Print(LatestTimestamp.ToString());
         var reader = DataReader.FromBuffer(args.CharacteristicValue);
         var input = new byte[reader.UnconsumedBufferLength];
         reader.ReadBytes(input);
         var receivedMsg = Encoding.UTF8.GetString(input);
+        //Debug.Print(receivedMsg);
 
         DataReceived?.Invoke(this, receivedMsg);
     }

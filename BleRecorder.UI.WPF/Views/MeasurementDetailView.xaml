@@ -149,7 +149,7 @@
                     <livecharts:CartesianChart Foreground="{StaticResource MainThemeColorAccent}"  
                                                DisableAnimations="True" MinHeight="230" Margin="10 10 10 0">
                         <livecharts:CartesianChart.AxisY>
-                            <livecharts:Axis MaxValue="120" MinValue="0" Title="Contraction Force [N]" />
+                            <livecharts:Axis MinValue="0" Title="Contraction Force [N]" />
                         </livecharts:CartesianChart.AxisY>
 
                         <livecharts:CartesianChart.AxisX>

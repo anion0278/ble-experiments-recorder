@@ -132,6 +132,8 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         protected override void UnsubscribeOnClosing()
         {
+            if (_bleRecorderManager.BleRecorderDevice != null) _bleRecorderManager.BleRecorderDevice!.NewValueReceived += OnNewValueReceived;
+
             MechanismParametersVm.PropertyChanged -= OnPropertyChangedEventHandler;
             StimulationParametersVm.PropertyChanged -= OnPropertyChangedEventHandler;
             PropertyChanged -= OnPropertyChangedEventHandler;
@@ -169,6 +171,7 @@ namespace BleRecorder.UI.WPF.ViewModels
                 StartMeasurementCommand.NotifyCanExecuteChanged();
                 StopMeasurementCommand.NotifyCanExecuteChanged();
                 CleanRecordedDataCommand.NotifyCanExecuteChanged();
+                SaveCommand.NotifyCanExecuteChanged();
                 DeleteCommand.NotifyCanExecuteChanged();
                 if (_bleRecorderManager.IsCurrentlyMeasuring) return;
 
@@ -253,6 +256,7 @@ namespace BleRecorder.UI.WPF.ViewModels
 
             MeasuredValues.Clear();
             Date = _dateTimeService.Now;
+            _bleRecorderManager.BleRecorderDevice!.NewValueReceived -= OnNewValueReceived;
             _bleRecorderManager.BleRecorderDevice!.NewValueReceived += OnNewValueReceived;
             await _bleRecorderManager.BleRecorderDevice.StartMeasurement(Model.ParametersDuringMeasurement!, Type);
         }

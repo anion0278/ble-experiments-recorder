@@ -74,7 +74,8 @@ public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewM
         _deviceCalibrationRepository = deviceCalibrationRepository;
         _bleRecorderManager = bleRecorderManager;
         _dialogService = dialogService;
-        _bleRecorderManager.BleRecorderAvailabilityChanged += BleRecorderAvailabilityChanged; // TODO unsub
+        _bleRecorderManager.BleRecorderAvailabilityChanged += BleRecorderStatusChanged; 
+        _bleRecorderManager.MeasurementStatusChanged += BleRecorderStatusChanged; 
 
         CalibrateNoLoadSensorValueCommand = asyncCommandFactory.Create(CalibrateNoLoadSensorValue, CanCalibrateExecute);
         CalibrateNominalLoadSensorValueCommand = asyncCommandFactory.Create(CalibrateNominalLoadSensorValue, CanCalibrateExecute);
@@ -85,7 +86,13 @@ public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewM
         Model = (await _deviceCalibrationRepository.GetByIdAsync(1))!;
     }
 
-    private void BleRecorderAvailabilityChanged(object? sender, System.EventArgs e)
+    //public void Unsubscribe() // TODO 
+    //{
+    //    _bleRecorderManager.BleRecorderAvailabilityChanged -= BleRecorderStatusChanged; 
+    //    _bleRecorderManager.MeasurementStatusChanged -= BleRecorderStatusChanged; 
+    //}
+
+    private void BleRecorderStatusChanged(object? sender, System.EventArgs e)
     {
         NotifyCalibrationCommandsCanExecuteChanged();
     }

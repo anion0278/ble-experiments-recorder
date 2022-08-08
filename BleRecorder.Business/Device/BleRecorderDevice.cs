@@ -18,7 +18,6 @@ public class BleRecorderDevice // TODO Extract inteface
     private Percentage _stimulatorBattery;
     private Percentage _controllerBattery;
     private StimulationParameters? _currentParameters;
-    private long? _firstTimeStamp; // TODO remove
 
     public event EventHandler<MeasuredValue>? NewValueReceived;
     public event EventHandler? ConnectionStatusChanged;
@@ -65,12 +64,7 @@ public class BleRecorderDevice // TODO Extract inteface
         private set
         {
             if (_isCurrentlyMeasuring == value) return;
-
             _isCurrentlyMeasuring = value;
-
-            if (!value) _firstTimeStamp = null;
-            else _firstTimeStamp ??= DateTimeOffset.Now.ToUnixTimeMilliseconds(); // temp, remove
-
             MeasurementStatusChanged?.Invoke(this, EventArgs.Empty);
         }
     }
@@ -95,11 +89,11 @@ public class BleRecorderDevice // TODO Extract inteface
     {
         if (!IsConnected) return;
 
-        Debug.Print("Sent");
-        await SendMsg(new(
-            StimulationParameters.GetDefaultValues(),
-            MeasurementType.Intermittent,
-            false));
+        //Debug.Print("Sent");
+        //await SendMsg(new(
+        //    CurrentParameters,
+        //    MeasurementType.MaximumContraction,
+        //    IsCurrentlyMeasuring));
     }
 
     private void BleDeviceStatusChanged(object? sender, EventArgs e)
@@ -119,14 +113,12 @@ public class BleRecorderDevice // TODO Extract inteface
         var reply = _messageParser.ParseReply(data);
         StimulatorBattery = reply.StimulatorBattery;
         ControllerBattery = reply.ControllerBattery;
-        if (reply.MeasurementStatus == BleRecorderMeasurement.Idle) IsCurrentlyMeasuring = false;
+        //Debug.Print(reply.MeasurementStatus.ToString());
+        IsCurrentlyMeasuring = reply.MeasurementStatus != BleRecorderMeasurement.Idle;
 
         if (!IsCurrentlyMeasuring) return;
 
-        NewValueReceived?.Invoke(
-            this,
-            new MeasuredValue(new Random().NextDouble() * 20, //reply.SensorValue
-                TimeSpan.FromMilliseconds(DateTimeOffset.Now.ToUnixTimeMilliseconds() - _firstTimeStamp.Value))); // TODO change when BLE part is ready: reply.Timestamp
+        NewValueReceived?.Invoke(this, new MeasuredValue(reply.SensorValue, reply.Timestamp)); 
     }
 
 
@@ -156,11 +148,14 @@ public class BleRecorderDevice // TODO Extract inteface
         if (IsCurrentlyMeasuring) throw new MeasurementIsAlreadyActiveException();
 
         CurrentParameters = parameters;
-        await SendMsg(new BleRecorderRequestMessage(
+        var msg = new BleRecorderRequestMessage(
             CurrentParameters,
             measurementType,
-            true));
-        IsCurrentlyMeasuring = true;
+            true);
+        await SendMsg(msg);
+        //await SendMsg(msg);
+        //await SendMsg(msg);
+        //IsCurrentlyMeasuring = true;
     }
 
     public async Task StopMeasurement()
@@ -170,7 +165,9 @@ public class BleRecorderDevice // TODO Extract inteface
             MeasurementType.MaximumContraction,
             false);
         await SendMsg(msg);
-        IsCurrentlyMeasuring = false;
+        //await SendMsg(msg);
+        //await SendMsg(msg);
+        //IsCurrentlyMeasuring = false;
     }
 
     public async Task Disconnect()
