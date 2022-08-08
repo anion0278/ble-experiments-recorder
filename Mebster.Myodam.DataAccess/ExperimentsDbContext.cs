@@ -4,7 +4,7 @@ using Mebster.Myodam.Models.TestSubject;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mebster.Myodam.DataAccess;
-public class ExperimentsDbContext : DbContext
+public sealed class ExperimentsDbContext : DbContext
 {
     public DbSet<TestSubject> TestSubjects { get; set; }
     public DbSet<Measurement> Measurements { get; set; }
