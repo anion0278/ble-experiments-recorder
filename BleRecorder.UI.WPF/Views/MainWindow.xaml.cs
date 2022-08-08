@@ -10,7 +10,7 @@ namespace BleRecorder.UI.WPF.Views
     
     public partial class MainWindow : MetroWindow
     {
-        private MainViewModel _viewModel;
+        private readonly MainViewModel _viewModel;
 
         public MainWindow(MainViewModel viewModel)
         {

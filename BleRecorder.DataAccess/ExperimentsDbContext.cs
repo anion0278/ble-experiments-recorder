@@ -11,6 +11,11 @@ public class ExperimentsDbContext : DbContext
     public DbSet<StimulationParameters> StimulationParameters { get; set; }
     public DbSet<DeviceCalibration> DeviceCalibrations { get; set; }
 
+    public ExperimentsDbContext()
+    {
+        Database.Migrate();
+    }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseSqlite("Data Source=BleRecorder.Experiments.db");
