@@ -14,10 +14,13 @@ public class MyodamDevice // TODO Extract inteface
     private readonly IBleDeviceHandler _bleDeviceHandler;
     private readonly IMyodamMessageParser _messageParser;
     private bool _isCurrentlyMeasuring;
-    private System.Timers.Timer _outboundDataTimer;
     private Percentage _stimulatorBattery;
     private Percentage _controllerBattery;
     private StimulationParameters? _currentParameters;
+    private bool _isCalibrating;
+
+    //private System.Timers.Timer _outboundDataTimer;
+    //private MyodamMeasurement _currentRequestedMeasurementStatus = MyodamMeasurement.Idle;
 
     public event EventHandler<MeasuredValue>? NewValueReceived;
     public event EventHandler? ConnectionStatusChanged;
@@ -56,7 +59,16 @@ public class MyodamDevice // TODO Extract inteface
 
     public bool IsConnected => _bleDeviceHandler.IsConnected;
 
-    public bool IsCalibrating { get; private set; }
+    public bool IsCalibrating // state machine would be better
+    {
+        get => _isCalibrating;
+        private set
+        {
+            if (_isCalibrating == value) return;
+            _isCalibrating = value;
+            MeasurementStatusChanged?.Invoke(this, EventArgs.Empty);
+        }
+    }
 
     public bool IsCurrentlyMeasuring
     {
@@ -77,28 +89,39 @@ public class MyodamDevice // TODO Extract inteface
         _bleDeviceHandler.DataReceived += BleDeviceHandlerDataReceived;
         _bleDeviceHandler.DeviceStatusChanged += BleDeviceStatusChanged;
 
-        _outboundDataTimer = new System.Timers.Timer(DataRequestInterval.TotalMilliseconds);
-        _outboundDataTimer.Elapsed += OnTimerTimeElapsed;
-        _outboundDataTimer.Start();
+        //_outboundDataTimer = new System.Timers.Timer(DataRequestInterval.TotalMilliseconds);
+        //_outboundDataTimer.Elapsed += OnTimerTimeElapsed;
+        //_outboundDataTimer.Start();
 
         StimulatorBattery = new Percentage(0);
         ControllerBattery = new Percentage(0);
     }
 
-    private async void OnTimerTimeElapsed(object? sender, ElapsedEventArgs e)
-    {
-        if (!IsConnected) return;
+    //private async void OnTimerTimeElapsed(object? sender, ElapsedEventArgs e)
+    //{
+    //    if (!IsConnected) return;
 
-        //Debug.Print("Sent");
-        //await SendMsg(new(
-        //    CurrentParameters,
-        //    MeasurementType.MaximumContraction,
-        //    IsCurrentlyMeasuring));
-    }
+    //    //Debug.Print("Sent");
+    //    var (x,y) = _currentRequestedMeasurementStatus switch
+    //    {
+    //        MyodamMeasurement.Idle => (MeasurementType.Fatigue, false),
+    //        MyodamMeasurement.MaximumContraction => (MeasurementType.MaximumContraction, true),
+    //        MyodamMeasurement.Fatigue => (MeasurementType.Fatigue, true),
+    //        _ => throw new ArgumentOutOfRangeException()
+    //    };
+    
+    //    var msg = new MyodamRequestMessage(CurrentParameters, x, y);
+    //    await SendMsg(msg);
+    //}
 
     private void BleDeviceStatusChanged(object? sender, EventArgs e)
     {
-        if (!_bleDeviceHandler.IsConnected) IsCurrentlyMeasuring = false;
+        if (!_bleDeviceHandler.IsConnected)
+        {
+            IsCurrentlyMeasuring = false;
+            IsCalibrating = false;
+            // no need to set _currentRequestedMeasurementStatus
+        }
         ConnectionStatusChanged?.Invoke(this, EventArgs.Empty);
     }
 
@@ -116,7 +139,7 @@ public class MyodamDevice // TODO Extract inteface
         //Debug.Print(reply.MeasurementStatus.ToString());
         IsCurrentlyMeasuring = reply.MeasurementStatus != MyodamMeasurement.Idle;
 
-        if (!IsCurrentlyMeasuring) return;
+        if (!IsCurrentlyMeasuring && !IsCalibrating) return;
 
         NewValueReceived?.Invoke(this, new MeasuredValue(reply.SensorValue, reply.Timestamp)); 
     }
@@ -127,17 +150,13 @@ public class MyodamDevice // TODO Extract inteface
         var calibrator = new Calibrator();
 
         IsCalibrating = true;
-        IsCurrentlyMeasuring = true;
         try
         {
             var value = await calibrator.GetCalibrationValue(this);
-            IsCurrentlyMeasuring = false;
-            IsCalibrating = false;
             return value;
         }
         finally
         {
-            IsCurrentlyMeasuring = false;
             IsCalibrating = false;
         }
     }
@@ -152,10 +171,8 @@ public class MyodamDevice // TODO Extract inteface
             CurrentParameters,
             measurementType,
             true);
+        //_currentRequestedMeasurementStatus = msg.Measurement;
         await SendMsg(msg);
-        //await SendMsg(msg);
-        //await SendMsg(msg);
-        //IsCurrentlyMeasuring = true;
     }
 
     public async Task StopMeasurement()
@@ -164,10 +181,8 @@ public class MyodamDevice // TODO Extract inteface
             CurrentParameters,
             MeasurementType.MaximumContraction,
             false);
+        //_currentRequestedMeasurementStatus = msg.Measurement;
         await SendMsg(msg);
-        //await SendMsg(msg);
-        //await SendMsg(msg);
-        //IsCurrentlyMeasuring = false;
     }
 
     public async Task Disconnect()

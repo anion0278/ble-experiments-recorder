@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
 using Mebster.Myodam.Business.Exception;
 using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.Models.TestSubject;
@@ -28,27 +29,29 @@ public class Calibrator
     /// <exception cref="TimeoutException">Canceled async waiting, due to timeout.</exception>
     public async Task<double> GetCalibrationValue(MyodamDevice device)
     {
-        if (!device.IsCurrentlyMeasuring || !device.IsConnected) throw new DeviceCalibrationException();
+        if (!device.IsCalibrating || !device.IsConnected) throw new DeviceCalibrationException();
 
         _device = device;
         _requiredDatasetCollected = new AsyncAutoResetEvent(false);
         _dataset.CollectionChanged += DatasetCollectionChanged;
         _device.NewValueReceived += CalibrationNewValueReceived;
 
-        const double increasedInterval = 2.5;
-        var timeout = TimeSpan.FromMilliseconds(_device.DataRequestInterval.TotalMilliseconds * (_datasetLengthForAverage * increasedInterval));
-        _cts.CancelAfter(timeout);
+        const double timeoutIntervalMultiplier = 3.5;
+        var timeout = TimeSpan.FromMilliseconds(_device.DataRequestInterval.TotalMilliseconds * (_datasetLengthForAverage * timeoutIntervalMultiplier));
         try
         {
+            _cts.CancelAfter(timeout);
             await _requiredDatasetCollected.WaitAsync(_cts.Token);
         }
         catch (TaskCanceledException exception)
         {
             throw new TimeoutException($"Could not collect data in allotted time: {timeout.TotalSeconds}s,", exception);
         }
-
-        _device.NewValueReceived -= CalibrationNewValueReceived;
-        _dataset.CollectionChanged -= DatasetCollectionChanged;
+        finally
+        {
+            _device.NewValueReceived -= CalibrationNewValueReceived;
+            _dataset.CollectionChanged -= DatasetCollectionChanged;
+        }
 
         return _dataset.Average(v => v.Value);
     }

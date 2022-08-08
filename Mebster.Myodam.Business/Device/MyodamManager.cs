@@ -41,7 +41,7 @@ public class MyodamManager : IMyodamManager
         }
     }
 
-    public bool IsCurrentlyMeasuring => MyodamDevice?.IsCurrentlyMeasuring ?? false;
+    public bool IsCurrentlyMeasuring => (MyodamDevice?.IsCurrentlyMeasuring ?? false) || (MyodamDevice?.IsCalibrating ?? false);
 
     public MyodamManager(IBluetoothManager bluetoothManager, IMyodamMessageParser messageParser)
     {
