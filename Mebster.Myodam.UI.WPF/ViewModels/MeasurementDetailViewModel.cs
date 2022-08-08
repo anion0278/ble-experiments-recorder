@@ -132,6 +132,8 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         protected override void UnsubscribeOnClosing()
         {
+            if (_myodamManager.MyodamDevice != null) _myodamManager.MyodamDevice!.NewValueReceived += OnNewValueReceived;
+
             MechanismParametersVm.PropertyChanged -= OnPropertyChangedEventHandler;
             StimulationParametersVm.PropertyChanged -= OnPropertyChangedEventHandler;
             PropertyChanged -= OnPropertyChangedEventHandler;
@@ -169,6 +171,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
                 StartMeasurementCommand.NotifyCanExecuteChanged();
                 StopMeasurementCommand.NotifyCanExecuteChanged();
                 CleanRecordedDataCommand.NotifyCanExecuteChanged();
+                SaveCommand.NotifyCanExecuteChanged();
                 DeleteCommand.NotifyCanExecuteChanged();
                 if (_myodamManager.IsCurrentlyMeasuring) return;
 
@@ -253,6 +256,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
             MeasuredValues.Clear();
             Date = _dateTimeService.Now;
+            _myodamManager.MyodamDevice!.NewValueReceived -= OnNewValueReceived;
             _myodamManager.MyodamDevice!.NewValueReceived += OnNewValueReceived;
             await _myodamManager.MyodamDevice.StartMeasurement(Model.ParametersDuringMeasurement!, Type);
         }

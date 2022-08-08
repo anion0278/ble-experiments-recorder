@@ -34,7 +34,7 @@
                         </Grid.RowDefinitions>
                         <WrapPanel x:Name="HeaderPanel" HorizontalAlignment="Stretch" VerticalAlignment="Top" IsItemsHost="true"
                                    Grid.Row="0" KeyboardNavigation.TabIndex="1" />
-                        <ContentPresenter Grid.Row="1" x:Name="PART_SelectedContentHost" ContentSource="SelectedContent" Margin="10" />
+                        <ContentPresenter Grid.Row="1" x:Name="PART_SelectedContentHost" ContentSource="SelectedContent" />
                     </Grid>
                 </ControlTemplate>
             </TabControl.Template>
@@ -92,7 +92,6 @@
                     <Style.Triggers>
                         <Trigger Property="IsSelected" Value="True">
                             <Setter Property="FontWeight" Value="UltraBold" />
-
                             <Setter Property="Background" Value="DodgerBlue"/>
                         </Trigger>
                     </Style.Triggers>

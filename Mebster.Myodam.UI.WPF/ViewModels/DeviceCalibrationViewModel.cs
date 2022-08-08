@@ -74,7 +74,8 @@ public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewM
         _deviceCalibrationRepository = deviceCalibrationRepository;
         _myodamManager = myodamManager;
         _dialogService = dialogService;
-        _myodamManager.MyodamAvailabilityChanged += MyodamAvailabilityChanged; // TODO unsub
+        _myodamManager.MyodamAvailabilityChanged += MyodamStatusChanged; 
+        _myodamManager.MeasurementStatusChanged += MyodamStatusChanged; 
 
         CalibrateNoLoadSensorValueCommand = asyncCommandFactory.Create(CalibrateNoLoadSensorValue, CanCalibrateExecute);
         CalibrateNominalLoadSensorValueCommand = asyncCommandFactory.Create(CalibrateNominalLoadSensorValue, CanCalibrateExecute);
@@ -85,7 +86,13 @@ public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewM
         Model = (await _deviceCalibrationRepository.GetByIdAsync(1))!;
     }
 
-    private void MyodamAvailabilityChanged(object? sender, System.EventArgs e)
+    //public void Unsubscribe() // TODO 
+    //{
+    //    _myodamManager.MyodamAvailabilityChanged -= MyodamStatusChanged; 
+    //    _myodamManager.MeasurementStatusChanged -= MyodamStatusChanged; 
+    //}
+
+    private void MyodamStatusChanged(object? sender, System.EventArgs e)
     {
         NotifyCalibrationCommandsCanExecuteChanged();
     }
