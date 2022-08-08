@@ -41,7 +41,7 @@ public class BleRecorderManager : IBleRecorderManager
         }
     }
 
-    public bool IsCurrentlyMeasuring => BleRecorderDevice?.IsCurrentlyMeasuring ?? false;
+    public bool IsCurrentlyMeasuring => (BleRecorderDevice?.IsCurrentlyMeasuring ?? false) || (BleRecorderDevice?.IsCalibrating ?? false);
 
     public BleRecorderManager(IBluetoothManager bluetoothManager, IBleRecorderMessageParser messageParser)
     {

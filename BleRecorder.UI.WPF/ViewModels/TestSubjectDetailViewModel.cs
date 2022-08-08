@@ -148,9 +148,6 @@ namespace BleRecorder.UI.WPF.ViewModels
         {
             if (message.ViewModelName != nameof(MeasurementDetailViewModel)) return;
 
-            var relatedMeas = await _measurementRepository.GetByIdAsync(message.Id);
-            if (relatedMeas.TestSubjectId != Id) return;
-
             Model = await _testSubjectRepository.ReloadAsync(Model);
 
             _measurements.Clear();
