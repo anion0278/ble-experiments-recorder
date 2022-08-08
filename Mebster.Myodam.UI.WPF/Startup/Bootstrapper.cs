@@ -23,6 +23,7 @@ namespace Mebster.Myodam.UI.WPF.Startup
 
             builder.RegisterInstance<IMessenger>(WeakReferenceMessenger.Default);
             builder.RegisterInstance<IMapper>(SetupMapper());
+            builder.RegisterInstance<IMapper>(SetupMapper());
 
             builder.RegisterType<MainWindow>().AsSelf();
             builder.RegisterType<MainViewModel>().AsSelf();
@@ -33,6 +34,7 @@ namespace Mebster.Myodam.UI.WPF.Startup
 
             builder.RegisterType<MessageDialogService>().As<IMessageDialogService>().SingleInstance();
             builder.RegisterType<AppCenterIntegration>().As<IAppCenterIntegration>().SingleInstance();
+            builder.RegisterType<Logger>().As<ILogger>().SingleInstance();
             builder.RegisterType<GlobalExceptionHandler>().As<IGlobalExceptionHandler>().SingleInstance();
             builder.RegisterType<AsyncRelayCommandFactory>().As<IAsyncRelayCommandFactory>().SingleInstance();
             builder.RegisterType<DateTimeService>().As<IDateTimeService>().SingleInstance();
