@@ -40,6 +40,7 @@ namespace Mebster.Myodam.UI.WPF
 
         private void Application_OnExit(object sender, ExitEventArgs e)
         {
+            DispatcherUnhandledException -= OnDispatcherUnhandledException;
             // TODO disconnect from devices
         }
 

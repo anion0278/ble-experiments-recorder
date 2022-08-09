@@ -15,6 +15,7 @@ public class Logger : ILogger
     public Logger()
     {
         _logger = new LoggerConfiguration()
+            .Enrich.WithDemystifiedStackTraces()
             .MinimumLevel.Debug()
             .WriteTo.File(
                 @"logs\log.txt", 
