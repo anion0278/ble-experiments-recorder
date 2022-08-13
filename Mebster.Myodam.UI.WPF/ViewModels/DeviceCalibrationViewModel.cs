@@ -15,7 +15,7 @@ public interface IDeviceCalibrationViewModel
     bool IsCalibrationRunning { get; }
     IAsyncRelayCommand CalibrateNoLoadSensorValueCommand { get; }
     IAsyncRelayCommand CalibrateNominalLoadSensorValueCommand { get; }
-
+    AppConfiguration AppConfiguration { get; }
     Task LoadAsync();
 }
 
@@ -26,6 +26,8 @@ public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewM
     private readonly IMessageDialogService _dialogService;
 
     public DeviceCalibration Model { get; private set; } = new(); // must be public prop
+
+    public AppConfiguration AppConfiguration { get; }
 
     [Required]
     public string NoLoadSensorValue
@@ -69,13 +71,16 @@ public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewM
         IDeviceCalibrationRepository deviceCalibrationRepository,
         IMyodamManager myodamManager,
         IAsyncRelayCommandFactory asyncCommandFactory,
-        IMessageDialogService dialogService)
+        IMessageDialogService dialogService,
+        IAppConfigurationLoader configurationLoader)
     {
         _deviceCalibrationRepository = deviceCalibrationRepository;
         _myodamManager = myodamManager;
         _dialogService = dialogService;
         _myodamManager.MyodamAvailabilityChanged += MyodamStatusChanged; 
-        _myodamManager.MeasurementStatusChanged += MyodamStatusChanged; 
+        _myodamManager.MeasurementStatusChanged += MyodamStatusChanged;
+
+        AppConfiguration = configurationLoader.GetConfiguration();
 
         CalibrateNoLoadSensorValueCommand = asyncCommandFactory.Create(CalibrateNoLoadSensorValue, CanCalibrateExecute);
         CalibrateNominalLoadSensorValueCommand = asyncCommandFactory.Create(CalibrateNominalLoadSensorValue, CanCalibrateExecute);

@@ -23,10 +23,17 @@ public class GlobalExceptionHandler : IGlobalExceptionHandler
         _logger = logger;
     }
 
-    public void HandleException(System.Exception exception) 
+    public void HandleException(System.Exception exception)
     {
-        _dialogService.ShowInfoDialog("Unexpected error occurred." + Environment.NewLine + exception.Message); // add title  "Unexpected error"
-        _logger.Error(exception);
-        _appCenter.TrackException(exception);
+        try
+        {
+            _dialogService.ShowInfoDialog("Unexpected error occurred." + Environment.NewLine +
+                                          exception.Message);
+        }
+        finally
+        {
+            _logger.Error(exception);
+            _appCenter.TrackException(exception);
+        }
     }
 }

@@ -3,6 +3,7 @@ using AutoMapper;
 using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.Common.Services;
 using Mebster.Myodam.DataAccess;
+using Mebster.Myodam.DataAccess.FileStorage;
 using Mebster.Myodam.Infrastructure.Bluetooth;
 using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.UI.WPF.Data.Repositories;
@@ -38,6 +39,7 @@ namespace Mebster.Myodam.UI.WPF.Startup
             builder.RegisterType<GlobalExceptionHandler>().As<IGlobalExceptionHandler>().SingleInstance();
             builder.RegisterType<AsyncRelayCommandFactory>().As<IAsyncRelayCommandFactory>().SingleInstance();
             builder.RegisterType<DateTimeService>().As<IDateTimeService>().SingleInstance();
+            builder.RegisterType<AppConfigurationLoader>().As<IAppConfigurationLoader>();
 
             builder.RegisterType<BluetoothManager>().As<IBluetoothManager>().SingleInstance();
             builder.RegisterType<MyodamMessageParser>().As<IMyodamMessageParser>().SingleInstance();
@@ -47,6 +49,8 @@ namespace Mebster.Myodam.UI.WPF.Startup
             builder.RegisterType<TestSubjectRepository>().As<ITestSubjectRepository>();
             builder.RegisterType<MeasurementRepository>().As<IMeasurementRepository>();
             builder.RegisterType<DeviceCalibrationRepository>().As<IDeviceCalibrationRepository>();
+            builder.RegisterType<FileManager>().As<IFileManager>();
+            builder.RegisterType<JsonManager>().As<IJsonManager>();
 
             return builder.Build();
         }
