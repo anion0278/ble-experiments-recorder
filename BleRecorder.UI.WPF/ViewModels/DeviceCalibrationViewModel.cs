@@ -15,7 +15,7 @@ public interface IDeviceCalibrationViewModel
     bool IsCalibrationRunning { get; }
     IAsyncRelayCommand CalibrateNoLoadSensorValueCommand { get; }
     IAsyncRelayCommand CalibrateNominalLoadSensorValueCommand { get; }
-
+    AppConfiguration AppConfiguration { get; }
     Task LoadAsync();
 }
 
@@ -26,6 +26,8 @@ public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewM
     private readonly IMessageDialogService _dialogService;
 
     public DeviceCalibration Model { get; private set; } = new(); // must be public prop
+
+    public AppConfiguration AppConfiguration { get; }
 
     [Required]
     public string NoLoadSensorValue
@@ -69,13 +71,16 @@ public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewM
         IDeviceCalibrationRepository deviceCalibrationRepository,
         IBleRecorderManager bleRecorderManager,
         IAsyncRelayCommandFactory asyncCommandFactory,
-        IMessageDialogService dialogService)
+        IMessageDialogService dialogService,
+        IAppConfigurationLoader configurationLoader)
     {
         _deviceCalibrationRepository = deviceCalibrationRepository;
         _bleRecorderManager = bleRecorderManager;
         _dialogService = dialogService;
         _bleRecorderManager.BleRecorderAvailabilityChanged += BleRecorderStatusChanged; 
-        _bleRecorderManager.MeasurementStatusChanged += BleRecorderStatusChanged; 
+        _bleRecorderManager.MeasurementStatusChanged += BleRecorderStatusChanged;
+
+        AppConfiguration = configurationLoader.GetConfiguration();
 
         CalibrateNoLoadSensorValueCommand = asyncCommandFactory.Create(CalibrateNoLoadSensorValue, CanCalibrateExecute);
         CalibrateNominalLoadSensorValueCommand = asyncCommandFactory.Create(CalibrateNominalLoadSensorValue, CanCalibrateExecute);

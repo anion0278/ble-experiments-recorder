@@ -3,6 +3,7 @@ using AutoMapper;
 using BleRecorder.Business.Device;
 using BleRecorder.Common.Services;
 using BleRecorder.DataAccess;
+using BleRecorder.DataAccess.FileStorage;
 using BleRecorder.Infrastructure.Bluetooth;
 using BleRecorder.Models.Device;
 using BleRecorder.UI.WPF.Data.Repositories;
@@ -38,6 +39,7 @@ namespace BleRecorder.UI.WPF.Startup
             builder.RegisterType<GlobalExceptionHandler>().As<IGlobalExceptionHandler>().SingleInstance();
             builder.RegisterType<AsyncRelayCommandFactory>().As<IAsyncRelayCommandFactory>().SingleInstance();
             builder.RegisterType<DateTimeService>().As<IDateTimeService>().SingleInstance();
+            builder.RegisterType<AppConfigurationLoader>().As<IAppConfigurationLoader>();
 
             builder.RegisterType<BluetoothManager>().As<IBluetoothManager>().SingleInstance();
             builder.RegisterType<BleRecorderMessageParser>().As<IBleRecorderMessageParser>().SingleInstance();
@@ -47,6 +49,8 @@ namespace BleRecorder.UI.WPF.Startup
             builder.RegisterType<TestSubjectRepository>().As<ITestSubjectRepository>();
             builder.RegisterType<MeasurementRepository>().As<IMeasurementRepository>();
             builder.RegisterType<DeviceCalibrationRepository>().As<IDeviceCalibrationRepository>();
+            builder.RegisterType<FileManager>().As<IFileManager>();
+            builder.RegisterType<JsonManager>().As<IJsonManager>();
 
             return builder.Build();
         }

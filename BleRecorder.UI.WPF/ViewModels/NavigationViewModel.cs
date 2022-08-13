@@ -65,6 +65,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             IMessenger messenger, 
             IMessageDialogService dialogService,
             IBleRecorderManager bleRecorderManager,
+            IAppConfigurationLoader configurationLoader,
             IDeviceCalibrationViewModel deviceCalibrationViewModel,
             IAsyncRelayCommandFactory asyncCommandFactory)
         {
