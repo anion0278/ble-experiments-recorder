@@ -27,6 +27,8 @@ public class BleRecorderDevice // TODO Extract inteface
     public event EventHandler? MeasurementStatusChanged;
     public event EventHandler? BatteryStatusChanged;
 
+    public DeviceCalibration Calibration { get; set; }
+
     public TimeSpan DataRequestInterval { get; } = TimeSpan.FromMilliseconds(100);
 
     public StimulationParameters CurrentParameters
@@ -81,8 +83,10 @@ public class BleRecorderDevice // TODO Extract inteface
         }
     }
 
-    public BleRecorderDevice(BleRecorderManager bleRecorderManager, IBleDeviceHandler bleDeviceHandler, IBleRecorderMessageParser messageParser)
+    public BleRecorderDevice(BleRecorderManager bleRecorderManager, IBleDeviceHandler bleDeviceHandler,
+        IBleRecorderMessageParser messageParser, DeviceCalibration deviceCalibration)
     {
+        Calibration = deviceCalibration;
         _bleRecorderManager = bleRecorderManager;
         _bleDeviceHandler = bleDeviceHandler;
         _messageParser = messageParser;
@@ -164,6 +168,8 @@ public class BleRecorderDevice // TODO Extract inteface
     // We always send up-to-date parameters in order to make sure that stimulation is correct even if the device has restarted in meantime
     public async Task StartMeasurementAsync(StimulationParameters parameters, MeasurementType measurementType)
     {
+        if (!Calibration.IsValid()) throw new DeviceMissingCalibrationException();
+
         if (IsCurrentlyMeasuring) throw new MeasurementIsAlreadyActiveException();
 
         CurrentParameters = parameters;

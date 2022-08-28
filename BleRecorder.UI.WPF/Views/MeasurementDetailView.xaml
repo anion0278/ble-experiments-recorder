@@ -125,7 +125,7 @@
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding MeasuredValues, Converter={StaticResource measuredDataLengthToBooleanConverter}}"
                                          Value="false">
-                                <Setter Property="Header" Value="Settings for this measurement (can be changed only if the measurement data is empty)"/>
+                                <Setter Property="Header" Value="Settings for this measurement (can be changed only if the measurement data are empty)"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>

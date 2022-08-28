@@ -101,7 +101,7 @@
                         <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
                         <Style.Triggers>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="ToolTip" Value="Measurement parameters can be changed only if the measurement data is empty."></Setter>
+                                <Setter Property="ToolTip" Value="Measurement parameters can be changed only if the measurement data are empty."/>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
@@ -110,7 +110,7 @@
                         <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
                         <Style.Triggers>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="ToolTip" Value="Measurement parameters can be changed only if the measurement data is empty."></Setter>
+                                <Setter Property="ToolTip" Value="Measurement parameters can be changed only if the measurement data are empty."/>
                             </Trigger>
                         </Style.Triggers>
                     </Style>

@@ -11,7 +11,7 @@ namespace BleRecorder.Infrastructure.Bluetooth
 {
     public interface IBluetoothManager
     {
-        ConcurrentObservableCollection<BleDeviceHandler> AvailableBleDevices { get; }
+        ConcurrentObservableCollection<BluetoothDeviceHandler> AvailableBleDevices { get; }
         void StartScanning();
         void AddDeviceNameFilter(string deviceName);
     }
@@ -21,7 +21,7 @@ namespace BleRecorder.Infrastructure.Bluetooth
         private readonly IDateTimeService _dateTimeService;
         readonly BluetoothLEAdvertisementWatcher _bleWatcher;
         private readonly System.Timers.Timer _advertisementWatchdog;
-        public ConcurrentObservableCollection<BleDeviceHandler> AvailableBleDevices { get; } = new();
+        public ConcurrentObservableCollection<BluetoothDeviceHandler> AvailableBleDevices { get; } = new();
 
         private TimeSpan _advertisementWatchdogInterval = TimeSpan.FromSeconds(1);
         private TimeSpan _advertisementWatchdogTimeout = TimeSpan.FromSeconds(3);
@@ -80,7 +80,7 @@ namespace BleRecorder.Infrastructure.Bluetooth
             var existing = AvailableBleDevices.SingleOrDefault(d => d.Address == args.BluetoothAddress);
             if (existing == null)
             {
-                AvailableBleDevices.Add(new BleDeviceHandler(
+                AvailableBleDevices.Add(new BluetoothDeviceHandler(
                     _dateTimeService,
                     args.Advertisement.LocalName,
                     args.BluetoothAddress,

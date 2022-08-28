@@ -11,3 +11,9 @@ public class DeviceCalibrationException : System.Exception
     public DeviceCalibrationException() : base("Could not calibrate. Device should be in measuring mode and connected.")
     { }
 }
+
+public class DeviceMissingCalibrationException : System.Exception
+{
+    public DeviceMissingCalibrationException() : base("Device calibration data are missing. Cannot start measurement.")
+    { }
+}

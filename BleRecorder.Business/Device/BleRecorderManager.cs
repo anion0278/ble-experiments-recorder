@@ -65,7 +65,7 @@ public class BleRecorderManager : IBleRecorderManager
             : BleRecorderAvailabilityStatus.DisconnectedUnavailable;
     }
 
-    private static bool IsBleRecorderDevice(BleDeviceHandler deviceHandler)
+    private static bool IsBleRecorderDevice(BluetoothDeviceHandler deviceHandler)
     {
         return deviceHandler.Name.Equals(_bleRecorderName);
     }
@@ -77,7 +77,7 @@ public class BleRecorderManager : IBleRecorderManager
         var bleRecorderDevices = _bluetoothManager.AvailableBleDevices.Where(IsBleRecorderDevice).ToArray();
 
         // TODO Handle multiple devices in a single room
-        if (bleRecorderDevices.Length > 1) throw new System.Exception("There is more than one bleRecorder device!");
+        if (bleRecorderDevices.Length > 1) throw new System.Exception("There is more than one bleRecorder device with provided address!");
 
         IBleDeviceHandler bleDevice;
         try
@@ -89,7 +89,7 @@ public class BleRecorderManager : IBleRecorderManager
             throw new DeviceConnectionException(ex);
         }
 
-        BleRecorderDevice = new BleRecorderDevice(this, bleDevice, _messageParser);
+        BleRecorderDevice = new BleRecorderDevice(this, bleDevice, _messageParser, Calibration);
         BleRecorderAvailability = BleRecorderAvailabilityStatus.Connected;
         BleRecorderDevice.ConnectionStatusChanged += OnConnectionStatusChanged;
         BleRecorderDevice.MeasurementStatusChanged += OnMeasurementStatusChanged;

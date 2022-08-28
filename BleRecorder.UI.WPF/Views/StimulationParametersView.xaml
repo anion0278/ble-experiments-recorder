@@ -25,7 +25,7 @@
                Content="Individual stimulation parameters" FontSize="14" FontWeight="Bold" 
                HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-        <Label Grid.Row="1" Grid.Column="0" Content="Current [mA]:"  VerticalAlignment="Center"/>
+        <Label Grid.Row="1" Grid.Column="0" Content="Max. current limit [mA]:"  VerticalAlignment="Center"/>
         <mah:NumericUpDown Grid.Row="1" Grid.Column="1" Style="{StaticResource MeasurementParamNumericBox}"
                            Interval="10" Minimum="1" Maximum="100"
                            Value="{Binding CurrentMilliAmps}" />

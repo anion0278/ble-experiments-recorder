@@ -178,7 +178,8 @@ namespace BleRecorder.UI.WPF.ViewModels
                 StopMeasurementCommand.NotifyCanExecuteChanged();
                 if (_bleRecorderManager.BleRecorderDevice is not null && _bleRecorderManager.BleRecorderDevice.IsConnected) return;
 
-                DialogService.ShowInfoDialogAsync("Measurement interrupted due to device disconnection!");
+                MeasuredValues.Clear();
+                DialogService.ShowInfoDialogAsync("Measurement interrupted due to device disconnection! Measured data were erased.");
             }, null);
         }
 
@@ -241,6 +242,12 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         public async Task StartMeasurementAsync()
         {
+            if (!_bleRecorderManager.Calibration.IsValid())
+            {
+                await DialogService.ShowInfoDialogAsync("Device calibration is invalid. Measurement is disabled.");
+                return;
+            }
+
             var result = await DialogService.ShowOkCancelDialogAsync(
                 "Are you sure you want to start measurement with current parameters listed in this page (they may differ from user-specific parameter settings)?",
                 "Start measurement?");
@@ -275,6 +282,9 @@ namespace BleRecorder.UI.WPF.ViewModels
             if (_bleRecorderManager.BleRecorderDevice != null)
             {
                 await _bleRecorderManager.BleRecorderDevice.StopMeasurementAsync();
+                _bleRecorderManager.BleRecorderDevice!.NewValueReceived -= OnNewValueReceived;
+                MeasuredValues.Clear();
+                await DialogService.ShowInfoDialogAsync("Measured values were erased because measurement was interrupted.");
             }
         }
 
