@@ -15,8 +15,7 @@ public class AppConfiguration
 public interface IAppConfigurationLoader
 {
     AppConfiguration Reload();
-    AppConfiguration GetConfiguration
-        ();
+    AppConfiguration GetConfiguration();
 }
 
 public class AppConfigurationLoader : IAppConfigurationLoader

@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Input;
 using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.ViewModels.Services;
-using Microsoft.Toolkit.Mvvm.Input;
 
 namespace Mebster.Myodam.UI.WPF.ViewModels;
 
@@ -82,8 +82,8 @@ public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewM
 
         AppConfiguration = configurationLoader.GetConfiguration();
 
-        CalibrateNoLoadSensorValueCommand = asyncCommandFactory.Create(CalibrateNoLoadSensorValue, CanCalibrateExecute);
-        CalibrateNominalLoadSensorValueCommand = asyncCommandFactory.Create(CalibrateNominalLoadSensorValue, CanCalibrateExecute);
+        CalibrateNoLoadSensorValueCommand = asyncCommandFactory.Create(CalibrateNoLoadSensorValueAsync, CanCalibrateExecute);
+        CalibrateNominalLoadSensorValueCommand = asyncCommandFactory.Create(CalibrateNominalLoadSensorValueAsync, CanCalibrateExecute);
     }
 
     public async Task LoadAsync()
@@ -103,25 +103,25 @@ public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewM
         NotifyCalibrationCommandsCanExecuteChanged();
     }
 
-    private async Task CalibrateNoLoadSensorValue()
+    private async Task CalibrateNoLoadSensorValueAsync()
     {
         var result = await _dialogService.ShowOkCancelDialogAsync(
             "Are you sure you want to perform calibration with nominal load? This will erase the current value.",
             "Start calibration with nominal load?");
         if (result != MessageDialogResult.OK) return;
 
-        NoLoadSensorValue = (await _myodamManager.MyodamDevice!.GetSensorCalibrationValue()).ToString();
+        NoLoadSensorValue = (await _myodamManager.MyodamDevice!.GetSensorCalibrationValueAsync()).ToString();
         NotifyCalibrationCommandsCanExecuteChanged();
     }
 
-    private async Task CalibrateNominalLoadSensorValue()
+    private async Task CalibrateNominalLoadSensorValueAsync()
     {
         var result = await _dialogService.ShowOkCancelDialogAsync(
             "Are you sure you want to perform calibration without load? This will erase the current value.",
             "Start calibration without load?");
         if (result != MessageDialogResult.OK) { return; }
 
-        NominalLoadSensorValue = (await _myodamManager.MyodamDevice!.GetSensorCalibrationValue()).ToString();
+        NominalLoadSensorValue = (await _myodamManager.MyodamDevice!.GetSensorCalibrationValueAsync()).ToString();
         NotifyCalibrationCommandsCanExecuteChanged();
     }
 

@@ -15,7 +15,7 @@ public interface IMyodamManager
     StimulationParameters CurrentStimulationParameters { get; set; }
     MyodamAvailabilityStatus MyodamAvailability { get; }
     bool IsCurrentlyMeasuring { get; }
-    Task ConnectMyodam();
+    Task ConnectMyodamAsync();
 }
 
 public class MyodamManager : IMyodamManager
@@ -70,7 +70,7 @@ public class MyodamManager : IMyodamManager
         return deviceHandler.Name.Equals(_myodamName);
     }
 
-    public async Task ConnectMyodam()
+    public async Task ConnectMyodamAsync()
     {
         if (MyodamDevice != null) OnDeviceDisconnection();
 
@@ -82,7 +82,7 @@ public class MyodamManager : IMyodamManager
         IBleDeviceHandler bleDevice;
         try
         {
-            bleDevice = await myodamDevices.Single().ConnectDevice();
+            bleDevice = await myodamDevices.Single().ConnectDeviceAsync();
         }
         catch (System.Exception ex)
         {

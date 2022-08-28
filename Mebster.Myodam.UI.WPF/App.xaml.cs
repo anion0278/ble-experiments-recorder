@@ -44,7 +44,7 @@ namespace Mebster.Myodam.UI.WPF
             // TODO disconnect from devices
         }
 
-        private async void OnDispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        private void OnDispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             var sourceSite = (e.Exception.TargetSite?.DeclaringType?.FullName ?? string.Empty);
             if (e.Exception.Source == "PresentationFramework" && sourceSite == "System.Windows.Automation.Peers.DataGridItemAutomationPeer")

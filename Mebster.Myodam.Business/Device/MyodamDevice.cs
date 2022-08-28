@@ -125,9 +125,9 @@ public class MyodamDevice // TODO Extract inteface
         ConnectionStatusChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    public async Task SendMsg(MyodamRequestMessage message)
+    public async Task SendMsgAsync(MyodamRequestMessage message)
     {
-        await _bleDeviceHandler.Send(message.FormatForSending());
+        await _bleDeviceHandler.SendAsync(message.FormatForSending());
     }
 
     private void BleDeviceHandlerDataReceived(object? sender, string data)
@@ -145,14 +145,14 @@ public class MyodamDevice // TODO Extract inteface
     }
 
 
-    public async Task<double> GetSensorCalibrationValue()
+    public async Task<double> GetSensorCalibrationValueAsync()
     {
         var calibrator = new Calibrator();
 
         IsCalibrating = true;
         try
         {
-            var value = await calibrator.GetCalibrationValue(this);
+            var value = await calibrator.GetCalibrationValueAsync(this);
             return value;
         }
         finally
@@ -162,7 +162,7 @@ public class MyodamDevice // TODO Extract inteface
     }
 
     // We always send up-to-date parameters in order to make sure that stimulation is correct even if the device has restarted in meantime
-    public async Task StartMeasurement(StimulationParameters parameters, MeasurementType measurementType)
+    public async Task StartMeasurementAsync(StimulationParameters parameters, MeasurementType measurementType)
     {
         if (IsCurrentlyMeasuring) throw new MeasurementIsAlreadyActiveException();
 
@@ -172,24 +172,24 @@ public class MyodamDevice // TODO Extract inteface
             measurementType,
             true);
         //_currentRequestedMeasurementStatus = msg.Measurement;
-        await SendMsg(msg);
+        await SendMsgAsync(msg);
     }
 
-    public async Task StopMeasurement()
+    public async Task StopMeasurementAsync()
     {
         var msg = new MyodamRequestMessage(
             CurrentParameters,
             MeasurementType.MaximumContraction,
             false);
         //_currentRequestedMeasurementStatus = msg.Measurement;
-        await SendMsg(msg);
+        await SendMsgAsync(msg);
     }
 
-    public async Task Disconnect()
+    public async Task DisconnectAsync()
     {
         try
         {
-            await StopMeasurement();
+            await StopMeasurementAsync();
         }
         catch (System.Exception ex)
         {

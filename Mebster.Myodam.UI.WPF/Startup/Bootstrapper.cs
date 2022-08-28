@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using AutoMapper;
+using CommunityToolkit.Mvvm.Messaging;
 using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.Common.Services;
 using Mebster.Myodam.DataAccess;
@@ -11,7 +12,6 @@ using Mebster.Myodam.UI.WPF.Exception;
 using Mebster.Myodam.UI.WPF.ViewModels;
 using Mebster.Myodam.UI.WPF.ViewModels.Services;
 using Mebster.Myodam.UI.WPF.Views;
-using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace Mebster.Myodam.UI.WPF.Startup
 {

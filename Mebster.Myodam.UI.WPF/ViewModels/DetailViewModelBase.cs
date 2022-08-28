@@ -2,12 +2,12 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.UI.WPF.Event;
 using Mebster.Myodam.UI.WPF.ViewModels.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Toolkit.Mvvm.Input;
-using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace Mebster.Myodam.UI.WPF.ViewModels
 {
@@ -49,9 +49,9 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             Messenger = messenger;
             DialogService = dialogService;
             _myodamManager = myodamManager;
-            SaveCommand = new RelayCommand(OnSaveExecute, OnSaveCanExecute);
-            DeleteCommand = new RelayCommand(OnDeleteExecute, OnDeleteCanExecute);
-            CloseDetailViewCommand = new RelayCommand(OnCloseDetailViewExecute);
+            SaveCommand = new RelayCommand(OnSaveExecuteAsync, OnSaveCanExecute);
+            DeleteCommand = new RelayCommand(OnDeleteExecuteAsync, OnDeleteCanExecute);
+            CloseDetailViewCommand = new RelayCommand(OnCloseDetailViewExecuteAsync);
         }
 
         protected virtual bool OnDeleteCanExecute()
@@ -59,9 +59,9 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             return true;
         }
 
-        protected abstract void OnDeleteExecute();
+        protected abstract void OnDeleteExecuteAsync();
 
-        protected abstract void OnSaveExecute();
+        protected abstract void OnSaveExecuteAsync();
 
         protected virtual bool OnSaveCanExecute()
         {
@@ -90,9 +90,9 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         protected abstract void UnsubscribeOnClosing();
 
-        protected virtual async void OnCloseDetailViewExecute()
+        protected virtual async void OnCloseDetailViewExecuteAsync()
         {
-            if (!await UserAcknowledgedClosing()) return;
+            if (!await UserAcknowledgedClosingAsync()) return;
 
             RaiseDetailClosedEvent();
         }
@@ -107,7 +107,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             });
         }
 
-        protected virtual async Task<bool> UserAcknowledgedClosing()
+        protected virtual async Task<bool> UserAcknowledgedClosingAsync()
         {
             if (!HasChanges) return true;
 

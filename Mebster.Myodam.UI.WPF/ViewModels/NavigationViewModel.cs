@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.Infrastructure.Bluetooth;
 using Mebster.Myodam.Models.Device;
@@ -15,8 +17,6 @@ using Mebster.Myodam.Models.TestSubject;
 using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.Event;
 using Mebster.Myodam.UI.WPF.ViewModels.Services;
-using Microsoft.Toolkit.Mvvm.Input;
-using Microsoft.Toolkit.Mvvm.Messaging;
 using Swordfish.NET.Collections.Auxiliary;
 
 namespace Mebster.Myodam.UI.WPF.ViewModels
@@ -69,7 +69,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             IDeviceCalibrationViewModel deviceCalibrationViewModel,
             IAsyncRelayCommandFactory asyncCommandFactory)
         {
-            ChangeMyodamConnectionCommand = asyncCommandFactory.Create(ChangeMyodamConnection, CanChangeMyodamConnection);
+            ChangeMyodamConnectionCommand = asyncCommandFactory.Create(ChangeMyodamConnectionAsync, CanChangeMyodamConnection);
 
             _testSubjectRepository = testSubjectRepository;
             _messenger = messenger;
@@ -105,7 +105,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             return MyodamAvailability != MyodamAvailabilityStatus.DisconnectedUnavailable && !_myodamManager.IsCurrentlyMeasuring;
         }
 
-        public async Task ChangeMyodamConnection()
+        public async Task ChangeMyodamConnectionAsync()
         {
             if (_myodamManager.IsCurrentlyMeasuring)
             {
@@ -116,10 +116,10 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             }
             if (_myodamManager.MyodamDevice != null && _myodamManager.MyodamDevice.IsConnected)
             {
-                await _myodamManager.MyodamDevice.Disconnect();
+                await _myodamManager.MyodamDevice.DisconnectAsync();
                 await Task.Delay(TimeSpan.FromSeconds(2));
             }
-            else await _myodamManager.ConnectMyodam();
+            else await _myodamManager.ConnectMyodamAsync();
         }
 
         public async Task LoadAsync()

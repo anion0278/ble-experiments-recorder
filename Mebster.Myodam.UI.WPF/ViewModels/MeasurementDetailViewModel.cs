@@ -9,6 +9,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using AutoMapper;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using LiveCharts;
 using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.Common.Services;
@@ -18,8 +20,6 @@ using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.Event;
 using Mebster.Myodam.UI.WPF.ViewModels.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Toolkit.Mvvm.Input;
-using Microsoft.Toolkit.Mvvm.Messaging;
 using PropertyChanged;
 using Swordfish.NET.Collections.Auxiliary;
 using WinRT;
@@ -107,16 +107,16 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             _measurementRepository = measurementRepository;
             _dateTimeService = dateTimeService;
 
-            StartMeasurementCommand = new AsyncRelayCommand(StartMeasurement, StartMeasurementCanExecute);
-            StopMeasurementCommand = new AsyncRelayCommand(StopMeasurement, StopMeasurementCanExecute);
-            CleanRecordedDataCommand = new RelayCommand(CleanRecordedData, () => !_myodamManager.IsCurrentlyMeasuring);
+            StartMeasurementCommand = new AsyncRelayCommand(StartMeasurementAsync, StartMeasurementCanExecute);
+            StopMeasurementCommand = new AsyncRelayCommand(StopMeasurementAsync, StopMeasurementCanExecute);
+            CleanRecordedDataCommand = new RelayCommand(CleanRecordedDataAsync, () => !_myodamManager.IsCurrentlyMeasuring);
 
             MeasuredValues.CollectionChanged += OnForceValuesChanged; // letting ComboBox.IsDisabled know that collection changed. Required due to the way ChartValues work
 
             _myodamManager.MyodamAvailabilityChanged += OnMyodamStatusChanged;
             _myodamManager.MeasurementStatusChanged += OnMeasurementStatusChanged;
 
-            Messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
+            Messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSavedAsync(e));
             Messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
         }
 
@@ -192,7 +192,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             ViewSynchronizationContext.Send(_ => StartMeasurementCommand.NotifyCanExecuteChanged(), null);
         }
 
-        private async void CleanRecordedData()
+        private async void CleanRecordedDataAsync()
         {
             if (MeasuredValues.Count <= 0) return;
 
@@ -211,7 +211,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             var ts = (TestSubject)argsData;
             Model = (measurementId > 0
                 ? await _measurementRepository.GetByIdAsync(measurementId)
-                : await CreateNewMeasurement(ts))!;
+                : await CreateNewMeasurementAsync(ts))!;
 
             Model.ParametersDuringMeasurement ??= (StimulationParameters)ts.CustomizedParameters.Clone();
             StimulationParametersVm = new StimulationParametersViewModel(Model.ParametersDuringMeasurement);
@@ -228,7 +228,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         }
 
 
-        private async Task<Measurement> CreateNewMeasurement(TestSubject correspondingTestSubject)
+        private async Task<Measurement> CreateNewMeasurementAsync(TestSubject correspondingTestSubject)
         {
             var newMeasurement = new Measurement
             {
@@ -239,7 +239,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             return newMeasurement;
         }
 
-        public async Task StartMeasurement()
+        public async Task StartMeasurementAsync()
         {
             var result = await DialogService.ShowOkCancelDialogAsync(
                 "Are you sure you want to start measurement with current parameters listed in this page (they may differ from user-specific parameter settings)?",
@@ -258,7 +258,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             Date = _dateTimeService.Now;
             _myodamManager.MyodamDevice!.NewValueReceived -= OnNewValueReceived; // making sure that it is not subscribed multiple times
             _myodamManager.MyodamDevice!.NewValueReceived += OnNewValueReceived;
-            await _myodamManager.MyodamDevice.StartMeasurement(Model.ParametersDuringMeasurement!, Type);
+            await _myodamManager.MyodamDevice.StartMeasurementAsync(Model.ParametersDuringMeasurement!, Type);
         }
 
         private void OnNewValueReceived(object? _, MeasuredValue sensorMeasuredValue)
@@ -270,19 +270,19 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             MeasuredValues.Add(forceValue);
         }
 
-        public async Task StopMeasurement()
+        public async Task StopMeasurementAsync()
         {
             if (_myodamManager.MyodamDevice != null)
             {
-                await _myodamManager.MyodamDevice.StopMeasurement();
+                await _myodamManager.MyodamDevice.StopMeasurementAsync();
             }
         }
 
-        protected override async void OnDeleteExecute() // TODO into base class, since TS OnDeleteExecute is almost same. Abstract a single main repository
+        protected override async void OnDeleteExecuteAsync() // TODO into base class, since TS OnDeleteExecute is almost same. Abstract a single main repository
         {
             if (Id < 0)
             {
-                OnCloseDetailViewExecute();
+                OnCloseDetailViewExecuteAsync();
                 return;
             }
 
@@ -296,7 +296,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             RaiseDetailDeletedEvent(Model.Id);
         }
 
-        protected override async void OnSaveExecute()
+        protected override async void OnSaveExecuteAsync()
         {
             await _measurementRepository.ReloadTestSubjectAsync(Model.TestSubject);
             var currentMeasurements = Model.TestSubject.Measurements;
@@ -324,7 +324,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             return base.OnSaveCanExecute() && !_myodamManager.IsCurrentlyMeasuring;
         }
 
-        protected override async Task<bool> UserAcknowledgedClosing()
+        protected override async Task<bool> UserAcknowledgedClosingAsync()
         {
             if (HasChanges || _myodamManager.IsCurrentlyMeasuring)
             {
@@ -334,11 +334,11 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
                 var result = await DialogService.ShowOkCancelDialogAsync(message, "Closing tab");
                 if (result == MessageDialogResult.Cancel) return false;
             }
-            await StopMeasurement();
+            await StopMeasurementAsync();
             return true;
         }
 
-        private async void AfterDetailSaved(AfterDetailSavedEventArgs message)
+        private async void AfterDetailSavedAsync(AfterDetailSavedEventArgs message)
         {
             if (message.ViewModelName != nameof(TestSubjectDetailViewModel) ||
                 message.Id != Model.TestSubjectId) return;

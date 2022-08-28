@@ -12,9 +12,9 @@ public interface IBleDeviceHandler : IDisposable
     short SignalStrength { get; set; }
     bool IsConnected { get; }
 
-    Task Send(string msg);
+    Task SendAsync(string msg);
 
-    Task<IBleDeviceHandler> ConnectDevice();
+    Task<IBleDeviceHandler> ConnectDeviceAsync();
 
     void Disconnect();
 }
