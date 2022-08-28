@@ -10,12 +10,12 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using Autofac.Features.Indexed;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using BleRecorder.Business.Device;
 using BleRecorder.Models.TestSubject;
 using BleRecorder.UI.WPF.Event;
 using BleRecorder.UI.WPF.ViewModels.Services;
-using Microsoft.Toolkit.Mvvm.Input;
-using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace BleRecorder.UI.WPF.ViewModels
 {
@@ -79,7 +79,7 @@ namespace BleRecorder.UI.WPF.ViewModels
 
             DetailViewModels = CollectionViewSource.GetDefaultView(_detailViewModels);
 
-            _messenger.Register<OpenDetailViewEventArgs>(this, (s, e) => OnOpenDetailView(e));
+            _messenger.Register<OpenDetailViewEventArgs>(this, (s, e) => OnOpenDetailViewAsync(e));
             _messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
             _messenger.Register<AfterDetailClosedEventArgs>(this, (s, e) => AfterDetailClosed(e));
 
@@ -93,7 +93,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             await NavigationViewModel.LoadAsync();
         }
 
-        private async void OnOpenDetailView(OpenDetailViewEventArgs args)
+        private async void OnOpenDetailViewAsync(OpenDetailViewEventArgs args)
         {
             if (_bleRecorderManager.IsCurrentlyMeasuring)
             {
@@ -116,7 +116,7 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         private void OnOpenSingleDetailViewExecute()
         {
-            OnOpenDetailView(new OpenDetailViewEventArgs
+            OnOpenDetailViewAsync(new OpenDetailViewEventArgs
             {
                 Id = -1,
                 ViewModelName = nameof(TestSubjectDetailViewModel)

@@ -15,7 +15,7 @@ public interface IBleRecorderManager
     StimulationParameters CurrentStimulationParameters { get; set; }
     BleRecorderAvailabilityStatus BleRecorderAvailability { get; }
     bool IsCurrentlyMeasuring { get; }
-    Task ConnectBleRecorder();
+    Task ConnectBleRecorderAsync();
 }
 
 public class BleRecorderManager : IBleRecorderManager
@@ -70,7 +70,7 @@ public class BleRecorderManager : IBleRecorderManager
         return deviceHandler.Name.Equals(_bleRecorderName);
     }
 
-    public async Task ConnectBleRecorder()
+    public async Task ConnectBleRecorderAsync()
     {
         if (BleRecorderDevice != null) OnDeviceDisconnection();
 
@@ -82,7 +82,7 @@ public class BleRecorderManager : IBleRecorderManager
         IBleDeviceHandler bleDevice;
         try
         {
-            bleDevice = await bleRecorderDevices.Single().ConnectDevice();
+            bleDevice = await bleRecorderDevices.Single().ConnectDeviceAsync();
         }
         catch (System.Exception ex)
         {

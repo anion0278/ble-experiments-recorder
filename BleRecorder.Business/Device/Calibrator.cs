@@ -27,7 +27,7 @@ public class Calibrator
     /// <returns></returns>
     /// <exception cref="DeviceCalibrationException">Device is not connected or is not measuring (not raising event on data received)./exception>
     /// <exception cref="TimeoutException">Canceled async waiting, due to timeout.</exception>
-    public async Task<double> GetCalibrationValue(BleRecorderDevice device)
+    public async Task<double> GetCalibrationValueAsync(BleRecorderDevice device)
     {
         if (!device.IsCalibrating || !device.IsConnected) throw new DeviceCalibrationException();
 

@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using AutoMapper;
+using CommunityToolkit.Mvvm.Messaging;
 using BleRecorder.Business.Device;
 using BleRecorder.Common.Services;
 using BleRecorder.DataAccess;
@@ -11,7 +12,6 @@ using BleRecorder.UI.WPF.Exception;
 using BleRecorder.UI.WPF.ViewModels;
 using BleRecorder.UI.WPF.ViewModels.Services;
 using BleRecorder.UI.WPF.Views;
-using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace BleRecorder.UI.WPF.Startup
 {

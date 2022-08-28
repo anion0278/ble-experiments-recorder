@@ -39,7 +39,7 @@ namespace BleRecorder.Infrastructure.Bluetooth
             //        DeviceInformationKind.AssociationEndpoint);
             _bleWatcher = new() { ScanningMode = BluetoothLEScanningMode.Active }; // Active - possible Windows bug https://stackoverflow.com/questions/54525137/why-does-bluetoothleadvertisementwatcher-stop-firing-received-events
             _bleWatcher.SignalStrengthFilter.OutOfRangeThresholdInDBm = -75;
-            _advertisementWatchdog = new System.Timers.Timer(_advertisementWatchdogInterval.TotalMilliseconds);
+            _advertisementWatchdog = new System.Timers.Timer(_advertisementWatchdogInterval.TotalMilliseconds); // TODO dispose
             _advertisementWatchdog.Elapsed += OnAdvertisementPeriodElapsed;
             _advertisementWatchdog.Start();
         }

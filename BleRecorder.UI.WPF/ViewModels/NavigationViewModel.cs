@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using BleRecorder.Business.Device;
 using BleRecorder.Infrastructure.Bluetooth;
 using BleRecorder.Models.Device;
@@ -15,8 +17,6 @@ using BleRecorder.Models.TestSubject;
 using BleRecorder.UI.WPF.Data.Repositories;
 using BleRecorder.UI.WPF.Event;
 using BleRecorder.UI.WPF.ViewModels.Services;
-using Microsoft.Toolkit.Mvvm.Input;
-using Microsoft.Toolkit.Mvvm.Messaging;
 using Swordfish.NET.Collections.Auxiliary;
 
 namespace BleRecorder.UI.WPF.ViewModels
@@ -69,7 +69,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             IDeviceCalibrationViewModel deviceCalibrationViewModel,
             IAsyncRelayCommandFactory asyncCommandFactory)
         {
-            ChangeBleRecorderConnectionCommand = asyncCommandFactory.Create(ChangeBleRecorderConnection, CanChangeBleRecorderConnection);
+            ChangeBleRecorderConnectionCommand = asyncCommandFactory.Create(ChangeBleRecorderConnectionAsync, CanChangeBleRecorderConnection);
 
             _testSubjectRepository = testSubjectRepository;
             _messenger = messenger;
@@ -105,7 +105,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             return BleRecorderAvailability != BleRecorderAvailabilityStatus.DisconnectedUnavailable && !_bleRecorderManager.IsCurrentlyMeasuring;
         }
 
-        public async Task ChangeBleRecorderConnection()
+        public async Task ChangeBleRecorderConnectionAsync()
         {
             if (_bleRecorderManager.IsCurrentlyMeasuring)
             {
@@ -116,10 +116,10 @@ namespace BleRecorder.UI.WPF.ViewModels
             }
             if (_bleRecorderManager.BleRecorderDevice != null && _bleRecorderManager.BleRecorderDevice.IsConnected)
             {
-                await _bleRecorderManager.BleRecorderDevice.Disconnect();
+                await _bleRecorderManager.BleRecorderDevice.DisconnectAsync();
                 await Task.Delay(TimeSpan.FromSeconds(2));
             }
-            else await _bleRecorderManager.ConnectBleRecorder();
+            else await _bleRecorderManager.ConnectBleRecorderAsync();
         }
 
         public async Task LoadAsync()

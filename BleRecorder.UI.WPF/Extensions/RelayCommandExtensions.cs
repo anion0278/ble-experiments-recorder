@@ -6,8 +6,8 @@ using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Toolkit.Mvvm.Input;
 
 namespace BleRecorder.UI.WPF.Extensions;
 

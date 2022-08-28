@@ -11,6 +11,8 @@ using System.Windows.Data;
 using System.Windows.Input;
 using AutoMapper;
 using Castle.Components.DictionaryAdapter;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using BleRecorder.Business.Device;
 using BleRecorder.Models.Device;
 using BleRecorder.Models.TestSubject;
@@ -18,8 +20,6 @@ using BleRecorder.UI.WPF.Data.Repositories;
 using BleRecorder.UI.WPF.Event;
 using BleRecorder.UI.WPF.ViewModels.Services;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.Toolkit.Mvvm.Input;
-using Microsoft.Toolkit.Mvvm.Messaging;
 using PropertyChanged;
 
 namespace BleRecorder.UI.WPF.ViewModels
@@ -93,7 +93,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             _measurementRepository = measurementRepository;
             _mapper = mapper;
 
-            AddMeasurementCommand = new RelayCommand(async () => await OnAddMeasurement());
+            AddMeasurementCommand = new RelayCommand(async () => await OnAddMeasurementAsync());
             EditMeasurementCommand = new RelayCommand(OnEditMeasurement, () => Measurements!.CurrentItem != null);
             RemoveMeasurementCommand = new RelayCommand(OnRemoveMeasurement, () => Measurements!.CurrentItem != null);
             
@@ -156,7 +156,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             }
         }
 
-        private async Task OnAddMeasurement()
+        private async Task OnAddMeasurementAsync()
         {
             if (await _testSubjectRepository.GetByIdAsync(Id) == null || HasChanges)
             {
@@ -191,7 +191,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             _measurements.Remove((Measurement)Measurements.CurrentItem);
         }
 
-        protected override async void OnSaveExecute()
+        protected override async void OnSaveExecuteAsync()
         {
             if ((await _testSubjectRepository.GetAllAsync()) // TODO replace getAll with customized query
                 .Any(ts => ts.FullName == Model.FullName && ts.Id != Model.Id))
@@ -206,11 +206,11 @@ namespace BleRecorder.UI.WPF.ViewModels
             RaiseDetailSavedEvent(Model.Id, $"{Model.FirstName} {Model.LastName}");
         }
 
-        protected override async void OnDeleteExecute()
+        protected override async void OnDeleteExecuteAsync()
         {
             if (Id < 0)
             {
-                OnCloseDetailViewExecute();
+                OnCloseDetailViewExecuteAsync();
                 return;
             }
 

@@ -16,7 +16,10 @@ public class MeasurementRepository : GenericRepository<Measurement, ExperimentsD
     {
         return await Context.Measurements
             .Include(m => m.TestSubject)
+            .ThenInclude(s => s.CustomizedParameters)
+            .ThenInclude(s => s.Current)
             .Include(m => m.AdjustmentsDuringMeasurement)
+
             .Include(m => m.ParametersDuringMeasurement)
             .SingleOrDefaultAsync(m => m.Id == id);
     }

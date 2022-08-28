@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using BleRecorder.UI.WPF.Event;
-using Microsoft.Toolkit.Mvvm.Input;
-using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace BleRecorder.UI.WPF.ViewModels
 {
@@ -50,7 +50,6 @@ namespace BleRecorder.UI.WPF.ViewModels
 
     public class NavigationAddItemViewModel : NavigationItemViewModel
     {
-        
         public NavigationAddItemViewModel(IMessenger messenger)
             : base(-999, "+ Add new test subject", messenger)
         {

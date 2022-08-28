@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Input;
 using BleRecorder.UI.WPF.Exception;
-using Microsoft.Toolkit.Mvvm.Input;
 
 namespace BleRecorder.UI.WPF.ViewModels.Services;
 
