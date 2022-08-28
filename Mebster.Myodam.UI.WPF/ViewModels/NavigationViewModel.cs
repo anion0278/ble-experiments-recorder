@@ -128,7 +128,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
                 .Select(ts => new NavigationItemViewModel(ts.Id, ts.FullName, _messenger));
             _testSubjectsNavigationItems.AddRange(items);
             _testSubjectsNavigationItems.Add(new NavigationAddItemViewModel(_messenger));
-
             await DeviceCalibrationVm.LoadAsync();
         }
 

@@ -178,7 +178,8 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
                 StopMeasurementCommand.NotifyCanExecuteChanged();
                 if (_myodamManager.MyodamDevice is not null && _myodamManager.MyodamDevice.IsConnected) return;
 
-                DialogService.ShowInfoDialogAsync("Measurement interrupted due to device disconnection!");
+                MeasuredValues.Clear();
+                DialogService.ShowInfoDialogAsync("Measurement interrupted due to device disconnection! Measured data were erased.");
             }, null);
         }
 
@@ -241,6 +242,12 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         public async Task StartMeasurementAsync()
         {
+            if (!_myodamManager.Calibration.IsValid())
+            {
+                await DialogService.ShowInfoDialogAsync("Device calibration is invalid. Measurement is disabled.");
+                return;
+            }
+
             var result = await DialogService.ShowOkCancelDialogAsync(
                 "Are you sure you want to start measurement with current parameters listed in this page (they may differ from user-specific parameter settings)?",
                 "Start measurement?");
@@ -275,6 +282,9 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             if (_myodamManager.MyodamDevice != null)
             {
                 await _myodamManager.MyodamDevice.StopMeasurementAsync();
+                _myodamManager.MyodamDevice!.NewValueReceived -= OnNewValueReceived;
+                MeasuredValues.Clear();
+                await DialogService.ShowInfoDialogAsync("Measured values were erased because measurement was interrupted.");
             }
         }
 

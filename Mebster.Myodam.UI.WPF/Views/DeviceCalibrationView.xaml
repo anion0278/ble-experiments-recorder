@@ -25,7 +25,7 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"  Content="Calibration"
+        <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"  Content="Calibration (for MEBSTER only!)"
                HorizontalAlignment="Center" FontWeight="Bold" FontSize="14"/>
 
         <Label Grid.Row="1" Grid.Column="0" Content="No load value:"/>

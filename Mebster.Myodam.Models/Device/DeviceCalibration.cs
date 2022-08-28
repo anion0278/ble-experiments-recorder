@@ -1,13 +1,21 @@
-﻿namespace Mebster.Myodam.Models.Device;
+﻿using System.ComponentModel;
+
+namespace Mebster.Myodam.Models.Device;
 
 public class DeviceCalibration
 {
-    public int Id { get; private set; }
+    private const double DefaultParametersValue = 1;
+
     public double NoLoadSensorValue { get; set; }
     public double NominalLoadSensorValue { get; set; }
 
-    public static DeviceCalibration GetDefaultValues(int id = 0) 
+    public static DeviceCalibration GetDefaultValues() 
     {
-        return new DeviceCalibration() { Id = id, NoLoadSensorValue = 1, NominalLoadSensorValue = 1};
+        return new DeviceCalibration() { NoLoadSensorValue = 1, NominalLoadSensorValue = 1};
+    }
+
+    public bool IsValid()
+    {
+        return NominalLoadSensorValue != DefaultParametersValue && NoLoadSensorValue != DefaultParametersValue;
     }
 }

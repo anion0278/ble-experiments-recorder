@@ -10,7 +10,7 @@ using Mebster.Myodam.Models.Device;
 
 namespace Mebster.Myodam.Infrastructure.Bluetooth;
 
-public class BleDeviceHandler : IBleDeviceHandler
+public class BluetoothDeviceHandler : IBleDeviceHandler
 {
     private readonly IDateTimeService _dateTimeService;
     public event EventHandler<string>? DataReceived;
@@ -43,7 +43,7 @@ public class BleDeviceHandler : IBleDeviceHandler
         }
     }
 
-    public BleDeviceHandler(IDateTimeService dateTimeService, 
+    public BluetoothDeviceHandler(IDateTimeService dateTimeService, 
         string name, ulong address, short signalStrength, DateTimeOffset timestamp)
     {
         _dateTimeService = dateTimeService;

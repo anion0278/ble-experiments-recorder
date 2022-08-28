@@ -18,6 +18,6 @@ public class JsonManager : IJsonManager
 
     public string Serialize<T>(T data)
     {
-        return JsonSerializer.Serialize<T>(data);
+        return JsonSerializer.Serialize<T>(data, new JsonSerializerOptions { WriteIndented = true });
     }
 }

@@ -9,10 +9,10 @@ public sealed class ExperimentsDbContext : DbContext
     public DbSet<TestSubject> TestSubjects { get; set; }
     public DbSet<Measurement> Measurements { get; set; }
     public DbSet<StimulationParameters> StimulationParameters { get; set; }
-    public DbSet<DeviceCalibration> DeviceCalibrations { get; set; }
 
     public ExperimentsDbContext()
     {
+        // swallowed System.InvalidOperationException and System.Reflection.TargetInvocationException is expected behaviour
         Database.Migrate();
     }
 
@@ -47,9 +47,6 @@ public sealed class ExperimentsDbContext : DbContext
     private static void SetDataSeeding(ModelBuilder modelBuilder)
     {
         var defaultStimulationParameters = Models.Device.StimulationParameters.GetDefaultValues(1);
-        var defaultCalibration = DeviceCalibration.GetDefaultValues(1);
-
         modelBuilder.Entity<StimulationParameters>().HasData(defaultStimulationParameters);
-        modelBuilder.Entity<DeviceCalibration>().HasData(defaultCalibration);
     }
 }

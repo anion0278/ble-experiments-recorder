@@ -21,9 +21,9 @@ public interface IDeviceCalibrationViewModel
 
 public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewModel
 {
-    private readonly IDeviceCalibrationRepository _deviceCalibrationRepository;
     private readonly IMyodamManager _myodamManager;
     private readonly IMessageDialogService _dialogService;
+    private readonly IAppConfigurationLoader _configurationLoader;
 
     public DeviceCalibration Model { get; private set; } = new(); // must be public prop
 
@@ -39,7 +39,7 @@ public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewM
             if (parsedValue < 0) return;
 
             Model.NoLoadSensorValue = parsedValue;
-            _deviceCalibrationRepository.Save();
+            _configurationLoader.SaveConfig();
         }
     }
 
@@ -53,7 +53,7 @@ public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewM
             if (parsedValue < 0) return;
 
             Model.NominalLoadSensorValue = parsedValue;
-            _deviceCalibrationRepository.Save();
+            _configurationLoader.SaveConfig();
         }
     }
 
@@ -68,19 +68,20 @@ public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewM
     public DeviceCalibrationViewModel() { }
 
     public DeviceCalibrationViewModel(
-        IDeviceCalibrationRepository deviceCalibrationRepository,
         IMyodamManager myodamManager,
         IAsyncRelayCommandFactory asyncCommandFactory,
         IMessageDialogService dialogService,
         IAppConfigurationLoader configurationLoader)
     {
-        _deviceCalibrationRepository = deviceCalibrationRepository;
         _myodamManager = myodamManager;
         _dialogService = dialogService;
+        _configurationLoader = configurationLoader;
         _myodamManager.MyodamAvailabilityChanged += MyodamStatusChanged; 
         _myodamManager.MeasurementStatusChanged += MyodamStatusChanged;
 
-        AppConfiguration = configurationLoader.GetConfiguration();
+        AppConfiguration = _configurationLoader.GetConfiguration();
+        Model = AppConfiguration.MyodamCalibration;
+        _myodamManager.Calibration = Model;
 
         CalibrateNoLoadSensorValueCommand = asyncCommandFactory.Create(CalibrateNoLoadSensorValueAsync, CanCalibrateExecute);
         CalibrateNominalLoadSensorValueCommand = asyncCommandFactory.Create(CalibrateNominalLoadSensorValueAsync, CanCalibrateExecute);
@@ -88,8 +89,10 @@ public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewM
 
     public async Task LoadAsync()
     {
-        Model = (await _deviceCalibrationRepository.GetByIdAsync(1))!;
-        _myodamManager.Calibration = Model;
+        if (!_configurationLoader.IsConfigurationAvailable())
+        {
+            await _dialogService.ShowInfoDialogAsync($"Configuration file '{_configurationLoader.ConfigurationFileName}' does not exist. Measurement will be disabled.");
+        }
     }
 
     //public void Unsubscribe() // TODO 

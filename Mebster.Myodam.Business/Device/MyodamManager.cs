@@ -65,7 +65,7 @@ public class MyodamManager : IMyodamManager
             : MyodamAvailabilityStatus.DisconnectedUnavailable;
     }
 
-    private static bool IsMyodamDevice(BleDeviceHandler deviceHandler)
+    private static bool IsMyodamDevice(BluetoothDeviceHandler deviceHandler)
     {
         return deviceHandler.Name.Equals(_myodamName);
     }
@@ -77,7 +77,7 @@ public class MyodamManager : IMyodamManager
         var myodamDevices = _bluetoothManager.AvailableBleDevices.Where(IsMyodamDevice).ToArray();
 
         // TODO Handle multiple devices in a single room
-        if (myodamDevices.Length > 1) throw new System.Exception("There is more than one myodam device!");
+        if (myodamDevices.Length > 1) throw new System.Exception("There is more than one myodam device with provided address!");
 
         IBleDeviceHandler bleDevice;
         try
@@ -89,7 +89,7 @@ public class MyodamManager : IMyodamManager
             throw new DeviceConnectionException(ex);
         }
 
-        MyodamDevice = new MyodamDevice(this, bleDevice, _messageParser);
+        MyodamDevice = new MyodamDevice(this, bleDevice, _messageParser, Calibration);
         MyodamAvailability = MyodamAvailabilityStatus.Connected;
         MyodamDevice.ConnectionStatusChanged += OnConnectionStatusChanged;
         MyodamDevice.MeasurementStatusChanged += OnMeasurementStatusChanged;
