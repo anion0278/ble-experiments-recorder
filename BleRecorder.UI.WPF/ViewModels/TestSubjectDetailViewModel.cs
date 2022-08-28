@@ -13,6 +13,7 @@ using AutoMapper;
 using Castle.Components.DictionaryAdapter;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using LiveCharts;
 using BleRecorder.Business.Device;
 using BleRecorder.Models.Device;
 using BleRecorder.Models.TestSubject;
@@ -38,6 +39,9 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         private ObservableCollection<Measurement> _measurements;
 
+        public ChartValues<StatisticsValue> MaxContractionStatisticValues { get; set; } = new();
+        public ChartValues<StatisticsValue> IntermittentStatisticValues { get; set; } = new();
+
         public ICollectionView Measurements { get; set; }
 
         public TestSubject Model { get; set; } // MUST BE PUBLIC PROP in order to make validation work on init
@@ -45,7 +49,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         public MechanismParametersViewModel MechanismParametersVm { get; private set; }
         public StimulationParametersViewModel StimulationParametersVm { get; private set; }
 
-        public override string Title => string.IsNullOrWhiteSpace(Model.FullName) ? "(New subject)" : Model.FullName;
+        public override string Title => string.IsNullOrWhiteSpace(Model?.FullName) ? "(New subject)" : Model.FullName;
 
         [Required]
         [StringLength(20, MinimumLength = 2)]
@@ -99,6 +103,13 @@ namespace BleRecorder.UI.WPF.ViewModels
             
             Messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailChanged(e));
             Messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailChanged(e));
+
+            _measurements = new ObservableCollection<Measurement>();
+            _measurements.CollectionChanged += (_, _) => OnPropertyChanged(nameof(Measurements)); // TODO why is it required?
+            Measurements = CollectionViewSource.GetDefaultView(_measurements);
+            Measurements.SortDescriptions.Add(new SortDescription(nameof(Measurement.Date), ListSortDirection.Ascending));
+            Measurements.GroupDescriptions.Add(new PropertyGroupDescription(nameof(Measurement.Type)));
+            Measurements.MoveCurrentTo(null);
         }
 
 
@@ -109,13 +120,7 @@ namespace BleRecorder.UI.WPF.ViewModels
                 : CreateNewTestSubject();
 
             Id = id;
-
-            _measurements = new ObservableCollection<Measurement>(Model.Measurements);
-            _measurements.CollectionChanged += (_, _) => OnPropertyChanged(nameof(Measurements)); // TODO why is it required?
-            Measurements = CollectionViewSource.GetDefaultView(_measurements);
-            Measurements.SortDescriptions.Add(new SortDescription(nameof(Measurement.Date), ListSortDirection.Ascending));
-            Measurements.GroupDescriptions.Add(new PropertyGroupDescription(nameof(Measurement.Type)));
-            Measurements.MoveCurrentTo(null);
+            if (id > 0) await RefreshMeasurements(); // TODO refactor
 
             MechanismParametersVm = new MechanismParametersViewModel(new MechanismParameters(Model.CustomizedAdjustments), _mapper);
             MechanismParametersVm.PropertyChanged += OnPropertyChangedEventHandler;
@@ -145,8 +150,14 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         private async void AfterDetailChanged(IDetailViewEventArgs message)
         {
+            // TODO reload only if changed VM is related to this TS
             if (message.ViewModelName != nameof(MeasurementDetailViewModel)) return;
 
+            await RefreshMeasurements();
+        }
+
+        private async Task RefreshMeasurements()
+        {
             Model = await _testSubjectRepository.ReloadAsync(Model);
 
             _measurements.Clear();
@@ -154,6 +165,34 @@ namespace BleRecorder.UI.WPF.ViewModels
             {
                 _measurements.Add(measurement);
             }
+
+            RefreshStatistics();
+        }
+
+        private void RefreshStatistics()
+        {
+            MaxContractionStatisticValues.Clear();
+            MaxContractionStatisticValues.AddRange(GetStatisticsValues(MeasurementType.MaximumContraction));
+            IntermittentStatisticValues.Clear();
+            IntermittentStatisticValues.AddRange(GetStatisticsValues(MeasurementType.Intermittent));
+        }
+
+        private IEnumerable<StatisticsValue> GetStatisticsValues(MeasurementType measurementType)
+        {
+            var statisticDataGroupedByDateOnly = _measurements
+                .Where(m => m.Type == measurementType && m.ForceData.Any() && m.Date.HasValue)
+                .Select(m => new StatisticsValue(m.ForceData.Max(v => v.Value), m.Date!.Value))
+                .GroupBy(d => d.MeasurementDate.Date);
+
+            return statisticDataGroupedByDateOnly
+                .Select(g => g.MaxBy(stat => stat.ContractionForceValue));
+
+            //if (statisticDataGroupedByDateOnly.Any(g => g.Count() > 1))
+            //{
+            //    await DialogService.ShowInfoDialogAsync(
+            //        $"There are multiple measurements of {measurementType} type performed at the same day." +
+            //        $"Only maximum value will be shown in the graph");
+            //}
         }
 
         private async Task OnAddMeasurementAsync()
@@ -189,6 +228,8 @@ namespace BleRecorder.UI.WPF.ViewModels
 
             _testSubjectRepository.RemoveMeasurement((Measurement)Measurements.CurrentItem);
             _measurements.Remove((Measurement)Measurements.CurrentItem);
+
+            RefreshStatistics();
         }
 
         protected override async void OnSaveExecuteAsync()

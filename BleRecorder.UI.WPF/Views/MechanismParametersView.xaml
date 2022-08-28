@@ -148,7 +148,6 @@
                 TickFrequency="{Binding Model.FixtureAnteroPosteriorDistance.Step}"
                 Value = "{Binding FixtureAnteroPosteriorDistance}" 
                 resouces:AttachedText.Text="Fixture (ant-post):"
-                resouces:AttachedRotation.Rotated="True"
                 Width="190"
                 RenderTransformOrigin="0.5,0.5" Canvas.Left="115" Canvas.Top="337" VerticalAlignment="Center" />
         </Canvas>

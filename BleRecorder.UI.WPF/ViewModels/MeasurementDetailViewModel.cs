@@ -284,7 +284,11 @@ namespace BleRecorder.UI.WPF.ViewModels
                 await _bleRecorderManager.BleRecorderDevice.StopMeasurementAsync();
                 _bleRecorderManager.BleRecorderDevice!.NewValueReceived -= OnNewValueReceived;
                 MeasuredValues.Clear();
-                await DialogService.ShowInfoDialogAsync("Measured values were erased because measurement was interrupted.");
+
+                if (_bleRecorderManager.IsCurrentlyMeasuring)
+                {
+                    await DialogService.ShowInfoDialogAsync("Measured values were erased because measurement was interrupted.");
+                }
             }
         }
 
