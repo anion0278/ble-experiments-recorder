@@ -6,7 +6,7 @@
              xmlns:resouces="clr-namespace:BleRecorder.UI.WPF.Views.Resouces"
              xmlns:viewModels="clr-namespace:BleRecorder.UI.WPF.ViewModels"
              mc:Ignorable="d" 
-             Height="400" Width="330"
+             Height="380" Width="350"
              d:DataContext="{d:DesignInstance viewModels:MechanismParametersViewModel, d:IsDesignTimeCreatable=True}">
     <UserControl.Resources>
         <ControlTemplate x:Key="SliderWithLabels" TargetType="Slider">
@@ -25,7 +25,7 @@
                             </Setter>
                             <Setter Property="Padding" Value="0"/>
                         </DataTrigger>
-                    
+
                     </Style.Triggers>
                 </Style>
             </ControlTemplate.Resources>
@@ -57,7 +57,6 @@
                 <!--Value="{TemplateBinding Value}"-->
                 <Slider Grid.Row="1"  Grid.Column="1" 
                         Value="{Binding Path=Value, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                        Interval="{TemplateBinding TickFrequency}" 
                         TickFrequency="{TemplateBinding TickFrequency}"
                         Minimum="{TemplateBinding Minimum}"
                         Maximum="{TemplateBinding Maximum}"
@@ -84,6 +83,11 @@
     </UserControl.Resources>
 
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.7*"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
         <Grid.Background>
             <LinearGradientBrush StartPoint="0 0" EndPoint="0 1">
                 <LinearGradientBrush.GradientStops>
@@ -92,65 +96,61 @@
                 </LinearGradientBrush.GradientStops>
             </LinearGradientBrush>
         </Grid.Background>
-        <Image Source="../Assets/bleRecorder_mechanical_adjustment.png"
+        <Image Source="../Assets/Bottom_cut.png" Margin="0 50 0 0"
                VerticalAlignment="Top" HorizontalAlignment="Left"
                RenderOptions.BitmapScalingMode="HighQuality" />
 
-        <Slider Minimum="{Binding Model.KneeAxisDeviation.MinValue}"
-                Maximum="{Binding Model.KneeAxisDeviation.MaxValue}"
-                TickFrequency="{Binding Model.KneeAxisDeviation.Step}"
-                Value = "{Binding KneeAxisDeviation}"
-                resouces:AttachedText.Text="Knee param:"
-                Width = "100" Margin="228,43,0,0" />
 
-        <Slider Minimum="{Binding Model.TibiaLength.MinValue}"
-                Maximum="{Binding Model.TibiaLength.MaxValue}"
-                TickFrequency="{Binding Model.TibiaLength.Step}"
-                Value = "{Binding TibiaLength}"
-                resouces:AttachedText.Text="Tibia length:"
+        <Image Grid.Column="1" Source="../Assets/Side_cut.png"
+               VerticalAlignment="Top" HorizontalAlignment="Left"
+               RenderOptions.BitmapScalingMode="HighQuality" />
+
+        <Canvas Grid.Column="0" Grid.ColumnSpan="2">
+
+            <Slider Canvas.Top="41" Minimum="{Binding Model.FixtureAdductionAbductionAngle.MinValue}"
+                    Maximum="{Binding Model.FixtureAdductionAbductionAngle.MaxValue}"
+                    TickFrequency="{Binding Model.FixtureAdductionAbductionAngle.Step}"
+                    Value = "{Binding FixtureAdductionAbductionAngle}"
+                    resouces:AttachedText.Text="Fixture (abd-add):"
+                    Width="140" RenderTransformOrigin="0.5,0.5"  VerticalAlignment="Center" />
+
+            <Slider Canvas.Left="128" Canvas.Top="90" Minimum="{Binding Model.CuffProximalDistalDistance.MinValue}"
+                Maximum="{Binding Model.CuffProximalDistalDistance.MaxValue}"
+                TickFrequency="{Binding Model.CuffProximalDistalDistance.Step}"
+                Value = "{Binding CuffProximalDistalDistance}"
+                resouces:AttachedText.Text="C-Cuff (prox-dist):"
                 resouces:AttachedRotation.Rotated="True"
-                Width = "140"
-                Margin="2,90,0,0" RenderTransformOrigin="0.5,0.5" >
-            <Slider.RenderTransform>
-                <TransformGroup>
-                    <RotateTransform Angle="-90"/>
-                </TransformGroup>
-            </Slider.RenderTransform>
-        </Slider>
+                Width="135"
+                RenderTransformOrigin="0.5,0.5" >
+                <Slider.RenderTransform>
+                    <TransformGroup>
+                        <RotateTransform Angle="-90"/>
+                    </TransformGroup>
+                </Slider.RenderTransform>
+            </Slider>
 
-        <Slider Minimum="{Binding Model.AnkleAxisX.MinValue}"
-                Maximum="{Binding Model.AnkleAxisX.MaxValue}"
-                TickFrequency="{Binding Model.AnkleAxisX.Step}"
-                Value = "{Binding AnkleAxisX}"
-                resouces:AttachedText.Text="Foot param:"
+            <Slider Minimum="{Binding Model.FixtureProximalDistalDistance.MinValue}"
+                Maximum="{Binding Model.FixtureProximalDistalDistance.MaxValue}"
+                TickFrequency="{Binding Model.FixtureProximalDistalDistance.Step}"
+                Value = "{Binding FixtureProximalDistalDistance}"
+                resouces:AttachedText.Text="Fixture (prox-dist):"
                 resouces:AttachedRotation.Rotated="True"
-                Width = "100" Margin="-23,233,253,119" RenderTransformOrigin="0.5,0.5" >
-            <Slider.RenderTransform>
-                <TransformGroup>
-                    <RotateTransform Angle="-90"/>
-                </TransformGroup>
-            </Slider.RenderTransform>
-        </Slider>
+                Width = "150" Canvas.Left="306" Canvas.Top="348" VerticalAlignment="Center" >
+                <Slider.RenderTransform>
+                    <TransformGroup>
+                        <RotateTransform Angle="-90"/>
+                    </TransformGroup>
+                </Slider.RenderTransform>
+            </Slider>
 
-        <Slider Minimum="{Binding Model.AnkleAxisZ.MinValue}"
-                Maximum="{Binding Model.AnkleAxisZ.MaxValue}"
-                TickFrequency="{Binding Model.AnkleAxisZ.Step}"
-                Value = "{Binding AnkleAxisZ}" 
-                resouces:AttachedText.Text="Ankle Z-axis:"
+            <Slider Minimum="{Binding Model.FixtureAnteroPosteriorDistance.MinValue}"
+                Maximum="{Binding Model.FixtureAnteroPosteriorDistance.MaxValue}"
+                TickFrequency="{Binding Model.FixtureAnteroPosteriorDistance.Step}"
+                Value = "{Binding FixtureAnteroPosteriorDistance}" 
+                resouces:AttachedText.Text="Fixture (ant-post):"
                 resouces:AttachedRotation.Rotated="True"
-                Width = "100" RenderTransformOrigin="0.5,0.5" Margin="167,327,0,0" >
-            <Slider.RenderTransform>
-                <TransformGroup>
-                    <RotateTransform Angle="-90"/>
-                </TransformGroup>
-            </Slider.RenderTransform>
-        </Slider>
-
-        <Slider Minimum="{Binding Model.AnkleAxisY.MinValue}"
-                Maximum="{Binding Model.AnkleAxisY.MaxValue}"
-                TickFrequency="{Binding Model.AnkleAxisY.Step}"
-                Value = "{Binding AnkleAxisY}"
-                resouces:AttachedText.Text="Ankle Y-axis:"
-                Width = "150" Margin="24,352,0,0" />
+                Width="190"
+                RenderTransformOrigin="0.5,0.5" Canvas.Left="115" Canvas.Top="337" VerticalAlignment="Center" />
+        </Canvas>
     </Grid>
 </UserControl>

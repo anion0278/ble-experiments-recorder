@@ -8,11 +8,10 @@ public class AdjustableParameter
 public class DeviceMechanicalAdjustments : ICloneable
 {
     public int Id { get; private set; }
-    public int AnkleAxisX { get; set; }
-    public int AnkleAxisY { get; set; }
-    public int AnkleAxisZ { get; set; }
-    public int TibiaLength { get; set; }
-    public int KneeAxisDeviation { get; set; }
+    public double FixtureAdductionAbductionAngle { get; set; }
+    public double FixtureProximalDistalDistance { get; set; }
+    public double FixtureAnteroPosteriorDistance { get; set; }
+    public double CuffProximalDistalDistance { get; set; }
     public object Clone()
     {
         return MemberwiseClone();
