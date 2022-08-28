@@ -1,0 +1,7 @@
+{
+  "IsCalibrationEnabled": true,
+  "MyodamCalibration": {
+    "NoLoadSensorValue": 41.54545454545455,
+    "NominalLoadSensorValue": 22
+  }
+}
