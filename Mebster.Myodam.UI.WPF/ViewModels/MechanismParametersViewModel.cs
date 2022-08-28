@@ -10,34 +10,28 @@ public class MechanismParametersViewModel : ViewModelBase
     private readonly IMapper _mapper;
     public MechanismParameters Model { get; }
 
-    public int AnkleAxisX
+    public double FootplateAdductionAbductionAngle
     {
-        get => Model.AnkleAxisX.Value;
-        set => Model.AnkleAxisX.Value = value;
+        get => Model.FootplateAdductionAbductionAngle.Value;
+        set => Model.FootplateAdductionAbductionAngle.Value = value;
     }
 
-    public int AnkleAxisY
+    public double FootplateProximalDistalDistance
     {
-        get => Model.AnkleAxisY.Value;
-        set => Model.AnkleAxisY.Value = value;
+        get => Model.FootplateProximalDistalDistance.Value;
+        set => Model.FootplateProximalDistalDistance.Value = value;
     }
 
-    public int AnkleAxisZ
+    public double FootplateAnteroPosteriorDistance
     {
-        get => Model.AnkleAxisZ.Value;
-        set => Model.AnkleAxisZ.Value = value;
+        get => Model.FootplateAnteroPosteriorDistance.Value;
+        set => Model.FootplateAnteroPosteriorDistance.Value = value;
     }
 
-    public int TibiaLength
+    public double CuffProximalDistalDistance
     {
-        get => Model.TibiaLength.Value;
-        set => Model.TibiaLength.Value = value;
-    }
-
-    public int KneeAxisDeviation
-    {
-        get => Model.KneeAxisDeviation.Value;
-        set => Model.KneeAxisDeviation.Value = value;
+        get => Model.CuffProximalDistalDistance.Value;
+        set => Model.CuffProximalDistalDistance.Value = value;
     }
 
     /// <summary>

@@ -2,12 +2,12 @@
 
 public class MechanicalAdjustmentWithLimits
 {
-    private int _value;
+    private double _value;
     public int MinValue { get; }
     public int MaxValue { get; }
-    public int Step { get; }
+    public double Step { get; }
 
-    public int Value
+    public double Value
     {
         get => _value;
         set
@@ -19,7 +19,7 @@ public class MechanicalAdjustmentWithLimits
         }
     }
 
-    public MechanicalAdjustmentWithLimits(int minValue, int maxValue, int step, int value)
+    public MechanicalAdjustmentWithLimits(int minValue, int maxValue, double step, double value)
     {
         MinValue = minValue;
         MaxValue = maxValue;

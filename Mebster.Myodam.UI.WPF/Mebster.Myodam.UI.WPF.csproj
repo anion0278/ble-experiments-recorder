@@ -25,7 +25,9 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Assets\Bottom_cut.png" />
 	  <None Remove="Assets\myodam_mechanical_adjustment.png" />
+	  <None Remove="Assets\Side_cut.png" />
 	  <None Remove="Assets\splashScreen.png" />
 	</ItemGroup>
 
@@ -37,7 +39,7 @@
     <!-- Work around https://github.com/dotnet/wpf/issues/6792 -->
 
     <ItemGroup>
-      <FilteredAnalyzer Include="@(Analyzer->Distinct())" />
+      <FilteredAnalyzer Include="@(Analyzer-&gt;Distinct())" />
       <Analyzer Remove="@(Analyzer)" />
       <Analyzer Include="@(FilteredAnalyzer)" />
     </ItemGroup>
@@ -106,7 +108,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Resource Include="Assets\Bottom_cut.png" />
 	  <Resource Include="Assets\myodam_mechanical_adjustment.png" />
+	  <Resource Include="Assets\Side_cut.png" />
 	</ItemGroup>
 
 

@@ -48,20 +48,17 @@ namespace Mebster.Myodam.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("AnkleAxisX")
-                        .HasColumnType("INTEGER");
+                    b.Property<double>("CuffProximalDistalDistance")
+                        .HasColumnType("REAL");
 
-                    b.Property<int>("AnkleAxisY")
-                        .HasColumnType("INTEGER");
+                    b.Property<double>("FootplateAdductionAbductionAngle")
+                        .HasColumnType("REAL");
 
-                    b.Property<int>("AnkleAxisZ")
-                        .HasColumnType("INTEGER");
+                    b.Property<double>("FootplateAnteroPosteriorDistance")
+                        .HasColumnType("REAL");
 
-                    b.Property<int>("KneeAxisDeviation")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("TibiaLength")
-                        .HasColumnType("INTEGER");
+                    b.Property<double>("FootplateProximalDistalDistance")
+                        .HasColumnType("REAL");
 
                     b.HasKey("Id");
 
@@ -97,7 +94,7 @@ namespace Mebster.Myodam.DataAccess.Migrations
                             Current = 10,
                             Frequency = 50,
                             PulseWidth = 50,
-                            StimulationTime = new TimeSpan(0, 0, 0, 5, 0)
+                            StimulationTime = new TimeSpan(0, 0, 0, 10, 0)
                         });
                 });
 
