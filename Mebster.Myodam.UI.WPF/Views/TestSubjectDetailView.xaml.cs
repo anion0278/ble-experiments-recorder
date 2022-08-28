@@ -1,5 +1,7 @@
-﻿using System.Windows.Controls;
+﻿using System;
+using System.Windows.Controls;
 using System.Windows.Input;
+using LiveCharts.Wpf;
 using Mebster.Myodam.UI.WPF.ViewModels;
 
 namespace Mebster.Myodam.UI.WPF.Views
@@ -7,11 +9,22 @@ namespace Mebster.Myodam.UI.WPF.Views
     /// <summary>
     /// Interaction logic for testSubjectDetailView.xaml
     /// </summary>
-    public partial class testSubjectDetailView : UserControl
+    public partial class TestSubjectDetailView : UserControl
     {
-        public testSubjectDetailView()
+        public TestSubjectDetailView()
         {
             InitializeComponent();
+
+            DefaultLegend customLegend = new DefaultLegend();
+            customLegend.Foreground = System.Windows.Media.Brushes.White;
+            StatisticsGraph.ChartLegend = customLegend;
+
+            StatisticsGraphXAxis.LabelFormatter = FormatXAxisLabel;
+        }
+
+        private static string FormatXAxisLabel(double value)
+        {
+            return new DateTime((long)(value * TimeSpan.FromDays(1).Ticks)).ToString("dd. MMM yyyy");
         }
 
 
@@ -21,7 +34,6 @@ namespace Mebster.Myodam.UI.WPF.Views
             var viewModel = (TestSubjectDetailViewModel)DataContext;
             if (viewModel.EditMeasurementCommand.CanExecute(null))
                 viewModel.EditMeasurementCommand.Execute(null);
-
         }
     }
 }

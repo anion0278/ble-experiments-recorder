@@ -37,6 +37,8 @@ public class Measurement
 
     public ICollection<MeasuredValue> ForceData { get; set; }
 
+    public double MaxForce => ForceData?.Max(v => v.Value) ?? 0;
+
     public static ICollection<MeasuredValue>? ConvertInternalJsonToForceValues(string json)
     {
         return JsonSerializer.Deserialize<ICollection<MeasuredValue>?>(json);
@@ -49,3 +51,5 @@ public class Measurement
 }
 
 public record MeasuredValue(double Value, TimeSpan Timestamp);
+
+public record StatisticsValue(double ContractionForceValue, DateTimeOffset MeasurementDate);

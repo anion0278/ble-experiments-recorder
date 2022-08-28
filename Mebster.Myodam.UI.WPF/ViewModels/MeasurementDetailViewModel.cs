@@ -284,7 +284,11 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
                 await _myodamManager.MyodamDevice.StopMeasurementAsync();
                 _myodamManager.MyodamDevice!.NewValueReceived -= OnNewValueReceived;
                 MeasuredValues.Clear();
-                await DialogService.ShowInfoDialogAsync("Measured values were erased because measurement was interrupted.");
+
+                if (_myodamManager.IsCurrentlyMeasuring)
+                {
+                    await DialogService.ShowInfoDialogAsync("Measured values were erased because measurement was interrupted.");
+                }
             }
         }
 

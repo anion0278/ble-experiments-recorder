@@ -19,7 +19,7 @@
                 <ResourceDictionary>
                     <!--Region Implicit MVVM teplates-->
                     <DataTemplate DataType="{x:Type viewModel:TestSubjectDetailViewModel}">
-                        <views:testSubjectDetailView/>
+                        <views:TestSubjectDetailView/>
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type viewModel:MeasurementDetailViewModel}">
                         <views:MeasurementDetailView/>
@@ -54,6 +54,11 @@
                         <Setter Property="FontWeight" Value="Bold"/>
                         <Setter Property="mah:ControlsHelper.ContentCharacterCasing" Value="Normal"/>
                     </Style>-->
+
+                    <Style TargetType="Expander"  BasedOn="{StaticResource {x:Type Expander}}">
+                        <Setter Property="mah:ControlsHelper.ContentCharacterCasing" Value="Normal"/>
+                        <Setter Property="Margin" Value="0 10 0 0"/>
+                    </Style>
 
                     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                         <Setter Property="FontSize" Value="14"/>
