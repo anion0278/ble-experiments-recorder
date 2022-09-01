@@ -11,12 +11,15 @@ using System.Windows.Threading;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using BleRecorder.Business.Device;
+using BleRecorder.DataAccess.DataExport;
+using BleRecorder.DataAccess.FileStorage;
 using BleRecorder.Infrastructure.Bluetooth;
 using BleRecorder.Models.Device;
 using BleRecorder.Models.TestSubject;
 using BleRecorder.UI.WPF.Data.Repositories;
 using BleRecorder.UI.WPF.Event;
 using BleRecorder.UI.WPF.ViewModels.Services;
+using Microsoft.Win32;
 using Swordfish.NET.Collections.Auxiliary;
 
 namespace BleRecorder.UI.WPF.ViewModels
@@ -27,11 +30,15 @@ namespace BleRecorder.UI.WPF.ViewModels
         private readonly IMessenger _messenger;
         private readonly IMessageDialogService _dialogService;
         private readonly IBleRecorderManager _bleRecorderManager;
+        private readonly IDocumentManager _documentManager;
+        private readonly IFileSystemManager _fileManager;
         private readonly ObservableCollection<NavigationItemViewModel> _testSubjectsNavigationItems = new();
 
         public ListCollectionView TestSubjectsNavigationItems { get; } 
 
         public IAsyncRelayCommand ChangeBleRecorderConnectionCommand { get; }
+
+        public IAsyncRelayCommand ExportSelectedCommand { get; }
 
         public BleRecorderAvailabilityStatus BleRecorderAvailability => _bleRecorderManager.BleRecorderAvailability;
 
@@ -67,14 +74,19 @@ namespace BleRecorder.UI.WPF.ViewModels
             IBleRecorderManager bleRecorderManager,
             IAppConfigurationLoader configurationLoader,
             IDeviceCalibrationViewModel deviceCalibrationViewModel,
+            IDocumentManager documentManager,
+            IFileSystemManager fileManager,
             IAsyncRelayCommandFactory asyncCommandFactory)
         {
             ChangeBleRecorderConnectionCommand = asyncCommandFactory.Create(ChangeBleRecorderConnectionAsync, CanChangeBleRecorderConnection);
+            ExportSelectedCommand = asyncCommandFactory.Create(ExportSelectedAsync, CanExportSelected);
 
             _testSubjectRepository = testSubjectRepository;
             _messenger = messenger;
             _dialogService = dialogService;
             _bleRecorderManager = bleRecorderManager;
+            _documentManager = documentManager;
+            _fileManager = fileManager;
             DeviceCalibrationVm = deviceCalibrationViewModel;
 
             _bleRecorderManager.BleRecorderAvailabilityChanged += OnBleRecorderAvailabilityChanged;
@@ -85,6 +97,20 @@ namespace BleRecorder.UI.WPF.ViewModels
 
             TestSubjectsNavigationItems = (ListCollectionView)CollectionViewSource.GetDefaultView(_testSubjectsNavigationItems);
             TestSubjectsNavigationItems.CustomSort = new NavigationAddItemViewModelRelationalComparer();
+        }
+
+        private bool CanExportSelected()
+        {
+            return true; // NOT DURING MEASUREMENT
+        }
+
+        private async Task ExportSelectedAsync()
+        {
+            var ts = await _testSubjectRepository.GetAllWithRelatedDataAsync();
+            if (_fileManager.SaveSingleFileDialog("Export.xlsx", out var fileName))
+            {
+                await Task.Run(() => _documentManager.Export(fileName!, ts));
+            }
         }
 
         private void OnBleRecorderPropertyChanged(object? sender, EventArgs e)

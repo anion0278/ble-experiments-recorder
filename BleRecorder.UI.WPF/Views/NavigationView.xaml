@@ -75,13 +75,21 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <GroupBox Header="Test subjects" Margin="0 0 0 3" mah:ControlsHelper.ContentCharacterCasing="Normal">
-            <ScrollViewer VerticalScrollBarVisibility="Auto"
-                  HorizontalScrollBarVisibility="Auto">
-                <ItemsControl ItemsSource="{Binding TestSubjectsNavigationItems}"
-                    ItemContainerStyle="{StaticResource NavigationItemContainerStyle}"
-                    ItemTemplate="{StaticResource NavigationItemTemplate}"
-                    Margin="10"/>
-            </ScrollViewer>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding TestSubjectsNavigationItems}"
+                                  ItemContainerStyle="{StaticResource NavigationItemContainerStyle}"
+                                  ItemTemplate="{StaticResource NavigationItemTemplate}"
+                                  Margin="10"/>
+                </ScrollViewer>
+                <Button Grid.Row="1" Content="Export selected"
+                        Command="{Binding ExportSelectedCommand}"/>
+            </Grid>
         </GroupBox>
         <GroupBox Grid.Row="1" MinHeight="200" Header="Device status" mah:ControlsHelper.ContentCharacterCasing="Normal">
             <Grid>

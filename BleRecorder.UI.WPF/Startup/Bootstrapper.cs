@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using BleRecorder.Business.Device;
 using BleRecorder.Common.Services;
 using BleRecorder.DataAccess;
+using BleRecorder.DataAccess.DataExport;
 using BleRecorder.DataAccess.FileStorage;
 using BleRecorder.Infrastructure.Bluetooth;
 using BleRecorder.Models.Device;
@@ -23,7 +24,6 @@ namespace BleRecorder.UI.WPF.Startup
             var builder = new ContainerBuilder();
 
             builder.RegisterInstance<IMessenger>(WeakReferenceMessenger.Default);
-            builder.RegisterInstance<IMapper>(SetupMapper());
             builder.RegisterInstance<IMapper>(SetupMapper());
 
             builder.RegisterType<MainWindow>().AsSelf();
@@ -48,8 +48,9 @@ namespace BleRecorder.UI.WPF.Startup
             builder.RegisterType<ExperimentsDbContext>().AsSelf();
             builder.RegisterType<TestSubjectRepository>().As<ITestSubjectRepository>();
             builder.RegisterType<MeasurementRepository>().As<IMeasurementRepository>();
-            builder.RegisterType<FileManager>().As<IFileManager>();
+            builder.RegisterType<FileSystemManager>().As<IFileSystemManager>();
             builder.RegisterType<JsonManager>().As<IJsonManager>();
+            builder.RegisterType<ExcelDocumentManager>().As<IDocumentManager>();
 
             return builder.Build();
         }

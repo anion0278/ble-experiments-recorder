@@ -27,12 +27,12 @@ public interface IAppConfigurationLoader
 public class AppConfigurationLoader : IAppConfigurationLoader
 {
     private readonly IJsonManager _jsonManager;
-    private readonly IFileManager _fileManager;
+    private readonly IFileSystemManager _fileManager;
     private AppConfiguration _configuration = GetDefaultConfiguration();
 
     public string ConfigurationFileName => "config.json";
 
-    public AppConfigurationLoader(IJsonManager jsonManager, IFileManager fileManager)
+    public AppConfigurationLoader(IJsonManager jsonManager, IFileSystemManager fileManager)
     {
         _jsonManager = jsonManager;
         _fileManager = fileManager;

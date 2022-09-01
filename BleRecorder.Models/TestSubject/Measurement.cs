@@ -23,7 +23,6 @@ public class Measurement
     [StringLength(40)]
     public string Title { get; set; }
 
-
     [StringLength(400)]
     public string? Notes { get; set; }
 
@@ -37,7 +36,7 @@ public class Measurement
 
     public ICollection<MeasuredValue> ForceData { get; set; }
 
-    public double MaxForce => ForceData?.Max(v => v.Value) ?? 0;
+    public double MaxForce => ForceData.Any() ? ForceData.Max(v => v.Value) : 0;
 
     public static ICollection<MeasuredValue>? ConvertInternalJsonToForceValues(string json)
     {

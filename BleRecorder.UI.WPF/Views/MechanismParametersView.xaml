@@ -25,7 +25,6 @@
                             </Setter>
                             <Setter Property="Padding" Value="0"/>
                         </DataTrigger>
-
                     </Style.Triggers>
                 </Style>
             </ControlTemplate.Resources>

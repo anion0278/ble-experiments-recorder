@@ -5,7 +5,7 @@ public class AdjustableParameter
     public int Value { get; set; }
 }
 
-public class DeviceMechanicalAdjustments : ICloneable
+public class DeviceMechanicalAdjustments : ICloneable // TODO: Prototype pattern
 {
     public int Id { get; private set; }
     public double FixtureAdductionAbductionAngle { get; set; }

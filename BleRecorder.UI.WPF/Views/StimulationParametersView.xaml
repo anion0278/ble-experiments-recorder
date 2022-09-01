@@ -40,7 +40,7 @@
                            Interval="1" Minimum="1" Maximum="10"
                            Value="{Binding StimulationTimeSeconds}" />
 
-        <Label Grid.Row="4" Grid.Column="0"  Content="Pulse [us]:"  VerticalAlignment="Center"/>
+        <Label Grid.Row="4" Grid.Column="0"  Content="Pulse width [us]:"  VerticalAlignment="Center"/>
         <ComboBox Grid.Row="4" Grid.Column="1" 
                   DisplayMemberPath="Value" Style="{StaticResource MeasurementParamComboBox}"
                   SelectedItem="{Binding PulseWidthMicroSeconds}"
