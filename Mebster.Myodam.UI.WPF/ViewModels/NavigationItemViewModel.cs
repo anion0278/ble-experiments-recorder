@@ -10,9 +10,10 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
     public class NavigationItemViewModel : ViewModelBase
     {
         private IMessenger _messenger;
-        private readonly string _detailViewModelName = nameof(TestSubjectDetailViewModel);
 
         public int Id { get; }
+
+        public virtual bool IsSelected { get; set; }
 
         public string DisplayMember { get; set; }
 
@@ -31,7 +32,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             _messenger.Send(new OpenDetailViewEventArgs
             {
                 Id = Id,
-                ViewModelName = _detailViewModelName
+                ViewModelName = nameof(TestSubjectDetailViewModel)
             });
         }
     }

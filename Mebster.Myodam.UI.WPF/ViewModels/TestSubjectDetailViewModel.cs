@@ -27,6 +27,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 {
     public class TestSubjectDetailViewModel : DetailViewModelBase, ITestSubjectDetailViewModel
     {
+        private ObservableCollection<Measurement> _measurements;
         private ITestSubjectRepository _testSubjectRepository;
         private readonly IMeasurementRepository _measurementRepository;
         private readonly IMapper _mapper;
@@ -37,7 +38,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         public ICommand AddMeasurementCommand { get; set; }
 
-        private ObservableCollection<Measurement> _measurements;
 
         public ChartValues<StatisticsValue> MaxContractionStatisticValues { get; set; } = new();
         public ChartValues<StatisticsValue> FatigueStatisticValues { get; set; } = new();
@@ -49,7 +49,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         public MechanismParametersViewModel MechanismParametersVm { get; private set; }
         public StimulationParametersViewModel StimulationParametersVm { get; private set; }
 
-        public override string Title => string.IsNullOrWhiteSpace(Model?.FullName) ? "(New subject)" : Model.FullName;
+        public override string Title => string.IsNullOrWhiteSpace(Model.FullName) ? "(New subject)" : Model.FullName;
 
         [Required]
         [StringLength(20, MinimumLength = 2)]
@@ -200,7 +200,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             if (await _testSubjectRepository.GetByIdAsync(Id) == null || HasChanges)
             {
                 await DialogService.ShowInfoDialogAsync(
-                    "Test subject is not saved. Save changes before adding measurements.");
+                    "Changes are not saved. Please, save changes before adding measurements.");
                 return;
             }
 

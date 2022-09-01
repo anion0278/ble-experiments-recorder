@@ -177,11 +177,11 @@
             <Expander Grid.Row="9" 
                       Header="Contraction force progression" IsExpanded="True">
                 <wpf:CartesianChart x:Name="StatisticsGraph" Foreground="{StaticResource MebsterColor}" 
-                                               DisableAnimations="True" MinHeight="230" 
-                                               LegendLocation="Bottom"
-                                               Margin="10 10 10 0">
+                                    DisableAnimations="True" MinHeight="230" 
+                                    LegendLocation="Bottom"
+                                    Margin="10 10 10 0">
                     <wpf:CartesianChart.AxisY>
-                        <wpf:Axis MinValue="0" Title="Contraction Force [N]" />
+                        <wpf:Axis  MinValue="0" Title="Contraction Force [N]" />
                     </wpf:CartesianChart.AxisY>
 
                     <wpf:CartesianChart.AxisX>

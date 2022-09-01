@@ -137,8 +137,7 @@ public class AsyncRelayCommandFactory : IAsyncRelayCommandFactory
                 ((IAsyncRelayCommand)s).ExecutionTask is Task task &&
                 task.Exception is AggregateException exception)
             {
-                //logger.LogCritical(exception, "Exception");
-                //dialogService.Sh(this, errorVm);
+                // TODO - investigate - throws aggregate exception, but the inner exceptions are rethrown again
                 _exceptionHandler.HandleException(exception);
             }
         };

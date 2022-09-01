@@ -11,12 +11,15 @@ using System.Windows.Threading;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Mebster.Myodam.Business.Device;
+using Mebster.Myodam.DataAccess.DataExport;
+using Mebster.Myodam.DataAccess.FileStorage;
 using Mebster.Myodam.Infrastructure.Bluetooth;
 using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.Models.TestSubject;
 using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.Event;
 using Mebster.Myodam.UI.WPF.ViewModels.Services;
+using Microsoft.Win32;
 using Swordfish.NET.Collections.Auxiliary;
 
 namespace Mebster.Myodam.UI.WPF.ViewModels
@@ -27,11 +30,15 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         private readonly IMessenger _messenger;
         private readonly IMessageDialogService _dialogService;
         private readonly IMyodamManager _myodamManager;
+        private readonly IDocumentManager _documentManager;
+        private readonly IFileSystemManager _fileManager;
         private readonly ObservableCollection<NavigationItemViewModel> _testSubjectsNavigationItems = new();
 
         public ListCollectionView TestSubjectsNavigationItems { get; } 
 
         public IAsyncRelayCommand ChangeMyodamConnectionCommand { get; }
+
+        public IAsyncRelayCommand ExportSelectedCommand { get; }
 
         public MyodamAvailabilityStatus MyodamAvailability => _myodamManager.MyodamAvailability;
 
@@ -67,14 +74,19 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             IMyodamManager myodamManager,
             IAppConfigurationLoader configurationLoader,
             IDeviceCalibrationViewModel deviceCalibrationViewModel,
+            IDocumentManager documentManager,
+            IFileSystemManager fileManager,
             IAsyncRelayCommandFactory asyncCommandFactory)
         {
             ChangeMyodamConnectionCommand = asyncCommandFactory.Create(ChangeMyodamConnectionAsync, CanChangeMyodamConnection);
+            ExportSelectedCommand = asyncCommandFactory.Create(ExportSelectedAsync, CanExportSelected);
 
             _testSubjectRepository = testSubjectRepository;
             _messenger = messenger;
             _dialogService = dialogService;
             _myodamManager = myodamManager;
+            _documentManager = documentManager;
+            _fileManager = fileManager;
             DeviceCalibrationVm = deviceCalibrationViewModel;
 
             _myodamManager.MyodamAvailabilityChanged += OnMyodamAvailabilityChanged;
@@ -85,6 +97,20 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
             TestSubjectsNavigationItems = (ListCollectionView)CollectionViewSource.GetDefaultView(_testSubjectsNavigationItems);
             TestSubjectsNavigationItems.CustomSort = new NavigationAddItemViewModelRelationalComparer();
+        }
+
+        private bool CanExportSelected()
+        {
+            return true; // NOT DURING MEASUREMENT
+        }
+
+        private async Task ExportSelectedAsync()
+        {
+            var ts = await _testSubjectRepository.GetAllWithRelatedDataAsync();
+            if (_fileManager.SaveSingleFileDialog("Export.xlsx", out var fileName))
+            {
+                await Task.Run(() => _documentManager.Export(fileName!, ts));
+            }
         }
 
         private void OnMyodamPropertyChanged(object? sender, EventArgs e)

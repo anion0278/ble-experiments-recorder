@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Mebster.Myodam.DataAccess;
 using Mebster.Myodam.Models.TestSubject;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ public interface ITestSubjectRepository : IGenericRepository<TestSubject>
     void RemoveMeasurement(Measurement measurementsCurrentItem);
 
     Task<TestSubject> ReloadAsync(TestSubject testSubject);
+    Task<IEnumerable<TestSubject>> GetAllWithRelatedDataAsync();
 }
 
 public class TestSubjectRepository : GenericRepository<TestSubject, ExperimentsDbContext>, ITestSubjectRepository
@@ -32,6 +34,15 @@ public class TestSubjectRepository : GenericRepository<TestSubject, ExperimentsD
     {
         Context.Entry(testSubject).State = EntityState.Detached;
         return (await GetByIdAsync(testSubject.Id))!;
+    }
+
+    public async Task<IEnumerable<TestSubject>> GetAllWithRelatedDataAsync()
+    {
+        return await Context.TestSubjects
+            .Include(ts => ts.Measurements)
+            .Include(ts => ts.CustomizedAdjustments)
+            .Include(ts => ts.CustomizedParameters)
+            .ToListAsync();
     }
 
     public void RemoveMeasurement(Measurement item) // TODO join repositories, or change Collection to List to remove item from TestSubj
