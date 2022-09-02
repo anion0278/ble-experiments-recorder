@@ -57,7 +57,7 @@
         <resouces:MeasurementValuesChartPointMapper x:Key="chartPointMapper" />
     </UserControl.Resources>
 
-    <ScrollViewer Padding="10">
+    <resouces:ScrollViewerWithStableOffset Padding="10">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -198,5 +198,5 @@
             </StackPanel>
 
         </Grid>
-    </ScrollViewer>
+    </resouces:ScrollViewerWithStableOffset>
 </UserControl>
