@@ -101,7 +101,9 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         private bool CanExportSelected()
         {
-            return true; // NOT DURING MEASUREMENT
+            return !_myodamManager.IsCurrentlyMeasuring && _navigationItems
+                .OfType<NavigationTestSubjectItemViewModel>()
+                .Count(item => item.IsSelected) > 0;
         }
 
         private async Task ExportSelectedAsync()
@@ -127,7 +129,11 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         private void OnMyodamAvailabilityChanged(object? o, EventArgs eventArgs)
         {
             OnMyodamPropertyChanged(this, EventArgs.Empty);
-            ViewSynchronizationContext.Send(_ => ChangeMyodamConnectionCommand.NotifyCanExecuteChanged(), null);
+            ViewSynchronizationContext.Send(_ =>
+            {
+                ChangeMyodamConnectionCommand.NotifyCanExecuteChanged();
+                ExportSelectedCommand.NotifyCanExecuteChanged();
+            }, null);
         }
 
         private bool CanChangeMyodamConnection()
