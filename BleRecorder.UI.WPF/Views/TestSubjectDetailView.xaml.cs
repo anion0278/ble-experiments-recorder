@@ -30,7 +30,6 @@ namespace BleRecorder.UI.WPF.Views
             return new DateTime((long)(value * TimeSpan.FromDays(1).Ticks)).ToString("dd. MMM yyyy");
         }
 
-
         private void Row_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             // fast hack that works well. Its UI responsibility anyway
@@ -38,7 +37,6 @@ namespace BleRecorder.UI.WPF.Views
             if (viewModel.EditMeasurementCommand.CanExecute(null))
                 viewModel.EditMeasurementCommand.Execute(null);
         }
-
     }
 }
 

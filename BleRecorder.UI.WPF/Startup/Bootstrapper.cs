@@ -26,12 +26,12 @@ namespace BleRecorder.UI.WPF.Startup
             builder.RegisterInstance<IMessenger>(WeakReferenceMessenger.Default);
             builder.RegisterInstance<IMapper>(SetupMapper());
 
-            builder.RegisterType<MainWindow>().AsSelf();
-            builder.RegisterType<MainViewModel>().AsSelf();
-            builder.RegisterType<NavigationViewModel>().As<INavigationViewModel>();
+            builder.RegisterType<MainWindow>().AsSelf().SingleInstance();
+            builder.RegisterType<MainViewModel>().AsSelf().SingleInstance();
+            builder.RegisterType<NavigationViewModel>().As<INavigationViewModel>().SingleInstance();
             builder.RegisterType<TestSubjectDetailViewModel>().Keyed<IDetailViewModel>(nameof(TestSubjectDetailViewModel));
             builder.RegisterType<MeasurementDetailViewModel>().Keyed<IDetailViewModel>(nameof(MeasurementDetailViewModel));
-            builder.RegisterType<DeviceCalibrationViewModel>().As<IDeviceCalibrationViewModel>();
+            builder.RegisterType<DeviceCalibrationViewModel>().As<IDeviceCalibrationViewModel>().SingleInstance();
 
             builder.RegisterType<MessageDialogService>().As<IMessageDialogService>().SingleInstance();
             builder.RegisterType<AppCenterIntegration>().As<IAppCenterIntegration>().SingleInstance();

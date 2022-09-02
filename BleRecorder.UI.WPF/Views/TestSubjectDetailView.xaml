@@ -175,9 +175,7 @@
 
             <Expander Grid.Row="9" 
                       Header="Contraction force progression" IsExpanded="True">
-
                 <Grid>
-
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition/>
@@ -221,7 +219,6 @@
                         </wpf:CartesianChart.AxisY>
 
                         <wpf:CartesianChart.AxisX>
-                            <!--738000-->
                             <wpf:Axis x:Name="StatisticsGraphXAxis" LabelsRotation="60" Title="Date" />
                         </wpf:CartesianChart.AxisX>
 

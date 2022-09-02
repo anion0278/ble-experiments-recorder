@@ -22,7 +22,7 @@ public class BluetoothDeviceHandler : IBleDeviceHandler
     private GattCharacteristic? _txCharacteristic;
     private readonly System.Timers.Timer _heartbeatWatchdog; // thread-safe timer
     private TimeSpan _incomingHearbeatWatchdogInterval = TimeSpan.FromSeconds(0.4);
-    private TimeSpan _incomingHearbeatTimeout = TimeSpan.FromSeconds(1.0); 
+    private TimeSpan _incomingHearbeatTimeout = TimeSpan.FromSeconds(1.0);
     private bool _isConnected;
     private readonly object _syncRoot = new();
     //private string _previousMsg;
@@ -97,6 +97,8 @@ public class BluetoothDeviceHandler : IBleDeviceHandler
 
     private void OnWatchdogPeriodElapsed(object? sender, ElapsedEventArgs e)
     {
+        //try
+        //{
         //Debug.Print(_previousMsg);
         //await Send(_previousMsg); // PROBLEM - when device sends Measurement stopped - the message does not reflect it. 
         // this causes restart of measurement
@@ -105,7 +107,13 @@ public class BluetoothDeviceHandler : IBleDeviceHandler
         if (ts - LatestTimestamp < _incomingHearbeatTimeout) return;
 
         Disconnect();
+
         _contextProvider.Context.Send(_ => throw new DeviceHeartbeatTimeoutException(), null);
+        //}
+        //catch (Exception ex)
+        //{
+        //    Debug.Print("Exception in ");
+        //} // TODO create TimerWithSynchronization, maybe fold exception into Aggregate exception and handle unwinding inside GlobalExHandler
     }
 
     private void BleDeviceOnConnectionStatusChanged(BluetoothLEDevice sender, object args)
