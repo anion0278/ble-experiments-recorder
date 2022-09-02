@@ -149,7 +149,6 @@ namespace BleRecorder.UI.WPF.ViewModels
         private void OnPropertyChangedEventHandler(object? o, PropertyChangedEventArgs propertyChangedEventArgs)
         {
             MechanismParametersVm.CopyAdjustmentValuesTo(Model.AdjustmentsDuringMeasurement!);
-
             HasChanges = _measurementRepository.HasChanges();
         }
 
@@ -262,10 +261,10 @@ namespace BleRecorder.UI.WPF.ViewModels
             }
 
             MeasuredValues.Clear();
-            Date = _dateTimeService.Now;
             _bleRecorderManager.BleRecorderDevice!.NewValueReceived -= OnNewValueReceived; // making sure that it is not subscribed multiple times
             _bleRecorderManager.BleRecorderDevice!.NewValueReceived += OnNewValueReceived;
             await _bleRecorderManager.BleRecorderDevice.StartMeasurementAsync(Model.ParametersDuringMeasurement!, Type);
+            Date = _dateTimeService.Now;
         }
 
         private void OnNewValueReceived(object? _, MeasuredValue sensorMeasuredValue)

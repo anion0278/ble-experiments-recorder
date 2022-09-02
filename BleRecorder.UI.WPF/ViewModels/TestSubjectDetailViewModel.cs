@@ -175,6 +175,8 @@ namespace BleRecorder.UI.WPF.ViewModels
             MaxContractionStatisticValues.AddRange(GetStatisticsValues(MeasurementType.MaximumContraction));
             IntermittentStatisticValues.Clear();
             IntermittentStatisticValues.AddRange(GetStatisticsValues(MeasurementType.Intermittent));
+            OnPropertyChanged(nameof(MaxContractionStatisticValues)); // only one update is enough, since MultiBinding will be triggered for both statements
+            OnPropertyChanged(nameof(IntermittentStatisticValues));
         }
 
         private IEnumerable<StatisticsValue> GetStatisticsValues(MeasurementType measurementType) // TODO into statistics Service
