@@ -3,27 +3,39 @@ using System.Collections.Generic;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using BleRecorder.Models.TestSubject;
 using BleRecorder.UI.WPF.Event;
 
 namespace BleRecorder.UI.WPF.ViewModels
 {
-    public class NavigationItemViewModel : ViewModelBase
+    public class NavigationTestSubjectItemViewModel : NavigationAddItemViewModel
     {
-        private IMessenger _messenger;
-
-        public int Id { get; }
+        public TestSubject Model { get; }
 
         public virtual bool IsSelected { get; set; }
 
         public string DisplayMember { get; set; }
 
+        public NavigationTestSubjectItemViewModel(TestSubject testSubject, IMessenger messenger): base(messenger)
+        {
+            Id = testSubject.Id;
+            DisplayMember = testSubject.FullName;
+            Model = testSubject;
+        }
+    }
+
+    public class NavigationAddItemViewModel :  ViewModelBase
+    {
+        private readonly IMessenger _messenger;
+
+        public int Id { get; protected set; }
+
         public ICommand OpenDetailViewCommand { get; }
 
-        public NavigationItemViewModel(int id, string displayMember, IMessenger messenger)
+        public NavigationAddItemViewModel(IMessenger messenger)
         {
             _messenger = messenger;
-            Id = id;
-            DisplayMember = displayMember;
+            Id = -999;
             OpenDetailViewCommand = new RelayCommand(OnOpenDetailViewExecute);
         }
 
@@ -43,17 +55,9 @@ namespace BleRecorder.UI.WPF.ViewModels
         {
             var xType = x.GetType();
             var yType = y.GetType();
-            if (xType == typeof(NavigationItemViewModel) && yType == typeof(NavigationAddItemViewModel)) return -1;
-            if (xType == typeof(NavigationAddItemViewModel) && yType == typeof(NavigationItemViewModel)) return 1;
+            if (xType == typeof(NavigationTestSubjectItemViewModel) && yType == typeof(NavigationAddItemViewModel)) return -1;
+            if (xType == typeof(NavigationAddItemViewModel) && yType == typeof(NavigationTestSubjectItemViewModel)) return 1;
             return 0;
-        }
-    }
-
-    public class NavigationAddItemViewModel : NavigationItemViewModel
-    {
-        public NavigationAddItemViewModel(IMessenger messenger)
-            : base(-999, "+ Add new test subject", messenger)
-        {
         }
     }
 }

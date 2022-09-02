@@ -177,7 +177,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             IntermittentStatisticValues.AddRange(GetStatisticsValues(MeasurementType.Intermittent));
         }
 
-        private IEnumerable<StatisticsValue> GetStatisticsValues(MeasurementType measurementType)
+        private IEnumerable<StatisticsValue> GetStatisticsValues(MeasurementType measurementType) // TODO into statistics Service
         {
             var statisticDataGroupedByDateOnly = _measurements
                 .Where(m => m.Type == measurementType && m.ForceData.Any() && m.Date.HasValue)

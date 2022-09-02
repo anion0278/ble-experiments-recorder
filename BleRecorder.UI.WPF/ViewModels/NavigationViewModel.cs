@@ -32,7 +32,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         private readonly IBleRecorderManager _bleRecorderManager;
         private readonly IDocumentManager _documentManager;
         private readonly IFileSystemManager _fileManager;
-        private readonly ObservableCollection<NavigationItemViewModel> _testSubjectsNavigationItems = new();
+        private readonly ObservableCollection<NavigationAddItemViewModel> _navigationItems = new();
 
         public ListCollectionView TestSubjectsNavigationItems { get; } 
 
@@ -51,7 +51,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         /// Design-time ctor
         /// </summary>
         [Obsolete("Design-time only!")]
-        public NavigationViewModel()
+        public NavigationViewModel(): this(new TestSubject(){FirstName = "Name", LastName = "Surname"})
         {
         }
 
@@ -61,10 +61,10 @@ namespace BleRecorder.UI.WPF.ViewModels
         [Obsolete("Design-time only!")]
         public NavigationViewModel(TestSubject testSubject)
         {
-            TestSubjectsNavigationItems = (ListCollectionView)CollectionViewSource.GetDefaultView(_testSubjectsNavigationItems);
+            TestSubjectsNavigationItems = (ListCollectionView)CollectionViewSource.GetDefaultView(_navigationItems);
             TestSubjectsNavigationItems.CustomSort = new NavigationAddItemViewModelRelationalComparer();
-            _testSubjectsNavigationItems.Add(new NavigationItemViewModel(testSubject.Id, testSubject.FullName, null!));
-            _testSubjectsNavigationItems.Add(new NavigationAddItemViewModel(null!));
+            _navigationItems.Add(new NavigationTestSubjectItemViewModel(testSubject, null!));
+            _navigationItems.Add(new NavigationAddItemViewModel(null!));
         }
 
         public NavigationViewModel(
@@ -95,7 +95,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             _messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
             _messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
 
-            TestSubjectsNavigationItems = (ListCollectionView)CollectionViewSource.GetDefaultView(_testSubjectsNavigationItems);
+            TestSubjectsNavigationItems = (ListCollectionView)CollectionViewSource.GetDefaultView(_navigationItems);
             TestSubjectsNavigationItems.CustomSort = new NavigationAddItemViewModelRelationalComparer();
         }
 
@@ -106,10 +106,14 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         private async Task ExportSelectedAsync()
         {
-            var ts = await _testSubjectRepository.GetAllWithRelatedDataAsync();
-            if (_fileManager.SaveSingleFileDialog("Export.xlsx", out var fileName))
+            var subjects = _navigationItems
+                .OfType<NavigationTestSubjectItemViewModel>()
+                .Where(item => item.IsSelected)
+                .Select(item => item.Model);
+            if (_fileManager.SaveSingleFileDialog("Export.xlsx", out var filePath))
             {
-                await Task.Run(() => _documentManager.Export(fileName!, ts));
+                await Task.Run(() => _documentManager.Export(filePath!, subjects));
+                _fileManager.OpenOrShowDir(_fileManager.GetFileDir(filePath));
             }
         }
 
@@ -151,9 +155,9 @@ namespace BleRecorder.UI.WPF.ViewModels
         public async Task LoadAsync()
         {
             var items = (await _testSubjectRepository.GetAllAsync())
-                .Select(ts => new NavigationItemViewModel(ts.Id, ts.FullName, _messenger));
-            _testSubjectsNavigationItems.AddRange(items);
-            _testSubjectsNavigationItems.Add(new NavigationAddItemViewModel(_messenger));
+                .Select(ts => new NavigationTestSubjectItemViewModel(ts, _messenger));
+            _navigationItems.AddRange(items);
+            _navigationItems.Add(new NavigationAddItemViewModel(_messenger));
             await DeviceCalibrationVm.LoadAsync();
         }
 
@@ -162,28 +166,30 @@ namespace BleRecorder.UI.WPF.ViewModels
             switch (args.ViewModelName)
             {
                 case nameof(TestSubjectDetailViewModel):
-                    var item = _testSubjectsNavigationItems.SingleOrDefault(f => f.Id == args.Id);
+                    var item = _navigationItems.SingleOrDefault(f => f.Id == args.Id);
                     if (item != null)
                     {
-                        _testSubjectsNavigationItems.Remove(item);
+                        _navigationItems.Remove(item);
                     }
                     break;
             }
         }
 
-        private void AfterDetailSaved(AfterDetailSavedEventArgs args) // TODO refactoring!
+        private async void AfterDetailSaved(AfterDetailSavedEventArgs args) // TODO refactoring!
         {
             switch (args.ViewModelName)
             {
                 case nameof(TestSubjectDetailViewModel):
-                    var lookupItem = _testSubjectsNavigationItems.SingleOrDefault(l => l.Id == args.Id);
+                    var lookupItem = _navigationItems.SingleOrDefault(l => l.Id == args.Id);
                     if (lookupItem == null)
                     {
-                        _testSubjectsNavigationItems.Add(new NavigationItemViewModel(args.Id, args.DisplayMember, _messenger));
+                        var ts = await _testSubjectRepository.GetByIdAsync(args.Id);
+                        _navigationItems.Add(new NavigationTestSubjectItemViewModel(ts!, _messenger));
                     }
                     else
+                    if (lookupItem is NavigationTestSubjectItemViewModel nvm)
                     {
-                        lookupItem.DisplayMember = args.DisplayMember;
+                        nvm.DisplayMember = args.DisplayMember;
                     }
                     break;
             }
