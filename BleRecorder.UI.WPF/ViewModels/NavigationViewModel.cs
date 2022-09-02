@@ -101,7 +101,9 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         private bool CanExportSelected()
         {
-            return true; // NOT DURING MEASUREMENT
+            return !_bleRecorderManager.IsCurrentlyMeasuring && _navigationItems
+                .OfType<NavigationTestSubjectItemViewModel>()
+                .Count(item => item.IsSelected) > 0;
         }
 
         private async Task ExportSelectedAsync()
@@ -127,7 +129,11 @@ namespace BleRecorder.UI.WPF.ViewModels
         private void OnBleRecorderAvailabilityChanged(object? o, EventArgs eventArgs)
         {
             OnBleRecorderPropertyChanged(this, EventArgs.Empty);
-            ViewSynchronizationContext.Send(_ => ChangeBleRecorderConnectionCommand.NotifyCanExecuteChanged(), null);
+            ViewSynchronizationContext.Send(_ =>
+            {
+                ChangeBleRecorderConnectionCommand.NotifyCanExecuteChanged();
+                ExportSelectedCommand.NotifyCanExecuteChanged();
+            }, null);
         }
 
         private bool CanChangeBleRecorderConnection()

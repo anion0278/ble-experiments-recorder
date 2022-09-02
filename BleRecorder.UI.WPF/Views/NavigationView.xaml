@@ -8,6 +8,7 @@
              xmlns:device1="clr-namespace:BleRecorder.Business.Device;assembly=BleRecorder.Business"
              xmlns:viewModels="clr-namespace:BleRecorder.UI.WPF.ViewModels"
              xmlns:views="clr-namespace:BleRecorder.UI.WPF.Views"
+             xmlns:extensions="clr-namespace:BleRecorder.UI.WPF.Extensions"
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="380"
              d:DataContext="{d:DesignInstance viewModels:NavigationViewModel, IsDesignTimeCreatable=True}">
@@ -116,7 +117,7 @@
                                   ItemContainerStyle="{StaticResource NavigationItemContainerStyle}"
                                   Margin="10"/>
                 </ScrollViewer>
-                <Button Grid.Row="1" Content="Export selected"
+                <Button Grid.Row="1" Content="Export selected" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
                         Command="{Binding ExportSelectedCommand}"/>
             </Grid>
         </GroupBox>
