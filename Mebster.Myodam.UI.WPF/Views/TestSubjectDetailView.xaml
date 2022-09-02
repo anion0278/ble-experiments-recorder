@@ -87,9 +87,10 @@
         </Style>
 
         <resouces:StatisticChartPointMapper x:Key="chartPointMapper" />
+        <resouces:MultiCollectionToVisibilityConverter x:Key="multiCollectionToVisibilityConverter" />
     </UserControl.Resources>
 
-    <ScrollViewer Padding="10">
+    <resouces:ScrollViewerWithStableOffset Padding="10">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -117,9 +118,7 @@
                      Text="{Binding Notes, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" />
 
             <Expander Grid.Row="6" Header="Individual settings" 
-                      IsExpanded="{Binding Id, Mode=OneTime, Converter={StaticResource idToBooleanConverter}}">
-                <!--TODO OneTime Binding does not work as expected, probably due to virtualization. 
-                    Possible solution https://www.codeproject.com/Articles/460989/WPF-TabControl-Turning-Off-Tab-Virtualization-->
+                      IsExpanded="{Binding Id, Mode=OneWay, Converter={StaticResource idToBooleanConverter}}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -176,34 +175,72 @@
 
             <Expander Grid.Row="9" 
                       Header="Contraction force progression" IsExpanded="True">
-                <wpf:CartesianChart x:Name="StatisticsGraph" Foreground="{StaticResource MebsterColor}" 
-                                    DisableAnimations="True" MinHeight="230" 
-                                    LegendLocation="Bottom"
-                                    Margin="10 10 10 0">
-                    <wpf:CartesianChart.AxisY>
-                        <wpf:Axis  MinValue="0" Title="Contraction Force [N]" />
-                    </wpf:CartesianChart.AxisY>
 
-                    <wpf:CartesianChart.AxisX>
-                        <wpf:Axis x:Name="StatisticsGraphXAxis" LabelsRotation="60" Title="Date"  />
-                    </wpf:CartesianChart.AxisX>
+                <Grid>
 
-                    <wpf:CartesianChart.SeriesColors>
-                        <wpf:ColorsCollection>
-                            <Color>Aqua</Color>
-                            <Color>Violet</Color>
-                        </wpf:ColorsCollection>
-                    </wpf:CartesianChart.SeriesColors>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
 
-                    <wpf:CartesianChart.Series>
-                        <wpf:LineSeries Title="Maximum contraction trend" 
+                    <TextBlock Grid.Row="1" x:Name="GraphInsufficientDataMessage"
+                               Text="Insufficient data for statistics"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center" Padding="16"
+                               Background="{StaticResource MebsterColor}"
+                               FontSize="18" FontWeight="DemiBold">
+                        <TextBlock.Visibility>
+                            <MultiBinding Converter="{StaticResource multiCollectionToVisibilityConverter}">
+                                <Binding Path="MaxContractionStatisticValues" />
+                                <Binding Path="FatigueStatisticValues" />
+                            </MultiBinding>
+                        </TextBlock.Visibility>
+                    </TextBlock>
+
+                    <wpf:CartesianChart Grid.Row="0" Grid.RowSpan="3" x:Name="StatisticsGraph" Foreground="{StaticResource MebsterColor}"
+                                        DisableAnimations="True" MinHeight="230"
+                                        LegendLocation="Bottom"
+                                        Margin="10 10 10 0">
+                        <wpf:CartesianChart.Style>
+                            <Style TargetType="wpf:CartesianChart">
+                                <Style.Triggers>
+                                    <DataTrigger  Binding="{Binding ElementName=GraphInsufficientDataMessage, Path=Visibility}" Value="Visible">
+                                        <Setter Property="Effect">
+                                            <Setter.Value>
+                                                <BlurEffect Radius="6" KernelType="Gaussian" />
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </wpf:CartesianChart.Style>
+
+                        <wpf:CartesianChart.AxisY>
+                            <wpf:Axis MinValue="0" Title="Contraction Force [N]" />
+                        </wpf:CartesianChart.AxisY>
+
+                        <wpf:CartesianChart.AxisX>
+                            <wpf:Axis x:Name="StatisticsGraphXAxis" LabelsRotation="60" Title="Date" />
+                        </wpf:CartesianChart.AxisX>
+
+                        <wpf:CartesianChart.SeriesColors>
+                            <wpf:ColorsCollection>
+                                <Color>Aqua</Color>
+                                <Color>Violet</Color>
+                            </wpf:ColorsCollection>
+                        </wpf:CartesianChart.SeriesColors>
+
+                        <wpf:CartesianChart.Series>
+                            <wpf:LineSeries Title="Maximum contraction trend"
                                             Values="{Binding MaxContractionStatisticValues}"
-                                            Configuration="{StaticResource chartPointMapper}"/>
-                        <wpf:LineSeries Title="Fatigue contraction trend" 
+                                            Configuration="{StaticResource chartPointMapper}" />
+                            <wpf:LineSeries Title="Fatigue contraction trend"
                                             Values="{Binding FatigueStatisticValues}"
-                                            Configuration="{StaticResource chartPointMapper}"/>
-                    </wpf:CartesianChart.Series>
-                </wpf:CartesianChart>
+                                            Configuration="{StaticResource chartPointMapper}" />
+                        </wpf:CartesianChart.Series>
+                    </wpf:CartesianChart>
+                </Grid>
             </Expander>
 
             <StackPanel Grid.Row="10" Orientation="Horizontal">
@@ -213,5 +250,5 @@
                     Command="{Binding DeleteCommand}"/>
             </StackPanel>
         </Grid>
-    </ScrollViewer>
+    </resouces:ScrollViewerWithStableOffset>
 </UserControl>

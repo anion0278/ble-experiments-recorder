@@ -7,6 +7,8 @@
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:viewModel="clr-namespace:Mebster.Myodam.UI.WPF.ViewModels"
         xmlns:views="clr-namespace:Mebster.Myodam.UI.WPF.Views"
+        xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:resouces="clr-namespace:Mebster.Myodam.UI.WPF.Views.Resouces"
         mc:Ignorable="d"
         Title="{Binding AppVersion, StringFormat='{}MYODAM GUI v{0}'}" 
         Width="1200" Height="700"
@@ -25,6 +27,10 @@
         <TabControl Grid.Column="1" VerticalAlignment="Stretch" IsSynchronizedWithCurrentItem="True"
                 ItemsSource="{Binding DetailViewModels}"
                 SelectedItem="{Binding SelectedDetailViewModel, ValidatesOnNotifyDataErrors=False}">
+            <b:Interaction.Behaviors>
+                <resouces:TabControlPreventVirtualizationBehavior/>
+            </b:Interaction.Behaviors>
+
             <TabControl.Template>
                 <ControlTemplate TargetType="TabControl">
                     <Grid SnapsToDevicePixels="true" KeyboardNavigation.TabNavigation="Local" HorizontalAlignment="Stretch" Margin="2 0">

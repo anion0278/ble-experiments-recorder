@@ -24,5 +24,20 @@ namespace Mebster.Myodam.UI.WPF.Views
         {
             await _viewModel.LoadAsync();
         }
+
+        private void ScrollViewer_Loaded(object sender, RoutedEventArgs e)
+        {
+            //double offset;
+            //if (PageScrollViewer.Tag != null
+            //    && double.TryParse(PageScrollViewer.Tag.ToString(), out offset))
+            //{
+            //    PageScrollViewer.ScrollToVerticalOffset(offset);
+            //}
+        }
+
+        private void ScrollViewer_Unloaded(object sender, RoutedEventArgs e)
+        {
+            //PageScrollViewer.Tag = PageScrollViewer.VerticalOffset;
+        }
     }
 }

@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using AutoMapper.Configuration;
+using DocumentFormat.OpenXml.Drawing;
 using LiveCharts.Wpf;
 using Mebster.Myodam.UI.WPF.ViewModels;
 
@@ -35,5 +38,7 @@ namespace Mebster.Myodam.UI.WPF.Views
             if (viewModel.EditMeasurementCommand.CanExecute(null))
                 viewModel.EditMeasurementCommand.Execute(null);
         }
+
     }
 }
+
