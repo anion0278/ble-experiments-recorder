@@ -56,10 +56,10 @@
 
         <resouces:MeasurementValuesChartPointMapper x:Key="chartPointMapper" />
 
-        <resouces:ConverterChain x:Key="collectionToVisibilityConverterPipeline">
+        <resouces:ConverterPipeline x:Key="collectionToVisibilityConverterPipeline">
             <resouces:MeasuredDataToBooleanConverter/>
             <BooleanToVisibilityConverter />
-        </resouces:ConverterChain>
+        </resouces:ConverterPipeline>
 </UserControl.Resources>
 
     <resouces:ScrollViewerWithStableOffset Padding="10">

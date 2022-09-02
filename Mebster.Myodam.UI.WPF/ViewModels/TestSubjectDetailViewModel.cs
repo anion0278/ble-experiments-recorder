@@ -80,7 +80,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         /// </summary>
         public TestSubjectDetailViewModel() : base(null!, null!, null!)
         {
-            _measurements = new ObservableCollection<Measurement>() { new Measurement() {Title = "Measurement 1"}};
+            _measurements = new ObservableCollection<Measurement>() { new Measurement() { Title = "Measurement 1" } };
             Measurements = CollectionViewSource.GetDefaultView(_measurements);
         }
 
@@ -100,7 +100,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             AddMeasurementCommand = new RelayCommand(async () => await OnAddMeasurementAsync());
             EditMeasurementCommand = new RelayCommand(OnEditMeasurement, () => Measurements!.CurrentItem != null);
             RemoveMeasurementCommand = new RelayCommand(OnRemoveMeasurement, () => Measurements!.CurrentItem != null);
-            
+
             Messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailChanged(e));
             Messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailChanged(e));
 
@@ -177,6 +177,11 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             FatigueStatisticValues.AddRange(GetStatisticsValues(MeasurementType.Fatigue));
             OnPropertyChanged(nameof(MaxContractionStatisticValues)); // only one update is enough, since MultiBinding will be triggered for both statements
             OnPropertyChanged(nameof(FatigueStatisticValues));
+            //if (MaxContractionStatisticValues.Count == 1 && FatigueStatisticValues.Count == 1)
+            //{
+            //    IsFixNeeded = MaxContractionStatisticValues.Single().MeasurementDate.Date.Ticks 
+            //                  == FatigueStatisticValues.Single().MeasurementDate.Date.Ticks;
+            //}
         }
 
         private IEnumerable<StatisticsValue> GetStatisticsValues(MeasurementType measurementType) // TODO into statistics Service
