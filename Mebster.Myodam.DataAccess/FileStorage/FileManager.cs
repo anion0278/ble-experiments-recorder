@@ -48,7 +48,7 @@ public class FileSystemManager : IFileSystemManager
         {
             Title = "Export data",
             FileName = predefinedName,
-            Filter = "Excel Document|*.xlsx",
+            Filter = "Excel Document|*.xlsx", // TODO Builder/Factory
         };
         bool? dialogResult = saveFileDialog.ShowDialog();
         if (dialogResult != true) return false;

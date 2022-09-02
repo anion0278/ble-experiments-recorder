@@ -149,7 +149,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         private void OnPropertyChangedEventHandler(object? o, PropertyChangedEventArgs propertyChangedEventArgs)
         {
             MechanismParametersVm.CopyAdjustmentValuesTo(Model.AdjustmentsDuringMeasurement!);
-
             HasChanges = _measurementRepository.HasChanges();
         }
 
@@ -262,10 +261,10 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             }
 
             MeasuredValues.Clear();
-            Date = _dateTimeService.Now;
             _myodamManager.MyodamDevice!.NewValueReceived -= OnNewValueReceived; // making sure that it is not subscribed multiple times
             _myodamManager.MyodamDevice!.NewValueReceived += OnNewValueReceived;
             await _myodamManager.MyodamDevice.StartMeasurementAsync(Model.ParametersDuringMeasurement!, Type);
+            Date = _dateTimeService.Now;
         }
 
         private void OnNewValueReceived(object? _, MeasuredValue sensorMeasuredValue)

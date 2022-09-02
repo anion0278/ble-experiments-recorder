@@ -72,7 +72,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             IMessenger messenger, 
             IMessageDialogService dialogService,
             IMyodamManager myodamManager,
-            IAppConfigurationLoader configurationLoader,
             IDeviceCalibrationViewModel deviceCalibrationViewModel,
             IDocumentManager documentManager,
             IFileSystemManager fileManager,

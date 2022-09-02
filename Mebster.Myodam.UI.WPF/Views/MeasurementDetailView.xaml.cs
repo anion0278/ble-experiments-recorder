@@ -2,11 +2,19 @@
 
 namespace Mebster.Myodam.UI.WPF.Views
 {
-  public partial class MeasurementDetailView : UserControl
-  {
-    public MeasurementDetailView()
+    public partial class MeasurementDetailView : UserControl
     {
-      InitializeComponent();
+        public MeasurementDetailView()
+        {
+            InitializeComponent();
+            GraphXAxis.LabelFormatter = FormatNumericLabel;
+            GraphYAxis.LabelFormatter = FormatNumericLabel;
+        }
+
+        private static string FormatNumericLabel(double value)
+        {
+            return value.ToString("0.0");
+        }
+
     }
-  }
 }

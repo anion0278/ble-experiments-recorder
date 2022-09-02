@@ -175,6 +175,8 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             MaxContractionStatisticValues.AddRange(GetStatisticsValues(MeasurementType.MaximumContraction));
             FatigueStatisticValues.Clear();
             FatigueStatisticValues.AddRange(GetStatisticsValues(MeasurementType.Fatigue));
+            OnPropertyChanged(nameof(MaxContractionStatisticValues)); // only one update is enough, since MultiBinding will be triggered for both statements
+            OnPropertyChanged(nameof(FatigueStatisticValues));
         }
 
         private IEnumerable<StatisticsValue> GetStatisticsValues(MeasurementType measurementType) // TODO into statistics Service
