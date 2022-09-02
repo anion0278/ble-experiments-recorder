@@ -177,7 +177,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             FatigueStatisticValues.AddRange(GetStatisticsValues(MeasurementType.Fatigue));
         }
 
-        private IEnumerable<StatisticsValue> GetStatisticsValues(MeasurementType measurementType)
+        private IEnumerable<StatisticsValue> GetStatisticsValues(MeasurementType measurementType) // TODO into statistics Service
         {
             var statisticDataGroupedByDateOnly = _measurements
                 .Where(m => m.Type == measurementType && m.ForceData.Any() && m.Date.HasValue)

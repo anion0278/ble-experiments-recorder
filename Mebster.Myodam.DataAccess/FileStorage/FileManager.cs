@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using System.Diagnostics;
 
 namespace Mebster.Myodam.DataAccess.FileStorage;
 
@@ -8,6 +9,8 @@ public interface IFileSystemManager
     void WriteAll(string path, string data);
     bool SaveSingleFileDialog(string predefinedName, out string? selectedFileName);
     bool FileExists(string path);
+    void OpenOrShowDir(string dirName);
+    string GetFileDir(string filePath);
 }
 
 public class FileSystemManager : IFileSystemManager
@@ -20,6 +23,22 @@ public class FileSystemManager : IFileSystemManager
     public void WriteAll(string path, string data)
     {
         File.WriteAllText(path, data);
+    }
+
+    public void OpenOrShowDir(string dirName)
+    {
+        var psi = new ProcessStartInfo()
+        {
+            FileName = dirName,
+            Verb = "open", // utilizes opened folder if available
+            UseShellExecute = true
+        };
+        Process.Start(psi);
+    }
+
+    public string GetFileDir(string filePath)
+    {
+        return Path.GetDirectoryName(filePath);
     }
 
     public bool SaveSingleFileDialog(string predefinedName, out string? selectedFileName)

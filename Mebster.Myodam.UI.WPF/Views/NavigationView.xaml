@@ -44,15 +44,21 @@
             <Setter Property="Margin" Value="2"/>
         </Style>
 
-        <DataTemplate x:Key="NavigationItemTemplate">
+        <!--Region Implicit NavigationItem templates-->
+        <DataTemplate DataType="{x:Type viewModels:NavigationTestSubjectItemViewModel}">
             <Button Content="{Binding DisplayMember}"
               Command="{Binding OpenDetailViewCommand}"
               FontSize="16" Style="{x:Null}">
                 <Button.Template>
                     <ControlTemplate TargetType="Button">
                         <Grid x:Name="grid">
-                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}"/>
+                            <ContentPresenter Grid.Column="1" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
@@ -67,6 +73,31 @@
                 </Button.Template>
             </Button>
         </DataTemplate>
+
+        <DataTemplate DataType="{x:Type viewModels:NavigationAddItemViewModel}">
+            <Button Content="+ Add new test subject" FontStyle="Italic" 
+                    Command="{Binding OpenDetailViewCommand}"
+                    FontSize="16" Style="{x:Null}"  Margin="5">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Grid x:Name="grid">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Cursor" Value="Hand"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="FontWeight" Value="Normal"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </DataTemplate>
+        <!--EndRegion-->
     </UserControl.Resources>
 
     <Grid>
@@ -80,11 +111,9 @@
                     <RowDefinition/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto"
-                              HorizontalScrollBarVisibility="Auto">
+                <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                     <ItemsControl ItemsSource="{Binding TestSubjectsNavigationItems}"
                                   ItemContainerStyle="{StaticResource NavigationItemContainerStyle}"
-                                  ItemTemplate="{StaticResource NavigationItemTemplate}"
                                   Margin="10"/>
                 </ScrollViewer>
                 <Button Grid.Row="1" Content="Export selected"
