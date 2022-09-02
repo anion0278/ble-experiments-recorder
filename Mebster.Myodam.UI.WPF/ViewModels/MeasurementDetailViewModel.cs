@@ -178,7 +178,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
                 if (_myodamManager.MyodamDevice is not null && _myodamManager.MyodamDevice.IsConnected) return;
 
                 MeasuredValues.Clear();
-                DialogService.ShowInfoDialogAsync("Measurement interrupted due to device disconnection! Measured data were erased.");
+                DialogService.ShowInfoDialogAsync("Measurement was interrupted due to device disconnection! Measured data were erased.");
             }, null);
         }
 

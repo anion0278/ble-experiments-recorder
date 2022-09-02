@@ -27,8 +27,7 @@ public class GlobalExceptionHandler : IGlobalExceptionHandler
     {
         try
         {
-            _dialogService.ShowInfoDialog("Unexpected error occurred." + Environment.NewLine +
-                                          exception.Message);
+            _dialogService.ShowInfoDialog("Unexpected error occurred: " + exception.Message);
         }
         finally
         {

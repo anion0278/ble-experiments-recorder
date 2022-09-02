@@ -13,6 +13,7 @@ namespace Mebster.Myodam.Infrastructure.Bluetooth;
 public class BluetoothDeviceHandler : IBleDeviceHandler
 {
     private readonly IDateTimeService _dateTimeService;
+    private readonly ITimerExceptionContextProvider _contextProvider;
     public event EventHandler<string>? DataReceived;
     public event EventHandler? DeviceStatusChanged;
 
@@ -43,10 +44,12 @@ public class BluetoothDeviceHandler : IBleDeviceHandler
         }
     }
 
-    public BluetoothDeviceHandler(IDateTimeService dateTimeService, 
+    public BluetoothDeviceHandler(IDateTimeService dateTimeService,
+        ITimerExceptionContextProvider contextProvider,
         string name, ulong address, short signalStrength, DateTimeOffset timestamp)
     {
         _dateTimeService = dateTimeService;
+        _contextProvider = contextProvider;
         Name = name;
         Address = address;
         SignalStrength = signalStrength;
@@ -102,7 +105,7 @@ public class BluetoothDeviceHandler : IBleDeviceHandler
         if (ts - LatestTimestamp < _incomingHearbeatTimeout) return;
 
         Disconnect();
-        //throw new ArgumentException("Device has been disconnected!");
+        _contextProvider.Context.Send(_ => throw new DeviceHeartbeatTimeoutException(), null);
     }
 
     private void BleDeviceOnConnectionStatusChanged(BluetoothLEDevice sender, object args)

@@ -19,6 +19,7 @@ namespace Mebster.Myodam.Infrastructure.Bluetooth
     public class BluetoothManager : IBluetoothManager
     {
         private readonly IDateTimeService _dateTimeService;
+        private readonly ITimerExceptionContextProvider _contextProvider;
         readonly BluetoothLEAdvertisementWatcher _bleWatcher;
         private readonly System.Timers.Timer _advertisementWatchdog;
         public ConcurrentObservableCollection<BluetoothDeviceHandler> AvailableBleDevices { get; } = new();
@@ -26,9 +27,10 @@ namespace Mebster.Myodam.Infrastructure.Bluetooth
         private TimeSpan _advertisementWatchdogInterval = TimeSpan.FromSeconds(1);
         private TimeSpan _advertisementWatchdogTimeout = TimeSpan.FromSeconds(3);
 
-        public BluetoothManager(IDateTimeService dateTimeService)
+        public BluetoothManager(IDateTimeService dateTimeService, ITimerExceptionContextProvider contextProvider)
         {
             _dateTimeService = dateTimeService;
+            _contextProvider = contextProvider;
             // DeviceInformation.Pairing.IsPaired;
             // TODO Checkout System.Devices.Aep.IsConnected param, since sometimes device is already connected
             //public bool IsConnected => (bool?)DeviceInformation.Properties["System.Devices.Aep.IsConnected"] == true;
@@ -82,6 +84,7 @@ namespace Mebster.Myodam.Infrastructure.Bluetooth
             {
                 AvailableBleDevices.Add(new BluetoothDeviceHandler(
                     _dateTimeService,
+                    _contextProvider,
                     args.Advertisement.LocalName,
                     args.BluetoothAddress,
                     args.RawSignalStrengthInDBm,

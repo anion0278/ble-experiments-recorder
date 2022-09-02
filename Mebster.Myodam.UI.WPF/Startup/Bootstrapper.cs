@@ -44,6 +44,7 @@ namespace Mebster.Myodam.UI.WPF.Startup
             builder.RegisterType<BluetoothManager>().As<IBluetoothManager>().SingleInstance();
             builder.RegisterType<MyodamMessageParser>().As<IMyodamMessageParser>().SingleInstance();
             builder.RegisterType<MyodamManager>().As<IMyodamManager>().SingleInstance();
+            builder.RegisterType<TimerExceptionContextProvider>().As<ITimerExceptionContextProvider>().SingleInstance();
 
             builder.RegisterType<ExperimentsDbContext>().AsSelf();
             builder.RegisterType<TestSubjectRepository>().As<ITestSubjectRepository>();
