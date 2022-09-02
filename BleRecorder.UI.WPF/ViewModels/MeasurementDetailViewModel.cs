@@ -178,7 +178,7 @@ namespace BleRecorder.UI.WPF.ViewModels
                 if (_bleRecorderManager.BleRecorderDevice is not null && _bleRecorderManager.BleRecorderDevice.IsConnected) return;
 
                 MeasuredValues.Clear();
-                DialogService.ShowInfoDialogAsync("Measurement interrupted due to device disconnection! Measured data were erased.");
+                DialogService.ShowInfoDialogAsync("Measurement was interrupted due to device disconnection! Measured data were erased.");
             }, null);
         }
 
