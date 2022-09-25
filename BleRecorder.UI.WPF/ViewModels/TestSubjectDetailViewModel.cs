@@ -183,7 +183,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         {
             var statisticDataGroupedByDateOnly = _measurements
                 .Where(m => m.Type == measurementType && m.ContractionLoadData.Any() && m.Date.HasValue)
-                .Select(m => new StatisticsValue(m.ContractionLoadData.Max(v => v.Value), m.Date!.Value))
+                .Select(m => new StatisticsValue(m.ContractionLoadData.Max(v => v.ContractionValue), m.Date!.Value))
                 .GroupBy(d => d.MeasurementDate.Date);
 
             return statisticDataGroupedByDateOnly

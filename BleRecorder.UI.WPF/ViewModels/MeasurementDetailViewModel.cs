@@ -274,7 +274,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         {
             var forceValue = sensorMeasuredValue with
             {
-                Value = _bleRecorderManager.Calibration.CalculateLoadValue(sensorMeasuredValue.Value)
+                ContractionValue = _bleRecorderManager.Calibration.CalculateLoadValue(sensorMeasuredValue.ContractionValue)
             };
             MeasuredValues.Add(forceValue);
         }
