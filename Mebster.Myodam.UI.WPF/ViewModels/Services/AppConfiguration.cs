@@ -11,6 +11,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels.Services;
 public class AppConfiguration
 {
     public bool IsCalibrationEnabled { get; init; }
+
     public DeviceCalibration MyodamCalibration { get; init; }
 }
 

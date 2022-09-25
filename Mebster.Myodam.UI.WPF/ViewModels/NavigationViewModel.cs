@@ -107,10 +107,14 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         private async Task ExportSelectedAsync()
         {
+            // TODO optimize query 
+            var reloadedSubjects = await _testSubjectRepository.GetAllWithRelatedDataAsync();
+
             var subjects = _navigationItems
                 .OfType<NavigationTestSubjectItemViewModel>()
                 .Where(item => item.IsSelected)
                 .Select(item => item.Model);
+                
             if (_fileManager.SaveSingleFileDialog("Export.xlsx", out var filePath))
             {
                 await Task.Run(() => _documentManager.Export(filePath!, subjects));

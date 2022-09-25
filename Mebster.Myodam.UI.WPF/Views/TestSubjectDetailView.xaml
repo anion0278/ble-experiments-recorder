@@ -151,8 +151,8 @@
                                             Binding="{Binding Title}"/>
                             <DataGridTextColumn Header="Experiment Date" Width="130" IsReadOnly="True"
                                             Binding="{Binding Date, StringFormat='{}{0:dd MMM. yyyy, HH:mm}', TargetNullValue='Not completed'}"/>
-                            <DataGridTextColumn Header="Max. force" Width="90" IsReadOnly="True"
-                                            Binding="{Binding MaxForce, StringFormat='{}{0:0.00} N'}" />
+                            <DataGridTextColumn Header="Max. torque" Width="105" IsReadOnly="True"
+                                            Binding="{Binding MaxForce, StringFormat='{}{0:0.00} Nm'}" />
                             <DataGridTextColumn Header="Type" Width="130"  IsReadOnly="True"
                                             Binding="{Binding Type, Converter={StaticResource enumDescriptionConverter}}"/>
                             <DataGridTextColumn Header="Site" Width="60" IsReadOnly="True"
