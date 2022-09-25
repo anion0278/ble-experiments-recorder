@@ -11,7 +11,7 @@ namespace BleRecorder.Business.Device;
 public class BleRecorderDevice // TODO Extract inteface
 {
     private readonly BleRecorderManager _bleRecorderManager;
-    private readonly IBleDeviceHandler _bleDeviceHandler;
+    private readonly IBluetoothDeviceHandler _bleDeviceHandler;
     private readonly IBleRecorderMessageParser _messageParser;
     private bool _isCurrentlyMeasuring;
     private Percentage _stimulatorBattery;
@@ -83,7 +83,7 @@ public class BleRecorderDevice // TODO Extract inteface
         }
     }
 
-    public BleRecorderDevice(BleRecorderManager bleRecorderManager, IBleDeviceHandler bleDeviceHandler,
+    public BleRecorderDevice(BleRecorderManager bleRecorderManager, IBluetoothDeviceHandler bleDeviceHandler,
         IBleRecorderMessageParser messageParser, DeviceCalibration deviceCalibration)
     {
         Calibration = deviceCalibration;

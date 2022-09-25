@@ -79,7 +79,7 @@ public class BleRecorderManager : IBleRecorderManager
         // TODO Handle multiple devices in a single room
         if (bleRecorderDevices.Length > 1) throw new System.Exception("There is more than one bleRecorder device with provided address!");
 
-        IBleDeviceHandler bleDevice;
+        IBluetoothDeviceHandler bleDevice;
         try
         {
             bleDevice = await bleRecorderDevices.Single().ConnectDeviceAsync();
