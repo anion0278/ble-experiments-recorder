@@ -7,6 +7,8 @@ public class MyodamReplyMessage
 {
     public TimeSpan Timestamp { get; }
     public double SensorValue { get; }
+    public int CurrentMilliAmp { get; }
+
     public Percentage ControllerBattery { get; }
     public Percentage StimulatorBattery { get; }
     public MyodamError Error { get; }
@@ -15,6 +17,7 @@ public class MyodamReplyMessage
     public MyodamReplyMessage(
         TimeSpan timestamp, 
         double sensorValue,
+        int currentMilliAmp,
         Percentage controllerBattery,
         Percentage stimulatorBattery,
         MyodamError error,
@@ -22,6 +25,7 @@ public class MyodamReplyMessage
     {
         Timestamp = timestamp;
         SensorValue = sensorValue;
+        CurrentMilliAmp = currentMilliAmp;
         ControllerBattery = controllerBattery;
         StimulatorBattery = stimulatorBattery;
         Error = error;

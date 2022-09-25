@@ -12,10 +12,11 @@ public class MyodamMessageParser : IMyodamMessageParser
     public MyodamReplyMessage ParseReply(string msg)
     { 
         // TODO possible refactoring
-        var regex = Regex.Match(msg, @">TS:(?'timestamp'\d{5})_ST:(?'sensor'\d{4})_CB:(?'controller_battery'\d{3})_FB:(?'fes_battery'\d{3})_EC:(?'error'\d)_MS:(?'measurement'\d)");
+        var regex = Regex.Match(msg, @">TS:(?'timestamp'\d{5})_ST:(?'sensor'\d{4})_AC:(?'current'\d{3})_CB:(?'controller_battery'\d{3})_FB:(?'fes_battery'\d{3})_EC:(?'error'\d)_MS:(?'measurement'\d)");
         if (regex.Success
             && int.TryParse(regex.Groups["timestamp"].Value, out var timestamp)
             && int.TryParse(regex.Groups["sensor"].Value, out var sensorValue)
+            && int.TryParse(regex.Groups["current"].Value, out var current)
             && Percentage.TryParse(regex.Groups["controller_battery"].Value, out var controllerBattery)
             && Percentage.TryParse(regex.Groups["fes_battery"].Value, out var stimulatorBattery)
             && Enum.TryParse(typeof(MyodamError), regex.Groups["error"].Value, true, out var errorCode)
@@ -24,6 +25,7 @@ public class MyodamMessageParser : IMyodamMessageParser
             return new MyodamReplyMessage(
                 TimeSpan.FromMilliseconds(timestamp),
                 sensorValue,
+                current,
                 controllerBattery,
                 stimulatorBattery,
                 (MyodamError)errorCode!,
@@ -31,12 +33,5 @@ public class MyodamMessageParser : IMyodamMessageParser
         }
 
         throw new ArgumentException("Invalid myodam message!");
-        //if (data.Contains("Finished"))
-        //{
-        //    IsCurrentlyMeasuring = false;
-        //    MeasurementFinished?.Invoke(this, EventArgs.Empty);
-        //}
-
-        //return new MyodamReplyMessage();
     }
 }

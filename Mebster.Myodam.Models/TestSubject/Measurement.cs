@@ -36,7 +36,7 @@ public class Measurement
 
     public ICollection<MeasuredValue> ContractionLoadData { get; set; }
 
-    public double MaxContractionLoad => ContractionLoadData.Any() ? ContractionLoadData.Max(v => v.Value) : 0;
+    public double MaxContractionLoad => ContractionLoadData.Any() ? ContractionLoadData.Max(v => v.ContractionValue) : 0;
 
     public static ICollection<MeasuredValue>? ConvertInternalJsonToForceValues(string json)
     {
@@ -49,6 +49,6 @@ public class Measurement
     }
 }
 
-public record MeasuredValue(double Value, TimeSpan Timestamp);
+public record MeasuredValue(double ContractionValue, double StimulationCurrent, TimeSpan Timestamp);
 
 public record StatisticsValue(double ContractionForceValue, DateTimeOffset MeasurementDate);

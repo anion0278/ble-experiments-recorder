@@ -274,7 +274,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         {
             var forceValue = sensorMeasuredValue with
             {
-                Value = _myodamManager.Calibration.CalculateLoadValue(sensorMeasuredValue.Value)
+                ContractionValue = _myodamManager.Calibration.CalculateLoadValue(sensorMeasuredValue.ContractionValue)
             };
             MeasuredValues.Add(forceValue);
         }

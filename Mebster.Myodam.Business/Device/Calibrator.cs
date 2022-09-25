@@ -53,7 +53,7 @@ public class Calibrator
             _dataset.CollectionChanged -= DatasetCollectionChanged;
         }
 
-        return _dataset.Average(v => v.Value);
+        return _dataset.Average(v => v.ContractionValue);
     }
 
     private void CalibrationNewValueReceived(object? sender, MeasuredValue e)

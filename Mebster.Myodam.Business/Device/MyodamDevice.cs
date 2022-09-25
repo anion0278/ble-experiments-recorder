@@ -145,7 +145,8 @@ public class MyodamDevice // TODO Extract inteface
 
         if (!IsCurrentlyMeasuring && !IsCalibrating) return;
 
-        NewValueReceived?.Invoke(this, new MeasuredValue(reply.SensorValue, reply.Timestamp)); 
+        NewValueReceived?.Invoke(this, new MeasuredValue(
+            reply.SensorValue, reply.CurrentMilliAmp, reply.Timestamp)); 
     }
 
 

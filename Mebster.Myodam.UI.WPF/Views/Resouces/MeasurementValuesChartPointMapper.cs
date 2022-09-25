@@ -10,7 +10,7 @@ public class MeasurementValuesChartPointMapper : CartesianMapper<MeasuredValue>
     public MeasurementValuesChartPointMapper()
     {
         X(mv => mv.Timestamp.TotalSeconds);
-        Y(mv => mv.Value);
+        Y(mv => mv.ContractionValue);
     }
 }
 
