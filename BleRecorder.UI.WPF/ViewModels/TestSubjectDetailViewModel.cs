@@ -188,14 +188,7 @@ namespace BleRecorder.UI.WPF.ViewModels
 
             return statisticDataGroupedByDateOnly
                 .Select(g => g.MaxBy(stat => stat.ContractionForceValue))
-                .OrderBy(sv => sv.MeasurementDate);
-
-            //if (statisticDataGroupedByDateOnly.Any(g => g.Count() > 1))
-            //{
-            //    await DialogService.ShowInfoDialogAsync(
-            //        $"There are multiple measurements of {measurementType} type performed at the same day." +
-            //        $"Only maximum value will be shown in the graph");
-            //}
+                .OrderBy(sv => sv!.MeasurementDate)!;
         }
 
         private async Task OnAddMeasurementAsync()
