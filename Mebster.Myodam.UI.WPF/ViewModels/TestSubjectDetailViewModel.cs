@@ -187,8 +187,8 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         private IEnumerable<StatisticsValue> GetStatisticsValues(MeasurementType measurementType) // TODO into statistics Service
         {
             var statisticDataGroupedByDateOnly = _measurements
-                .Where(m => m.Type == measurementType && m.ForceData.Any() && m.Date.HasValue)
-                .Select(m => new StatisticsValue(m.ForceData.Max(v => v.Value), m.Date!.Value))
+                .Where(m => m.Type == measurementType && m.ContractionLoadData.Any() && m.Date.HasValue)
+                .Select(m => new StatisticsValue(m.ContractionLoadData.Max(v => v.Value), m.Date!.Value))
                 .GroupBy(d => d.MeasurementDate.Date);
 
             return statisticDataGroupedByDateOnly

@@ -34,9 +34,9 @@ public class Measurement
 
     public StimulationParameters? ParametersDuringMeasurement { get; set; }
 
-    public ICollection<MeasuredValue> ForceData { get; set; }
+    public ICollection<MeasuredValue> ContractionLoadData { get; set; }
 
-    public double MaxForce => ForceData.Any() ? ForceData.Max(v => v.Value) : 0;
+    public double MaxContractionLoad => ContractionLoadData.Any() ? ContractionLoadData.Max(v => v.Value) : 0;
 
     public static ICollection<MeasuredValue>? ConvertInternalJsonToForceValues(string json)
     {

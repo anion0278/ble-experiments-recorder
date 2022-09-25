@@ -26,7 +26,7 @@ public sealed class ExperimentsDbContext : DbContext
     {
         modelBuilder
             .Entity<Measurement>()
-            .Property(e => e.ForceData)
+            .Property(e => e.ContractionLoadData)
             .HasConversion(
                 v => Measurement.ConvertForceValuesToJson(v),
                 v => Measurement.ConvertInternalJsonToForceValues(v) ?? Array.Empty<MeasuredValue>());
