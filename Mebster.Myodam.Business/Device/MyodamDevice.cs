@@ -11,7 +11,7 @@ namespace Mebster.Myodam.Business.Device;
 public class MyodamDevice // TODO Extract inteface
 {
     private readonly MyodamManager _myodamManager;
-    private readonly IBleDeviceHandler _bleDeviceHandler;
+    private readonly IBluetoothDeviceHandler _bleDeviceHandler;
     private readonly IMyodamMessageParser _messageParser;
     private bool _isCurrentlyMeasuring;
     private Percentage _stimulatorBattery;
@@ -83,7 +83,7 @@ public class MyodamDevice // TODO Extract inteface
         }
     }
 
-    public MyodamDevice(MyodamManager myodamManager, IBleDeviceHandler bleDeviceHandler,
+    public MyodamDevice(MyodamManager myodamManager, IBluetoothDeviceHandler bleDeviceHandler,
         IMyodamMessageParser messageParser, DeviceCalibration deviceCalibration)
     {
         Calibration = deviceCalibration;

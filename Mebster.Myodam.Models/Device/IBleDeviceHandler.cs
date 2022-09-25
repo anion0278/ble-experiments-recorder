@@ -2,7 +2,7 @@
 
 namespace Mebster.Myodam.Models.Device;
 
-public interface IBleDeviceHandler : IDisposable
+public interface IBluetoothDeviceHandler : IDisposable
 {
     event EventHandler<string> DataReceived;
     event EventHandler? DeviceStatusChanged;
@@ -14,7 +14,7 @@ public interface IBleDeviceHandler : IDisposable
 
     Task SendAsync(string msg);
 
-    Task<IBleDeviceHandler> ConnectDeviceAsync();
+    Task<IBluetoothDeviceHandler> ConnectDeviceAsync();
 
     void Disconnect();
 }

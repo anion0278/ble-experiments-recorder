@@ -79,7 +79,7 @@ public class MyodamManager : IMyodamManager
         // TODO Handle multiple devices in a single room
         if (myodamDevices.Length > 1) throw new System.Exception("There is more than one myodam device with provided address!");
 
-        IBleDeviceHandler bleDevice;
+        IBluetoothDeviceHandler bleDevice;
         try
         {
             bleDevice = await myodamDevices.Single().ConnectDeviceAsync();

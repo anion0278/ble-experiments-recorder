@@ -10,7 +10,7 @@ using Mebster.Myodam.Models.Device;
 
 namespace Mebster.Myodam.Infrastructure.Bluetooth;
 
-public class BluetoothDeviceHandler : IBleDeviceHandler
+public class BluetoothDeviceHandler : IBluetoothDeviceHandler
 {
     private readonly IDateTimeService _dateTimeService;
     private readonly ITimerExceptionContextProvider _contextProvider;
@@ -60,7 +60,7 @@ public class BluetoothDeviceHandler : IBleDeviceHandler
         //_previousMsg = ">SC:001_SF:001_SP:050_ST:01_MC:0\n"; 
     }
 
-    public async Task<IBleDeviceHandler> ConnectDeviceAsync()
+    public async Task<IBluetoothDeviceHandler> ConnectDeviceAsync()
     {
         if (IsDisposed) throw new ObjectDisposedException("BLE devise was disposed! Create a new object.");
 
