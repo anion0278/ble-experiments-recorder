@@ -39,8 +39,8 @@ public class MultiCollectionToRangeConverter : IMultiValueConverter
         var vals = collections.Cast<ChartValues<StatisticsValue>>()
             .SelectMany(c => c).Select(c => c.MeasurementDate).ToArray();
         
-        if (parameter.Equals("Max")) rangeLimit = vals.DefaultIfEmpty(defaultValue).Max().GetTotalDays();
         if (parameter.Equals("Min")) rangeLimit = vals.DefaultIfEmpty(defaultValue).Min().GetTotalDays();
+        if (parameter.Equals("Max")) rangeLimit = vals.DefaultIfEmpty(defaultValue.AddDays(1)).Max().GetTotalDays();
 
         return (double)rangeLimit;
     }
