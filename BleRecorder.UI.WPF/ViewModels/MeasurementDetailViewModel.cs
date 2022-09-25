@@ -165,6 +165,7 @@ namespace BleRecorder.UI.WPF.ViewModels
                 _bleRecorderManager.BleRecorderDevice.NewValueReceived -= OnNewValueReceived;
             }
 
+            // TODO put Send method into VMBase 
             ViewSynchronizationContext.Send(_ =>
             {
                 StartMeasurementCommand.NotifyCanExecuteChanged();
@@ -221,7 +222,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             MechanismParametersVm = new MechanismParametersViewModel(new MechanismParameters(Model.AdjustmentsDuringMeasurement), _mapper);
             MechanismParametersVm.PropertyChanged += OnPropertyChangedEventHandler;
 
-            MeasuredValues.AddRange(Model.ForceData);
+            MeasuredValues.AddRange(Model.ContractionLoadData);
             Id = measurementId;
 
             PropertyChanged += OnPropertyChangedEventHandler;
@@ -232,7 +233,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         {
             var newMeasurement = new Measurement
             {
-                ForceData = new List<MeasuredValue>(),
+                ContractionLoadData = new List<MeasuredValue>(),
                 TestSubject = (await _measurementRepository.GetTestSubjectById(correspondingTestSubject.Id))!
             };
             _measurementRepository.Add(newMeasurement);
@@ -246,6 +247,8 @@ namespace BleRecorder.UI.WPF.ViewModels
                 await DialogService.ShowInfoDialogAsync("Device calibration is invalid. Measurement is disabled.");
                 return;
             }
+            _bleRecorderManager.Calibration.UpdateCalibration();
+
 
             var result = await DialogService.ShowOkCancelDialogAsync(
                 "Are you sure you want to start measurement with current parameters listed in this page (they may differ from user-specific parameter settings)?",
@@ -271,7 +274,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         {
             var forceValue = sensorMeasuredValue with
             {
-                Value = sensorMeasuredValue.Value / _bleRecorderManager.Calibration.NoLoadSensorValue
+                Value = _bleRecorderManager.Calibration.CalculateLoadValue(sensorMeasuredValue.Value)
             };
             MeasuredValues.Add(forceValue);
         }
@@ -328,7 +331,7 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         private void UpdateMeasurementForceData()
         {
-            Model.ForceData = MeasuredValues.ToArray();
+            Model.ContractionLoadData = MeasuredValues.ToArray();
             OnPropertyChanged(nameof(MeasuredValues));
         }
 

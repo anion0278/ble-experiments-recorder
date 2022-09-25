@@ -57,7 +57,7 @@ public class ExcelDocumentManager : IDocumentManager
                     measurement.Date != null ? measurement.Date : "[Not measured]",
                     measurement.Type.GetDescription(),
                     measurement.Notes,
-                    measurement.MaxForce,
+                    measurement.MaxContractionLoad,
                     FormatMechanicalAdjustments(measurement.AdjustmentsDuringMeasurement),
                     FormatStimulationParameters(measurement.ParametersDuringMeasurement),
                     measurement.SiteDuringMeasurement.GetDescription(),
