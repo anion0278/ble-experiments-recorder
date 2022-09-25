@@ -177,11 +177,6 @@ namespace BleRecorder.UI.WPF.ViewModels
             IntermittentStatisticValues.AddRange(GetStatisticsValues(MeasurementType.Intermittent));
             OnPropertyChanged(nameof(MaxContractionStatisticValues)); // only one update is enough, since MultiBinding will be triggered for both statements
             OnPropertyChanged(nameof(IntermittentStatisticValues));
-            //if (MaxContractionStatisticValues.Count == 1 && IntermittentStatisticValues.Count == 1)
-            //{
-            //    IsFixNeeded = MaxContractionStatisticValues.Single().MeasurementDate.Date.Ticks 
-            //                  == IntermittentStatisticValues.Single().MeasurementDate.Date.Ticks;
-            //}
         }
 
         private IEnumerable<StatisticsValue> GetStatisticsValues(MeasurementType measurementType) // TODO into statistics Service
@@ -192,7 +187,8 @@ namespace BleRecorder.UI.WPF.ViewModels
                 .GroupBy(d => d.MeasurementDate.Date);
 
             return statisticDataGroupedByDateOnly
-                .Select(g => g.MaxBy(stat => stat.ContractionForceValue));
+                .Select(g => g.MaxBy(stat => stat.ContractionForceValue))
+                .OrderBy(sv => sv.MeasurementDate);
 
             //if (statisticDataGroupedByDateOnly.Any(g => g.Count() > 1))
             //{

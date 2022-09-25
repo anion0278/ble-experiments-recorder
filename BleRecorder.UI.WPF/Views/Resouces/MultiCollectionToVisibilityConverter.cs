@@ -27,27 +27,26 @@ public class MultiCollectionToVisibilityConverter : IMultiValueConverter
     }
 }
 
-//public class MultiCollectionToBooleanConverter : IMultiValueConverter
-//{
-//    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
-//    {
-//        var collections = values as IList<object>;
-//        if (collections.First() == DependencyProperty.UnsetValue) return false;
-//        if (collections[0] is not ChartValues<StatisticsValue> maxContractionVals ||
-//            collections[1] is not ChartValues<StatisticsValue> fatigueVals)
-//        {
-//            throw new ArgumentException("Invalid use of converter");
-//        }
+public class MultiCollectionToRangeConverter : IMultiValueConverter
+{
+    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+    {
+        var defaultValue = DateTimeOffset.Now;
 
-//        if (maxContractionVals.Count == 1 && fatigueVals.Count == 1)
-//        {
-//            return maxContractionVals.Single().MeasurementDate.Date.Ticks == fatigueVals.Single().MeasurementDate.Date.Ticks;
-//        }
-//        throw new ArgumentException("Invalid use of converter");
-//    }
+        long rangeLimit = 0;
+        var collections = values as IList<object>;
+        if (collections.First() == DependencyProperty.UnsetValue) return (double)defaultValue.GetTotalDays();
+        var vals = collections.Cast<ChartValues<StatisticsValue>>()
+            .SelectMany(c => c).Select(c => c.MeasurementDate).ToArray();
+        
+        if (parameter.Equals("Max")) rangeLimit = vals.DefaultIfEmpty(defaultValue).Max().GetTotalDays();
+        if (parameter.Equals("Min")) rangeLimit = vals.DefaultIfEmpty(defaultValue).Min().GetTotalDays();
 
-//    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-//    {
-//        throw new NotImplementedException();
-//    }
-//}
+        return (double)rangeLimit;
+    }
+
+    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}

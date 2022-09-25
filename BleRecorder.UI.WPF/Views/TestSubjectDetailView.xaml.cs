@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -6,6 +7,7 @@ using AutoMapper.Configuration;
 using DocumentFormat.OpenXml.Drawing;
 using LiveCharts.Wpf;
 using BleRecorder.UI.WPF.ViewModels;
+using BleRecorder.UI.WPF.Views.Resouces;
 
 namespace BleRecorder.UI.WPF.Views
 {
@@ -14,6 +16,8 @@ namespace BleRecorder.UI.WPF.Views
     /// </summary>
     public partial class TestSubjectDetailView : UserControl
     {
+        private readonly long _oneDayTicks = DateFormatterHelper.OneDayTicks;
+
         public TestSubjectDetailView()
         {
             InitializeComponent();
@@ -25,13 +29,24 @@ namespace BleRecorder.UI.WPF.Views
             StatisticsGraphXAxis.LabelFormatter = FormatXAxisLabel;
         }
 
-        private static string FormatXAxisLabel(double value)
+        private string FormatXAxisLabel(double value)
         {
-            return new DateTime((long)(value * TimeSpan.FromDays(1).Ticks)).ToString("dd. MMM yyyy");
+            // Livechars separator does not allow for non-constant distances between ticks and default auto ticks are very off!
+            // maybe another approach would be to use Livechars Sections
+            if (DataContext is TestSubjectDetailViewModel vm
+                && vm.MaxContractionStatisticValues.Union(vm.IntermittentStatisticValues)
+                    .Any(v => v.MeasurementDate.GetTotalDays() == value))
+            {
+                return new DateTime((long)(value * _oneDayTicks)).ToString("dd. MMM yyyy");
+            }
+
+            return string.Empty;
         }
 
         private void Row_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            var x = StatisticsGraphXAxis.Labels;
+
             // fast hack that works well. Its UI responsibility anyway
             var viewModel = (TestSubjectDetailViewModel)DataContext;
             if (viewModel.EditMeasurementCommand.CanExecute(null))
