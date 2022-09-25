@@ -2,6 +2,7 @@
   "IsCalibrationEnabled": true,
   "BleRecorderCalibration": {
     "NoLoadSensorValue": 41.54545454545455,
-    "NominalLoadSensorValue": 22
+    "NominalLoadSensorValue": 22,
+    "NominalLoad": 8 
   }
 }

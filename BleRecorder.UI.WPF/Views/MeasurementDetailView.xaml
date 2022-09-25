@@ -185,7 +185,7 @@
                             </livecharts:CartesianChart.Style>
 
                             <livecharts:CartesianChart.AxisY>
-                                <livecharts:Axis x:Name="GraphYAxis" MinValue="0" Title="Contraction Force [N]" />
+                                <livecharts:Axis x:Name="GraphYAxis" MinValue="0" Title="Contraction - Torque [Nm]" />
                             </livecharts:CartesianChart.AxisY>
 
                             <livecharts:CartesianChart.AxisX>
@@ -200,7 +200,7 @@
                             </livecharts:CartesianChart.SeriesColors>
 
                             <livecharts:CartesianChart.Series>
-                                <livecharts:LineSeries Title="Measured force" Values="{Binding MeasuredValues}"
+                                <livecharts:LineSeries Title="Measured torque" Values="{Binding MeasuredValues}"
                                            Configuration="{StaticResource chartPointMapper}"/>
                             </livecharts:CartesianChart.Series>
                         </livecharts:CartesianChart>
