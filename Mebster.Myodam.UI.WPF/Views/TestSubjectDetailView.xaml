@@ -88,6 +88,7 @@
 
         <resouces:StatisticChartPointMapper x:Key="chartPointMapper" />
         <resouces:MultiCollectionToVisibilityConverter x:Key="multiCollectionToVisibilityConverter" />
+        <resouces:MultiCollectionToRangeConverter x:Key="multiCollectionToRangeConverter" />
     </UserControl.Resources>
 
     <resouces:ScrollViewerWithStableOffset Padding="10">
@@ -152,7 +153,7 @@
                             <DataGridTextColumn Header="Experiment Date" Width="130" IsReadOnly="True"
                                             Binding="{Binding Date, StringFormat='{}{0:dd MMM. yyyy, HH:mm}', TargetNullValue='Not completed'}"/>
                             <DataGridTextColumn Header="Max. torque" Width="105" IsReadOnly="True"
-                                            Binding="{Binding MaxForce, StringFormat='{}{0:0.00} Nm'}" />
+                                            Binding="{Binding MaxContractionLoad, StringFormat='{}{0:0.00} Nm'}" />
                             <DataGridTextColumn Header="Type" Width="130"  IsReadOnly="True"
                                             Binding="{Binding Type, Converter={StaticResource enumDescriptionConverter}}"/>
                             <DataGridTextColumn Header="Site" Width="60" IsReadOnly="True"
@@ -215,11 +216,30 @@
                         </wpf:CartesianChart.Style>
 
                         <wpf:CartesianChart.AxisY>
-                            <wpf:Axis MinValue="0" Title="Contraction Force [N]" />
+                            <wpf:Axis MinValue="0" Title="Contraction - Torque [Nm]" />
                         </wpf:CartesianChart.AxisY>
 
                         <wpf:CartesianChart.AxisX>
-                            <wpf:Axis x:Name="StatisticsGraphXAxis" LabelsRotation="60" Title="Date" />
+                            <wpf:Axis x:Name="StatisticsGraphXAxis" LabelsRotation="60" Title="Date">
+                                <wpf:Axis.Separator>
+                                    <!--IsEnabled = False disables the vertical lines-->
+                                    <wpf:Separator Step="1" IsEnabled="False" />
+                                </wpf:Axis.Separator>
+
+                                <wpf:Axis.MinValue>
+                                    <MultiBinding Converter="{StaticResource multiCollectionToRangeConverter}" ConverterParameter="Min">
+                                        <Binding Path="MaxContractionStatisticValues" />
+                                        <Binding Path="FatigueStatisticValues" />
+                                    </MultiBinding>
+                                </wpf:Axis.MinValue>
+
+                                <wpf:Axis.MaxValue>
+                                    <MultiBinding Converter="{StaticResource multiCollectionToRangeConverter}" ConverterParameter="Max">
+                                        <Binding Path="MaxContractionStatisticValues" />
+                                        <Binding Path="FatigueStatisticValues" />
+                                    </MultiBinding>
+                                </wpf:Axis.MaxValue>
+                            </wpf:Axis>
                         </wpf:CartesianChart.AxisX>
 
                         <wpf:CartesianChart.SeriesColors>
@@ -230,10 +250,10 @@
                         </wpf:CartesianChart.SeriesColors>
 
                         <wpf:CartesianChart.Series>
-                            <wpf:LineSeries Title="Maximum contraction trend"
+                            <wpf:LineSeries Title="Maximum contraction trend" LineSmoothness="0"
                                             Values="{Binding MaxContractionStatisticValues}"
                                             Configuration="{StaticResource chartPointMapper}" />
-                            <wpf:LineSeries Title="Fatigue contraction trend"
+                            <wpf:LineSeries Title="Fatigue contraction trend" LineSmoothness="0"
                                             Values="{Binding FatigueStatisticValues}"
                                             Configuration="{StaticResource chartPointMapper}" />
                         </wpf:CartesianChart.Series>

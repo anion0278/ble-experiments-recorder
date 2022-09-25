@@ -137,7 +137,7 @@ public class BluetoothDeviceHandler : IBluetoothDeviceHandler
         var input = new byte[reader.UnconsumedBufferLength];
         reader.ReadBytes(input);
         var receivedMsg = Encoding.UTF8.GetString(input);
-        //Debug.Print(receivedMsg);
+        Debug.Print(receivedMsg);
 
         DataReceived?.Invoke(this, receivedMsg);
     }

@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:device="clr-namespace:Mebster.Myodam.Models.Device;assembly=Mebster.Myodam.Models"
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
-             xmlns:device1="clr-namespace:Mebster.Myodam.Business.Device;assembly=Mebster.Myodam.Business"
              xmlns:viewModels="clr-namespace:Mebster.Myodam.UI.WPF.ViewModels"
              xmlns:views="clr-namespace:Mebster.Myodam.UI.WPF.Views"
              xmlns:extensions="clr-namespace:Mebster.Myodam.UI.WPF.Extensions"
