@@ -189,7 +189,7 @@
                             </livecharts:CartesianChart.AxisY>
 
                             <livecharts:CartesianChart.AxisX>
-                                <livecharts:Axis x:Name="GraphXAxis"  MinValue="0" Title="Time [s]" />
+                                <livecharts:Axis x:Name="GraphXAxis"  Title="Stimulation current [mA]" />
                             </livecharts:CartesianChart.AxisX>
 
                             <livecharts:CartesianChart.SeriesColors>
