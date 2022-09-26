@@ -60,7 +60,7 @@
             <resouces:MeasuredDataToBooleanConverter/>
             <BooleanToVisibilityConverter />
         </resouces:ConverterPipeline>
-</UserControl.Resources>
+    </UserControl.Resources>
 
     <resouces:ScrollViewerWithStableOffset Padding="10">
         <Grid>
@@ -189,7 +189,11 @@
                             </livecharts:CartesianChart.AxisY>
 
                             <livecharts:CartesianChart.AxisX>
-                                <livecharts:Axis x:Name="GraphXAxis"  Title="Stimulation current [mA]" />
+                                <livecharts:Axis x:Name="GraphXAxis" MinValue="0" Title="Stimulation current [mA]">
+                                    <livecharts:Axis.Separator>
+                                        <livecharts:Separator Step="10"/>
+                                    </livecharts:Axis.Separator>
+                                </livecharts:Axis>
                             </livecharts:CartesianChart.AxisX>
 
                             <livecharts:CartesianChart.SeriesColors>
