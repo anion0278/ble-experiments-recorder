@@ -27,7 +27,7 @@ namespace BleRecorder.UI.WPF.ViewModels
 {
     public class TestSubjectDetailViewModel : DetailViewModelBase, ITestSubjectDetailViewModel
     {
-        private ObservableCollection<Measurement> _measurements;
+        private ObservableCollection<MeasurementBase> _measurements;
         private ITestSubjectRepository _testSubjectRepository;
         private readonly IMeasurementRepository _measurementRepository;
         private readonly IMapper _mapper;
@@ -80,7 +80,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         /// </summary>
         public TestSubjectDetailViewModel() : base(null!, null!, null!)
         {
-            _measurements = new ObservableCollection<Measurement>() { new Measurement() { Title = "Measurement 1" } };
+            _measurements = new ObservableCollection<MeasurementBase>() { new MaximumContractionMeasurement(){ Title = "Measurement 1" } };
             Measurements = CollectionViewSource.GetDefaultView(_measurements);
         }
 
@@ -104,11 +104,11 @@ namespace BleRecorder.UI.WPF.ViewModels
             Messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailChanged(e));
             Messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailChanged(e));
 
-            _measurements = new ObservableCollection<Measurement>();
+            _measurements = new ObservableCollection<MeasurementBase>();
             _measurements.CollectionChanged += (_, _) => OnPropertyChanged(nameof(Measurements)); // TODO why is it required?
             Measurements = CollectionViewSource.GetDefaultView(_measurements);
-            Measurements.SortDescriptions.Add(new SortDescription(nameof(Measurement.Date), ListSortDirection.Ascending));
-            Measurements.GroupDescriptions.Add(new PropertyGroupDescription(nameof(Measurement.Type)));
+            Measurements.SortDescriptions.Add(new SortDescription(nameof(MeasurementBase.Date), ListSortDirection.Ascending));
+            Measurements.GroupDescriptions.Add(new PropertyGroupDescription(nameof(MeasurementBase.Type)));
             Measurements.MoveCurrentTo(null);
         }
 
@@ -173,8 +173,8 @@ namespace BleRecorder.UI.WPF.ViewModels
         {
             MaxContractionStatisticValues.Clear();
             MaxContractionStatisticValues.AddRange(GetStatisticsValues(MeasurementType.MaximumContraction));
-            IntermittentStatisticValues.Clear();
-            IntermittentStatisticValues.AddRange(GetStatisticsValues(MeasurementType.Intermittent));
+            //IntermittentStatisticValues.Clear();
+            //IntermittentStatisticValues.AddRange(GetStatisticsValues(MeasurementType.Intermittent));
             OnPropertyChanged(nameof(MaxContractionStatisticValues)); // only one update is enough, since MultiBinding will be triggered for both statements
             OnPropertyChanged(nameof(IntermittentStatisticValues));
         }
@@ -182,8 +182,9 @@ namespace BleRecorder.UI.WPF.ViewModels
         private IEnumerable<StatisticsValue> GetStatisticsValues(MeasurementType measurementType) // TODO into statistics Service
         {
             var statisticDataGroupedByDateOnly = _measurements
-                .Where(m => m.Type == measurementType && m.ContractionLoadData.Any() && m.Date.HasValue)
-                .Select(m => new StatisticsValue(m.ContractionLoadData.Max(v => v.ContractionValue), m.Date!.Value))
+                .OfType<MaximumContractionMeasurement>()
+                .Where(m => m.Type == measurementType && m.Date.HasValue && m.Record.Data.Any())
+                .Select(m => new StatisticsValue(m.Record.MaxContraction, m.Date!.Value))
                 .GroupBy(d => d.MeasurementDate.Date);
 
             return statisticDataGroupedByDateOnly
@@ -212,7 +213,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         {
             Messenger.Send(new OpenDetailViewEventArgs
             {
-                Id = ((Measurement)Measurements.CurrentItem).Id,
+                Id = ((MeasurementBase)Measurements.CurrentItem).Id,
                 ViewModelName = nameof(MeasurementDetailViewModel),
                 Data = Model
             });
@@ -222,8 +223,8 @@ namespace BleRecorder.UI.WPF.ViewModels
         {
             if (Measurements.CurrentItem == null) return;
 
-            _testSubjectRepository.RemoveMeasurement((Measurement)Measurements.CurrentItem);
-            _measurements.Remove((Measurement)Measurements.CurrentItem);
+            _testSubjectRepository.RemoveMeasurement((MeasurementBase)Measurements.CurrentItem);
+            _measurements.Remove((MeasurementBase)Measurements.CurrentItem);
 
             RefreshStatistics();
         }

@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using BleRecorder.Models.TestSubject;
+using System.Text.Json;
 
 namespace BleRecorder.DataAccess.FileStorage;
 
@@ -20,4 +21,5 @@ public class JsonManager : IJsonManager
     {
         return JsonSerializer.Serialize<T>(data, new JsonSerializerOptions { WriteIndented = true });
     }
+
 }

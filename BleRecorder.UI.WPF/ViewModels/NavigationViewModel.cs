@@ -132,11 +132,9 @@ namespace BleRecorder.UI.WPF.ViewModels
         private void OnBleRecorderAvailabilityChanged(object? o, EventArgs eventArgs)
         {
             OnBleRecorderPropertyChanged(this, EventArgs.Empty);
-            ViewSynchronizationContext.Send(_ =>
-            {
+            RunInViewContext(() => {
                 ChangeBleRecorderConnectionCommand.NotifyCanExecuteChanged();
-                ExportSelectedCommand.NotifyCanExecuteChanged();
-            }, null);
+                ExportSelectedCommand.NotifyCanExecuteChanged(); });
         }
 
         private bool CanChangeBleRecorderConnection()

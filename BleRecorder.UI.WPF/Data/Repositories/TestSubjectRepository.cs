@@ -8,7 +8,7 @@ namespace BleRecorder.UI.WPF.Data.Repositories;
 
 public interface ITestSubjectRepository : IGenericRepository<TestSubject>
 {
-    void RemoveMeasurement(Measurement measurementsCurrentItem);
+    void RemoveMeasurement(MeasurementBase measurementsCurrentItem);
 
     Task<TestSubject> ReloadAsync(TestSubject testSubject);
     Task<IEnumerable<TestSubject>> GetAllWithRelatedDataAsync();
@@ -45,7 +45,7 @@ public class TestSubjectRepository : GenericRepository<TestSubject, ExperimentsD
             .ToListAsync();
     }
 
-    public void RemoveMeasurement(Measurement item) // TODO join repositories, or change Collection to List to remove item from TestSubj
+    public void RemoveMeasurement(MeasurementBase item) // TODO join repositories, or change Collection to List to remove item from TestSubj
     {
         Context.Measurements.Remove(item);
     }

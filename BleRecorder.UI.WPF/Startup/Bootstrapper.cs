@@ -8,6 +8,7 @@ using BleRecorder.DataAccess.DataExport;
 using BleRecorder.DataAccess.FileStorage;
 using BleRecorder.Infrastructure.Bluetooth;
 using BleRecorder.Models.Device;
+using BleRecorder.Models.TestSubject;
 using BleRecorder.UI.WPF.Data.Repositories;
 using BleRecorder.UI.WPF.Exception;
 using BleRecorder.UI.WPF.ViewModels;
@@ -33,6 +34,7 @@ namespace BleRecorder.UI.WPF.Startup
             builder.RegisterType<MeasurementDetailViewModel>().Keyed<IDetailViewModel>(nameof(MeasurementDetailViewModel));
             builder.RegisterType<DeviceCalibrationViewModel>().As<IDeviceCalibrationViewModel>().SingleInstance();
 
+            builder.RegisterType<MeasurementFactory>().As<IMeasurementFactory>().SingleInstance();
             builder.RegisterType<MessageDialogService>().As<IMessageDialogService>().SingleInstance();
             builder.RegisterType<AppCenterIntegration>().As<IAppCenterIntegration>().SingleInstance();
             builder.RegisterType<Logger>().As<ILogger>().SingleInstance();
@@ -44,7 +46,7 @@ namespace BleRecorder.UI.WPF.Startup
             builder.RegisterType<BluetoothManager>().As<IBluetoothManager>().SingleInstance();
             builder.RegisterType<BleRecorderMessageParser>().As<IBleRecorderMessageParser>().SingleInstance();
             builder.RegisterType<BleRecorderManager>().As<IBleRecorderManager>().SingleInstance();
-            builder.RegisterType<TimerExceptionContextProvider>().As<ITimerExceptionContextProvider>().SingleInstance();
+            builder.RegisterType<SynchronizationContextProvider>().As<ISynchronizationContextProvider>().SingleInstance();
 
             builder.RegisterType<ExperimentsDbContext>().AsSelf();
             builder.RegisterType<TestSubjectRepository>().As<ITestSubjectRepository>();
@@ -59,8 +61,12 @@ namespace BleRecorder.UI.WPF.Startup
         public IMapper SetupMapper()
         {
             var config = new MapperConfiguration(
-                cfg => cfg.CreateMap<DeviceMechanicalAdjustments, DeviceMechanicalAdjustments>()
-                    .IgnoreAllPropertiesWithAnInaccessibleSetter());
+                cfg =>
+                {
+                    cfg.CreateMap<DeviceMechanicalAdjustments, DeviceMechanicalAdjustments>().IgnoreAllPropertiesWithAnInaccessibleSetter();
+                    cfg.CreateMap<IntermittentMeasurement, MeasurementBase>();
+                    cfg.CreateMap<MaximumContractionMeasurement, MeasurementBase>();
+                });
             return config.CreateMapper();
         }
     }

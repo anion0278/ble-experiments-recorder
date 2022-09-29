@@ -21,7 +21,7 @@
             <Setter Property="Width" Value="160"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="IsEnabled" Value="{Binding MeasuredValues,Mode=OneWay, Converter={StaticResource measuredDataLengthToBooleanConverter}}"/>
+            <Setter Property="IsEnabled" Value="{Binding MeasuredValues, Mode=OneWay, Converter={StaticResource measuredDataLengthToBooleanConverter}}"/>
             <Setter Property="ItemTemplate">
                 <Setter.Value>
                     <DataTemplate>
@@ -99,8 +99,8 @@
                 </Grid.ColumnDefinitions>
 
                 <Label Grid.Row="0" Grid.Column="0"  Content="Test subject:"/>
-                <Label Grid.Row="0" Grid.Column="1" FontWeight="Bold" 
-                       Content="{Binding Model.TestSubject.FullName}"/>
+                <Label Grid.Row="0" Grid.Column="1" FontWeight="Bold"
+                       Content="{Binding TestSubjectName}"/>
 
                 <Label Grid.Row="1" Grid.Column="0" Content="Measurement date:" />
                 <Label Grid.Row="1" Grid.Column="1"  FontWeight="Bold" VerticalAlignment="Center" ContentStringFormat="dd MMM. yyyy, HH:mm"

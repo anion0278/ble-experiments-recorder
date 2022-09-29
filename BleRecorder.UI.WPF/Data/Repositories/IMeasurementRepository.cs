@@ -4,7 +4,7 @@ using BleRecorder.Models.TestSubject;
 
 namespace BleRecorder.UI.WPF.Data.Repositories
 {
-  public interface IMeasurementRepository : IGenericRepository<Measurement>
+  public interface IMeasurementRepository : IGenericRepository<MeasurementBase>
   {
     public Task<TestSubject?> GetTestSubjectById(int id);
 

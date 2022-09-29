@@ -1,6 +1,6 @@
 ﻿namespace BleRecorder.Models.Device;
 
-public class StimulationParameters :ICloneable
+public class StimulationParameters :ICloneable // TODO prototype
 {
     public int Id { get; private set; }
 
@@ -8,8 +8,10 @@ public class StimulationParameters :ICloneable
     public int Frequency { get; set; }
     public StimulationPulseWidth PulseWidth { get; set; }
     public TimeSpan StimulationTime { get; set; }
+    public TimeSpan RestTime { get; set; }
+    public int IntermittentRepetitions { get; set; }
 
-    public StimulationParameters(int current, int frequency, StimulationPulseWidth pulseWidth, TimeSpan stimulationTime)
+    public StimulationParameters(int current, int frequency, StimulationPulseWidth pulseWidth, TimeSpan stimulationTime, TimeSpan restTime, int fatigueRepetitions)
     {
         //if (current < 1 || current > 100) throw new ArgumentException($"Parameter {nameof(Current)} is ")
         // TODO Validate
@@ -18,6 +20,8 @@ public class StimulationParameters :ICloneable
         Frequency = frequency;
         PulseWidth = pulseWidth;
         StimulationTime = stimulationTime;
+        RestTime = restTime;
+        IntermittentRepetitions = fatigueRepetitions;
     }
 
     public static StimulationParameters GetDefaultValues(int id = 0) // TODO into  DefaultValuesFactory
@@ -26,7 +30,9 @@ public class StimulationParameters :ICloneable
             10,
             50,
             StimulationPulseWidth.AvailableOptions[0],
-            TimeSpan.FromSeconds(10)) { Id = id };
+            TimeSpan.FromSeconds(10),
+            TimeSpan.FromSeconds(5), 
+            10) { Id = id };
     }
 
     public object Clone()

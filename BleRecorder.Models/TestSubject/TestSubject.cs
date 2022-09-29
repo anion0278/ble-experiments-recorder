@@ -9,7 +9,7 @@ public class TestSubject
 {
     public TestSubject() // TODO EF requires at least private param-less ctor, replace.      
     {
-        Measurements = new Collection<Measurement>();
+        Measurements = new Collection<MeasurementBase>();
     }
 
     public int Id { get; set; }
@@ -31,6 +31,6 @@ public class TestSubject
 
     public StimulationParameters CustomizedParameters { get; set; }
 
-    public ICollection<Measurement> Measurements { get; set; }
+    public ICollection<MeasurementBase> Measurements { get; set; }
 }
 

@@ -89,7 +89,7 @@ public class BleRecorderManager : IBleRecorderManager
             throw new DeviceConnectionException(ex);
         }
 
-        BleRecorderDevice = new BleRecorderDevice(this, bleDevice, _messageParser, Calibration);
+        BleRecorderDevice = new BleRecorderDevice(bleDevice, _messageParser, Calibration);
         BleRecorderAvailability = BleRecorderAvailabilityStatus.Connected;
         BleRecorderDevice.ConnectionStatusChanged += OnConnectionStatusChanged;
         BleRecorderDevice.MeasurementStatusChanged += OnMeasurementStatusChanged;

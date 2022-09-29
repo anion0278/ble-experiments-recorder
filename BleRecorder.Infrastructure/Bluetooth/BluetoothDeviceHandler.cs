@@ -13,7 +13,7 @@ namespace BleRecorder.Infrastructure.Bluetooth;
 public class BluetoothDeviceHandler : IBluetoothDeviceHandler
 {
     private readonly IDateTimeService _dateTimeService;
-    private readonly ITimerExceptionContextProvider _contextProvider;
+    private readonly ISynchronizationContextProvider _contextProvider;
     public event EventHandler<string>? DataReceived;
     public event EventHandler? DeviceStatusChanged;
 
@@ -21,11 +21,10 @@ public class BluetoothDeviceHandler : IBluetoothDeviceHandler
     private GattCharacteristic? _rxCharacteristic;
     private GattCharacteristic? _txCharacteristic;
     private readonly System.Timers.Timer _heartbeatWatchdog; // thread-safe timer
-    private TimeSpan _incomingHearbeatWatchdogInterval = TimeSpan.FromSeconds(0.4);
-    private TimeSpan _incomingHearbeatTimeout = TimeSpan.FromSeconds(1.0);
+    private readonly TimeSpan _incomingHeartbeatWatchdogInterval = TimeSpan.FromSeconds(0.4);
+    private readonly TimeSpan _incomingHeartbeatTimeout = TimeSpan.FromSeconds(1.0);
     private bool _isConnected;
     private readonly object _syncRoot = new();
-    //private string _previousMsg;
 
     public bool IsDisposed { get; private set; }
     public ulong Address { get; set; }
@@ -45,7 +44,7 @@ public class BluetoothDeviceHandler : IBluetoothDeviceHandler
     }
 
     public BluetoothDeviceHandler(IDateTimeService dateTimeService,
-        ITimerExceptionContextProvider contextProvider,
+        ISynchronizationContextProvider contextProvider,
         string name, ulong address, short signalStrength, DateTimeOffset timestamp)
     {
         _dateTimeService = dateTimeService;
@@ -54,10 +53,8 @@ public class BluetoothDeviceHandler : IBluetoothDeviceHandler
         Address = address;
         SignalStrength = signalStrength;
         LatestTimestamp = timestamp;
-        _heartbeatWatchdog = new System.Timers.Timer(_incomingHearbeatWatchdogInterval.TotalMilliseconds);
+        _heartbeatWatchdog = new System.Timers.Timer(_incomingHeartbeatWatchdogInterval.TotalMilliseconds);
         _heartbeatWatchdog.Elapsed += OnWatchdogPeriodElapsed;
-
-        //_previousMsg = ">SC:001_SF:001_SP:050_ST:01_MC:0\n"; 
     }
 
     public async Task<IBluetoothDeviceHandler> ConnectDeviceAsync()
@@ -97,18 +94,12 @@ public class BluetoothDeviceHandler : IBluetoothDeviceHandler
 
     private void OnWatchdogPeriodElapsed(object? sender, ElapsedEventArgs e)
     {
-        //try
-        //{
-        //Debug.Print(_previousMsg);
-        //await Send(_previousMsg); // PROBLEM - when device sends Measurement stopped - the message does not reflect it. 
-        // this causes restart of measurement
-
         var ts = _dateTimeService.Now;
-        if (ts - LatestTimestamp < _incomingHearbeatTimeout) return;
+        if (ts - LatestTimestamp < _incomingHeartbeatTimeout) return;
 
         Disconnect();
 
-        _contextProvider.Context.Send(_ => throw new DeviceHeartbeatTimeoutException(), null);
+        _contextProvider.RunInContext(() => throw new DeviceHeartbeatTimeoutException());
         //}
         //catch (Exception ex)
         //{
@@ -132,19 +123,18 @@ public class BluetoothDeviceHandler : IBluetoothDeviceHandler
     private void Uart_ReceivedData(GattCharacteristic sender, GattValueChangedEventArgs args)
     {
         LatestTimestamp = _dateTimeService.Now;
-        //Debug.Print(LatestTimestamp.ToString());
         var reader = DataReader.FromBuffer(args.CharacteristicValue);
         var input = new byte[reader.UnconsumedBufferLength];
         reader.ReadBytes(input);
         var receivedMsg = Encoding.UTF8.GetString(input);
-        Debug.Print(receivedMsg);
+        Debug.Print(LatestTimestamp + receivedMsg);
 
         DataReceived?.Invoke(this, receivedMsg);
     }
 
     public async Task SendAsync(string msg)
     {
-        //_previousMsg = msg;
+        Debug.Print("Sending: " + msg);
         using var writer = new DataWriter();
         writer.WriteString(msg);
         var res = await _txCharacteristic.WriteValueAsync(writer.DetachBuffer(), GattWriteOption.WriteWithoutResponse);

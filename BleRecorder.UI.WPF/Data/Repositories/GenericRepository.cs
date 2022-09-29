@@ -1,49 +1,52 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml.InkML;
 using Microsoft.EntityFrameworkCore;
 
 namespace BleRecorder.UI.WPF.Data.Repositories
 {
-  public class GenericRepository<TEntity, TContext> : IGenericRepository<TEntity>
-    where TEntity : class
-    where TContext : DbContext
-  {
-    protected readonly TContext Context;
-
-    protected GenericRepository(TContext context)
+    public class GenericRepository<TEntity, TContext> : IGenericRepository<TEntity>
+      where TEntity : class
+      where TContext : DbContext
     {
-      this.Context = context;
-    }
+        protected readonly TContext Context;
 
-    public void Add(TEntity model)
-    {
-      Context.Set<TEntity>().Add(model);
-    }
+        protected GenericRepository(TContext context)
+        {
+            this.Context = context;
+        }
 
-    public virtual async Task<TEntity?> GetByIdAsync(int id)
-    {
-      return await Context.Set<TEntity>().FindAsync(id);
-    }
+        public void Add(TEntity model)
+        {
+            Context.Set<TEntity>().Add(model);
+        }
 
-    public async Task<IEnumerable<TEntity>> GetAllAsync()
-    {
-      return await Context.Set<TEntity>().ToListAsync();
-    }
+        public virtual async Task<TEntity?> GetByIdAsync(int id)
+        {
+            return await Context.Set<TEntity>().FindAsync(id);
+        }
 
-    public bool HasChanges()
-    {
-      return Context.ChangeTracker.HasChanges();
-    }
+        public async Task<IEnumerable<TEntity>> GetAllAsync()
+        {
+            return await Context.Set<TEntity>().ToListAsync();
+        }
 
-    public void Remove(TEntity model)
-    {
-      Context.Set<TEntity>().Remove(model);
-    }
+        public bool HasChanges()
+        {
+            return Context.ChangeTracker.HasChanges();
+        }
 
-    public async Task SaveAsync()
-    {
-      await Context.SaveChangesAsync();
+        public void Remove(TEntity model)
+        {
+            Context.Set<TEntity>().Remove(model);
+        }
+
+        public async Task SaveAsync()
+        {
+            Debug.Print(Context.ChangeTracker.DebugView.LongView);
+            await Context.SaveChangesAsync();
+        }
     }
-  }
 }

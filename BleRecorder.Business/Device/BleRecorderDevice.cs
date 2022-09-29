@@ -10,7 +10,6 @@ namespace BleRecorder.Business.Device;
 
 public class BleRecorderDevice // TODO Extract inteface
 {
-    private readonly BleRecorderManager _bleRecorderManager;
     private readonly IBluetoothDeviceHandler _bleDeviceHandler;
     private readonly IBleRecorderMessageParser _messageParser;
     private bool _isCurrentlyMeasuring;
@@ -18,9 +17,6 @@ public class BleRecorderDevice // TODO Extract inteface
     private Percentage _controllerBattery;
     private StimulationParameters? _currentParameters;
     private bool _isCalibrating;
-
-    //private System.Timers.Timer _outboundDataTimer;
-    //private BleRecorderMeasurement _currentRequestedMeasurementStatus = BleRecorderMeasurement.Idle;
 
     public event EventHandler<MeasuredValue>? NewValueReceived;
     public event EventHandler? ConnectionStatusChanged;
@@ -83,40 +79,20 @@ public class BleRecorderDevice // TODO Extract inteface
         }
     }
 
-    public BleRecorderDevice(BleRecorderManager bleRecorderManager, IBluetoothDeviceHandler bleDeviceHandler,
-        IBleRecorderMessageParser messageParser, DeviceCalibration deviceCalibration)
+    public BleRecorderDevice(
+        IBluetoothDeviceHandler bleDeviceHandler,
+        IBleRecorderMessageParser messageParser, 
+        DeviceCalibration deviceCalibration)
     {
         Calibration = deviceCalibration;
-        _bleRecorderManager = bleRecorderManager;
         _bleDeviceHandler = bleDeviceHandler;
         _messageParser = messageParser;
         _bleDeviceHandler.DataReceived += BleDeviceHandlerDataReceived;
         _bleDeviceHandler.DeviceStatusChanged += BleDeviceStatusChanged;
 
-        //_outboundDataTimer = new System.Timers.Timer(DataRequestInterval.TotalMilliseconds);
-        //_outboundDataTimer.Elapsed += OnTimerTimeElapsed;
-        //_outboundDataTimer.Start();
-
         StimulatorBattery = new Percentage(0);
         ControllerBattery = new Percentage(0);
     }
-
-    //private async void OnTimerTimeElapsed(object? sender, ElapsedEventArgs e)
-    //{
-    //    if (!IsConnected) return;
-
-    //    //Debug.Print("Sent");
-    //    var (x,y) = _currentRequestedMeasurementStatus switch
-    //    {
-    //        BleRecorderMeasurement.Idle => (MeasurementType.Intermittent, false),
-    //        BleRecorderMeasurement.MaximumContraction => (MeasurementType.MaximumContraction, true),
-    //        BleRecorderMeasurement.Intermittent => (MeasurementType.Intermittent, true),
-    //        _ => throw new ArgumentOutOfRangeException()
-    //    };
-    
-    //    var msg = new BleRecorderRequestMessage(CurrentParameters, x, y);
-    //    await SendMsg(msg);
-    //}
 
     private void BleDeviceStatusChanged(object? sender, EventArgs e)
     {
@@ -145,8 +121,9 @@ public class BleRecorderDevice // TODO Extract inteface
 
         if (!IsCurrentlyMeasuring && !IsCalibrating) return;
 
-        NewValueReceived?.Invoke(this, new MeasuredValue(
-            reply.SensorValue, reply.CurrentMilliAmp, reply.Timestamp)); 
+        NewValueReceived?.Invoke(
+            this, 
+            new MeasuredValue(reply.SensorValue, reply.CurrentMilliAmp, reply.Timestamp)); 
     }
 
 
@@ -178,7 +155,6 @@ public class BleRecorderDevice // TODO Extract inteface
             CurrentParameters,
             measurementType,
             true);
-        //_currentRequestedMeasurementStatus = msg.Measurement;
         await SendMsgAsync(msg);
     }
 
@@ -188,7 +164,6 @@ public class BleRecorderDevice // TODO Extract inteface
             CurrentParameters,
             MeasurementType.MaximumContraction,
             false);
-        //_currentRequestedMeasurementStatus = msg.Measurement;
         await SendMsgAsync(msg);
     }
 

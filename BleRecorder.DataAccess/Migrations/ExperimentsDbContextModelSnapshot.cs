@@ -49,11 +49,17 @@ namespace BleRecorder.DataAccess.Migrations
                     b.Property<int>("Current")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("IntermittentRepetitions")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("Frequency")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("PulseWidth")
                         .HasColumnType("INTEGER");
+
+                    b.Property<TimeSpan>("RestTime")
+                        .HasColumnType("TEXT");
 
                     b.Property<TimeSpan>("StimulationTime")
                         .HasColumnType("TEXT");
@@ -67,13 +73,15 @@ namespace BleRecorder.DataAccess.Migrations
                         {
                             Id = 1,
                             Current = 10,
+                            IntermittentRepetitions = 10,
                             Frequency = 50,
                             PulseWidth = 50,
+                            RestTime = new TimeSpan(0, 0, 0, 5, 0),
                             StimulationTime = new TimeSpan(0, 0, 0, 10, 0)
                         });
                 });
 
-            modelBuilder.Entity("BleRecorder.Models.TestSubject.Measurement", b =>
+            modelBuilder.Entity("BleRecorder.Models.TestSubject.MeasurementBase", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -82,11 +90,11 @@ namespace BleRecorder.DataAccess.Migrations
                     b.Property<int?>("AdjustmentsDuringMeasurementId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("ContractionLoadData")
-                        .IsRequired()
+                    b.Property<DateTimeOffset?>("Date")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("Date")
+                    b.Property<string>("MeasurementTypeDiscriminator")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Notes")
@@ -110,9 +118,6 @@ namespace BleRecorder.DataAccess.Migrations
                         .HasMaxLength(40)
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
 
                     b.HasIndex("AdjustmentsDuringMeasurementId");
@@ -122,6 +127,8 @@ namespace BleRecorder.DataAccess.Migrations
                     b.HasIndex("TestSubjectId");
 
                     b.ToTable("Measurements");
+
+                    b.HasDiscriminator<string>("MeasurementTypeDiscriminator").HasValue("MeasurementBase");
                 });
 
             modelBuilder.Entity("BleRecorder.Models.TestSubject.TestSubject", b =>
@@ -158,7 +165,21 @@ namespace BleRecorder.DataAccess.Migrations
                     b.ToTable("TestSubjects");
                 });
 
-            modelBuilder.Entity("BleRecorder.Models.TestSubject.Measurement", b =>
+            modelBuilder.Entity("BleRecorder.Models.TestSubject.IntermittentMeasurement", b =>
+                {
+                    b.HasBaseType("BleRecorder.Models.TestSubject.MeasurementBase");
+
+                    b.HasDiscriminator().HasValue("IntermittentMeasurement");
+                });
+
+            modelBuilder.Entity("BleRecorder.Models.TestSubject.MaximumContractionMeasurement", b =>
+                {
+                    b.HasBaseType("BleRecorder.Models.TestSubject.MeasurementBase");
+
+                    b.HasDiscriminator().HasValue("MaximumContractionMeasurement");
+                });
+
+            modelBuilder.Entity("BleRecorder.Models.TestSubject.MeasurementBase", b =>
                 {
                     b.HasOne("BleRecorder.Models.Device.DeviceMechanicalAdjustments", "AdjustmentsDuringMeasurement")
                         .WithMany()
@@ -198,6 +219,51 @@ namespace BleRecorder.DataAccess.Migrations
                     b.Navigation("CustomizedAdjustments");
 
                     b.Navigation("CustomizedParameters");
+                });
+
+            modelBuilder.Entity("BleRecorder.Models.TestSubject.IntermittentMeasurement", b =>
+                {
+                    b.OwnsOne("BleRecorder.Models.TestSubject.MultipleContractionRecord", "MultiCycleRecord", b1 =>
+                        {
+                            b1.Property<int>("IntermittentMeasurementId")
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<string>("Data")
+                                .IsRequired()
+                                .HasColumnType("TEXT");
+
+                            b1.HasKey("IntermittentMeasurementId");
+
+                            b1.ToTable("Measurements");
+
+                            b1.WithOwner()
+                                .HasForeignKey("IntermittentMeasurementId");
+                        });
+
+                    b.Navigation("MultiCycleRecord");
+                });
+
+            modelBuilder.Entity("BleRecorder.Models.TestSubject.MaximumContractionMeasurement", b =>
+                {
+                    b.OwnsOne("BleRecorder.Models.TestSubject.SingleContractionRecord", "Record", b1 =>
+                        {
+                            b1.Property<int>("MaximumContractionMeasurementId")
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<string>("Data")
+                                .IsRequired()
+                                .HasColumnType("TEXT");
+
+                            b1.HasKey("MaximumContractionMeasurementId");
+
+                            b1.ToTable("Measurements");
+
+                            b1.WithOwner()
+                                .HasForeignKey("MaximumContractionMeasurementId");
+                        });
+
+                    b.Navigation("Record")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("BleRecorder.Models.TestSubject.TestSubject", b =>
