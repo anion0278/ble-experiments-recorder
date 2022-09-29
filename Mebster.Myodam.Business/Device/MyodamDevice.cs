@@ -10,7 +10,6 @@ namespace Mebster.Myodam.Business.Device;
 
 public class MyodamDevice // TODO Extract inteface
 {
-    private readonly MyodamManager _myodamManager;
     private readonly IBluetoothDeviceHandler _bleDeviceHandler;
     private readonly IMyodamMessageParser _messageParser;
     private bool _isCurrentlyMeasuring;
@@ -18,9 +17,6 @@ public class MyodamDevice // TODO Extract inteface
     private Percentage _controllerBattery;
     private StimulationParameters? _currentParameters;
     private bool _isCalibrating;
-
-    //private System.Timers.Timer _outboundDataTimer;
-    //private MyodamMeasurement _currentRequestedMeasurementStatus = MyodamMeasurement.Idle;
 
     public event EventHandler<MeasuredValue>? NewValueReceived;
     public event EventHandler? ConnectionStatusChanged;
@@ -83,40 +79,20 @@ public class MyodamDevice // TODO Extract inteface
         }
     }
 
-    public MyodamDevice(MyodamManager myodamManager, IBluetoothDeviceHandler bleDeviceHandler,
-        IMyodamMessageParser messageParser, DeviceCalibration deviceCalibration)
+    public MyodamDevice(
+        IBluetoothDeviceHandler bleDeviceHandler,
+        IMyodamMessageParser messageParser, 
+        DeviceCalibration deviceCalibration)
     {
         Calibration = deviceCalibration;
-        _myodamManager = myodamManager;
         _bleDeviceHandler = bleDeviceHandler;
         _messageParser = messageParser;
         _bleDeviceHandler.DataReceived += BleDeviceHandlerDataReceived;
         _bleDeviceHandler.DeviceStatusChanged += BleDeviceStatusChanged;
 
-        //_outboundDataTimer = new System.Timers.Timer(DataRequestInterval.TotalMilliseconds);
-        //_outboundDataTimer.Elapsed += OnTimerTimeElapsed;
-        //_outboundDataTimer.Start();
-
         StimulatorBattery = new Percentage(0);
         ControllerBattery = new Percentage(0);
     }
-
-    //private async void OnTimerTimeElapsed(object? sender, ElapsedEventArgs e)
-    //{
-    //    if (!IsConnected) return;
-
-    //    //Debug.Print("Sent");
-    //    var (x,y) = _currentRequestedMeasurementStatus switch
-    //    {
-    //        MyodamMeasurement.Idle => (MeasurementType.Fatigue, false),
-    //        MyodamMeasurement.MaximumContraction => (MeasurementType.MaximumContraction, true),
-    //        MyodamMeasurement.Fatigue => (MeasurementType.Fatigue, true),
-    //        _ => throw new ArgumentOutOfRangeException()
-    //    };
-    
-    //    var msg = new MyodamRequestMessage(CurrentParameters, x, y);
-    //    await SendMsg(msg);
-    //}
 
     private void BleDeviceStatusChanged(object? sender, EventArgs e)
     {
@@ -145,8 +121,9 @@ public class MyodamDevice // TODO Extract inteface
 
         if (!IsCurrentlyMeasuring && !IsCalibrating) return;
 
-        NewValueReceived?.Invoke(this, new MeasuredValue(
-            reply.SensorValue, reply.CurrentMilliAmp, reply.Timestamp)); 
+        NewValueReceived?.Invoke(
+            this, 
+            new MeasuredValue(reply.SensorValue, reply.CurrentMilliAmp, reply.Timestamp)); 
     }
 
 
@@ -178,7 +155,6 @@ public class MyodamDevice // TODO Extract inteface
             CurrentParameters,
             measurementType,
             true);
-        //_currentRequestedMeasurementStatus = msg.Measurement;
         await SendMsgAsync(msg);
     }
 
@@ -188,7 +164,6 @@ public class MyodamDevice // TODO Extract inteface
             CurrentParameters,
             MeasurementType.MaximumContraction,
             false);
-        //_currentRequestedMeasurementStatus = msg.Measurement;
         await SendMsgAsync(msg);
     }
 

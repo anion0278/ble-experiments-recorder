@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -10,11 +11,16 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
     public class ViewModelBase : ObservableValidator
     {
-        public SynchronizationContext ViewSynchronizationContext { get; }
+        private SynchronizationContext ViewSynchronizationContext { get; }
 
         public ViewModelBase()
         {
             ViewSynchronizationContext = SynchronizationContext.Current!;
+        }
+
+        public void RunInViewContext(Action action)
+        {
+            ViewSynchronizationContext.Send(_ => action.Invoke(), null);
         }
 
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)

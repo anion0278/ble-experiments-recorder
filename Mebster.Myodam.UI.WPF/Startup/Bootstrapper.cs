@@ -8,6 +8,7 @@ using Mebster.Myodam.DataAccess.DataExport;
 using Mebster.Myodam.DataAccess.FileStorage;
 using Mebster.Myodam.Infrastructure.Bluetooth;
 using Mebster.Myodam.Models.Device;
+using Mebster.Myodam.Models.TestSubject;
 using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.Exception;
 using Mebster.Myodam.UI.WPF.ViewModels;
@@ -33,6 +34,7 @@ namespace Mebster.Myodam.UI.WPF.Startup
             builder.RegisterType<MeasurementDetailViewModel>().Keyed<IDetailViewModel>(nameof(MeasurementDetailViewModel));
             builder.RegisterType<DeviceCalibrationViewModel>().As<IDeviceCalibrationViewModel>().SingleInstance();
 
+            builder.RegisterType<MeasurementFactory>().As<IMeasurementFactory>().SingleInstance();
             builder.RegisterType<MessageDialogService>().As<IMessageDialogService>().SingleInstance();
             builder.RegisterType<AppCenterIntegration>().As<IAppCenterIntegration>().SingleInstance();
             builder.RegisterType<Logger>().As<ILogger>().SingleInstance();
@@ -44,7 +46,7 @@ namespace Mebster.Myodam.UI.WPF.Startup
             builder.RegisterType<BluetoothManager>().As<IBluetoothManager>().SingleInstance();
             builder.RegisterType<MyodamMessageParser>().As<IMyodamMessageParser>().SingleInstance();
             builder.RegisterType<MyodamManager>().As<IMyodamManager>().SingleInstance();
-            builder.RegisterType<TimerExceptionContextProvider>().As<ITimerExceptionContextProvider>().SingleInstance();
+            builder.RegisterType<SynchronizationContextProvider>().As<ISynchronizationContextProvider>().SingleInstance();
 
             builder.RegisterType<ExperimentsDbContext>().AsSelf();
             builder.RegisterType<TestSubjectRepository>().As<ITestSubjectRepository>();
@@ -59,8 +61,12 @@ namespace Mebster.Myodam.UI.WPF.Startup
         public IMapper SetupMapper()
         {
             var config = new MapperConfiguration(
-                cfg => cfg.CreateMap<DeviceMechanicalAdjustments, DeviceMechanicalAdjustments>()
-                    .IgnoreAllPropertiesWithAnInaccessibleSetter());
+                cfg =>
+                {
+                    cfg.CreateMap<DeviceMechanicalAdjustments, DeviceMechanicalAdjustments>().IgnoreAllPropertiesWithAnInaccessibleSetter();
+                    cfg.CreateMap<FatigueMeasurement, MeasurementBase>();
+                    cfg.CreateMap<MaximumContractionMeasurement, MeasurementBase>();
+                });
             return config.CreateMapper();
         }
     }

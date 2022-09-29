@@ -89,7 +89,7 @@ public class MyodamManager : IMyodamManager
             throw new DeviceConnectionException(ex);
         }
 
-        MyodamDevice = new MyodamDevice(this, bleDevice, _messageParser, Calibration);
+        MyodamDevice = new MyodamDevice(bleDevice, _messageParser, Calibration);
         MyodamAvailability = MyodamAvailabilityStatus.Connected;
         MyodamDevice.ConnectionStatusChanged += OnConnectionStatusChanged;
         MyodamDevice.MeasurementStatusChanged += OnMeasurementStatusChanged;

@@ -1,18 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Mebster.Myodam.DataAccess;
+using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.Models.TestSubject;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mebster.Myodam.UI.WPF.Data.Repositories;
-public class MeasurementRepository : GenericRepository<Measurement, ExperimentsDbContext>, IMeasurementRepository
+public class MeasurementRepository : GenericRepository<MeasurementBase, ExperimentsDbContext>, IMeasurementRepository
 {
     public MeasurementRepository(ExperimentsDbContext context) : base(context)
     {
     }
 
-    public override async Task<Measurement?> GetByIdAsync(int id)
+    public override async Task<MeasurementBase?> GetByIdAsync(int id)
     {
         return await Context.Measurements
             .Include(m => m.TestSubject)
