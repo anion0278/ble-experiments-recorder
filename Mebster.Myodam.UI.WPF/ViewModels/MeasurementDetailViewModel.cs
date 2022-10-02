@@ -89,6 +89,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         public IRelayCommand StopMeasurementCommand { get; }
         public IRelayCommand CleanRecordedDataCommand { get; set; }
 
+        public bool IsMeasurementRunning => _myodamManager.IsCurrentlyMeasuring;
 
         /// <summary>
         /// Design-time ctor    
@@ -170,6 +171,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             // TODO put Send method into VMBase 
             RunInViewContext(() =>
             {
+                OnPropertyChanged(nameof(IsMeasurementRunning));
                 StartMeasurementCommand.NotifyCanExecuteChanged();
                 StopMeasurementCommand.NotifyCanExecuteChanged();
                 CleanRecordedDataCommand.NotifyCanExecuteChanged();
