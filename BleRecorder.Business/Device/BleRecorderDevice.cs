@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Timers;
 using BleRecorder.Business.Exception;
+using BleRecorder.Common.Services;
 using BleRecorder.Models.Device;
 using BleRecorder.Models.TestSubject;
 
@@ -10,9 +11,9 @@ namespace BleRecorder.Business.Device;
 
 public class BleRecorderDevice // TODO Extract inteface
 {
-    private readonly BleRecorderManager _bleRecorderManager;
     private readonly IBluetoothDeviceHandler _bleDeviceHandler;
     private readonly IBleRecorderMessageParser _messageParser;
+    private readonly ISynchronizationContextProvider _synchronizationContextProvider;
     private bool _isCurrentlyMeasuring;
     private Percentage _stimulatorBattery;
     private Percentage _controllerBattery;
@@ -80,13 +81,16 @@ public class BleRecorderDevice // TODO Extract inteface
         }
     }
 
-    public BleRecorderDevice(BleRecorderManager bleRecorderManager, IBluetoothDeviceHandler bleDeviceHandler,
-        IBleRecorderMessageParser messageParser, DeviceCalibration deviceCalibration)
+    public BleRecorderDevice(
+        IBluetoothDeviceHandler bleDeviceHandler,
+        IBleRecorderMessageParser messageParser,
+        ISynchronizationContextProvider synchronizationContextProvider,
+        DeviceCalibration deviceCalibration)
     {
         Calibration = deviceCalibration;
-        _bleRecorderManager = bleRecorderManager;
         _bleDeviceHandler = bleDeviceHandler;
         _messageParser = messageParser;
+        _synchronizationContextProvider = synchronizationContextProvider;
         _bleDeviceHandler.DataReceived += BleDeviceHandlerDataReceived;
         _bleDeviceHandler.DeviceStatusChanged += BleDeviceStatusChanged;
 
@@ -100,7 +104,6 @@ public class BleRecorderDevice // TODO Extract inteface
         {
             IsCurrentlyMeasuring = false;
             IsCalibrating = false;
-            // no need to set _currentRequestedMeasurementStatus
         }
         ConnectionStatusChanged?.Invoke(this, EventArgs.Empty);
     }
@@ -112,19 +115,28 @@ public class BleRecorderDevice // TODO Extract inteface
 
     private void BleDeviceHandlerDataReceived(object? sender, string data)
     {
-        //Debug.Print("Received");
-        var reply = _messageParser.ParseReply(data);
-        StimulatorBattery = reply.StimulatorBattery;
-        ControllerBattery = reply.ControllerBattery;
-        //Debug.Print(reply.MeasurementStatus.ToString());
-        IsCurrentlyMeasuring = reply.MeasurementStatus != BleRecorderMeasurement.Idle;
+        try
+        {
+            var reply = _messageParser.ParseReply(data);
+            StimulatorBattery = reply.StimulatorBattery;
+            ControllerBattery = reply.ControllerBattery;
+            IsCurrentlyMeasuring = reply.MeasurementStatus != BleRecorderMeasurement.Idle;
 
-        if (!IsCurrentlyMeasuring && !IsCalibrating) return;
+            if (!IsCurrentlyMeasuring && !IsCalibrating) return;
 
-        NewValueReceived?.Invoke(this, new MeasuredValue(
-            reply.SensorValue, reply.CurrentMilliAmp, reply.Timestamp)); 
+            NewValueReceived?.Invoke(this, new MeasuredValue(
+                reply.SensorValue, reply.CurrentMilliAmp, reply.Timestamp));
+        }
+        catch (DeviceInvalidMessageException ex)
+        {
+            _synchronizationContextProvider.RunInContext(() => throw ex); //throw; cannot be used
+        }
+        catch (System.Exception ex)
+        {
+            _synchronizationContextProvider.RunInContext(
+                () => throw new DeviceInvalidMessageException("Error during processing data from device.", ex)); 
+        }
     }
-
 
     public async Task<double> GetSensorCalibrationValueAsync()
     {

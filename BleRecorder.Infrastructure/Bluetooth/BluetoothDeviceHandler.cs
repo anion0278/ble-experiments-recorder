@@ -21,11 +21,10 @@ public class BluetoothDeviceHandler : IBluetoothDeviceHandler
     private GattCharacteristic? _rxCharacteristic;
     private GattCharacteristic? _txCharacteristic;
     private readonly System.Timers.Timer _heartbeatWatchdog; // thread-safe timer
-    private TimeSpan _incomingHearbeatWatchdogInterval = TimeSpan.FromSeconds(0.4);
-    private TimeSpan _incomingHearbeatTimeout = TimeSpan.FromSeconds(1.0);
+    private readonly TimeSpan _incomingHeartbeatWatchdogInterval = TimeSpan.FromSeconds(0.4);
+    private readonly TimeSpan _incomingHeartbeatTimeout = TimeSpan.FromSeconds(1.0);
     private bool _isConnected;
     private readonly object _syncRoot = new();
-    //private string _previousMsg;
 
     public bool IsDisposed { get; private set; }
     public ulong Address { get; set; }
@@ -54,10 +53,8 @@ public class BluetoothDeviceHandler : IBluetoothDeviceHandler
         Address = address;
         SignalStrength = signalStrength;
         LatestTimestamp = timestamp;
-        _heartbeatWatchdog = new System.Timers.Timer(_incomingHearbeatWatchdogInterval.TotalMilliseconds);
+        _heartbeatWatchdog = new System.Timers.Timer(_incomingHeartbeatWatchdogInterval.TotalMilliseconds);
         _heartbeatWatchdog.Elapsed += OnWatchdogPeriodElapsed;
-
-        //_previousMsg = ">SC:001_SF:001_SP:050_ST:01_MC:0\n"; 
     }
 
     public async Task<IBluetoothDeviceHandler> ConnectDeviceAsync()
@@ -97,14 +94,8 @@ public class BluetoothDeviceHandler : IBluetoothDeviceHandler
 
     private void OnWatchdogPeriodElapsed(object? sender, ElapsedEventArgs e)
     {
-        //try
-        //{
-        //Debug.Print(_previousMsg);
-        //await Send(_previousMsg); // PROBLEM - when device sends Measurement stopped - the message does not reflect it. 
-        // this causes restart of measurement
-
         var ts = _dateTimeService.Now;
-        if (ts - LatestTimestamp < _incomingHearbeatTimeout) return;
+        if (ts - LatestTimestamp < _incomingHeartbeatTimeout) return;
 
         Disconnect();
 
@@ -144,7 +135,6 @@ public class BluetoothDeviceHandler : IBluetoothDeviceHandler
 
     public async Task SendAsync(string msg)
     {
-        //_previousMsg = msg;
         using var writer = new DataWriter();
         writer.WriteString(msg);
         var res = await _txCharacteristic.WriteValueAsync(writer.DetachBuffer(), GattWriteOption.WriteWithoutResponse);

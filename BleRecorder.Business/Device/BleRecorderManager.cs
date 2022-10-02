@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using BleRecorder.Business.Exception;
+using BleRecorder.Common.Services;
 using BleRecorder.Infrastructure.Bluetooth;
 using BleRecorder.Models.Device;
 
@@ -25,6 +26,7 @@ public class BleRecorderManager : IBleRecorderManager
     public event EventHandler? DevicePropertyChanged;
     private readonly IBluetoothManager _bluetoothManager;
     private readonly IBleRecorderMessageParser _messageParser;
+    private readonly ISynchronizationContextProvider _synchronizationContextProvider;
     private BleRecorderAvailabilityStatus _bleRecorderAvailability;
     private const string _bleRecorderName = "Aggregator-TEST";
     public BleRecorderDevice? BleRecorderDevice { get; private set; }
@@ -46,10 +48,14 @@ public class BleRecorderManager : IBleRecorderManager
 
     public bool IsCurrentlyMeasuring => (BleRecorderDevice?.IsCurrentlyMeasuring ?? false) || (BleRecorderDevice?.IsCalibrating ?? false);
 
-    public BleRecorderManager(IBluetoothManager bluetoothManager, IBleRecorderMessageParser messageParser)
+    public BleRecorderManager(
+        IBluetoothManager bluetoothManager, 
+        IBleRecorderMessageParser messageParser,
+        ISynchronizationContextProvider synchronizationContextProvider)
     {
         _bluetoothManager = bluetoothManager;
         _messageParser = messageParser;
+        _synchronizationContextProvider = synchronizationContextProvider;
         _bluetoothManager.AddDeviceNameFilter(_bleRecorderName);
         _bluetoothManager.AvailableBleDevices.CollectionChanged += OnAvailableDevicesChanged;
         BleRecorderAvailability = BleRecorderAvailabilityStatus.DisconnectedUnavailable;
@@ -89,7 +95,7 @@ public class BleRecorderManager : IBleRecorderManager
             throw new DeviceConnectionException(ex);
         }
 
-        BleRecorderDevice = new BleRecorderDevice(this, bleDevice, _messageParser, Calibration);
+        BleRecorderDevice = new BleRecorderDevice(bleDevice, _messageParser, _synchronizationContextProvider, Calibration);
         BleRecorderAvailability = BleRecorderAvailabilityStatus.Connected;
         BleRecorderDevice.ConnectionStatusChanged += OnConnectionStatusChanged;
         BleRecorderDevice.MeasurementStatusChanged += OnMeasurementStatusChanged;

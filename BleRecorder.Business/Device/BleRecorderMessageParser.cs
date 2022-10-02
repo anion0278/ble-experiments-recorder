@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using BleRecorder.Business.Exception;
+using System.Text.RegularExpressions;
 
 namespace BleRecorder.Business.Device;
 
@@ -32,6 +33,6 @@ public class BleRecorderMessageParser : IBleRecorderMessageParser
                 (BleRecorderMeasurement)measurementStatus!);
         }
 
-        throw new ArgumentException("Invalid bleRecorder message!");
+        throw new DeviceInvalidMessageException(msg);
     }
 }
