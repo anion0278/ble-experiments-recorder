@@ -167,6 +167,18 @@
                                    FontSize="18" FontWeight="DemiBold"
                                    Visibility="{Binding MeasuredValues, Converter={ StaticResource collectionToVisibilityConverterPipeline}}">
                         </TextBlock>
+                        <mah:ProgressRing Grid.Row="1" Foreground="SteelBlue">
+                            <mah:ProgressRing.Style>
+                                <Style TargetType="mah:ProgressRing">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsMeasurementRunning}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </mah:ProgressRing.Style>
+                        </mah:ProgressRing>
 
                         <livecharts:CartesianChart Grid.Row="0" Grid.RowSpan="3" Foreground="{StaticResource MainThemeColorAccent}" 
                                                DisableAnimations="True" MinHeight="230" Margin="10 10 10 0">
