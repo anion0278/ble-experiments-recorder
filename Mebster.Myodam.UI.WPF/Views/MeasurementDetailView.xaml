@@ -13,6 +13,7 @@
              xmlns:views="clr-namespace:Mebster.Myodam.UI.WPF.Views"
              xmlns:resouces="clr-namespace:Mebster.Myodam.UI.WPF.Views.Resouces"
              mc:Ignorable="d"
+             x:Name="control"
              d:DesignHeight="800" d:DesignWidth="800" 
              d:DataContext="{d:DesignInstance viewModels:MeasurementDetailViewModel, IsDesignTimeCreatable=True}">
     <UserControl.Resources>
@@ -141,7 +142,17 @@
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
                     <views:MechanismParametersView Grid.Column="0"  DataContext="{Binding MechanismParametersVm}"  />
-                    <views:StimulationParametersView Grid.Column="1" HorizontalAlignment="Center" DataContext="{Binding StimulationParametersVm}" />
+                    <views:StimulationParametersView Grid.Column="1" HorizontalAlignment="Center" DataContext="{Binding StimulationParametersVm}">
+                        <views:StimulationParametersView.Style>
+                            <Style TargetType="views:StimulationParametersView">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ElementName=control, Path=DataContext.Type}" Value="{x:Static testSubject:MeasurementType.MaximumContraction}">
+                                        <Setter Property="IsFatigueParametersAdjustable" Value="False"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </views:StimulationParametersView.Style>
+                    </views:StimulationParametersView>
                 </Grid>
             </Expander>
 

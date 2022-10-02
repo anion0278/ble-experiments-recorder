@@ -20,6 +20,15 @@ namespace Mebster.Myodam.UI.WPF.Views
     /// </summary>
     public partial class StimulationParametersView : UserControl
     {
+        public static readonly DependencyProperty IsFatigueParametersAdjustableProperty = DependencyProperty.Register(
+            "IsFatigueParametersAdjustable", typeof(bool), typeof(StimulationParametersView), new PropertyMetadata(true));
+
+        public bool IsFatigueParametersAdjustable
+        {
+            get { return (bool)GetValue(IsFatigueParametersAdjustableProperty); }
+            set { SetValue(IsFatigueParametersAdjustableProperty, value); }
+        }
+
         public StimulationParametersView()
         {
             InitializeComponent();
