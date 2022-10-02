@@ -20,6 +20,15 @@ namespace BleRecorder.UI.WPF.Views
     /// </summary>
     public partial class StimulationParametersView : UserControl
     {
+        public static readonly DependencyProperty IsIntermittentParametersAdjustableProperty = DependencyProperty.Register(
+            "IsIntermittentParametersAdjustable", typeof(bool), typeof(StimulationParametersView), new PropertyMetadata(true));
+
+        public bool IsIntermittentParametersAdjustable
+        {
+            get { return (bool)GetValue(IsIntermittentParametersAdjustableProperty); }
+            set { SetValue(IsIntermittentParametersAdjustableProperty, value); }
+        }
+
         public StimulationParametersView()
         {
             InitializeComponent();

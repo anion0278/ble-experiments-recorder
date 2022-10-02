@@ -198,10 +198,10 @@
                                         <Setter Property="Text" Value="Connect" />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding ChangeBleRecorderConnectionCommand.IsRunning}" Value="True" >
-                                                <Setter Property="Text" Value="Connecting..."></Setter>
+                                                <Setter Property="Text" Value="Connecting..."/>
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding BleRecorderAvailability}" Value="{x:Static device:BleRecorderAvailabilityStatus.Connected}" >
-                                                <Setter Property="Text" Value="Disconnect"></Setter>
+                                                <Setter Property="Text" Value="Disconnect"/>
                                             </DataTrigger>
                                             <MultiDataTrigger>
                                                 <MultiDataTrigger.Conditions>
