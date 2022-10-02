@@ -21,8 +21,8 @@ public class DeviceCalibration
         if (!IsValid()) throw new ArgumentException($"Calibration is invalid.");
 
         _linearEquation = new LinearEquation(
-            new CalibrationData(0, NoLoadSensorValue),
-            new CalibrationData(NominalLoad, NominalLoadSensorValue));
+            new CalibrationData(NoLoadSensorValue, 0),
+            new CalibrationData(NominalLoadSensorValue, NominalLoad));
     }
 
     public static DeviceCalibration GetDefaultValues() 

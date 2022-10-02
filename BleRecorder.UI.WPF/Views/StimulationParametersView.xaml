@@ -7,9 +7,11 @@
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:device="clr-namespace:BleRecorder.Models.Device;assembly=BleRecorder.Models"
              mc:Ignorable="d" 
-             d:DesignHeight="200" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="300">
     <Grid Margin="10">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -37,13 +39,22 @@
 
         <Label Grid.Row="3" Grid.Column="0"  Content="Stimulation time [s]:" VerticalAlignment="Center"/>
         <mah:NumericUpDown Grid.Row="3" Grid.Column="1"  Style="{StaticResource MeasurementParamNumericBox}"
-                           Interval="1" Minimum="1" Maximum="10"
+                           Interval="1" Minimum="1" Maximum="25"
                            Value="{Binding StimulationTimeSeconds}" />
 
-        <Label Grid.Row="4" Grid.Column="0"  Content="Pulse width [us]:"  VerticalAlignment="Center"/>
-        <ComboBox Grid.Row="4" Grid.Column="1" 
-                  DisplayMemberPath="Value" Style="{StaticResource MeasurementParamComboBox}"
-                  SelectedItem="{Binding PulseWidthMicroSeconds}"
-                  ItemsSource="{x:Static device:StimulationPulseWidth.AvailableOptions}"/>
+        <Label Grid.Row="4" Grid.Column="0"  Content="Stimulation time [s]:" VerticalAlignment="Center"/>
+        <mah:NumericUpDown Grid.Row="4" Grid.Column="1"  Style="{StaticResource MeasurementParamNumericBox}"
+                           Interval="1" Minimum="1" Maximum="25"
+                           Value="{Binding StimulationTimeSeconds}" />
+
+        <Label Grid.Row="5" Grid.Column="0" Content="Intermittent - rest time [s]:" VerticalAlignment="Center"/>
+        <mah:NumericUpDown Grid.Row="5" Grid.Column="1"  Style="{StaticResource MeasurementParamNumericBox}"
+                           Interval="1" Minimum="1" Maximum="25"
+                           Value="{Binding RestTimeSeconds}" />
+
+        <Label Grid.Row="6" Grid.Column="0"  Content="Intermittent - repetitions:" VerticalAlignment="Center"/>
+        <mah:NumericUpDown Grid.Row="6" Grid.Column="1"  Style="{StaticResource MeasurementParamNumericBox}"
+                           Interval="1" Minimum="2" Maximum="10"
+                           Value="{Binding IntermittentRepetitions}" />
     </Grid>
 </UserControl>

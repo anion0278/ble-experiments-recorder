@@ -19,9 +19,6 @@ public class BleRecorderDevice // TODO Extract inteface
     private StimulationParameters? _currentParameters;
     private bool _isCalibrating;
 
-    //private System.Timers.Timer _outboundDataTimer;
-    //private BleRecorderMeasurement _currentRequestedMeasurementStatus = BleRecorderMeasurement.Idle;
-
     public event EventHandler<MeasuredValue>? NewValueReceived;
     public event EventHandler? ConnectionStatusChanged;
     public event EventHandler? MeasurementStatusChanged;
@@ -93,30 +90,9 @@ public class BleRecorderDevice // TODO Extract inteface
         _bleDeviceHandler.DataReceived += BleDeviceHandlerDataReceived;
         _bleDeviceHandler.DeviceStatusChanged += BleDeviceStatusChanged;
 
-        //_outboundDataTimer = new System.Timers.Timer(DataRequestInterval.TotalMilliseconds);
-        //_outboundDataTimer.Elapsed += OnTimerTimeElapsed;
-        //_outboundDataTimer.Start();
-
         StimulatorBattery = new Percentage(0);
         ControllerBattery = new Percentage(0);
     }
-
-    //private async void OnTimerTimeElapsed(object? sender, ElapsedEventArgs e)
-    //{
-    //    if (!IsConnected) return;
-
-    //    //Debug.Print("Sent");
-    //    var (x,y) = _currentRequestedMeasurementStatus switch
-    //    {
-    //        BleRecorderMeasurement.Idle => (MeasurementType.Intermittent, false),
-    //        BleRecorderMeasurement.MaximumContraction => (MeasurementType.MaximumContraction, true),
-    //        BleRecorderMeasurement.Intermittent => (MeasurementType.Intermittent, true),
-    //        _ => throw new ArgumentOutOfRangeException()
-    //    };
-    
-    //    var msg = new BleRecorderRequestMessage(CurrentParameters, x, y);
-    //    await SendMsg(msg);
-    //}
 
     private void BleDeviceStatusChanged(object? sender, EventArgs e)
     {
@@ -178,7 +154,6 @@ public class BleRecorderDevice // TODO Extract inteface
             CurrentParameters,
             measurementType,
             true);
-        //_currentRequestedMeasurementStatus = msg.Measurement;
         await SendMsgAsync(msg);
     }
 
@@ -188,7 +163,6 @@ public class BleRecorderDevice // TODO Extract inteface
             CurrentParameters,
             MeasurementType.MaximumContraction,
             false);
-        //_currentRequestedMeasurementStatus = msg.Measurement;
         await SendMsgAsync(msg);
     }
 

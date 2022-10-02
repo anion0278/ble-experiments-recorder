@@ -100,7 +100,7 @@
 
                 <Label Grid.Row="0" Grid.Column="0"  Content="Test subject:"/>
                 <Label Grid.Row="0" Grid.Column="1" FontWeight="Bold" 
-                       Content="{Binding Model.TestSubject.FullName}"/>
+                       Content="{Binding TestSubjectName}"/>
 
                 <Label Grid.Row="1" Grid.Column="0" Content="Measurement date:" />
                 <Label Grid.Row="1" Grid.Column="1"  FontWeight="Bold" VerticalAlignment="Center" ContentStringFormat="dd MMM. yyyy, HH:mm"
@@ -185,7 +185,7 @@
                             </livecharts:CartesianChart.Style>
 
                             <livecharts:CartesianChart.AxisY>
-                                <livecharts:Axis x:Name="GraphYAxis" MinValue="0" Title="Contraction - Torque [Nm]" />
+                                <livecharts:Axis x:Name="GraphYAxis" MaxValue="25" Title="Contraction - Torque [Nm]" />
                             </livecharts:CartesianChart.AxisY>
 
                             <livecharts:CartesianChart.AxisX>
@@ -204,7 +204,7 @@
                             </livecharts:CartesianChart.SeriesColors>
 
                             <livecharts:CartesianChart.Series>
-                                <livecharts:LineSeries Title="Measured torque" Values="{Binding MeasuredValues}"
+                                <livecharts:LineSeries LineSmoothness="0" Title="Measured torque" Values="{Binding MeasuredValues}"
                                            Configuration="{StaticResource chartPointMapper}"/>
                             </livecharts:CartesianChart.Series>
                         </livecharts:CartesianChart>

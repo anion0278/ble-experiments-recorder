@@ -13,7 +13,7 @@ namespace BleRecorder.Infrastructure.Bluetooth;
 public class BluetoothDeviceHandler : IBluetoothDeviceHandler
 {
     private readonly IDateTimeService _dateTimeService;
-    private readonly ITimerExceptionContextProvider _contextProvider;
+    private readonly ISynchronizationContextProvider _contextProvider;
     public event EventHandler<string>? DataReceived;
     public event EventHandler? DeviceStatusChanged;
 
@@ -45,7 +45,7 @@ public class BluetoothDeviceHandler : IBluetoothDeviceHandler
     }
 
     public BluetoothDeviceHandler(IDateTimeService dateTimeService,
-        ITimerExceptionContextProvider contextProvider,
+        ISynchronizationContextProvider contextProvider,
         string name, ulong address, short signalStrength, DateTimeOffset timestamp)
     {
         _dateTimeService = dateTimeService;
@@ -137,7 +137,7 @@ public class BluetoothDeviceHandler : IBluetoothDeviceHandler
         var input = new byte[reader.UnconsumedBufferLength];
         reader.ReadBytes(input);
         var receivedMsg = Encoding.UTF8.GetString(input);
-        Debug.Print(receivedMsg);
+        Debug.Print(LatestTimestamp + receivedMsg);
 
         DataReceived?.Invoke(this, receivedMsg);
     }

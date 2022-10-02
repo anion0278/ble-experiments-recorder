@@ -76,7 +76,7 @@ public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewM
         _bleRecorderManager = bleRecorderManager;
         _dialogService = dialogService;
         _configurationLoader = configurationLoader;
-        _bleRecorderManager.BleRecorderAvailabilityChanged += BleRecorderStatusChanged; 
+        _bleRecorderManager.BleRecorderAvailabilityChanged += BleRecorderStatusChanged;
         _bleRecorderManager.MeasurementStatusChanged += BleRecorderStatusChanged;
 
         AppConfiguration = _configurationLoader.GetConfiguration();
@@ -110,7 +110,7 @@ public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewM
     {
         var result = await _dialogService.ShowOkCancelDialogAsync(
             "Are you sure you want to perform calibration with nominal load? This will erase the current value.",
-            "Start calibration with nominal load?");
+            "Start calibration without load?");
         if (result != MessageDialogResult.OK) return;
 
         NoLoadSensorValue = (await _bleRecorderManager.BleRecorderDevice!.GetSensorCalibrationValueAsync()).ToString();
@@ -121,7 +121,7 @@ public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewM
     {
         var result = await _dialogService.ShowOkCancelDialogAsync(
             "Are you sure you want to perform calibration without load? This will erase the current value.",
-            "Start calibration without load?");
+            "Start calibration with nominal load?");
         if (result != MessageDialogResult.OK) { return; }
 
         NominalLoadSensorValue = (await _bleRecorderManager.BleRecorderDevice!.GetSensorCalibrationValueAsync()).ToString();
@@ -130,11 +130,11 @@ public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewM
 
     private void NotifyCalibrationCommandsCanExecuteChanged()
     {
-        ViewSynchronizationContext.Send(_ => 
+        RunInViewContext(() =>
             {
                 CalibrateNoLoadSensorValueCommand.NotifyCanExecuteChanged();
                 CalibrateNominalLoadSensorValueCommand.NotifyCanExecuteChanged();
-            }, null);
+            });
     }
 
     private bool CanCalibrateExecute()

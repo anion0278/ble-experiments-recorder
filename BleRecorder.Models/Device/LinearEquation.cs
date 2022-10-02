@@ -13,20 +13,20 @@ public class LinearEquation
 
     public void UpdateCoefficients(CalibrationData p1, CalibrationData p2)
     {
-        _coefficients = new LinearEquationCoefficients(
-            p1.Y - p2.Y,
-            p2.X - p1.X,
-            (p1.X - p2.X) * p1.Y + (p2.Y - p1.Y) * p1.X);
+        var m = (p2.Y - p1.Y) / (p2.X - p1.X);
+        var b = p1.Y - (m * p1.X);
+
+        _coefficients = new LinearEquationCoefficients(m, b);
     }
 
     public double CalculateLoadValue(double sensorValue)
     {
-        return (-_coefficients.C - _coefficients.A * sensorValue) / _coefficients.B;
+        return sensorValue * _coefficients.M + _coefficients.B;
     }
 }
 
 
 public record CalibrationData(double X, double Y);
 
-// equation in form ax + by + c = 0
-public record LinearEquationCoefficients(double A, double B, double C);
+// equation in form y = mx + b
+public record LinearEquationCoefficients(double M, double B);

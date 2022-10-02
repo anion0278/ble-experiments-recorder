@@ -47,6 +47,8 @@ namespace BleRecorder.UI.WPF.ViewModels
             set => Model.Title = value;
         }
 
+        public string TestSubjectName => Model.TestSubject.FullName;
+
         public string? Notes
         {
             get => Model.Notes;
@@ -111,7 +113,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             StopMeasurementCommand = new AsyncRelayCommand(StopMeasurementAsync, StopMeasurementCanExecute);
             CleanRecordedDataCommand = new RelayCommand(CleanRecordedDataAsync, () => !_bleRecorderManager.IsCurrentlyMeasuring);
 
-            MeasuredValues.CollectionChanged += OnForceValuesChanged; // letting ComboBox.IsDisabled know that collection changed. Required due to the way ChartValues work
+            MeasuredValues.CollectionChanged += OnContractionValuesChanged; // letting ComboBox.IsDisabled know that collection changed. Required due to the way ChartValues work
 
             _bleRecorderManager.BleRecorderAvailabilityChanged += OnBleRecorderStatusChanged;
             _bleRecorderManager.MeasurementStatusChanged += OnMeasurementStatusChanged;
@@ -138,7 +140,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             StimulationParametersVm.PropertyChanged -= OnPropertyChangedEventHandler;
             PropertyChanged -= OnPropertyChangedEventHandler;
 
-            MeasuredValues.CollectionChanged -= OnForceValuesChanged;
+            MeasuredValues.CollectionChanged -= OnContractionValuesChanged;
             _bleRecorderManager.BleRecorderAvailabilityChanged -= OnBleRecorderStatusChanged;
             _bleRecorderManager.MeasurementStatusChanged -= OnMeasurementStatusChanged;
 
@@ -152,7 +154,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             HasChanges = _measurementRepository.HasChanges();
         }
 
-        private void OnForceValuesChanged(object? o, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
+        private void OnContractionValuesChanged(object? o, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
         {
             OnPropertyChanged(nameof(MeasuredValues));
         }
@@ -166,7 +168,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             }
 
             // TODO put Send method into VMBase 
-            ViewSynchronizationContext.Send(_ =>
+            RunInViewContext(() =>
             {
                 StartMeasurementCommand.NotifyCanExecuteChanged();
                 StopMeasurementCommand.NotifyCanExecuteChanged();
@@ -180,7 +182,7 @@ namespace BleRecorder.UI.WPF.ViewModels
 
                 MeasuredValues.Clear();
                 DialogService.ShowInfoDialogAsync("Measurement was interrupted due to device disconnection! Measured data were erased.");
-            }, null);
+            });
         }
 
         private bool StartMeasurementCanExecute()
@@ -190,7 +192,7 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         private void OnBleRecorderStatusChanged(object? o, EventArgs eventArgs)
         {
-            ViewSynchronizationContext.Send(_ => StartMeasurementCommand.NotifyCanExecuteChanged(), null);
+            RunInViewContext(() => StartMeasurementCommand.NotifyCanExecuteChanged());
         }
 
         private async void CleanRecordedDataAsync()
@@ -204,7 +206,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             {
                 MeasuredValues.Clear();
             }
-            UpdateMeasurementForceData();
+            NotifyMeasurementDataChanged();
         }
 
         public override async Task LoadAsync(int measurementId, object argsData)
@@ -322,14 +324,14 @@ namespace BleRecorder.UI.WPF.ViewModels
                 return;
             }
 
-            UpdateMeasurementForceData();
+            NotifyMeasurementDataChanged();
             await _measurementRepository.SaveAsync();
             HasChanges = _measurementRepository.HasChanges();
             Id = Model.Id;
             RaiseDetailSavedEvent(Model.Id, Model.Title);
         }
 
-        private void UpdateMeasurementForceData()
+        private void NotifyMeasurementDataChanged()
         {
             Model.ContractionLoadData = MeasuredValues.ToArray();
             OnPropertyChanged(nameof(MeasuredValues));
@@ -366,6 +368,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             }
 
             await _measurementRepository.ReloadTestSubjectAsync(Model.TestSubject);
+            OnPropertyChanged(nameof(TestSubjectName));
         }
 
         private void AfterDetailDeleted(AfterDetailDeletedEventArgs message)
