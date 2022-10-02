@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using Mebster.Myodam.Business.Exception;
+using System.Text.RegularExpressions;
 
 namespace Mebster.Myodam.Business.Device;
 
@@ -32,6 +33,6 @@ public class MyodamMessageParser : IMyodamMessageParser
                 (MyodamMeasurement)measurementStatus!);
         }
 
-        throw new ArgumentException("Invalid myodam message!");
+        throw new DeviceInvalidMessageException(msg);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Mebster.Myodam.Business.Exception;
+using Mebster.Myodam.Common.Services;
 using Mebster.Myodam.Infrastructure.Bluetooth;
 using Mebster.Myodam.Models.Device;
 
@@ -25,6 +26,7 @@ public class MyodamManager : IMyodamManager
     public event EventHandler? DevicePropertyChanged;
     private readonly IBluetoothManager _bluetoothManager;
     private readonly IMyodamMessageParser _messageParser;
+    private readonly ISynchronizationContextProvider _synchronizationContextProvider;
     private MyodamAvailabilityStatus _myodamAvailability;
     private const string _myodamName = "MYODAM-TEST";
     public MyodamDevice? MyodamDevice { get; private set; }
@@ -46,10 +48,14 @@ public class MyodamManager : IMyodamManager
 
     public bool IsCurrentlyMeasuring => (MyodamDevice?.IsCurrentlyMeasuring ?? false) || (MyodamDevice?.IsCalibrating ?? false);
 
-    public MyodamManager(IBluetoothManager bluetoothManager, IMyodamMessageParser messageParser)
+    public MyodamManager(
+        IBluetoothManager bluetoothManager, 
+        IMyodamMessageParser messageParser,
+        ISynchronizationContextProvider synchronizationContextProvider)
     {
         _bluetoothManager = bluetoothManager;
         _messageParser = messageParser;
+        _synchronizationContextProvider = synchronizationContextProvider;
         _bluetoothManager.AddDeviceNameFilter(_myodamName);
         _bluetoothManager.AvailableBleDevices.CollectionChanged += OnAvailableDevicesChanged;
         MyodamAvailability = MyodamAvailabilityStatus.DisconnectedUnavailable;
@@ -89,7 +95,7 @@ public class MyodamManager : IMyodamManager
             throw new DeviceConnectionException(ex);
         }
 
-        MyodamDevice = new MyodamDevice(this, bleDevice, _messageParser, Calibration);
+        MyodamDevice = new MyodamDevice(bleDevice, _messageParser, _synchronizationContextProvider, Calibration);
         MyodamAvailability = MyodamAvailabilityStatus.Connected;
         MyodamDevice.ConnectionStatusChanged += OnConnectionStatusChanged;
         MyodamDevice.MeasurementStatusChanged += OnMeasurementStatusChanged;

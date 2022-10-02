@@ -47,7 +47,6 @@ public class StimulationParametersViewModel : ViewModelBase
     // Design-time 
     public StimulationParametersViewModel()
     {
-
     }
 
     public StimulationParametersViewModel(StimulationParameters model)

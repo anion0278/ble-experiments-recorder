@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Timers;
 using Mebster.Myodam.Business.Exception;
+using Mebster.Myodam.Common.Services;
 using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.Models.TestSubject;
 
@@ -10,9 +11,9 @@ namespace Mebster.Myodam.Business.Device;
 
 public class MyodamDevice // TODO Extract inteface
 {
-    private readonly MyodamManager _myodamManager;
     private readonly IBluetoothDeviceHandler _bleDeviceHandler;
     private readonly IMyodamMessageParser _messageParser;
+    private readonly ISynchronizationContextProvider _synchronizationContextProvider;
     private bool _isCurrentlyMeasuring;
     private Percentage _stimulatorBattery;
     private Percentage _controllerBattery;
@@ -80,13 +81,16 @@ public class MyodamDevice // TODO Extract inteface
         }
     }
 
-    public MyodamDevice(MyodamManager myodamManager, IBluetoothDeviceHandler bleDeviceHandler,
-        IMyodamMessageParser messageParser, DeviceCalibration deviceCalibration)
+    public MyodamDevice(
+        IBluetoothDeviceHandler bleDeviceHandler,
+        IMyodamMessageParser messageParser,
+        ISynchronizationContextProvider synchronizationContextProvider,
+        DeviceCalibration deviceCalibration)
     {
         Calibration = deviceCalibration;
-        _myodamManager = myodamManager;
         _bleDeviceHandler = bleDeviceHandler;
         _messageParser = messageParser;
+        _synchronizationContextProvider = synchronizationContextProvider;
         _bleDeviceHandler.DataReceived += BleDeviceHandlerDataReceived;
         _bleDeviceHandler.DeviceStatusChanged += BleDeviceStatusChanged;
 
@@ -100,7 +104,6 @@ public class MyodamDevice // TODO Extract inteface
         {
             IsCurrentlyMeasuring = false;
             IsCalibrating = false;
-            // no need to set _currentRequestedMeasurementStatus
         }
         ConnectionStatusChanged?.Invoke(this, EventArgs.Empty);
     }
@@ -112,19 +115,28 @@ public class MyodamDevice // TODO Extract inteface
 
     private void BleDeviceHandlerDataReceived(object? sender, string data)
     {
-        //Debug.Print("Received");
-        var reply = _messageParser.ParseReply(data);
-        StimulatorBattery = reply.StimulatorBattery;
-        ControllerBattery = reply.ControllerBattery;
-        //Debug.Print(reply.MeasurementStatus.ToString());
-        IsCurrentlyMeasuring = reply.MeasurementStatus != MyodamMeasurement.Idle;
+        try
+        {
+            var reply = _messageParser.ParseReply(data);
+            StimulatorBattery = reply.StimulatorBattery;
+            ControllerBattery = reply.ControllerBattery;
+            IsCurrentlyMeasuring = reply.MeasurementStatus != MyodamMeasurement.Idle;
 
-        if (!IsCurrentlyMeasuring && !IsCalibrating) return;
+            if (!IsCurrentlyMeasuring && !IsCalibrating) return;
 
-        NewValueReceived?.Invoke(this, new MeasuredValue(
-            reply.SensorValue, reply.CurrentMilliAmp, reply.Timestamp)); 
+            NewValueReceived?.Invoke(this, new MeasuredValue(
+                reply.SensorValue, reply.CurrentMilliAmp, reply.Timestamp));
+        }
+        catch (DeviceInvalidMessageException ex)
+        {
+            _synchronizationContextProvider.RunInContext(() => throw ex); //throw; cannot be used
+        }
+        catch (System.Exception ex)
+        {
+            _synchronizationContextProvider.RunInContext(
+                () => throw new DeviceInvalidMessageException("Error during processing data from device.", ex)); 
+        }
     }
-
 
     public async Task<double> GetSensorCalibrationValueAsync()
     {
