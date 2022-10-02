@@ -23,7 +23,9 @@ namespace Mebster.Myodam.Business.Tests
                 current,
                 frequency,
                 StimulationPulseWidth.AvailableOptions[pulseWidthOption],
-                TimeSpan.FromSeconds(10)),
+                TimeSpan.FromSeconds(10),
+                TimeSpan.FromSeconds(5),
+                4),
                 measurementType,
                 isMeasurementRequested);
 

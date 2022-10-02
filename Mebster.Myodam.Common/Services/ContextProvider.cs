@@ -1,15 +1,15 @@
 ﻿namespace Mebster.Myodam.Common.Services;
 
-public interface ITimerExceptionContextProvider
+public interface ISynchronizationContextProvider
 {
     SynchronizationContext Context { get; }
 }
 
-public class TimerExceptionContextProvider : ITimerExceptionContextProvider
+public class SynchronizationContextProvider : ISynchronizationContextProvider
 {
     public SynchronizationContext Context { get; }
 
-    public TimerExceptionContextProvider()
+    public SynchronizationContextProvider()
     {
         Context = SynchronizationContext.Current ?? throw new ArgumentException("Synchronization context initialization was not successful.");
     }

@@ -131,12 +131,12 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         private void OnMyodamAvailabilityChanged(object? o, EventArgs eventArgs)
         {
-            OnMyodamPropertyChanged(this, EventArgs.Empty);
-            ViewSynchronizationContext.Send(_ =>
+            RunInViewContext(() =>
             {
+                OnMyodamPropertyChanged(this, EventArgs.Empty);
                 ChangeMyodamConnectionCommand.NotifyCanExecuteChanged();
                 ExportSelectedCommand.NotifyCanExecuteChanged();
-            }, null);
+            });
         }
 
         private bool CanChangeMyodamConnection()

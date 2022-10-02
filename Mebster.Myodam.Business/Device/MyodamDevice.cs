@@ -19,9 +19,6 @@ public class MyodamDevice // TODO Extract inteface
     private StimulationParameters? _currentParameters;
     private bool _isCalibrating;
 
-    //private System.Timers.Timer _outboundDataTimer;
-    //private MyodamMeasurement _currentRequestedMeasurementStatus = MyodamMeasurement.Idle;
-
     public event EventHandler<MeasuredValue>? NewValueReceived;
     public event EventHandler? ConnectionStatusChanged;
     public event EventHandler? MeasurementStatusChanged;
@@ -93,30 +90,9 @@ public class MyodamDevice // TODO Extract inteface
         _bleDeviceHandler.DataReceived += BleDeviceHandlerDataReceived;
         _bleDeviceHandler.DeviceStatusChanged += BleDeviceStatusChanged;
 
-        //_outboundDataTimer = new System.Timers.Timer(DataRequestInterval.TotalMilliseconds);
-        //_outboundDataTimer.Elapsed += OnTimerTimeElapsed;
-        //_outboundDataTimer.Start();
-
         StimulatorBattery = new Percentage(0);
         ControllerBattery = new Percentage(0);
     }
-
-    //private async void OnTimerTimeElapsed(object? sender, ElapsedEventArgs e)
-    //{
-    //    if (!IsConnected) return;
-
-    //    //Debug.Print("Sent");
-    //    var (x,y) = _currentRequestedMeasurementStatus switch
-    //    {
-    //        MyodamMeasurement.Idle => (MeasurementType.Fatigue, false),
-    //        MyodamMeasurement.MaximumContraction => (MeasurementType.MaximumContraction, true),
-    //        MyodamMeasurement.Fatigue => (MeasurementType.Fatigue, true),
-    //        _ => throw new ArgumentOutOfRangeException()
-    //    };
-    
-    //    var msg = new MyodamRequestMessage(CurrentParameters, x, y);
-    //    await SendMsg(msg);
-    //}
 
     private void BleDeviceStatusChanged(object? sender, EventArgs e)
     {
@@ -178,7 +154,6 @@ public class MyodamDevice // TODO Extract inteface
             CurrentParameters,
             measurementType,
             true);
-        //_currentRequestedMeasurementStatus = msg.Measurement;
         await SendMsgAsync(msg);
     }
 
@@ -188,7 +163,6 @@ public class MyodamDevice // TODO Extract inteface
             CurrentParameters,
             MeasurementType.MaximumContraction,
             false);
-        //_currentRequestedMeasurementStatus = msg.Measurement;
         await SendMsgAsync(msg);
     }
 
