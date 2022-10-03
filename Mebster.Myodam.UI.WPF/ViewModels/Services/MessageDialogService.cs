@@ -23,6 +23,15 @@ namespace Mebster.Myodam.UI.WPF.ViewModels.Services
               : MessageDialogResult.Cancel;
         }
 
+        public MessageDialogResult ShowOkCancelDialog(string text, string title)
+        {
+            var result = MetroWindow.ShowModalMessageExternal(title, text, MessageDialogStyle.AffirmativeAndNegative);
+
+            return result == MahApps.Metro.Controls.Dialogs.MessageDialogResult.Affirmative
+                ? MessageDialogResult.OK
+                : MessageDialogResult.Cancel;
+        }
+
         public async Task ShowInfoDialogAsync(string text)
         {
             await MetroWindow.ShowMessageAsync("Info", text);
