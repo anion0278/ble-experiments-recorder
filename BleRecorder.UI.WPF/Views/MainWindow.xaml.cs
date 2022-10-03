@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Windows;
 using MahApps.Metro.Controls;
 using BleRecorder.UI.WPF.ViewModels;
 
@@ -25,19 +26,10 @@ namespace BleRecorder.UI.WPF.Views
             await _viewModel.LoadAsync();
         }
 
-        private void ScrollViewer_Loaded(object sender, RoutedEventArgs e)
+        private void MainWindow_OnClosing(object? sender, CancelEventArgs e)
         {
-            //double offset;
-            //if (PageScrollViewer.Tag != null
-            //    && double.TryParse(PageScrollViewer.Tag.ToString(), out offset))
-            //{
-            //    PageScrollViewer.ScrollToVerticalOffset(offset);
-            //}
-        }
-
-        private void ScrollViewer_Unloaded(object sender, RoutedEventArgs e)
-        {
-            //PageScrollViewer.Tag = PageScrollViewer.VerticalOffset;
+            _viewModel.MainViewClosingCommand.Execute(e);
+            // cannot be handled with InvokeCommandAction
         }
     }
 }

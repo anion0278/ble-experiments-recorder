@@ -30,6 +30,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         private readonly ObservableCollection<IDetailViewModel> _detailViewModels = new();
 
         public ICommand OpenSingleDetailViewCommand { get; }
+        public RelayCommand<CancelEventArgs> MainViewClosingCommand { get; set; }
 
         public INavigationViewModel NavigationViewModel { get; }
 
@@ -37,6 +38,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         public ICollectionView DetailViewModels { get; }
 
         public string AppVersion => Assembly.GetExecutingAssembly().GetName().Version!.ToString(3);
+
 
         public IDetailViewModel SelectedDetailViewModel
         {
@@ -51,7 +53,7 @@ namespace BleRecorder.UI.WPF.ViewModels
                 }
                 _selectedDetailViewModel = value;
             }
-        } 
+        }
 
 
         /// <summary>
@@ -83,9 +85,20 @@ namespace BleRecorder.UI.WPF.ViewModels
             _messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
             _messenger.Register<AfterDetailClosedEventArgs>(this, (s, e) => AfterDetailClosed(e));
 
-            OpenSingleDetailViewCommand = new RelayCommand(OnOpenSingleDetailViewExecute);
+            OpenSingleDetailViewCommand = new RelayCommand(OpenSingleDetailViewExecute);
+            MainViewClosingCommand = new RelayCommand<CancelEventArgs>(MainViewClosingExecute);
 
             NavigationViewModel = navigationViewModel;
+        }
+
+        private void MainViewClosingExecute(CancelEventArgs? cancelEventArgs)
+        {
+            if (!_detailViewModels.Any(vm => vm.HasChanges)) return;
+
+            var result = _dialogService.ShowOkCancelDialog(
+                "There are unsaved changes. Do you really want to close the application?",
+                "Closing application");
+            if (result == MessageDialogResult.Cancel) cancelEventArgs!.Cancel = true;
         }
 
         public async Task LoadAsync()
@@ -114,7 +127,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             DetailViewModels.MoveCurrentTo(detailViewModel);
         }
 
-        private void OnOpenSingleDetailViewExecute()
+        private void OpenSingleDetailViewExecute()
         {
             OnOpenDetailViewAsync(new OpenDetailViewEventArgs
             {

@@ -29,6 +29,7 @@ public class BleRecorderRequestMessage
 
     public string FormatForSending()
     {
+        // TODO possible refactoring
         return     
             $">SC:{StimulationParameters.Current:000}_" +
             $"SF:{StimulationParameters.Frequency:000}_" +
