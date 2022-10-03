@@ -25,7 +25,7 @@ public class MyodamManager : IMyodamManager
     public event EventHandler? MeasurementStatusChanged;
     public event EventHandler? DevicePropertyChanged;
     private readonly IBluetoothManager _bluetoothManager;
-    private readonly IMyodamMessageParser _messageParser;
+    private readonly IMyodamReplyParser _messageParser;
     private readonly ISynchronizationContextProvider _synchronizationContextProvider;
     private MyodamAvailabilityStatus _myodamAvailability;
     private const string _myodamName = "MYODAM-TEST";
@@ -50,7 +50,7 @@ public class MyodamManager : IMyodamManager
 
     public MyodamManager(
         IBluetoothManager bluetoothManager, 
-        IMyodamMessageParser messageParser,
+        IMyodamReplyParser messageParser,
         ISynchronizationContextProvider synchronizationContextProvider)
     {
         _bluetoothManager = bluetoothManager;

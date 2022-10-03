@@ -8,7 +8,8 @@ public enum MyodamMeasurement // it has to be separated from MeasurementType not
 {
     Idle,
     MaximumContraction,
-    Fatigue
+    Fatigue,
+    FatigueIdle
 }
 
 public class MyodamRequestMessage

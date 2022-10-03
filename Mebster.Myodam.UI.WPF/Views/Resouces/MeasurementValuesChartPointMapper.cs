@@ -19,6 +19,6 @@ public class StatisticChartPointMapper : CartesianMapper<StatisticsValue>
     public StatisticChartPointMapper()
     {
         X(mv => mv.MeasurementDate.GetTotalDays());
-        Y(mv => mv.ContractionForceValue);
+        Y(mv => mv.Value);
     }
 }

@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using System.Timers;
 using Mebster.Myodam.Business.Exception;
 using Mebster.Myodam.Common.Services;
+using Mebster.Myodam.Models;
 using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.Models.TestSubject;
 
@@ -12,18 +13,31 @@ namespace Mebster.Myodam.Business.Device;
 public class MyodamDevice // TODO Extract inteface
 {
     private readonly IBluetoothDeviceHandler _bleDeviceHandler;
-    private readonly IMyodamMessageParser _messageParser;
+    private readonly IMyodamReplyParser _messageParser;
     private readonly ISynchronizationContextProvider _synchronizationContextProvider;
     private bool _isCurrentlyMeasuring;
     private Percentage _stimulatorBattery;
     private Percentage _controllerBattery;
     private StimulationParameters? _currentParameters;
     private bool _isCalibrating;
+    private MyodamError _error = MyodamError.NoError;
 
     public event EventHandler<MeasuredValue>? NewValueReceived;
     public event EventHandler? ConnectionStatusChanged;
+    public event EventHandler? ErrorChanged;
     public event EventHandler? MeasurementStatusChanged;
     public event EventHandler? BatteryStatusChanged;
+
+    public MyodamError Error
+    {
+        get => _error;
+        private set
+        {
+            if (value == _error) return;
+            _error = value;
+            ErrorChanged?.Invoke(this, EventArgs.Empty);
+        }
+    }
 
     public DeviceCalibration Calibration { get; set; }
 
@@ -83,7 +97,7 @@ public class MyodamDevice // TODO Extract inteface
 
     public MyodamDevice(
         IBluetoothDeviceHandler bleDeviceHandler,
-        IMyodamMessageParser messageParser,
+        IMyodamReplyParser messageParser,
         ISynchronizationContextProvider synchronizationContextProvider,
         DeviceCalibration deviceCalibration)
     {
@@ -120,12 +134,16 @@ public class MyodamDevice // TODO Extract inteface
             var reply = _messageParser.ParseReply(data);
             StimulatorBattery = reply.StimulatorBattery;
             ControllerBattery = reply.ControllerBattery;
+            Error = reply.Error;
             IsCurrentlyMeasuring = reply.MeasurementStatus != MyodamMeasurement.Idle;
 
             if (!IsCurrentlyMeasuring && !IsCalibrating) return;
 
-            NewValueReceived?.Invoke(this, new MeasuredValue(
-                reply.SensorValue, reply.CurrentMilliAmp, reply.Timestamp));
+            if (reply.MeasurementStatus == MyodamMeasurement.FatigueIdle) return;
+
+            NewValueReceived?.Invoke(
+                this, 
+                new MeasuredValue(reply.SensorValue, reply.CurrentMilliAmp, reply.Timestamp));
         }
         catch (DeviceInvalidMessageException ex)
         {

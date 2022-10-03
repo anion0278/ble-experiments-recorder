@@ -42,7 +42,7 @@ namespace Mebster.Myodam.UI.WPF.Startup
             builder.RegisterType<AppConfigurationLoader>().As<IAppConfigurationLoader>();
 
             builder.RegisterType<BluetoothManager>().As<IBluetoothManager>().SingleInstance();
-            builder.RegisterType<MyodamMessageParser>().As<IMyodamMessageParser>().SingleInstance();
+            builder.RegisterType<MyodamReplyParser>().As<IMyodamReplyParser>().SingleInstance();
             builder.RegisterType<MyodamManager>().As<IMyodamManager>().SingleInstance();
             builder.RegisterType<SynchronizationContextProvider>().As<ISynchronizationContextProvider>().SingleInstance();
 

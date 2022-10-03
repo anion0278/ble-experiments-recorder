@@ -222,7 +222,17 @@
                 <Label Grid.Row="1" Grid.Column="1" FontWeight="Bold" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">
                     <Label.Content>
                         <TextBlock TextWrapping="Wrap"
-                                Text="{Binding MyodamAvailability, Converter={StaticResource enumDescriptionConverter}}"/>
+                                Text="{Binding MyodamAvailability, Converter={StaticResource enumDescriptionConverter}}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding MyodamAvailability}" Value="{x:Static device:MyodamAvailabilityStatus.ErrorOnDevice}">
+                                            <Setter Property="Foreground" Value="{StaticResource ErrorTextColor}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
                     </Label.Content>
                 </Label>
 

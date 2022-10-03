@@ -38,6 +38,15 @@ public class Measurement
 
     public double MaxContractionLoad => ContractionLoadData.Any() ? ContractionLoadData.Max(v => v.ContractionValue) : 0;
 
+    public Percentage Fatigue => GetFatiguePercentage();
+
+    private Percentage GetFatiguePercentage()
+    {
+        var max = MaxContractionLoad;
+        var min = ContractionLoadData.Any() ? ContractionLoadData.Min(v => v.ContractionValue) : 0;
+        return new Percentage((max - min) / max, validate: false);
+    }
+
     public static ICollection<MeasuredValue>? ConvertInternalJsonToForceValues(string json)
     {
         return JsonSerializer.Deserialize<ICollection<MeasuredValue>?>(json);
@@ -51,4 +60,4 @@ public class Measurement
 
 public record MeasuredValue(double ContractionValue, double StimulationCurrent, TimeSpan Timestamp);
 
-public record StatisticsValue(double ContractionForceValue, DateTimeOffset MeasurementDate);
+public record StatisticsValue(double Value, DateTimeOffset MeasurementDate);
