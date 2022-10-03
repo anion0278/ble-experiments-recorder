@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using BleRecorder.Models;
 using BleRecorder.Models.TestSubject;
 
 namespace BleRecorder.Business.Device;
@@ -7,7 +8,7 @@ public class BleRecorderReplyMessage
 {
     public TimeSpan Timestamp { get; }
     public double SensorValue { get; }
-    public int CurrentMilliAmp { get; }
+    public double CurrentMilliAmp { get; }
 
     public Percentage ControllerBattery { get; }
     public Percentage StimulatorBattery { get; }
@@ -17,7 +18,7 @@ public class BleRecorderReplyMessage
     public BleRecorderReplyMessage(
         TimeSpan timestamp, 
         double sensorValue,
-        int currentMilliAmp,
+        double currentMilliAmp,
         Percentage controllerBattery,
         Percentage stimulatorBattery,
         BleRecorderError error,

@@ -8,7 +8,8 @@ public enum BleRecorderMeasurement // it has to be separated from MeasurementTyp
 {
     Idle,
     MaximumContraction,
-    Intermittent
+    Intermittent,
+    IntermittentIdle
 }
 
 public class BleRecorderRequestMessage

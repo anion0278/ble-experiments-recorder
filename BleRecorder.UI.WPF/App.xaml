@@ -17,6 +17,12 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/dark.indigo.xaml" />
 
                 <ResourceDictionary>
+                    <!--Region Colors-->
+                    <SolidColorBrush x:Key="MainThemeColorAccent" Color="#322882"/>
+                    <SolidColorBrush x:Key="ErrorColor" Color="DarkRed"/>
+                    <SolidColorBrush x:Key="ErrorTextColor" Color="OrangeRed"/>
+                    <!--EndRegion-->
+
                     <!--Region Implicit MVVM teplates-->
                     <DataTemplate DataType="{x:Type viewModel:TestSubjectDetailViewModel}">
                         <views:TestSubjectDetailView/>
@@ -69,15 +75,18 @@
                                 <ControlTemplate>
                                     <StackPanel>
                                         <AdornedElementPlaceholder x:Name="placeholder"/>
-                                        <TextBlock FontSize="10" Foreground="OrangeRed" Text="{Binding ElementName=placeholder, Path=AdornedElement.(Validation.Errors)/ErrorContent}"/>
+                                        <TextBlock FontSize="10" Foreground="{StaticResource ErrorTextColor}" 
+                                                   Text="{Binding ElementName=placeholder, 
+                                                    Path=AdornedElement.(Validation.Errors)/ErrorContent}"/>
                                     </StackPanel>
                                 </ControlTemplate>
                             </Setter.Value>
                         </Setter>
                         <Style.Triggers>
                             <Trigger Property="Validation.HasError" Value="True">
-                                <Setter Property="Background" Value="DarkRed"/>
-                                <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)/ErrorContent}"/>
+                                <Setter Property="Background" Value="{StaticResource ErrorColor}"/>
+                                <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, 
+                                    Path=(Validation.Errors)/ErrorContent}"/>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
@@ -120,7 +129,6 @@
                         </Style.Triggers>
                     </Style>
 
-                    <SolidColorBrush x:Key="MainThemeColorAccent" Color="#322882"/>
 
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>

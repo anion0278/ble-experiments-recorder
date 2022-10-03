@@ -99,12 +99,7 @@ public class BluetoothDeviceHandler : IBluetoothDeviceHandler
 
         Disconnect();
 
-        _contextProvider.Context.Send(_ => throw new DeviceHeartbeatTimeoutException(), null);
-        //}
-        //catch (Exception ex)
-        //{
-        //    Debug.Print("Exception in ");
-        //} // TODO create TimerWithSynchronization, maybe fold exception into Aggregate exception and handle unwinding inside GlobalExHandler
+        _contextProvider.RunInContext(() => throw new DeviceHeartbeatTimeoutException());
     }
 
     private void BleDeviceOnConnectionStatusChanged(BluetoothLEDevice sender, object args)

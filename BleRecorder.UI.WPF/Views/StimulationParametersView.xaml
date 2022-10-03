@@ -57,10 +57,11 @@
                            Interval="5" Minimum="1" Maximum="100"
                            Value="{Binding FrequencyHz}" />
 
-        <Label Grid.Row="3" Grid.Column="0"  Content="Stimulation time [s]:" VerticalAlignment="Center"/>
-        <mah:NumericUpDown Grid.Row="3" Grid.Column="1"  Style="{StaticResource MeasurementParamNumericBox}"
-                           Interval="1" Minimum="1" Maximum="25"
-                           Value="{Binding StimulationTimeSeconds}" />
+        <Label Grid.Row="3" Grid.Column="0"  Content="Pulse width [us]:"  VerticalAlignment="Center"/>
+        <ComboBox Grid.Row="3" Grid.Column="1" 
+                  DisplayMemberPath="Value" Style="{StaticResource MeasurementParamComboBox}"
+                  SelectedItem="{Binding PulseWidthMicroSeconds}"
+                  ItemsSource="{x:Static device:StimulationPulseWidth.AvailableOptions}"/>
 
         <Label Grid.Row="4" Grid.Column="0"  Content="Stimulation time [s]:" VerticalAlignment="Center"/>
         <mah:NumericUpDown Grid.Row="4" Grid.Column="1"  Style="{StaticResource MeasurementParamNumericBox}"

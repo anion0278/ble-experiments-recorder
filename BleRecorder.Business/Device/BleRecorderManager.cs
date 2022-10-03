@@ -25,7 +25,7 @@ public class BleRecorderManager : IBleRecorderManager
     public event EventHandler? MeasurementStatusChanged;
     public event EventHandler? DevicePropertyChanged;
     private readonly IBluetoothManager _bluetoothManager;
-    private readonly IBleRecorderMessageParser _messageParser;
+    private readonly IBleRecorderReplyParser _messageParser;
     private readonly ISynchronizationContextProvider _synchronizationContextProvider;
     private BleRecorderAvailabilityStatus _bleRecorderAvailability;
     private const string _bleRecorderName = "Aggregator-TEST";
@@ -50,7 +50,7 @@ public class BleRecorderManager : IBleRecorderManager
 
     public BleRecorderManager(
         IBluetoothManager bluetoothManager, 
-        IBleRecorderMessageParser messageParser,
+        IBleRecorderReplyParser messageParser,
         ISynchronizationContextProvider synchronizationContextProvider)
     {
         _bluetoothManager = bluetoothManager;

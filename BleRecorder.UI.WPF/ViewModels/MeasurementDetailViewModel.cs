@@ -253,7 +253,6 @@ namespace BleRecorder.UI.WPF.ViewModels
             }
             _bleRecorderManager.Calibration.UpdateCalibration();
 
-
             var result = await DialogService.ShowOkCancelDialogAsync(
                 "Are you sure you want to start measurement with current parameters listed in this page (they may differ from user-specific parameter settings)?",
                 "Start measurement?");

@@ -1,13 +1,13 @@
-﻿namespace BleRecorder.Business.Device;
+﻿namespace BleRecorder.Models;
 
 public readonly struct Percentage
 {
-    public decimal Value { get; }
+    public double Value { get; }
 
-    public Percentage(decimal value) 
+    public Percentage(double value, bool validate = true) 
     {
         Value = value;
-        if (value is > 100 or < 0) throw new ArgumentException("Percentage is out of range");
+        if (validate && (value is > 100 or < 0)) throw new ArgumentException("Percentage is out of range");
     }
 
     public bool Equals(Percentage other)
@@ -25,19 +25,19 @@ public readonly struct Percentage
         return Value.GetHashCode();
     }
 
-    public static explicit operator Percentage(decimal d)
+    public static implicit operator Percentage(double d)
     {
         return new Percentage(d);
     }
 
     public static Percentage Parse(string value)
     {
-        return new Percentage(decimal.Parse(value));
+        return new Percentage(double.Parse(value));
     }
 
     public static bool TryParse(string value, out Percentage percentage)
     {
-        bool flag = decimal.TryParse(value, out var parsedValue);
+        bool flag = double.TryParse(value, out var parsedValue);
         percentage = new Percentage(parsedValue);
         return flag;
     }

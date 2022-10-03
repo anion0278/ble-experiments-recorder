@@ -222,7 +222,17 @@
                 <Label Grid.Row="1" Grid.Column="1" FontWeight="Bold" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">
                     <Label.Content>
                         <TextBlock TextWrapping="Wrap"
-                                Text="{Binding BleRecorderAvailability, Converter={StaticResource enumDescriptionConverter}}"/>
+                                Text="{Binding BleRecorderAvailability, Converter={StaticResource enumDescriptionConverter}}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding BleRecorderAvailability}" Value="{x:Static device:BleRecorderAvailabilityStatus.ErrorOnDevice}">
+                                            <Setter Property="Foreground" Value="{StaticResource ErrorTextColor}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
                     </Label.Content>
                 </Label>
 

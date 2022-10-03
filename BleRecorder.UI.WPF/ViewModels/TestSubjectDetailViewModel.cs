@@ -172,22 +172,27 @@ namespace BleRecorder.UI.WPF.ViewModels
         private void RefreshStatistics()
         {
             MaxContractionStatisticValues.Clear();
-            MaxContractionStatisticValues.AddRange(GetStatisticsValues(MeasurementType.MaximumContraction));
-            IntermittentStatisticValues.Clear();
-            IntermittentStatisticValues.AddRange(GetStatisticsValues(MeasurementType.Intermittent));
+            MaxContractionStatisticValues.AddRange(GetStatisticsValues(
+                MeasurementType.MaximumContraction,
+                m => new StatisticsValue(m.ContractionLoadData.Max(v => v.ContractionValue), m.Date!.Value)));
             OnPropertyChanged(nameof(MaxContractionStatisticValues)); // only one update is enough, since MultiBinding will be triggered for both statements
+
+            IntermittentStatisticValues.Clear();
+            IntermittentStatisticValues.AddRange(GetStatisticsValues(
+                MeasurementType.Intermittent,
+                m => new StatisticsValue(m.Intermittent.Value, m.Date!.Value)));
             OnPropertyChanged(nameof(IntermittentStatisticValues));
         }
 
-        private IEnumerable<StatisticsValue> GetStatisticsValues(MeasurementType measurementType) // TODO into statistics Service
+        private IEnumerable<StatisticsValue> GetStatisticsValues(MeasurementType measurementType, Func<Measurement, StatisticsValue> selector) // TODO into statistics Service
         {
             var statisticDataGroupedByDateOnly = _measurements
                 .Where(m => m.Type == measurementType && m.ContractionLoadData.Any() && m.Date.HasValue)
-                .Select(m => new StatisticsValue(m.ContractionLoadData.Max(v => v.ContractionValue), m.Date!.Value))
+                .Select(selector)
                 .GroupBy(d => d.MeasurementDate.Date);
 
             return statisticDataGroupedByDateOnly
-                .Select(g => g.MaxBy(stat => stat.ContractionForceValue))
+                .Select(g => g.MaxBy(stat => stat.Value))
                 .OrderBy(sv => sv!.MeasurementDate)!;
         }
 
