@@ -98,7 +98,16 @@ namespace BleRecorder.UI.WPF.ViewModels
             var result = _dialogService.ShowOkCancelDialog(
                 "There are unsaved changes. Do you really want to close the application?",
                 "Closing application");
-            if (result == MessageDialogResult.Cancel) cancelEventArgs!.Cancel = true;
+            if (result == MessageDialogResult.Cancel)
+            {
+                cancelEventArgs!.Cancel = true; 
+                return;
+            }
+
+            if (_bleRecorderManager.IsCurrentlyMeasuring && _bleRecorderManager.BleRecorderDevice != null)
+            {
+                _bleRecorderManager.BleRecorderDevice.DisconnectAsync().GetAwaiter().GetResult();
+            }
         }
 
         public async Task LoadAsync()
