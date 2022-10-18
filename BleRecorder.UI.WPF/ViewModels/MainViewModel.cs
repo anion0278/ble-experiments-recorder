@@ -111,6 +111,8 @@ namespace BleRecorder.UI.WPF.ViewModels
                 return;
             }
 
+            StimulationParametersViewModel.PropertyChanged -= StimulationParametersViewModel_PropertyChanged;
+
             if (_bleRecorderManager.IsCurrentlyMeasuring && _bleRecorderManager.BleRecorderDevice != null)
             {
                 _bleRecorderManager.BleRecorderDevice.DisconnectAsync().GetAwaiter().GetResult();
