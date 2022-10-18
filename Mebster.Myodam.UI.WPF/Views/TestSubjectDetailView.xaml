@@ -205,6 +205,11 @@
                         </wpf:CartesianChart.Resources>
                         <wpf:CartesianChart.Style>
                             <Style TargetType="wpf:CartesianChart">
+                                <Setter Property="DataTooltip">
+                                    <Setter.Value>
+                                        <wpf:DefaultTooltip/>
+                                    </Setter.Value>
+                                </Setter>
                                 <Style.Triggers>
                                     <DataTrigger  Binding="{Binding ElementName=GraphInsufficientDataMessage, Path=Visibility}" Value="Visible">
                                         <Setter Property="Effect">
@@ -212,7 +217,7 @@
                                                 <BlurEffect Radius="6" KernelType="Gaussian" />
                                             </Setter.Value>
                                         </Setter>
-                                        <!--<Setter Property="DataTooltip" Value="{x:Null}"/>-->
+                                        <Setter Property="DataTooltip" Value="{x:Null}"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
