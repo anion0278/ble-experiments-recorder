@@ -42,8 +42,13 @@ public readonly struct Percentage
         return flag;
     }
 
+    public string ToString(string? format)
+    {
+        return $"{Value.ToString(format)}%";
+    }
+
     public override string ToString()
     {
-        return $"{Value}%";
+        return ToString(null);
     }
 }

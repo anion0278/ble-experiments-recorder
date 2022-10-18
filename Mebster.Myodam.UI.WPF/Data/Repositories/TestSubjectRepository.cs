@@ -24,7 +24,8 @@ public class TestSubjectRepository : GenericRepository<TestSubject, ExperimentsD
     public override async Task<TestSubject?> GetByIdAsync(int testSubjectId)
     {
         return await Context.TestSubjects
-            .Include(ts => ts.Measurements)
+            .Include(ts => ts.Measurements).ThenInclude(m => m.AdjustmentsDuringMeasurement)
+            .Include(ts => ts.Measurements).ThenInclude(m => m.ParametersDuringMeasurement)
             .Include(ts => ts.CustomizedAdjustments)
             .Include(ts => ts.CustomizedParameters)
             .SingleOrDefaultAsync(s => s.Id == testSubjectId);
@@ -39,7 +40,8 @@ public class TestSubjectRepository : GenericRepository<TestSubject, ExperimentsD
     public async Task<IEnumerable<TestSubject>> GetAllWithRelatedDataAsync()
     {
         return await Context.TestSubjects
-            .Include(ts => ts.Measurements)
+            .Include(ts => ts.Measurements).ThenInclude(m => m.AdjustmentsDuringMeasurement)
+            .Include(ts => ts.Measurements).ThenInclude(m => m.ParametersDuringMeasurement)
             .Include(ts => ts.CustomizedAdjustments)
             .Include(ts => ts.CustomizedParameters)
             .ToListAsync();

@@ -107,14 +107,19 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         private async Task ExportSelectedAsync()
         {
-            // TODO optimize query 
-            var reloadedSubjects = await _testSubjectRepository.GetAllWithRelatedDataAsync();
-
             var subjects = _navigationItems
                 .OfType<NavigationTestSubjectItemViewModel>()
                 .Where(item => item.IsSelected)
-                .Select(item => item.Model);
-                
+                .Select(item => item.Model).ToArray();
+
+            //// TODO optimize query 
+            var reloadedSubjects = await _testSubjectRepository.GetAllWithRelatedDataAsync();
+
+            //foreach (var ts in subjects) // Does not work the same way !! measurements are not loaded at all
+            //{
+            //    await _testSubjectRepository.ReloadAsync(ts);
+            //}
+
             if (_fileManager.SaveSingleFileDialog("Export.xlsx", out var filePath))
             {
                 await Task.Run(() => _documentManager.Export(filePath!, subjects));
