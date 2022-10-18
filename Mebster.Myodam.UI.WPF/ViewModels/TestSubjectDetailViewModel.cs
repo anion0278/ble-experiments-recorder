@@ -29,7 +29,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
     {
         private ObservableCollection<Measurement> _measurements;
         private ITestSubjectRepository _testSubjectRepository;
-        private readonly IMeasurementRepository _measurementRepository;
         private readonly IMapper _mapper;
 
         public ICommand RemoveMeasurementCommand { get; set; }
@@ -86,7 +85,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         public TestSubjectDetailViewModel(
             ITestSubjectRepository testSubjectRepository,
-            IMeasurementRepository measurementRepository,
             IMessenger messenger,
             IMapper mapper,
             IMyodamManager myodamManager,
@@ -94,7 +92,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
           : base(messenger, dialogService, myodamManager)
         {
             _testSubjectRepository = testSubjectRepository; // TODO possible refactoring - this is main repo for VM, abstract it along with related methods
-            _measurementRepository = measurementRepository;
             _mapper = mapper;
 
             AddMeasurementCommand = new RelayCommand(async () => await OnAddMeasurementAsync());

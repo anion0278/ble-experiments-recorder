@@ -43,8 +43,10 @@ public class Measurement
     private Percentage GetFatiguePercentage()
     {
         var max = MaxContractionLoad;
+        if (max == 0) return new Percentage(0);
+
         var min = ContractionLoadData.Any() ? ContractionLoadData.Min(v => v.ContractionValue) : 0;
-        return new Percentage((max - min) / max, validate: false);
+        return new Percentage((max - min) / max * 100.0, validate: false); // * 100 -> percentage
     }
 
     public static ICollection<MeasuredValue>? ConvertInternalJsonToForceValues(string json)

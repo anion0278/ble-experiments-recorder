@@ -173,7 +173,7 @@
             </Expander>
 
             <Expander Grid.Row="9" 
-                      Header="Contraction force progression" IsExpanded="True">
+                      Header="Statistics" IsExpanded="True">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition/>
@@ -196,9 +196,13 @@
                     </TextBlock>
 
                     <wpf:CartesianChart Grid.Row="0" Grid.RowSpan="3" x:Name="StatisticsGraph" Foreground="{StaticResource MebsterColor}"
-                                        DisableAnimations="True" MinHeight="230"
-                                        LegendLocation="Bottom"
-                                        Margin="10 10 10 0">
+                                        DisableAnimations="True" MinHeight="230" 
+                                        LegendLocation="Bottom" Margin="10 10 10 0">
+                        <wpf:CartesianChart.Resources>
+                            <!--<Style TargetType="wpf:Separator">
+                                <Setter Property="Stroke" Value="DimGray"/>
+                            </Style>-->
+                        </wpf:CartesianChart.Resources>
                         <wpf:CartesianChart.Style>
                             <Style TargetType="wpf:CartesianChart">
                                 <Style.Triggers>
@@ -208,20 +212,40 @@
                                                 <BlurEffect Radius="6" KernelType="Gaussian" />
                                             </Setter.Value>
                                         </Setter>
+                                        <!--<Setter Property="DataTooltip" Value="{x:Null}"/>-->
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </wpf:CartesianChart.Style>
 
                         <wpf:CartesianChart.AxisY>
-                            <wpf:Axis MinValue="0" Title="Contraction - Torque [Nm]" />
+                            <wpf:Axis x:Name="MaxContractionAxis" Foreground="Aqua" MinValue="0" Title="Contraction - Torque [Nm]">
+                                <!--<wpf:Axis.Resources>
+                                    <Style TargetType="wpf:Separator">
+                                        <Setter Property="Stroke" Value="DarkCyan"/>
+                                    </Style>
+                                </wpf:Axis.Resources>-->
+                                <wpf:Axis.Separator>
+                                    <wpf:Separator Stroke="CadetBlue"/>
+                                </wpf:Axis.Separator>
+                            </wpf:Axis>
+                            <wpf:Axis x:Name="FatigueAxis" Position="RightTop" Foreground="Violet" Title="Fatigue [%]">
+                                <!--<wpf:Axis.Resources>
+                                    <Style TargetType="wpf:Separator">
+                                        <Setter Property="Stroke" Value="DarkOrchid"/>
+                                    </Style>
+                                </wpf:Axis.Resources>-->
+                                <wpf:Axis.Separator>
+                                    <wpf:Separator Stroke="DarkOrchid"/>
+                                </wpf:Axis.Separator>
+                            </wpf:Axis>
                         </wpf:CartesianChart.AxisY>
 
                         <wpf:CartesianChart.AxisX>
                             <wpf:Axis x:Name="StatisticsGraphXAxis" LabelsRotation="60" Title="Date">
                                 <wpf:Axis.Separator>
                                     <!--IsEnabled = False disables the vertical lines-->
-                                    <wpf:Separator Step="1" IsEnabled="False" />
+                                    <wpf:Separator Step="1" IsEnabled="True"  />
                                 </wpf:Axis.Separator>
 
                                 <wpf:Axis.MinValue>
@@ -249,9 +273,11 @@
 
                         <wpf:CartesianChart.Series>
                             <wpf:LineSeries Title="Maximum contraction trend" LineSmoothness="0"
+                                            ScalesYAt="0"
                                             Values="{Binding MaxContractionStatisticValues}"
                                             Configuration="{StaticResource chartPointMapper}" />
-                            <wpf:LineSeries Title="Fatigue contraction trend" LineSmoothness="0"
+                            <wpf:LineSeries Title="Fatigue percentage trend" LineSmoothness="0"
+                                            ScalesYAt="1"
                                             Values="{Binding FatigueStatisticValues}"
                                             Configuration="{StaticResource chartPointMapper}" />
                         </wpf:CartesianChart.Series>

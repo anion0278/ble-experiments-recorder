@@ -14,6 +14,12 @@ public class DeviceMechanicalAdjustments : ICloneable // TODO: Prototype pattern
     public double CuffProximalDistalDistance { get; set; }
     public object Clone()
     {
-        return MemberwiseClone();
+        return new DeviceMechanicalAdjustments()
+        {
+            FootplateAdductionAbductionAngle = FootplateAdductionAbductionAngle,
+            FootplateProximalDistalDistance = FootplateProximalDistalDistance,
+            FootplateAnteroPosteriorDistance = FootplateAnteroPosteriorDistance,
+            CuffProximalDistalDistance = CuffProximalDistalDistance
+        };
     }
 }
