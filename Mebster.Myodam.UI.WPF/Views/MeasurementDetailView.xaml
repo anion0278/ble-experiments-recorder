@@ -249,7 +249,7 @@
                                 </Style>
                             </StackPanel.Style>
 
-                            <Label Style="{x:Null}" Content="{Binding Fatigue}" 
+                            <Label Content="{Binding Fatigue}" 
                                    FontWeight="DemiBold"  ContentStringFormat="Fatigue: {0}" HorizontalAlignment="Right" Margin="0 0 10 0" />
 
                             <livecharts:CartesianChart Foreground="{StaticResource MebsterColor}" 
