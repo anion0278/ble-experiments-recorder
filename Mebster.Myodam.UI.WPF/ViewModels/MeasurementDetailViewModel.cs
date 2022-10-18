@@ -14,6 +14,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using LiveCharts;
 using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.Common.Services;
+using Mebster.Myodam.Models;
 using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.Models.TestSubject;
 using Mebster.Myodam.UI.WPF.Data.Repositories;
@@ -78,6 +79,8 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             get => Model.SiteDuringMeasurement;
             set => Model.SiteDuringMeasurement = value;
         }
+
+        public Percentage Fatigue => Model.Fatigue;
 
         public StimulationParametersViewModel StimulationParametersVm { get; private set; }
 
@@ -336,6 +339,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         {
             Model.ContractionLoadData = MeasuredValues.ToArray();
             OnPropertyChanged(nameof(MeasuredValues));
+            OnPropertyChanged(nameof(Fatigue));
         }
 
         protected override bool OnSaveCanExecute()
