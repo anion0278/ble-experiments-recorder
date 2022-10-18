@@ -37,6 +37,7 @@ public class ExcelDocumentManager : IDocumentManager
         {
             var ws = workbook.Worksheet(testSubject.FullName);
 
+            // TODO put into WS wrapper to encapsulate value setting logic
             ws.Range(nameof(testSubject.FirstName)).Value = testSubject.FirstName;
             ws.Range(nameof(testSubject.LastName)).Value = testSubject.LastName;
             ws.Range(nameof(testSubject.Notes)).Value = testSubject.Notes;
@@ -51,13 +52,13 @@ public class ExcelDocumentManager : IDocumentManager
             foreach (var (measurement, row) in testSubject.Measurements.OrderBy(m => m.Date)
                                                                         .Zip(table.Rows().Skip(1)))
             {
-                var orderedData = new object?[]
+                var orderedData = new []
                 {
                     measurement.Title,
                     measurement.Date != null ? measurement.Date : "[Not measured]",
                     measurement.Type.GetDescription(),
                     measurement.Notes,
-                    measurement.MaxContractionLoad,
+                    GetMeasurementStatistics(measurement),
                     FormatMechanicalAdjustments(measurement.AdjustmentsDuringMeasurement),
                     FormatStimulationParameters(measurement.ParametersDuringMeasurement),
                     measurement.SiteDuringMeasurement.GetDescription(),
@@ -72,6 +73,19 @@ public class ExcelDocumentManager : IDocumentManager
 
         }
         workbook.SaveAs(path);
+    }
+
+    private static object GetMeasurementStatistics(Measurement measurement)
+    {
+        switch (measurement.Type)
+        {
+            case MeasurementType.MaximumContraction:
+                return measurement.MaxContractionLoad;
+            case MeasurementType.Intermittent:
+                return measurement.Intermittent.ToString("0.00");
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 
     private static string FormatStimulationParameters(StimulationParameters? stimulationParameters)
