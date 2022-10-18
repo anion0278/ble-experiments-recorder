@@ -27,8 +27,9 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 {
     public class TestSubjectDetailViewModel : DetailViewModelBase, ITestSubjectDetailViewModel
     {
-        private ObservableCollection<Measurement> _measurements;
-        private ITestSubjectRepository _testSubjectRepository;
+        private readonly IList<Measurement> _removedMeasurements = new List<Measurement>();
+        private readonly ObservableCollection<Measurement> _measurements;
+        private readonly ITestSubjectRepository _testSubjectRepository;
         private readonly IMapper _mapper;
 
         public ICommand RemoveMeasurementCommand { get; set; }
@@ -158,7 +159,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             Model = await _testSubjectRepository.ReloadAsync(Model);
 
             _measurements.Clear();
-            foreach (var measurement in Model.Measurements) // TODO fix BUG !! except those which have been deleted!
+            foreach (var measurement in Model.Measurements.Except(_removedMeasurements)) 
             {
                 _measurements.Add(measurement);
             }
@@ -224,8 +225,11 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         {
             if (Measurements.CurrentItem == null) return;
 
-            _testSubjectRepository.RemoveMeasurement((Measurement)Measurements.CurrentItem);
-            _measurements.Remove((Measurement)Measurements.CurrentItem);
+            var measToRemove = (Measurement)Measurements.CurrentItem;
+
+            _testSubjectRepository.RemoveMeasurement(measToRemove);
+            _measurements.Remove(measToRemove);
+            _removedMeasurements.Add(measToRemove);
 
             RefreshStatistics();
         }
@@ -240,6 +244,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             }
 
             await _testSubjectRepository.SaveAsync();
+            _removedMeasurements.Clear();
             Id = Model.Id;
             HasChanges = false;
             RaiseDetailSavedEvent(Model.Id, $"{Model.FirstName} {Model.LastName}");
