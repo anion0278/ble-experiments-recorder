@@ -249,7 +249,7 @@
                                 </Style>
                             </StackPanel.Style>
 
-                            <Label Style="{x:Null}" Content="{Binding Intermittent}" 
+                            <Label Content="{Binding Intermittent}" 
                                    FontWeight="DemiBold"  ContentStringFormat="Intermittent: {0}" HorizontalAlignment="Right" Margin="0 0 10 0" />
 
                             <livecharts:CartesianChart Foreground="{StaticResource MainThemeColorAccent}" 
