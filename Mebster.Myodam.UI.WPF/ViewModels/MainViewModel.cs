@@ -98,7 +98,16 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             var result = _dialogService.ShowOkCancelDialog(
                 "There are unsaved changes. Do you really want to close the application?",
                 "Closing application");
-            if (result == MessageDialogResult.Cancel) cancelEventArgs!.Cancel = true;
+            if (result == MessageDialogResult.Cancel)
+            {
+                cancelEventArgs!.Cancel = true; 
+                return;
+            }
+
+            if (_myodamManager.IsCurrentlyMeasuring && _myodamManager.MyodamDevice != null)
+            {
+                _myodamManager.MyodamDevice.DisconnectAsync().GetAwaiter().GetResult();
+            }
         }
 
         public async Task LoadAsync()
