@@ -14,6 +14,14 @@ public class MeasurementValuesChartPointMapper : CartesianMapper<MeasuredValue>
     }
 }
 
+public class MeasurementRepetitionsChartPointMapper : CartesianMapper<MeasuredValue>
+{
+    public MeasurementRepetitionsChartPointMapper()
+    {
+        Y(mv => mv.ContractionValue);
+    }
+}
+
 public class StatisticChartPointMapper : CartesianMapper<StatisticsValue>
 {
     public StatisticChartPointMapper()

@@ -40,10 +40,10 @@ public class MultiCollectionToRangeConverter : IMultiValueConverter
             .SelectMany(c => c).Select(c => c.MeasurementDate).ToArray();
 
         // solves problem when we cannot set ranges from "single" datapoint
-        if (vals.Distinct().Count() == 1) vals = Array.Empty<DateTimeOffset>(); 
+        if (vals.Select(v => v.GetTotalDays()).Distinct().Count() == 1) vals = Array.Empty<DateTimeOffset>(); 
 
-        if (parameter.Equals("Min")) rangeLimit = vals.DefaultIfEmpty(defaultValue).Min().GetTotalDays();
-        if (parameter.Equals("Max")) rangeLimit = vals.DefaultIfEmpty(defaultValue.AddDays(1)).Max().GetTotalDays();
+        if (parameter.Equals("Min")) rangeLimit = vals.DefaultIfEmpty(defaultValue.AddDays(-1)).Min().AddDays(-1).GetTotalDays();
+        if (parameter.Equals("Max")) rangeLimit = vals.DefaultIfEmpty(defaultValue.AddDays(1)).Max().AddDays(1).GetTotalDays();
 
         return (double)rangeLimit;
     }

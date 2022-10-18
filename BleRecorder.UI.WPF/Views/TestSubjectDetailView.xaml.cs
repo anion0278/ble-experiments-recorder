@@ -27,6 +27,14 @@ namespace BleRecorder.UI.WPF.Views
             StatisticsGraph.ChartHandend = customHandend;
 
             StatisticsGraphXAxis.LabelFormatter = FormatXAxisLabel;
+
+            MaxContractionAxis.LabelFormatter = FormatNumericLabel;
+            IntermittentAxis.LabelFormatter = FormatNumericLabel;
+        }
+
+        private static string FormatNumericLabel(double value)
+        {
+            return value.ToString("0");
         }
 
         private string FormatXAxisLabel(double value)
@@ -45,8 +53,6 @@ namespace BleRecorder.UI.WPF.Views
 
         private void Row_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            var x = StatisticsGraphXAxis.Labels;
-
             // fast hack that works well. Its UI responsibility anyway
             var viewModel = (TestSubjectDetailViewModel)DataContext;
             if (viewModel.EditMeasurementCommand.CanExecute(null))

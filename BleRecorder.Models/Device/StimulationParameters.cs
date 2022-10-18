@@ -40,6 +40,13 @@ public class StimulationParameters : ICloneable
 
     public object Clone()
     {
-        return MemberwiseClone();
+        return new StimulationParameters(
+            Current,
+            Frequency,
+            PulseWidth,
+            StimulationTime,
+            RestTime,
+            IntermittentRepetitions
+        );
     }
 }

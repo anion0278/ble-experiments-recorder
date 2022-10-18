@@ -56,6 +56,7 @@
         </ObjectDataProvider>
 
         <resouces:MeasurementValuesChartPointMapper x:Key="chartPointMapper" />
+        <resouces:MeasurementRepetitionsChartPointMapper x:Key="chartRepetitionPointMapper" />
 
         <resouces:ConverterPipeline x:Key="collectionToVisibilityConverterPipeline">
             <resouces:MeasuredDataToBooleanConverter/>
@@ -159,7 +160,8 @@
             <Expander Grid.Row="7" Header="Measured data" IsExpanded="True">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition/>
+                        <RowDefinition />
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
@@ -203,12 +205,15 @@
                                                 </Setter.Value>
                                             </Setter>
                                         </DataTrigger>
+                                        <DataTrigger  Binding="{Binding Type}" Value="{x:Static testSubject:MeasurementType.Intermittent}">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </livecharts:CartesianChart.Style>
 
                             <livecharts:CartesianChart.AxisY>
-                                <livecharts:Axis x:Name="GraphYAxis" MaxValue="25" Title="Contraction - Torque [Nm]" />
+                                <livecharts:Axis x:Name="GraphYAxis" Title="Contraction - Torque [Nm]" />
                             </livecharts:CartesianChart.AxisY>
 
                             <livecharts:CartesianChart.AxisX>
@@ -229,6 +234,51 @@
                             <livecharts:CartesianChart.Series>
                                 <livecharts:LineSeries LineSmoothness="0" Title="Measured torque" Values="{Binding MeasuredValues}"
                                            Configuration="{StaticResource chartPointMapper}"/>
+                            </livecharts:CartesianChart.Series>
+                        </livecharts:CartesianChart>
+
+                        <livecharts:CartesianChart Grid.Row="0" Grid.RowSpan="3" Foreground="{StaticResource MainThemeColorAccent}" 
+                                               DisableAnimations="True" MinHeight="230" Margin="10 10 10 0">
+                            <livecharts:CartesianChart.Style>
+                                <Style TargetType="livecharts:CartesianChart">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ElementName=GraphInsufficientDataMessage, Path=Visibility}" Value="Visible">
+                                            <Setter Property="Effect">
+                                                <Setter.Value>
+                                                    <BlurEffect Radius="6" KernelType="Gaussian" />
+                                                </Setter.Value>
+                                            </Setter>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Type}" Value="{x:Static testSubject:MeasurementType.MaximumContraction}">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </livecharts:CartesianChart.Style>
+
+                            <livecharts:CartesianChart.AxisY>
+                                <livecharts:Axis x:Name="Graph2YAxis" Title="Contraction - Torque [Nm]" />
+                            </livecharts:CartesianChart.AxisY>
+
+                            <livecharts:CartesianChart.AxisX>
+                                <livecharts:Axis x:Name="Graph2XAxis" MinValue="0" Title="Repetition">
+                                    <livecharts:Axis.Separator>
+                                        <livecharts:Separator Step="1"/>
+                                    </livecharts:Axis.Separator>
+                                </livecharts:Axis>
+                            </livecharts:CartesianChart.AxisX>
+
+                            <livecharts:CartesianChart.SeriesColors>
+                                <livecharts:ColorsCollection>
+                                    <Color>Aqua</Color>
+                                    <Color R="50" G="40" B="130" />
+                                </livecharts:ColorsCollection>
+                            </livecharts:CartesianChart.SeriesColors>
+
+                            <livecharts:CartesianChart.Series>
+                                <livecharts:LineSeries LineSmoothness="0" Title="Measured torque" 
+                                                       Values="{Binding MeasuredValues}"
+                                                       Configuration="{StaticResource chartRepetitionPointMapper}"/>
                             </livecharts:CartesianChart.Series>
                         </livecharts:CartesianChart>
                     </Grid>

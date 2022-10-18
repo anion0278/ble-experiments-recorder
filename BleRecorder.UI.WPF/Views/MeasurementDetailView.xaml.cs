@@ -9,6 +9,8 @@ namespace BleRecorder.UI.WPF.Views
             InitializeComponent();
             GraphXAxis.LabelFormatter = FormatNumericLabel;
             GraphYAxis.LabelFormatter = FormatNumericLabel;
+
+            Graph2YAxis.LabelFormatter = FormatNumericLabel;
         }
 
         private static string FormatNumericLabel(double value)
