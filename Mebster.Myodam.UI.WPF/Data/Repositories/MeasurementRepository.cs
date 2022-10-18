@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Mebster.Myodam.DataAccess;
+using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.Models.TestSubject;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,4 +32,16 @@ public class MeasurementRepository : GenericRepository<Measurement, ExperimentsD
         await Context.Entry(testSubject).ReloadAsync();
         await Context.Entry(testSubject).Collection(ts => ts.Measurements).LoadAsync();
     }
+}
+
+
+public class StimulationParametersRepository : GenericRepository<StimulationParameters, ExperimentsDbContext>, IStimulationParametersRepository
+{
+    public StimulationParametersRepository(ExperimentsDbContext context) : base(context)
+    {
+    }
+}
+
+public interface IStimulationParametersRepository : IGenericRepository<StimulationParameters>
+{
 }

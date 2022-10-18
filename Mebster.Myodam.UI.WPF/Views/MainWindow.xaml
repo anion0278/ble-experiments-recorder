@@ -38,9 +38,12 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <views:NavigationView Grid.Column="0" DataContext="{Binding NavigationViewModel}"/>
+        <views:StimulationParametersView Grid.Column="1" Title="Default stimulation parameters:"
+                                         DataContext="{Binding StimulationParametersViewModel}"
+                                         VerticalAlignment="Center" MaxWidth="300"/>
         <TabControl Grid.Column="1" VerticalAlignment="Stretch" IsSynchronizedWithCurrentItem="True"
-                ItemsSource="{Binding DetailViewModels}"
-                SelectedItem="{Binding SelectedDetailViewModel, ValidatesOnNotifyDataErrors=False}">
+                    ItemsSource="{Binding DetailViewModels}"
+                    SelectedItem="{Binding SelectedDetailViewModel, ValidatesOnNotifyDataErrors=False}">
             <b:Interaction.Behaviors>
                 <resouces:TabControlPreventVirtualizationBehavior/>
             </b:Interaction.Behaviors>

@@ -8,7 +8,7 @@ using Mebster.Myodam.UI.WPF.Event;
 
 namespace Mebster.Myodam.UI.WPF.ViewModels
 {
-    public class NavigationTestSubjectItemViewModel : NavigationAddItemViewModel
+    public class NavigationTestSubjectItemViewModel : NavigationAddTestSubjectItemViewModel
     {
         public TestSubject Model { get; }
 
@@ -24,7 +24,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         }
     }
 
-    public class NavigationAddItemViewModel :  ViewModelBase
+    public class NavigationAddTestSubjectItemViewModel :  ViewModelBase
     {
         private readonly IMessenger _messenger;
 
@@ -32,7 +32,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         public ICommand OpenDetailViewCommand { get; }
 
-        public NavigationAddItemViewModel(IMessenger messenger)
+        public NavigationAddTestSubjectItemViewModel(IMessenger messenger)
         {
             _messenger = messenger;
             Id = -999;
@@ -55,8 +55,8 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         {
             var xType = x.GetType();
             var yType = y.GetType();
-            if (xType == typeof(NavigationTestSubjectItemViewModel) && yType == typeof(NavigationAddItemViewModel)) return -1;
-            if (xType == typeof(NavigationAddItemViewModel) && yType == typeof(NavigationTestSubjectItemViewModel)) return 1;
+            if (xType == typeof(NavigationTestSubjectItemViewModel) && yType == typeof(NavigationAddTestSubjectItemViewModel)) return -1;
+            if (xType == typeof(NavigationAddTestSubjectItemViewModel) && yType == typeof(NavigationTestSubjectItemViewModel)) return 1;
             return 0;
         }
     }

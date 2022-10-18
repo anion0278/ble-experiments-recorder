@@ -64,7 +64,7 @@
         </resouces:ConverterPipeline>
     </UserControl.Resources>
 
-    <resouces:ScrollViewerWithStableOffset Padding="10">
+    <resouces:ScrollViewerWithStableOffset Padding="10"  Background="{StaticResource TabBackground}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -143,7 +143,8 @@
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
                     <views:MechanismParametersView Grid.Column="0"  DataContext="{Binding MechanismParametersVm}"  />
-                    <views:StimulationParametersView Grid.Column="1" HorizontalAlignment="Center" DataContext="{Binding StimulationParametersVm}">
+                    <views:StimulationParametersView Grid.Column="1" Title="Stimulation parameters for this measurement:"
+                                                     HorizontalAlignment="Center" DataContext="{Binding StimulationParametersVm}">
                         <views:StimulationParametersView.Style>
                             <Style TargetType="views:StimulationParametersView">
                                 <Style.Triggers>

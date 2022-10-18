@@ -13,7 +13,9 @@ using Autofac.Features.Indexed;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Mebster.Myodam.Business.Device;
+using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.Models.TestSubject;
+using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.Event;
 using Mebster.Myodam.UI.WPF.ViewModels.Services;
 
@@ -24,10 +26,13 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         private int nextNewItemId = 0;
         private readonly IMessenger _messenger;
         private readonly IMyodamManager _myodamManager;
+        private readonly IStimulationParametersRepository _stimulationParametersRepository;
         private readonly IMessageDialogService _dialogService;
         private readonly IIndex<string, IDetailViewModel> _detailViewModelCreator; // TODO change
         private IDetailViewModel _selectedDetailViewModel;
         private readonly ObservableCollection<IDetailViewModel> _detailViewModels = new();
+
+        public StimulationParametersViewModel StimulationParametersViewModel { get; set; }
 
         public ICommand OpenSingleDetailViewCommand { get; }
         public RelayCommand<CancelEventArgs> MainViewClosingCommand { get; set; }
@@ -72,10 +77,12 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             IIndex<string, IDetailViewModel> detailViewModelCreator,
             IMessenger messenger,
             IMyodamManager myodamManager,
+            IStimulationParametersRepository stimulationParametersRepository,
             IMessageDialogService dialogService)
         {
             _messenger = messenger;
             _myodamManager = myodamManager;
+            _stimulationParametersRepository = stimulationParametersRepository;
             _detailViewModelCreator = detailViewModelCreator;
             _dialogService = dialogService;
 
@@ -113,6 +120,13 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         public async Task LoadAsync()
         {
             await NavigationViewModel.LoadAsync();
+            StimulationParametersViewModel = new StimulationParametersViewModel(await _stimulationParametersRepository.GetByIdAsync(1));
+            StimulationParametersViewModel.PropertyChanged += StimulationParametersViewModel_PropertyChanged;
+        }
+
+        private async void StimulationParametersViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            await _stimulationParametersRepository.SaveAsync();
         }
 
         private async void OnOpenDetailViewAsync(OpenDetailViewEventArgs args)
