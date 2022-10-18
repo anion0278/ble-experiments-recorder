@@ -111,7 +111,7 @@
             </Button>
         </DataTemplate>
 
-        <DataTemplate DataType="{x:Type viewModels:NavigationAddItemViewModel}">
+        <DataTemplate DataType="{x:Type viewModels:NavigationAddTestSubjectItemViewModel}">
             <Button Content="+ Add new test subject" FontStyle="Italic" 
                     Command="{Binding OpenDetailViewCommand}"
                     FontSize="16" Style="{x:Null}"  Margin="5">

@@ -49,6 +49,7 @@ namespace BleRecorder.UI.WPF.Startup
             builder.RegisterType<ExperimentsDbContext>().AsSelf();
             builder.RegisterType<TestSubjectRepository>().As<ITestSubjectRepository>();
             builder.RegisterType<MeasurementRepository>().As<IMeasurementRepository>();
+            builder.RegisterType<StimulationParametersRepository>().As<IStimulationParametersRepository>();
             builder.RegisterType<FileSystemManager>().As<IFileSystemManager>();
             builder.RegisterType<JsonManager>().As<IJsonManager>();
             builder.RegisterType<ExcelDocumentManager>().As<IDocumentManager>();

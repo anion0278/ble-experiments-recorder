@@ -91,7 +91,7 @@
         <resouces:MultiCollectionToRangeConverter x:Key="multiCollectionToRangeConverter" />
     </UserControl.Resources>
 
-    <resouces:ScrollViewerWithStableOffset Padding="10">
+    <resouces:ScrollViewerWithStableOffset Padding="10" Background="{StaticResource TabBackground}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -126,7 +126,8 @@
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
                     <views:MechanismParametersView Grid.Column="0"  DataContext="{Binding MechanismParametersVm}"  />
-                    <views:StimulationParametersView Grid.Column="1" HorizontalAlignment="Center" DataContext="{Binding StimulationParametersVm}" />
+                    <views:StimulationParametersView Grid.Column="1" HorizontalAlignment="Center" Title="Default stimulation parameters for this test subject:"
+                                                     DataContext="{Binding StimulationParametersVm}" />
                 </Grid>
             </Expander>
 

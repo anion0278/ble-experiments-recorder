@@ -21,6 +21,7 @@
                     <SolidColorBrush x:Key="MainThemeColorAccent" Color="#322882"/>
                     <SolidColorBrush x:Key="ErrorColor" Color="DarkRed"/>
                     <SolidColorBrush x:Key="ErrorTextColor" Color="OrangeRed"/>
+                    <SolidColorBrush x:Key="TabBackground" Color="#252525"/>
                     <!--EndRegion-->
 
                     <!--Region Implicit MVVM teplates-->

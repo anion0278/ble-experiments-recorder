@@ -13,7 +13,9 @@ using Autofac.Features.Indexed;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using BleRecorder.Business.Device;
+using BleRecorder.Models.Device;
 using BleRecorder.Models.TestSubject;
+using BleRecorder.UI.WPF.Data.Repositories;
 using BleRecorder.UI.WPF.Event;
 using BleRecorder.UI.WPF.ViewModels.Services;
 
@@ -24,10 +26,13 @@ namespace BleRecorder.UI.WPF.ViewModels
         private int nextNewItemId = 0;
         private readonly IMessenger _messenger;
         private readonly IBleRecorderManager _bleRecorderManager;
+        private readonly IStimulationParametersRepository _stimulationParametersRepository;
         private readonly IMessageDialogService _dialogService;
         private readonly IIndex<string, IDetailViewModel> _detailViewModelCreator; // TODO change
         private IDetailViewModel _selectedDetailViewModel;
         private readonly ObservableCollection<IDetailViewModel> _detailViewModels = new();
+
+        public StimulationParametersViewModel StimulationParametersViewModel { get; set; }
 
         public ICommand OpenSingleDetailViewCommand { get; }
         public RelayCommand<CancelEventArgs> MainViewClosingCommand { get; set; }
@@ -72,10 +77,12 @@ namespace BleRecorder.UI.WPF.ViewModels
             IIndex<string, IDetailViewModel> detailViewModelCreator,
             IMessenger messenger,
             IBleRecorderManager bleRecorderManager,
+            IStimulationParametersRepository stimulationParametersRepository,
             IMessageDialogService dialogService)
         {
             _messenger = messenger;
             _bleRecorderManager = bleRecorderManager;
+            _stimulationParametersRepository = stimulationParametersRepository;
             _detailViewModelCreator = detailViewModelCreator;
             _dialogService = dialogService;
 
@@ -113,6 +120,13 @@ namespace BleRecorder.UI.WPF.ViewModels
         public async Task LoadAsync()
         {
             await NavigationViewModel.LoadAsync();
+            StimulationParametersViewModel = new StimulationParametersViewModel(await _stimulationParametersRepository.GetByIdAsync(1));
+            StimulationParametersViewModel.PropertyChanged += StimulationParametersViewModel_PropertyChanged;
+        }
+
+        private async void StimulationParametersViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            await _stimulationParametersRepository.SaveAsync();
         }
 
         private async void OnOpenDetailViewAsync(OpenDetailViewEventArgs args)

@@ -31,6 +31,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         private readonly ObservableCollection<Measurement> _measurements;
         private readonly ITestSubjectRepository _testSubjectRepository;
         private readonly IMapper _mapper;
+        private readonly IStimulationParametersRepository _stimulationParametersRepository;
 
         public ICommand RemoveMeasurementCommand { get; set; }
 
@@ -89,11 +90,13 @@ namespace BleRecorder.UI.WPF.ViewModels
             IMessenger messenger,
             IMapper mapper,
             IBleRecorderManager bleRecorderManager,
+            IStimulationParametersRepository stimulationParametersRepository,
             IMessageDialogService dialogService)
           : base(messenger, dialogService, bleRecorderManager)
         {
             _testSubjectRepository = testSubjectRepository; // TODO possible refactoring - this is main repo for VM, abstract it along with related methods
             _mapper = mapper;
+            _stimulationParametersRepository = stimulationParametersRepository;
 
             AddMeasurementCommand = new RelayCommand(async () => await OnAddMeasurementAsync());
             EditMeasurementCommand = new RelayCommand(OnEditMeasurement, () => Measurements!.CurrentItem != null);
@@ -115,7 +118,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         {
             Model = id > 0
                 ? await _testSubjectRepository.GetByIdAsync(id)
-                : CreateNewTestSubject();
+                : await CreateNewTestSubject();
 
             Id = id;
             if (id > 0) await RefreshMeasurements(); // TODO refactor
@@ -267,12 +270,12 @@ namespace BleRecorder.UI.WPF.ViewModels
             RaiseDetailDeletedEvent(Model.Id);
         }
 
-        private TestSubject CreateNewTestSubject()
+        private async Task<TestSubject> CreateNewTestSubject()
         {
             var testSubject = new TestSubject
             {
                 CustomizedAdjustments = new DeviceMechanicalAdjustments(),
-                CustomizedParameters = StimulationParameters.GetDefaultValues()
+                CustomizedParameters = (StimulationParameters)(await _stimulationParametersRepository.GetByIdAsync(1))!.Clone()
             };
 
             _testSubjectRepository.Add(testSubject);

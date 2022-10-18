@@ -32,7 +32,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         private readonly IBleRecorderManager _bleRecorderManager;
         private readonly IDocumentManager _documentManager;
         private readonly IFileSystemManager _fileManager;
-        private readonly ObservableCollection<NavigationAddItemViewModel> _navigationItems = new();
+        private readonly ObservableCollection<NavigationAddTestSubjectItemViewModel> _navigationItems = new();
 
         public ListCollectionView TestSubjectsNavigationItems { get; } 
 
@@ -64,7 +64,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             TestSubjectsNavigationItems = (ListCollectionView)CollectionViewSource.GetDefaultView(_navigationItems);
             TestSubjectsNavigationItems.CustomSort = new NavigationAddItemViewModelRelationalComparer();
             _navigationItems.Add(new NavigationTestSubjectItemViewModel(testSubject, null!));
-            _navigationItems.Add(new NavigationAddItemViewModel(null!));
+            _navigationItems.Add(new NavigationAddTestSubjectItemViewModel(null!));
         }
 
         public NavigationViewModel(
@@ -171,7 +171,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             var items = (await _testSubjectRepository.GetAllAsync())
                 .Select(ts => new NavigationTestSubjectItemViewModel(ts, _messenger));
             _navigationItems.AddRange(items);
-            _navigationItems.Add(new NavigationAddItemViewModel(_messenger));
+            _navigationItems.Add(new NavigationAddTestSubjectItemViewModel(_messenger));
             await DeviceCalibrationVm.LoadAsync();
         }
 
