@@ -24,7 +24,7 @@ public class MyodamDevice // TODO Extract inteface
 
     public event EventHandler<MeasuredValue>? NewValueReceived;
     public event EventHandler? ConnectionStatusChanged;
-    public event EventHandler? ErrorChanged;
+    public event EventHandler<MyodamError>? ErrorChanged;
     public event EventHandler? MeasurementStatusChanged;
     public event EventHandler? BatteryStatusChanged;
 
@@ -35,7 +35,7 @@ public class MyodamDevice // TODO Extract inteface
         {
             if (value == _error) return;
             _error = value;
-            ErrorChanged?.Invoke(this, EventArgs.Empty);
+            ErrorChanged?.Invoke(this, _error);
         }
     }
 

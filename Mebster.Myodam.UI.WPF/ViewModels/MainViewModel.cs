@@ -111,6 +111,8 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
                 return;
             }
 
+            StimulationParametersViewModel.PropertyChanged -= StimulationParametersViewModel_PropertyChanged;
+
             if (_myodamManager.IsCurrentlyMeasuring && _myodamManager.MyodamDevice != null)
             {
                 _myodamManager.MyodamDevice.DisconnectAsync().GetAwaiter().GetResult();
