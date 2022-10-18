@@ -14,6 +14,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using LiveCharts;
 using BleRecorder.Business.Device;
 using BleRecorder.Common.Services;
+using BleRecorder.Models;
 using BleRecorder.Models.Device;
 using BleRecorder.Models.TestSubject;
 using BleRecorder.UI.WPF.Data.Repositories;
@@ -78,6 +79,8 @@ namespace BleRecorder.UI.WPF.ViewModels
             get => Model.SiteDuringMeasurement;
             set => Model.SiteDuringMeasurement = value;
         }
+
+        public Percentage Intermittent => Model.Intermittent;
 
         public StimulationParametersViewModel StimulationParametersVm { get; private set; }
 
@@ -336,6 +339,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         {
             Model.ContractionLoadData = MeasuredValues.ToArray();
             OnPropertyChanged(nameof(MeasuredValues));
+            OnPropertyChanged(nameof(Intermittent));
         }
 
         protected override bool OnSaveCanExecute()

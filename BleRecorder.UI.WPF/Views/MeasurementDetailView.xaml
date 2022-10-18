@@ -238,50 +238,62 @@
                             </livecharts:CartesianChart.Series>
                         </livecharts:CartesianChart>
 
-                        <livecharts:CartesianChart Grid.Row="0" Grid.RowSpan="3" Foreground="{StaticResource MainThemeColorAccent}" 
-                                               DisableAnimations="True" MinHeight="230" Margin="10 10 10 0">
-                            <livecharts:CartesianChart.Style>
-                                <Style TargetType="livecharts:CartesianChart">
+                        <StackPanel Grid.Row="0" Grid.RowSpan="3" >
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ElementName=GraphInsufficientDataMessage, Path=Visibility}" Value="Visible">
-                                            <Setter Property="Effect">
-                                                <Setter.Value>
-                                                    <BlurEffect Radius="6" KernelType="Gaussian" />
-                                                </Setter.Value>
-                                            </Setter>
-                                        </DataTrigger>
                                         <DataTrigger Binding="{Binding Type}" Value="{x:Static testSubject:MeasurementType.MaximumContraction}">
                                             <Setter Property="Visibility" Value="Collapsed"/>
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
-                            </livecharts:CartesianChart.Style>
+                            </StackPanel.Style>
 
-                            <livecharts:CartesianChart.AxisY>
-                                <livecharts:Axis x:Name="Graph2YAxis" Title="Contraction - Torque [Nm]" />
-                            </livecharts:CartesianChart.AxisY>
+                            <Label Style="{x:Null}" Content="{Binding Intermittent}" 
+                                   FontWeight="DemiBold"  ContentStringFormat="Intermittent: {0}" HorizontalAlignment="Right" Margin="0 0 10 0" />
 
-                            <livecharts:CartesianChart.AxisX>
-                                <livecharts:Axis x:Name="Graph2XAxis" MinValue="0" Title="Repetition">
-                                    <livecharts:Axis.Separator>
-                                        <livecharts:Separator Step="1"/>
-                                    </livecharts:Axis.Separator>
-                                </livecharts:Axis>
-                            </livecharts:CartesianChart.AxisX>
+                            <livecharts:CartesianChart Foreground="{StaticResource MainThemeColorAccent}" 
+                                                       DisableAnimations="True" MinHeight="230" Margin="10 10 10 0">
+                                <livecharts:CartesianChart.Style>
+                                    <Style TargetType="livecharts:CartesianChart">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ElementName=GraphInsufficientDataMessage, Path=Visibility}" Value="Visible">
+                                                <Setter Property="Effect">
+                                                    <Setter.Value>
+                                                        <BlurEffect Radius="6" KernelType="Gaussian" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </livecharts:CartesianChart.Style>
 
-                            <livecharts:CartesianChart.SeriesColors>
-                                <livecharts:ColorsCollection>
-                                    <Color>Aqua</Color>
-                                    <Color R="50" G="40" B="130" />
-                                </livecharts:ColorsCollection>
-                            </livecharts:CartesianChart.SeriesColors>
+                                <livecharts:CartesianChart.AxisY>
+                                    <livecharts:Axis x:Name="Graph2YAxis" Title="Contraction - Torque [Nm]" />
+                                </livecharts:CartesianChart.AxisY>
 
-                            <livecharts:CartesianChart.Series>
-                                <livecharts:LineSeries LineSmoothness="0" Title="Measured torque" 
+                                <livecharts:CartesianChart.AxisX>
+                                    <livecharts:Axis x:Name="Graph2XAxis" MinValue="0" Title="Repetition">
+                                        <livecharts:Axis.Separator>
+                                            <livecharts:Separator Step="1"/>
+                                        </livecharts:Axis.Separator>
+                                    </livecharts:Axis>
+                                </livecharts:CartesianChart.AxisX>
+
+                                <livecharts:CartesianChart.SeriesColors>
+                                    <livecharts:ColorsCollection>
+                                        <Color>Aqua</Color>
+                                        <Color R="50" G="40" B="130" />
+                                    </livecharts:ColorsCollection>
+                                </livecharts:CartesianChart.SeriesColors>
+
+                                <livecharts:CartesianChart.Series>
+                                    <livecharts:LineSeries LineSmoothness="0" Title="Measured torque" 
                                                        Values="{Binding MeasuredValues}"
                                                        Configuration="{StaticResource chartRepetitionPointMapper}"/>
-                            </livecharts:CartesianChart.Series>
-                        </livecharts:CartesianChart>
+                                </livecharts:CartesianChart.Series>
+                            </livecharts:CartesianChart>
+                        </StackPanel>
                     </Grid>
 
                     <Grid Grid.Row="1">
