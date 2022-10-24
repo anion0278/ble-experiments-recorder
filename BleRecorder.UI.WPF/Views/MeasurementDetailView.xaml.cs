@@ -15,7 +15,7 @@ namespace BleRecorder.UI.WPF.Views
 
         private static string FormatNumericLabel(double value)
         {
-            return value.ToString("0.0");
+            return value.ToString("0");
         }
 
     }

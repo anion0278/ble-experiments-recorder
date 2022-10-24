@@ -6,14 +6,36 @@
              xmlns:local="clr-namespace:BleRecorder.UI.WPF.Views"
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:device="clr-namespace:BleRecorder.Models.Device;assembly=BleRecorder.Models"
+             xmlns:viewModels="clr-namespace:BleRecorder.UI.WPF.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
-             x:Name="control">
+             x:Name="control"
+             d:DataContext="{d:DesignInstance viewModels:StimulationParametersViewModel, IsDesignTimeCreatable=True}">
     <UserControl.Resources>
+
+        <Style x:Key="MaxContractionParamLabel" TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
+            <Setter Property="Visibility" Value="Visible"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ElementName=control, Path=IsIntermittentParametersAdjustable}" Value="True">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+
         <Style x:Key="IntermittentParamLabel" TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
             <Setter Property="Visibility" Value="Visible"/>
             <Style.Triggers>
                 <DataTrigger Binding="{Binding ElementName=control, Path=IsIntermittentParametersAdjustable}" Value="False">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="MaxContractionParamTextBox" TargetType="mah:NumericUpDown" BasedOn="{StaticResource MeasurementParamNumericBox}">
+            <Setter Property="Visibility" Value="Visible"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ElementName=control, Path=IsIntermittentParametersAdjustable}" Value="True">
                     <Setter Property="Visibility" Value="Collapsed"/>
                 </DataTrigger>
             </Style.Triggers>
@@ -64,25 +86,25 @@
                   SelectedItem="{Binding PulseWidthMicroSeconds}"
                   ItemsSource="{x:Static device:StimulationPulseWidth.AvailableOptions}"/>
 
-        <Label Grid.Row="4" Grid.Column="0"  Content="Stimulation time [s]:" VerticalAlignment="Center"/>
-        <mah:NumericUpDown Grid.Row="4" Grid.Column="1"  Style="{StaticResource MeasurementParamNumericBox}"
+        <Label Grid.Row="4" Grid.Column="0"  Content="Stimulation time [s]:" VerticalAlignment="Center" Style="{StaticResource MaxContractionParamLabel}"/>
+        <mah:NumericUpDown Grid.Row="4" Grid.Column="1"  Style="{StaticResource MaxContractionParamTextBox}"
                            Interval="1" Minimum="1" Maximum="25"
                            Value="{Binding StimulationTimeSeconds}" />
 
-        <Label Grid.Row="5" Grid.Column="0" Style="{StaticResource IntermittentParamLabel}"
-               Content="Intermittent - rest time [s]:"/>
+        <Label Grid.Row="5" Grid.Column="0"   Style="{StaticResource IntermittentParamLabel}"
+               Content="Intermittent - stim. time [s]:"/>
         <mah:NumericUpDown Grid.Row="5" Grid.Column="1"  Style="{StaticResource IntermittentParamTextBox}"
+                           Interval="1" Minimum="1" Maximum="10"
+                           Value="{Binding IntermittentStimulationTimeSeconds}" />
+
+        <Label Grid.Row="6" Grid.Column="0" Style="{StaticResource IntermittentParamLabel}"
+               Content="Intermittent - rest time [s]:"/>
+        <mah:NumericUpDown Grid.Row="6" Grid.Column="1"  Style="{StaticResource IntermittentParamTextBox}"
                            Interval="1" Minimum="1" Maximum="25"
                            Value="{Binding RestTimeSeconds}" />
 
-        <Label Grid.Row="6" Grid.Column="0"   Style="{StaticResource IntermittentParamLabel}"
-               Content="Intermittent - repetitions:"/>
-        <mah:NumericUpDown Grid.Row="6" Grid.Column="1"  Style="{StaticResource IntermittentParamTextBox}"
-                           Interval="1" Minimum="2" Maximum="10"
-                           Value="{Binding IntermittentRepetitions}" />
-
         <Label Grid.Row="7" Grid.Column="0"   Style="{StaticResource IntermittentParamLabel}"
-               Content="Intermittent - stim. time:"/>
+               Content="Intermittent - repetitions:"/>
         <mah:NumericUpDown Grid.Row="7" Grid.Column="1"  Style="{StaticResource IntermittentParamTextBox}"
                            Interval="1" Minimum="2" Maximum="10"
                            Value="{Binding IntermittentRepetitions}" />
