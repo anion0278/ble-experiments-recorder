@@ -37,6 +37,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -79,5 +80,12 @@
         <mah:NumericUpDown Grid.Row="6" Grid.Column="1"  Style="{StaticResource IntermittentParamTextBox}"
                            Interval="1" Minimum="2" Maximum="10"
                            Value="{Binding IntermittentRepetitions}" />
+
+        <Label Grid.Row="7" Grid.Column="0"   Style="{StaticResource IntermittentParamLabel}"
+               Content="Intermittent - stim. time:"/>
+        <mah:NumericUpDown Grid.Row="7" Grid.Column="1"  Style="{StaticResource IntermittentParamTextBox}"
+                           Interval="1" Minimum="2" Maximum="10"
+                           Value="{Binding IntermittentRepetitions}" />
+
     </Grid>
 </UserControl>

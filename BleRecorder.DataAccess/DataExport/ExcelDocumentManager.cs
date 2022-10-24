@@ -82,7 +82,7 @@ public class ExcelDocumentManager : IDocumentManager
             case MeasurementType.MaximumContraction:
                 return measurement.MaxContractionLoad;
             case MeasurementType.Intermittent:
-                return measurement.Intermittent.ToString("0.00");
+                return measurement.Intermittent.ToString();
             default:
                 throw new ArgumentOutOfRangeException();
         }

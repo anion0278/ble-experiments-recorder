@@ -17,6 +17,7 @@ public interface IBleRecorderManager
     BleRecorderAvailabilityStatus BleRecorderAvailability { get; }
     bool IsCurrentlyMeasuring { get; }
     Task ConnectBleRecorderAsync();
+    void SetDeviceAddressFilter(ulong? acceptedAddress);
 }
 
 public class BleRecorderManager : IBleRecorderManager
@@ -28,7 +29,8 @@ public class BleRecorderManager : IBleRecorderManager
     private readonly IBleRecorderReplyParser _messageParser;
     private readonly ISynchronizationContextProvider _synchronizationContextProvider;
     private BleRecorderAvailabilityStatus _bleRecorderAvailability;
-    private const string _bleRecorderName = "Aggregator-TEST";
+    private ulong? _acceptedAddress;
+    private const string _bleRecorderName = "Aggregator";
     public BleRecorderDevice? BleRecorderDevice { get; private set; }
 
     public StimulationParameters CurrentStimulationParameters { get; set; }
@@ -71,9 +73,16 @@ public class BleRecorderManager : IBleRecorderManager
             : BleRecorderAvailabilityStatus.DisconnectedUnavailable;
     }
 
-    private static bool IsBleRecorderDevice(BluetoothDeviceHandler deviceHandler)
+    public void SetDeviceAddressFilter(ulong? acceptedAddress)
     {
-        return deviceHandler.Name.Equals(_bleRecorderName);
+        _acceptedAddress = acceptedAddress;
+    }
+
+    private bool IsBleRecorderDevice(BluetoothDeviceHandler deviceHandler)
+    {
+        bool isBleRecorderDevice = deviceHandler.Name.Equals(_bleRecorderName);
+        if (_acceptedAddress is not null) return isBleRecorderDevice && deviceHandler.Address.Equals(_acceptedAddress);
+        return isBleRecorderDevice;
     }
 
     public async Task ConnectBleRecorderAsync()
@@ -82,7 +91,6 @@ public class BleRecorderManager : IBleRecorderManager
 
         var bleRecorderDevices = _bluetoothManager.AvailableBleDevices.Where(IsBleRecorderDevice).ToArray();
 
-        // TODO Handle multiple devices in a single room
         if (bleRecorderDevices.Length > 1) throw new System.Exception("There is more than one bleRecorder device with provided address!");
 
         IBluetoothDeviceHandler bleDevice;

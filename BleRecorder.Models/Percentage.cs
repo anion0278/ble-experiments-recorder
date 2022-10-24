@@ -49,6 +49,6 @@ public readonly struct Percentage
 
     public override string ToString()
     {
-        return ToString(null);
+        return ToString("0.00");
     }
 }

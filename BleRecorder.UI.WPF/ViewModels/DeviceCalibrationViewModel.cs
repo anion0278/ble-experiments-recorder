@@ -80,6 +80,7 @@ public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewM
         _bleRecorderManager.MeasurementStatusChanged += BleRecorderStatusChanged;
 
         AppConfiguration = _configurationLoader.GetConfiguration();
+        _bleRecorderManager.SetDeviceAddressFilter(AppConfiguration.BleRecorderAddress);
         Model = AppConfiguration.BleRecorderCalibration;
         _bleRecorderManager.Calibration = Model;
 

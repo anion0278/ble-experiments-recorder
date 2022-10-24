@@ -64,7 +64,7 @@
         </resouces:ConverterPipeline>
     </UserControl.Resources>
 
-    <resouces:ScrollViewerWithStableOffset Padding="10"  Background="{StaticResource TabBackground}">
+    <resouces:ScrollViewerWithStableOffset Padding="10"  Background="{StaticResource MahApps.Brushes.Window.Background}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>

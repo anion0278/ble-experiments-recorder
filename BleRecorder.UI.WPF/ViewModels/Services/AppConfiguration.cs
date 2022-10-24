@@ -11,6 +11,7 @@ namespace BleRecorder.UI.WPF.ViewModels.Services;
 public class AppConfiguration
 {
     public bool IsCalibrationEnabled { get; init; }
+    public ulong? BleRecorderAddress { get; init; }
 
     public DeviceCalibration BleRecorderCalibration { get; init; }
 }
