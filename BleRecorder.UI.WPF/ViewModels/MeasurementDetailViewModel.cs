@@ -171,7 +171,6 @@ namespace BleRecorder.UI.WPF.ViewModels
                 _bleRecorderManager.BleRecorderDevice.NewValueReceived -= OnNewValueReceived;
             }
 
-            // TODO put Send method into VMBase 
             RunInViewContext(() =>
             {
                 OnPropertyChanged(nameof(IsMeasurementRunning));
@@ -183,10 +182,15 @@ namespace BleRecorder.UI.WPF.ViewModels
                 if (_bleRecorderManager.IsCurrentlyMeasuring) return;
 
                 StopMeasurementCommand.NotifyCanExecuteChanged();
-                if (_bleRecorderManager.BleRecorderDevice is not null && _bleRecorderManager.BleRecorderDevice.IsConnected) return;
+                if (_bleRecorderManager.BleRecorderDevice is not null && _bleRecorderManager.BleRecorderDevice.IsConnected)
+                {
+                    // Measurement finished (by stopping or due meas finished)
+                    return;
+                }
 
-                MeasuredValues.Clear();
-                DialogService.ShowInfoDialogAsync("Measurement was interrupted due to device disconnection! Measured data were erased.");
+                // Measurement interrupted (due to error on device)
+                DialogService.ShowInfoDialog("Measurement was interrupted due to device disconnection! Measured data were erased.");
+                ClearMeasuredData();
             });
         }
 
@@ -209,8 +213,7 @@ namespace BleRecorder.UI.WPF.ViewModels
                 "Delete data?");
             if (result == MessageDialogResult.OK)
             {
-                MeasuredValues.Clear();
-                NotifyMeasurementDataChanged();
+                ClearMeasuredData();
             }
         }
 
@@ -269,7 +272,7 @@ namespace BleRecorder.UI.WPF.ViewModels
                 if (result != MessageDialogResult.OK) return;
             }
 
-            MeasuredValues.Clear();
+            ClearMeasuredData();
             _bleRecorderManager.BleRecorderDevice!.NewValueReceived -= OnNewValueReceived; // making sure that it is not subscribed multiple times
             _bleRecorderManager.BleRecorderDevice!.NewValueReceived += OnNewValueReceived;
             await _bleRecorderManager.BleRecorderDevice.StartMeasurementAsync(Model.ParametersDuringMeasurement!, Type);
@@ -286,13 +289,20 @@ namespace BleRecorder.UI.WPF.ViewModels
             NotifyMeasurementDataChanged(); // TODO change, since not effective
         }
 
+        private void ClearMeasuredData()
+        {
+            MeasuredValues.Clear();
+            Date = null;
+            NotifyMeasurementDataChanged();
+        }
+
         public async Task StopMeasurementAsync()
         {
             if (_bleRecorderManager.BleRecorderDevice != null)
             {
                 await _bleRecorderManager.BleRecorderDevice.StopMeasurementAsync();
                 _bleRecorderManager.BleRecorderDevice!.NewValueReceived -= OnNewValueReceived;
-                MeasuredValues.Clear();
+                ClearMeasuredData();
 
                 if (_bleRecorderManager.IsCurrentlyMeasuring)
                 {
