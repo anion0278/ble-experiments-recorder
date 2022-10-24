@@ -171,7 +171,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
                 _myodamManager.MyodamDevice.NewValueReceived -= OnNewValueReceived;
             }
 
-            // TODO put Send method into VMBase 
             RunInViewContext(() =>
             {
                 OnPropertyChanged(nameof(IsMeasurementRunning));
@@ -183,10 +182,15 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
                 if (_myodamManager.IsCurrentlyMeasuring) return;
 
                 StopMeasurementCommand.NotifyCanExecuteChanged();
-                if (_myodamManager.MyodamDevice is not null && _myodamManager.MyodamDevice.IsConnected) return;
+                if (_myodamManager.MyodamDevice is not null && _myodamManager.MyodamDevice.IsConnected)
+                {
+                    // Measurement finished (by stopping or due meas finished)
+                    return;
+                }
 
-                MeasuredValues.Clear();
-                DialogService.ShowInfoDialogAsync("Measurement was interrupted due to device disconnection! Measured data were erased.");
+                // Measurement interrupted (due to error on device)
+                DialogService.ShowInfoDialog("Measurement was interrupted due to device disconnection! Measured data were erased.");
+                ClearMeasuredData();
             });
         }
 
@@ -209,8 +213,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
                 "Delete data?");
             if (result == MessageDialogResult.OK)
             {
-                MeasuredValues.Clear();
-                NotifyMeasurementDataChanged();
+                ClearMeasuredData();
             }
         }
 
@@ -269,7 +272,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
                 if (result != MessageDialogResult.OK) return;
             }
 
-            MeasuredValues.Clear();
+            ClearMeasuredData();
             _myodamManager.MyodamDevice!.NewValueReceived -= OnNewValueReceived; // making sure that it is not subscribed multiple times
             _myodamManager.MyodamDevice!.NewValueReceived += OnNewValueReceived;
             await _myodamManager.MyodamDevice.StartMeasurementAsync(Model.ParametersDuringMeasurement!, Type);
@@ -286,13 +289,20 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             NotifyMeasurementDataChanged(); // TODO change, since not effective
         }
 
+        private void ClearMeasuredData()
+        {
+            MeasuredValues.Clear();
+            Date = null;
+            NotifyMeasurementDataChanged();
+        }
+
         public async Task StopMeasurementAsync()
         {
             if (_myodamManager.MyodamDevice != null)
             {
                 await _myodamManager.MyodamDevice.StopMeasurementAsync();
                 _myodamManager.MyodamDevice!.NewValueReceived -= OnNewValueReceived;
-                MeasuredValues.Clear();
+                ClearMeasuredData();
 
                 if (_myodamManager.IsCurrentlyMeasuring)
                 {

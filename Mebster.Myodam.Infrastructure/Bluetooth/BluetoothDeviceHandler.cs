@@ -123,7 +123,7 @@ public class BluetoothDeviceHandler : IBluetoothDeviceHandler
         var input = new byte[reader.UnconsumedBufferLength];
         reader.ReadBytes(input);
         var receivedMsg = Encoding.UTF8.GetString(input);
-        Debug.Print(LatestTimestamp + receivedMsg);
+        //Debug.Print(LatestTimestamp + receivedMsg);
 
         DataReceived?.Invoke(this, receivedMsg);
     }
