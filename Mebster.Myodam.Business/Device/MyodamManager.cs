@@ -13,7 +13,6 @@ public interface IMyodamManager
     event EventHandler? DevicePropertyChanged;
     MyodamDevice? MyodamDevice { get; }
     DeviceCalibration Calibration { get; set; }
-    StimulationParameters CurrentStimulationParameters { get; set; }
     MyodamAvailabilityStatus MyodamAvailability { get; }
     bool IsCurrentlyMeasuring { get; }
     Task ConnectMyodamAsync();
@@ -32,8 +31,6 @@ public class MyodamManager : IMyodamManager
     private ulong? _acceptedAddress;
     private const string _myodamName = "MYODAM";
     public MyodamDevice? MyodamDevice { get; private set; }
-
-    public StimulationParameters CurrentStimulationParameters { get; set; }
 
     public MyodamAvailabilityStatus MyodamAvailability
     {
