@@ -80,6 +80,7 @@ public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewM
         _myodamManager.MeasurementStatusChanged += MyodamStatusChanged;
 
         AppConfiguration = _configurationLoader.GetConfiguration();
+        _myodamManager.SetDeviceAddressFilter(AppConfiguration.MyodamAddress);
         Model = AppConfiguration.MyodamCalibration;
         _myodamManager.Calibration = Model;
 

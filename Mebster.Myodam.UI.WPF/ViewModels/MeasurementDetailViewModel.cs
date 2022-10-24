@@ -210,8 +210,8 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             if (result == MessageDialogResult.OK)
             {
                 MeasuredValues.Clear();
+                NotifyMeasurementDataChanged();
             }
-            NotifyMeasurementDataChanged();
         }
 
         public override async Task LoadAsync(int measurementId, object argsData)
@@ -283,6 +283,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
                 ContractionValue = _myodamManager.Calibration.CalculateLoadValue(sensorMeasuredValue.ContractionValue)
             };
             MeasuredValues.Add(forceValue);
+            NotifyMeasurementDataChanged(); // TODO change, since not effective
         }
 
         public async Task StopMeasurementAsync()

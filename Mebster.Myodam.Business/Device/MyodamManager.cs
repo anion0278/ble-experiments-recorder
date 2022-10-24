@@ -17,6 +17,7 @@ public interface IMyodamManager
     MyodamAvailabilityStatus MyodamAvailability { get; }
     bool IsCurrentlyMeasuring { get; }
     Task ConnectMyodamAsync();
+    void SetDeviceAddressFilter(ulong? acceptedAddress);
 }
 
 public class MyodamManager : IMyodamManager
@@ -28,7 +29,8 @@ public class MyodamManager : IMyodamManager
     private readonly IMyodamReplyParser _messageParser;
     private readonly ISynchronizationContextProvider _synchronizationContextProvider;
     private MyodamAvailabilityStatus _myodamAvailability;
-    private const string _myodamName = "MYODAM-TEST";
+    private ulong? _acceptedAddress;
+    private const string _myodamName = "MYODAM";
     public MyodamDevice? MyodamDevice { get; private set; }
 
     public StimulationParameters CurrentStimulationParameters { get; set; }
@@ -71,9 +73,16 @@ public class MyodamManager : IMyodamManager
             : MyodamAvailabilityStatus.DisconnectedUnavailable;
     }
 
-    private static bool IsMyodamDevice(BluetoothDeviceHandler deviceHandler)
+    public void SetDeviceAddressFilter(ulong? acceptedAddress)
     {
-        return deviceHandler.Name.Equals(_myodamName);
+        _acceptedAddress = acceptedAddress;
+    }
+
+    private bool IsMyodamDevice(BluetoothDeviceHandler deviceHandler)
+    {
+        bool isMyodamDevice = deviceHandler.Name.Equals(_myodamName);
+        if (_acceptedAddress is not null) return isMyodamDevice && deviceHandler.Address.Equals(_acceptedAddress);
+        return isMyodamDevice;
     }
 
     public async Task ConnectMyodamAsync()
@@ -82,7 +91,6 @@ public class MyodamManager : IMyodamManager
 
         var myodamDevices = _bluetoothManager.AvailableBleDevices.Where(IsMyodamDevice).ToArray();
 
-        // TODO Handle multiple devices in a single room
         if (myodamDevices.Length > 1) throw new System.Exception("There is more than one myodam device with provided address!");
 
         IBluetoothDeviceHandler bleDevice;
