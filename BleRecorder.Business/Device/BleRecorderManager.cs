@@ -13,7 +13,6 @@ public interface IBleRecorderManager
     event EventHandler? DevicePropertyChanged;
     BleRecorderDevice? BleRecorderDevice { get; }
     DeviceCalibration Calibration { get; set; }
-    StimulationParameters CurrentStimulationParameters { get; set; }
     BleRecorderAvailabilityStatus BleRecorderAvailability { get; }
     bool IsCurrentlyMeasuring { get; }
     Task ConnectBleRecorderAsync();
@@ -32,8 +31,6 @@ public class BleRecorderManager : IBleRecorderManager
     private ulong? _acceptedAddress;
     private const string _bleRecorderName = "Aggregator";
     public BleRecorderDevice? BleRecorderDevice { get; private set; }
-
-    public StimulationParameters CurrentStimulationParameters { get; set; }
 
     public BleRecorderAvailabilityStatus BleRecorderAvailability
     {
