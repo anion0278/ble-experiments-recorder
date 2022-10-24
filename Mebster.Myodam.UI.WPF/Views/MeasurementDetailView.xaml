@@ -219,9 +219,9 @@
 
                             <livecharts:CartesianChart.AxisX>
                                 <livecharts:Axis x:Name="GraphXAxis" MinValue="0" Title="Stimulation current [mA]">
-                                    <livecharts:Axis.Separator>
+                                    <!--<livecharts:Axis.Separator>
                                         <livecharts:Separator Step="10"/>
-                                    </livecharts:Axis.Separator>
+                                    </livecharts:Axis.Separator>-->
                                 </livecharts:Axis>
                             </livecharts:CartesianChart.AxisX>
 

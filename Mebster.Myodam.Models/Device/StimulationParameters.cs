@@ -8,11 +8,19 @@ public class StimulationParameters : ICloneable
     public int Frequency { get; set; }
     public StimulationPulseWidth PulseWidth { get; set; }
     public TimeSpan StimulationTime { get; set; }
+    public TimeSpan FatigueStimulationTime { get; set; }
     public TimeSpan RestTime { get; set; }
     public int FatigueRepetitions { get; set; }
 
 
-    public StimulationParameters(int current, int frequency, StimulationPulseWidth pulseWidth, TimeSpan stimulationTime, TimeSpan restTime, int fatigueRepetitions)
+    public StimulationParameters(
+        int current, 
+        int frequency, 
+        StimulationPulseWidth pulseWidth, 
+        TimeSpan stimulationTime,
+        TimeSpan fatigueStimulationTime,
+        TimeSpan restTime, 
+        int fatigueRepetitions)
     {
         //if (current < 1 || current > 100) throw new ArgumentException($"Parameter {nameof(Current)} is ")
         // TODO Validate
@@ -23,6 +31,7 @@ public class StimulationParameters : ICloneable
         StimulationTime = stimulationTime;
         RestTime = restTime;
         FatigueRepetitions = fatigueRepetitions;
+        FatigueStimulationTime = fatigueStimulationTime;
     }
 
     public static StimulationParameters GetDefaultValues(int id = 0) // TODO into  DefaultValuesFactory
@@ -32,6 +41,7 @@ public class StimulationParameters : ICloneable
             50,
             StimulationPulseWidth.AvailableOptions[0],
             TimeSpan.FromSeconds(5),
+            TimeSpan.FromSeconds(1),
             TimeSpan.FromSeconds(5),
             4
             )
@@ -45,6 +55,7 @@ public class StimulationParameters : ICloneable
             Frequency,
             PulseWidth,
             StimulationTime,
+            FatigueStimulationTime,
             RestTime,
             FatigueRepetitions
         );

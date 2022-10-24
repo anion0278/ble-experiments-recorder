@@ -32,6 +32,13 @@ public class StimulationParametersViewModel : ViewModelBase
         get => (int)_model.StimulationTime.TotalSeconds;
         set => _model.StimulationTime = TimeSpan.FromSeconds(value);
     }
+
+    public int FatigueStimulationTimeSeconds
+    {
+        get => (int)_model.FatigueStimulationTime.TotalSeconds;
+        set => _model.FatigueStimulationTime = TimeSpan.FromSeconds(value);
+    }
+
     public int RestTimeSeconds
     {
         get => (int)_model.RestTime.TotalSeconds;

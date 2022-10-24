@@ -29,12 +29,17 @@ public class MyodamRequestMessage
 
     public string FormatForSending()
     {
+        // TODO Strategy !!!
+        var stimTime = Measurement == MyodamMeasurement.Fatigue 
+            ? StimulationParameters.FatigueStimulationTime.TotalSeconds
+            : StimulationParameters.StimulationTime.TotalSeconds;
+
         // TODO possible refactoring
         return     
             $">SC:{StimulationParameters.Current:000}_" +
             $"SF:{StimulationParameters.Frequency:000}_" +
             $"SP:{StimulationParameters.PulseWidth.Value:000}_" +
-            $"ST:{StimulationParameters.StimulationTime.TotalSeconds:00}_" +
+            $"ST:{stimTime:00}_" +
             $"RT:{StimulationParameters.RestTime.TotalSeconds:00}_"+
             $"FR:{StimulationParameters.FatigueRepetitions:00}_"+
             $"MC:{(int)Measurement}\n";
