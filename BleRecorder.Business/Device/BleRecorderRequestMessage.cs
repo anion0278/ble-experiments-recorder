@@ -9,28 +9,38 @@ public enum BleRecorderMeasurement // it has to be separated from MeasurementTyp
     Idle,
     MaximumContraction,
     Intermittent,
-    IntermittentIdle
+    IntermittentIdle,
+    DisableFes
 }
 
 public class BleRecorderRequestMessage
 {
     public StimulationParameters StimulationParameters { get; }
 
-    public BleRecorderMeasurement Measurement { get; }
+    public BleRecorderMeasurement Command { get; }
 
     public bool IsMeasurementRequested { get; }
 
     public BleRecorderRequestMessage(StimulationParameters stimulationParameters, MeasurementType measurementType, bool isMeasurementRequested)
+    : this(stimulationParameters, Convert(measurementType), isMeasurementRequested) 
+    { }
+
+    private BleRecorderRequestMessage(StimulationParameters stimulationParameters, BleRecorderMeasurement command, bool isMeasurementRequested)
     {
+        Command = command;
         StimulationParameters = stimulationParameters;
         IsMeasurementRequested = isMeasurementRequested;
-        Measurement = IsMeasurementRequested ? Convert(measurementType) : BleRecorderMeasurement.Idle;
+    }
+
+    public static BleRecorderRequestMessage GetDisableFesMessage()
+    {
+        return new BleRecorderRequestMessage(StimulationParameters.GetDefaultValues(), BleRecorderMeasurement.DisableFes, false);
     }
 
     public string FormatForSending()
     {
         // TODO Strategy !!!
-        var stimTime = Measurement == BleRecorderMeasurement.Intermittent 
+        var stimTime = Command == BleRecorderMeasurement.Intermittent 
             ? StimulationParameters.IntermittentStimulationTime.TotalSeconds
             : StimulationParameters.StimulationTime.TotalSeconds;
 
@@ -42,7 +52,7 @@ public class BleRecorderRequestMessage
             $"ST:{stimTime:00}_" +
             $"RT:{StimulationParameters.RestTime.TotalSeconds:00}_"+
             $"FR:{StimulationParameters.IntermittentRepetitions:00}_"+
-            $"MC:{(int)Measurement}\n";
+            $"MC:{(int)Command}\n";
     }
 
     public static BleRecorderMeasurement Convert(MeasurementType measurementType)

@@ -98,25 +98,37 @@ namespace BleRecorder.UI.WPF.ViewModels
             NavigationViewModel = navigationViewModel;
         }
 
-        private void MainViewClosingExecute(CancelEventArgs? cancelEventArgs)
+        private async void MainViewClosingExecute(CancelEventArgs? cancelEventArgs)
         {
-            if (!_detailViewModels.Any(vm => vm.HasChanges)) return;
-
-            var result = _dialogService.ShowOkCancelDialog(
-                "There are unsaved changes. Do you really want to close the application?",
-                "Closing application");
-            if (result == MessageDialogResult.Cancel)
+            if (_detailViewModels.Any(vm => vm.HasChanges))
             {
-                cancelEventArgs!.Cancel = true; 
-                return;
+                var result = _dialogService.ShowOkCancelDialog(
+                    "There are unsaved changes. Do you really want to close the application?",
+                    "Closing application");
+                if (result == MessageDialogResult.Cancel)
+                {
+                    cancelEventArgs!.Cancel = true;
+                    return;
+                }
             }
 
             StimulationParametersViewModel.PropertyChanged -= StimulationParametersViewModel_PropertyChanged;
 
-            if (_bleRecorderManager.IsCurrentlyMeasuring && _bleRecorderManager.BleRecorderDevice != null)
+            if (_bleRecorderManager.BleRecorderDevice is null) return;
+            var result_fes = _dialogService.ShowYesNoDialog(
+                "Do you want to disable Unit module?",
+                "Disabling Unit module");
+
+            if (_bleRecorderManager.BleRecorderDevice is null) return;// status could have changed in meantime!
+
+            if (result_fes == MessageDialogResult.Yes)
             {
-                _bleRecorderManager.BleRecorderDevice.DisconnectAsync().GetAwaiter().GetResult();
+                await _bleRecorderManager.BleRecorderDevice.DisableFesAndDisconnectAsync();
+                Debug.Print("Exit and disable Unit");
+                return;
             }
+            await _bleRecorderManager.BleRecorderDevice.DisconnectAsync();
+            Debug.Print("Exit");
         }
 
         public async Task LoadAsync()

@@ -196,6 +196,13 @@ public class BleRecorderDevice // TODO Extract inteface
         await SendMsgAsync(msg);
     }
 
+    public async Task DisableFesAndDisconnectAsync()
+    {
+        var msg = BleRecorderRequestMessage.GetDisableFesMessage();
+        await SendMsgAsync(msg);
+        await DisconnectAsync();
+    }
+
     public async Task DisconnectAsync()
     {
         try
