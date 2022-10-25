@@ -115,20 +115,23 @@ namespace BleRecorder.UI.WPF.ViewModels
             StimulationParametersViewModel.PropertyChanged -= StimulationParametersViewModel_PropertyChanged;
 
             if (_bleRecorderManager.BleRecorderDevice is null) return;
-            var result_fes = _dialogService.ShowYesNoDialog(
+            var resultFes = _dialogService.ShowYesNoDialog(
                 "Do you want to disable Unit module?",
                 "Disabling Unit module");
 
             if (_bleRecorderManager.BleRecorderDevice is null) return;// status could have changed in meantime!
 
-            if (result_fes == MessageDialogResult.Yes)
+            cancelEventArgs!.Cancel = true;
+            if (resultFes == MessageDialogResult.Yes)
             {
                 await _bleRecorderManager.BleRecorderDevice.DisableFesAndDisconnectAsync();
                 Debug.Print("Exit and disable Unit");
+                Application.Current.Shutdown();
                 return;
             }
             await _bleRecorderManager.BleRecorderDevice.DisconnectAsync();
             Debug.Print("Exit");
+            Application.Current.Shutdown();
         }
 
         public async Task LoadAsync()
