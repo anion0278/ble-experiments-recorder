@@ -98,25 +98,37 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             NavigationViewModel = navigationViewModel;
         }
 
-        private void MainViewClosingExecute(CancelEventArgs? cancelEventArgs)
+        private async void MainViewClosingExecute(CancelEventArgs? cancelEventArgs)
         {
-            if (!_detailViewModels.Any(vm => vm.HasChanges)) return;
-
-            var result = _dialogService.ShowOkCancelDialog(
-                "There are unsaved changes. Do you really want to close the application?",
-                "Closing application");
-            if (result == MessageDialogResult.Cancel)
+            if (_detailViewModels.Any(vm => vm.HasChanges))
             {
-                cancelEventArgs!.Cancel = true; 
-                return;
+                var result = _dialogService.ShowOkCancelDialog(
+                    "There are unsaved changes. Do you really want to close the application?",
+                    "Closing application");
+                if (result == MessageDialogResult.Cancel)
+                {
+                    cancelEventArgs!.Cancel = true;
+                    return;
+                }
             }
 
             StimulationParametersViewModel.PropertyChanged -= StimulationParametersViewModel_PropertyChanged;
 
-            if (_myodamManager.IsCurrentlyMeasuring && _myodamManager.MyodamDevice != null)
+            if (_myodamManager.MyodamDevice is null) return;
+            var result_fes = _dialogService.ShowYesNoDialog(
+                "Do you want to disable FES module?",
+                "Disabling FES module");
+
+            if (_myodamManager.MyodamDevice is null) return;// status could have changed in meantime!
+
+            if (result_fes == MessageDialogResult.Yes)
             {
-                _myodamManager.MyodamDevice.DisconnectAsync().GetAwaiter().GetResult();
+                await _myodamManager.MyodamDevice.DisableFesAndDisconnectAsync();
+                Debug.Print("Exit and disable FES");
+                return;
             }
+            await _myodamManager.MyodamDevice.DisconnectAsync();
+            Debug.Print("Exit");
         }
 
         public async Task LoadAsync()

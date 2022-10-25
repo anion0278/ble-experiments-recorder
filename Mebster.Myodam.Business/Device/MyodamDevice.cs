@@ -196,6 +196,13 @@ public class MyodamDevice // TODO Extract inteface
         await SendMsgAsync(msg);
     }
 
+    public async Task DisableFesAndDisconnectAsync()
+    {
+        var msg = MyodamRequestMessage.GetDisableFesMessage();
+        await SendMsgAsync(msg);
+        await DisconnectAsync();
+    }
+
     public async Task DisconnectAsync()
     {
         try
