@@ -115,20 +115,23 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             StimulationParametersViewModel.PropertyChanged -= StimulationParametersViewModel_PropertyChanged;
 
             if (_myodamManager.MyodamDevice is null) return;
-            var result_fes = _dialogService.ShowYesNoDialog(
+            var resultFes = _dialogService.ShowYesNoDialog(
                 "Do you want to disable FES module?",
                 "Disabling FES module");
 
             if (_myodamManager.MyodamDevice is null) return;// status could have changed in meantime!
 
-            if (result_fes == MessageDialogResult.Yes)
+            cancelEventArgs!.Cancel = true;
+            if (resultFes == MessageDialogResult.Yes)
             {
                 await _myodamManager.MyodamDevice.DisableFesAndDisconnectAsync();
                 Debug.Print("Exit and disable FES");
+                Application.Current.Shutdown();
                 return;
             }
             await _myodamManager.MyodamDevice.DisconnectAsync();
             Debug.Print("Exit");
+            Application.Current.Shutdown();
         }
 
         public async Task LoadAsync()
