@@ -7,6 +7,7 @@ using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Storage.Streams;
 using BleRecorder.Common.Services;
 using BleRecorder.Models.Device;
+using System.Threading;
 
 namespace BleRecorder.Infrastructure.Bluetooth;
 
@@ -20,10 +21,12 @@ public class BluetoothDeviceHandler : IBluetoothDeviceHandler
     private BluetoothLEDevice? _device;
     private GattCharacteristic? _rxCharacteristic;
     private GattCharacteristic? _txCharacteristic;
-    private readonly System.Timers.Timer _heartbeatWatchdog; // thread-safe timer
-    private readonly TimeSpan _incomingHeartbeatWatchdogInterval = TimeSpan.FromSeconds(0.4);
+    private readonly System.Timers.Timer _incomingHeartbeatWatchdog; // thread-safe timer
+    private readonly System.Timers.Timer _outgoingHeartbeat; // thread-safe timer
+    private readonly TimeSpan _heartbeatInterval = TimeSpan.FromSeconds(0.4);
     private readonly TimeSpan _incomingHeartbeatTimeout = TimeSpan.FromSeconds(1.0);
     private bool _isConnected;
+    private readonly SemaphoreSlim _syncSemaphore = new (1,1);
     private readonly object _syncRoot = new();
 
     public bool IsDisposed { get; private set; }
@@ -53,8 +56,16 @@ public class BluetoothDeviceHandler : IBluetoothDeviceHandler
         Address = address;
         SignalStrength = signalStrength;
         LatestTimestamp = timestamp;
-        _heartbeatWatchdog = new System.Timers.Timer(_incomingHeartbeatWatchdogInterval.TotalMilliseconds);
-        _heartbeatWatchdog.Elapsed += OnWatchdogPeriodElapsed;
+        _incomingHeartbeatWatchdog = new System.Timers.Timer(_heartbeatInterval.TotalMilliseconds);
+        _incomingHeartbeatWatchdog.Elapsed += OnWatchdogPeriodElapsed;
+
+        _outgoingHeartbeat = new System.Timers.Timer(_heartbeatInterval.TotalMilliseconds);
+        _outgoingHeartbeat.Elapsed += OnHeartbeatPeriodElapsed;
+    }
+
+    private async void OnHeartbeatPeriodElapsed(object? sender, ElapsedEventArgs e)
+    {
+        await SendAsync("Heartbeat");
     }
 
     public async Task<IBluetoothDeviceHandler> ConnectDeviceAsync()
@@ -85,7 +96,8 @@ public class BluetoothDeviceHandler : IBluetoothDeviceHandler
         await _rxCharacteristic.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify); // required to receive data
         _rxCharacteristic.ValueChanged += Uart_ReceivedData;
 
-        _heartbeatWatchdog.Start();
+        _incomingHeartbeatWatchdog.Start();
+        _outgoingHeartbeat.Start();
 
         // var isAccessAllowed = await _device.RequestAccessAsync();
 
@@ -130,10 +142,21 @@ public class BluetoothDeviceHandler : IBluetoothDeviceHandler
 
     public async Task SendAsync(string msg)
     {
-        using var writer = new DataWriter();
-        writer.WriteString(msg);
-        var res = await _txCharacteristic.WriteValueAsync(writer.DetachBuffer(), GattWriteOption.WriteWithoutResponse);
-        if (res != GattCommunicationStatus.Success) throw new VerificationException("Failed to send data to device!");
+        Debug.Print("Sent "+ msg);
+        await _syncSemaphore.WaitAsync();
+        try
+        {
+            using var writer = new DataWriter();
+            writer.WriteString(msg);
+            var res = await _txCharacteristic.WriteValueAsync(writer.DetachBuffer(),
+                GattWriteOption.WriteWithoutResponse);
+            if (res != GattCommunicationStatus.Success)
+                throw new VerificationException("Failed to send data to device!");
+        }
+        finally
+        {
+            _syncSemaphore.Release();
+        }
     }
 
     public void Disconnect()
@@ -150,8 +173,10 @@ public class BluetoothDeviceHandler : IBluetoothDeviceHandler
             Debug.Print("Disposing");
             IsConnected = false;
             IsDisposed = true;
-            _heartbeatWatchdog.Stop();
-            _heartbeatWatchdog.Dispose();
+            _incomingHeartbeatWatchdog.Stop();
+            _incomingHeartbeatWatchdog.Dispose();
+            _outgoingHeartbeat.Stop();
+            _outgoingHeartbeat.Dispose();
             //https://stackoverflow.com/questions/39599252/windows-ble-uwp-disconnect
 
             if (_rxCharacteristic != null)
