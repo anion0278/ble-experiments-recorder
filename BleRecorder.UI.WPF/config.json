@@ -1,6 +1,6 @@
 {
   "IsCalibrationEnabled": false,
-  "BleRecorderAddress": 168065797756419,
+  "BleRecorderAddress": 14065313771985,
   "BleRecorderCalibration": {
     "NoLoadSensorValue": 512.8,
     "NominalLoadSensorValue": 569.9,
