@@ -22,7 +22,7 @@ public class MyodamRequestMessage
     public bool IsMeasurementRequested { get; }
 
     public MyodamRequestMessage(StimulationParameters stimulationParameters, MeasurementType measurementType, bool isMeasurementRequested)
-    : this(stimulationParameters, Convert(measurementType), isMeasurementRequested) 
+    : this(stimulationParameters, isMeasurementRequested ? Convert(measurementType) : MyodamMeasurement.Idle, isMeasurementRequested) 
     { }
 
     private MyodamRequestMessage(StimulationParameters stimulationParameters, MyodamMeasurement command, bool isMeasurementRequested)
