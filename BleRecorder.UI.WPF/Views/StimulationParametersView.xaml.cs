@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using BleRecorder.Models.TestSubject;
 
 namespace BleRecorder.UI.WPF.Views
 {
@@ -20,13 +21,13 @@ namespace BleRecorder.UI.WPF.Views
     /// </summary>
     public partial class StimulationParametersView : UserControl
     {
-        public static readonly DependencyProperty IsIntermittentParametersAdjustableProperty = DependencyProperty.Register(
-            "IsIntermittentParametersAdjustable", typeof(bool), typeof(StimulationParametersView), new PropertyMetadata(true));
+        public static readonly DependencyProperty MeasurementTypeProperty = DependencyProperty.Register(
+            "MeasurementType", typeof(MeasurementType?), typeof(StimulationParametersView), new PropertyMetadata(null));
 
-        public bool IsIntermittentParametersAdjustable
+        public MeasurementType? MeasurementType
         {
-            get { return (bool)GetValue(IsIntermittentParametersAdjustableProperty); }
-            set { SetValue(IsIntermittentParametersAdjustableProperty, value); }
+            get { return (MeasurementType?)GetValue(MeasurementTypeProperty); }
+            set { SetValue(MeasurementTypeProperty, value); }
         }
 
         public static readonly DependencyProperty TitleProperty = DependencyProperty.Register(
