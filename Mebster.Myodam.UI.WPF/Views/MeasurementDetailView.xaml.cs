@@ -8,9 +8,9 @@ namespace Mebster.Myodam.UI.WPF.Views
         {
             InitializeComponent();
             GraphXAxis.LabelFormatter = FormatNumericLabel;
-            GraphYAxis.LabelFormatter = FormatNumericLabel;
+            GraphYAxis.LabelFormatter = FormatYLabel;
 
-            Graph2YAxis.LabelFormatter = FormatNumericLabel;
+            Graph2YAxis.LabelFormatter = FormatYLabel;
         }
 
         private static string FormatNumericLabel(double value)
@@ -18,5 +18,9 @@ namespace Mebster.Myodam.UI.WPF.Views
             return value.ToString("0");
         }
 
+        private static string FormatYLabel(double value)
+        {
+            return value.ToString("0.0");
+        }
     }
 }

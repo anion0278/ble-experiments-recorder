@@ -19,7 +19,18 @@
         d:Background="Transparent"
         Closing="MainWindow_OnClosing"
         d:DataContext="{d:DesignInstance viewModel:MainViewModel, d:IsDesignTimeCreatable=True}">
-
+    <mah:MetroWindow.IconTemplate>
+        <DataTemplate>
+            <Grid Width="{TemplateBinding Width}"
+                  Height="{TemplateBinding Height}"
+                  Margin="4"
+                  Background="Transparent"
+                  RenderOptions.EdgeMode="Aliased"
+                  RenderOptions.BitmapScalingMode="HighQuality">
+                <Image Source="/Assets/icon.ico"/>
+            </Grid>
+        </DataTemplate>
+    </mah:MetroWindow.IconTemplate>
     <!--<b:Interaction.Triggers>
         <b:EventTrigger EventName="Closing">
             <b:Interaction.Triggers>
