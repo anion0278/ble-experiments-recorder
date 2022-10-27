@@ -26,13 +26,14 @@
 
 	<ItemGroup>
 	  <None Remove="Assets\Bottom_cut.png" />
+	  <None Remove="Assets\ISO.png" />
 	  <None Remove="Assets\bleRecorder_mechanical_adjustment.png" />
 	  <None Remove="Assets\Side_cut.png" />
 	  <None Remove="Assets\splashScreen.png" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Include="Assets\icon.ico" />
+	  <Resource Include="Assets\icon.ico" />
 	</ItemGroup>
 
   <Target Name="RemoveDuplicateAnalyzers" BeforeTargets="CoreCompile">
@@ -113,6 +114,7 @@
 
 	<ItemGroup>
 	  <Resource Include="Assets\Bottom_cut.png" />
+	  <Resource Include="Assets\ISO.png" />
 	  <Resource Include="Assets\bleRecorder_mechanical_adjustment.png" />
 	  <Resource Include="Assets\Side_cut.png" />
 	</ItemGroup>
