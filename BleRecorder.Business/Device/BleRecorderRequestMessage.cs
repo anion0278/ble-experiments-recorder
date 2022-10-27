@@ -22,7 +22,7 @@ public class BleRecorderRequestMessage
     public bool IsMeasurementRequested { get; }
 
     public BleRecorderRequestMessage(StimulationParameters stimulationParameters, MeasurementType measurementType, bool isMeasurementRequested)
-    : this(stimulationParameters, Convert(measurementType), isMeasurementRequested) 
+    : this(stimulationParameters, isMeasurementRequested ? Convert(measurementType) : BleRecorderMeasurement.Idle, isMeasurementRequested) 
     { }
 
     private BleRecorderRequestMessage(StimulationParameters stimulationParameters, BleRecorderMeasurement command, bool isMeasurementRequested)
