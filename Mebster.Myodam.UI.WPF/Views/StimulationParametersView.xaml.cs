@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Mebster.Myodam.Models.TestSubject;
 
 namespace Mebster.Myodam.UI.WPF.Views
 {
@@ -20,13 +21,13 @@ namespace Mebster.Myodam.UI.WPF.Views
     /// </summary>
     public partial class StimulationParametersView : UserControl
     {
-        public static readonly DependencyProperty IsFatigueParametersAdjustableProperty = DependencyProperty.Register(
-            "IsFatigueParametersAdjustable", typeof(bool), typeof(StimulationParametersView), new PropertyMetadata(true));
+        public static readonly DependencyProperty MeasurementTypeProperty = DependencyProperty.Register(
+            "MeasurementType", typeof(MeasurementType?), typeof(StimulationParametersView), new PropertyMetadata(null));
 
-        public bool IsFatigueParametersAdjustable
+        public MeasurementType? MeasurementType
         {
-            get { return (bool)GetValue(IsFatigueParametersAdjustableProperty); }
-            set { SetValue(IsFatigueParametersAdjustableProperty, value); }
+            get { return (MeasurementType?)GetValue(MeasurementTypeProperty); }
+            set { SetValue(MeasurementTypeProperty, value); }
         }
 
         public static readonly DependencyProperty TitleProperty = DependencyProperty.Register(
