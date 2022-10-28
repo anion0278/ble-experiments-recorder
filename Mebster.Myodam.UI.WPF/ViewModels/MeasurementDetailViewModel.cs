@@ -163,7 +163,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             OnPropertyChanged(nameof(MeasuredValues));
         }
 
-        private void OnMeasurementStatusChanged(object? sender, EventArgs e)
+        private async void OnMeasurementStatusChanged(object? sender, EventArgs e)
         {
             // TODO solve case when device is null (was already disconnected and may cause memory leak)
             if (!_myodamManager.IsCurrentlyMeasuring && _myodamManager.MyodamDevice != null) //_myodamManager.MyodamDevice != null
@@ -171,27 +171,23 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
                 _myodamManager.MyodamDevice.NewValueReceived -= OnNewValueReceived;
             }
 
-            RunInViewContext(() =>
+            OnPropertyChanged(nameof(IsMeasurementRunning));
+            StartMeasurementCommand.NotifyCanExecuteChanged();
+            StopMeasurementCommand.NotifyCanExecuteChanged();
+            CleanRecordedDataCommand.NotifyCanExecuteChanged();
+            SaveCommand.NotifyCanExecuteChanged();
+            DeleteCommand.NotifyCanExecuteChanged();
+            if (_myodamManager.IsCurrentlyMeasuring) return;
+
+            StopMeasurementCommand.NotifyCanExecuteChanged();
+            if (_myodamManager.MyodamDevice is not null && _myodamManager.MyodamDevice.IsConnected)
             {
-                OnPropertyChanged(nameof(IsMeasurementRunning));
-                StartMeasurementCommand.NotifyCanExecuteChanged();
-                StopMeasurementCommand.NotifyCanExecuteChanged();
-                CleanRecordedDataCommand.NotifyCanExecuteChanged();
-                SaveCommand.NotifyCanExecuteChanged();
-                DeleteCommand.NotifyCanExecuteChanged();
-                if (_myodamManager.IsCurrentlyMeasuring) return;
+                return; // Measurement finished (by stopping or due meas finished)
+            }
 
-                StopMeasurementCommand.NotifyCanExecuteChanged();
-                if (_myodamManager.MyodamDevice is not null && _myodamManager.MyodamDevice.IsConnected)
-                {
-                    // Measurement finished (by stopping or due meas finished)
-                    return;
-                }
-
-                // Measurement interrupted (due to error on device)
-                DialogService.ShowInfoDialog("Measurement was interrupted due to device disconnection! Measured data were erased.");
-                ClearMeasuredData();
-            });
+            // Measurement interrupted (due to error on device)
+            await DialogService.ShowInfoDialogAsync("Measurement was interrupted due to device disconnection! Measured data were erased.");
+            ClearMeasuredData();
         }
 
         private bool StartMeasurementCanExecute()
@@ -201,7 +197,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         private void OnMyodamStatusChanged(object? o, EventArgs eventArgs)
         {
-            RunInViewContext(() => StartMeasurementCommand.NotifyCanExecuteChanged());
+            StartMeasurementCommand.NotifyCanExecuteChanged();
         }
 
         private async void CleanRecordedDataAsync()

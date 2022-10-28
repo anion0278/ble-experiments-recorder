@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Timers;
 using Windows.Devices.Bluetooth.Advertisement;
 using Windows.Devices.Enumeration;
+using Mebster.Myodam.Common;
 using Mebster.Myodam.Common.Services;
 using Mebster.Myodam.Models.Device;
 using Swordfish.NET.Collections;
@@ -20,29 +21,27 @@ namespace Mebster.Myodam.Infrastructure.Bluetooth
     {
         private readonly IDateTimeService _dateTimeService;
         private readonly ISynchronizationContextProvider _contextProvider;
-        readonly BluetoothLEAdvertisementWatcher _bleWatcher;
-        private readonly System.Timers.Timer _advertisementWatchdog;
+        private readonly TimeSpan _advertisementWatchdogInterval = TimeSpan.FromSeconds(1);
+        private readonly TimeSpan _advertisementWatchdogTimeout = TimeSpan.FromSeconds(3);
+        private readonly BluetoothLEAdvertisementWatcher _bleWatcher;
+        private readonly ITimerWithExceptionPropagation _advertisementWatchdog;
         public ConcurrentObservableCollection<BluetoothDeviceHandler> AvailableBleDevices { get; } = new();
-
-        private TimeSpan _advertisementWatchdogInterval = TimeSpan.FromSeconds(1);
-        private TimeSpan _advertisementWatchdogTimeout = TimeSpan.FromSeconds(3);
 
         public BluetoothManager(IDateTimeService dateTimeService, ISynchronizationContextProvider contextProvider)
         {
             _dateTimeService = dateTimeService;
             _contextProvider = contextProvider;
-            // DeviceInformation.Pairing.IsPaired;
-            // TODO Checkout System.Devices.Aep.IsConnected param, since sometimes device is already connected
-            //public bool IsConnected => (bool?)DeviceInformation.Properties["System.Devices.Aep.IsConnected"] == true;
 
-            //string[] requestedProperties = { "System.Devices.Aep.DeviceAddress", "System.Devices.Aep.IsConnected", "System.Devices.Aep.Bluetooth.Le.IsConnectable" };
-            //_bleWatcher =
-            //    DeviceInformation.CreateWatcher(string.Empty, requestedProperties, 
-            //        DeviceInformationKind.AssociationEndpoint);
-            _bleWatcher = new() { ScanningMode = BluetoothLEScanningMode.Active }; // Active - possible Windows bug https://stackoverflow.com/questions/54525137/why-does-bluetoothleadvertisementwatcher-stop-firing-received-events
-            _bleWatcher.SignalStrengthFilter.OutOfRangeThresholdInDBm = -75;
-            _advertisementWatchdog = new System.Timers.Timer(_advertisementWatchdogInterval.TotalMilliseconds); // TODO dispose
-            _advertisementWatchdog.Elapsed += OnAdvertisementPeriodElapsed;
+            _bleWatcher = new()
+            {
+                ScanningMode = BluetoothLEScanningMode.Active,
+                SignalStrengthFilter = { OutOfRangeThresholdInDBm = -75 }
+            }; // Active - possible Windows bug https://stackoverflow.com/questions/54525137/why-does-bluetoothleadvertisementwatcher-stop-firing-received-events
+            
+            _advertisementWatchdog = new TimerWithExceptionPropagation(
+                OnAdvertisementPeriodElapsed,
+                _advertisementWatchdogInterval,
+                _contextProvider); // TODO dispose
             _advertisementWatchdog.Start();
         }
 
@@ -51,7 +50,7 @@ namespace Mebster.Myodam.Infrastructure.Bluetooth
             _bleWatcher.AdvertisementFilter.Advertisement.LocalName = deviceName;
         }
 
-        private void OnAdvertisementPeriodElapsed(object? sender, ElapsedEventArgs elapsedEventArgs)
+        private void OnAdvertisementPeriodElapsed()
         {
             foreach (var availableBleDevice in AvailableBleDevices.ToArray())
             {
@@ -74,7 +73,7 @@ namespace Mebster.Myodam.Infrastructure.Bluetooth
 
         private void BleWatcher_Received(BluetoothLEAdvertisementWatcher sender, BluetoothLEAdvertisementReceivedEventArgs args)
         {
-            foreach (var disposedDevice in AvailableBleDevices.Where(d=>d.IsDisposed))
+            foreach (var disposedDevice in AvailableBleDevices.Where(d => d.IsDisposed))
             {
                 AvailableBleDevices.Remove(disposedDevice);
             }

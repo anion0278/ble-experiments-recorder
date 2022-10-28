@@ -34,7 +34,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         private readonly IFileSystemManager _fileManager;
         private readonly ObservableCollection<NavigationAddTestSubjectItemViewModel> _navigationItems = new();
 
-        public ListCollectionView TestSubjectsNavigationItems { get; } 
+        public ListCollectionView TestSubjectsNavigationItems { get; }
 
         public IAsyncRelayCommand ChangeMyodamConnectionCommand { get; }
 
@@ -51,7 +51,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         /// Design-time ctor
         /// </summary>
         [Obsolete("Design-time only!")]
-        public NavigationViewModel(): this(new TestSubject(){FirstName = "Name", LastName = "Surname"})
+        public NavigationViewModel() : this(new TestSubject() { FirstName = "Name", LastName = "Surname" })
         {
         }
 
@@ -69,7 +69,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         public NavigationViewModel(
             ITestSubjectRepository testSubjectRepository,
-            IMessenger messenger, 
+            IMessenger messenger,
             IMessageDialogService dialogService,
             IMyodamManager myodamManager,
             IDeviceCalibrationViewModel deviceCalibrationViewModel,
@@ -136,12 +136,9 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         private void OnMyodamAvailabilityChanged(object? o, EventArgs eventArgs)
         {
-            RunInViewContext(() =>
-            {
-                OnMyodamPropertyChanged(this, EventArgs.Empty);
-                ChangeMyodamConnectionCommand.NotifyCanExecuteChanged();
-                ExportSelectedCommand.NotifyCanExecuteChanged();
-            });
+            OnMyodamPropertyChanged(this, EventArgs.Empty);
+            ChangeMyodamConnectionCommand.NotifyCanExecuteChanged();
+            ExportSelectedCommand.NotifyCanExecuteChanged();
         }
 
         private bool CanChangeMyodamConnection()

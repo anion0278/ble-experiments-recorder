@@ -10,7 +10,7 @@ using Mebster.Myodam.Models.TestSubject;
 
 namespace Mebster.Myodam.Business.Device;
 
-public class MyodamDevice // TODO Extract inteface
+public class MyodamDevice : IMyodamDevice
 {
     private readonly IBluetoothDeviceHandler _bleDeviceHandler;
     private readonly IMyodamReplyParser _messageParser;
@@ -142,17 +142,17 @@ public class MyodamDevice // TODO Extract inteface
             if (reply.MeasurementStatus == MyodamMeasurement.FatigueIdle) return;
 
             NewValueReceived?.Invoke(
-                this, 
+                this,
                 new MeasuredValue(reply.SensorValue, reply.CurrentMilliAmp, reply.Timestamp));
         }
         catch (DeviceInvalidMessageException ex)
         {
-            _synchronizationContextProvider.RunInContext(() => throw ex); //throw; cannot be used
+            _synchronizationContextProvider.RunInContext(() => throw ex); // 'throw;' cannot be used here
         }
         catch (System.Exception ex)
         {
             _synchronizationContextProvider.RunInContext(
-                () => throw new DeviceInvalidMessageException("Error during processing data from device.", ex)); 
+                () => throw new DeviceInvalidMessageException("Error during processing data from device.", ex));
         }
     }
 

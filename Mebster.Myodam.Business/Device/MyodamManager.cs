@@ -6,19 +6,6 @@ using Mebster.Myodam.Models.Device;
 
 namespace Mebster.Myodam.Business.Device;
 
-public interface IMyodamManager
-{
-    event EventHandler MyodamAvailabilityChanged;
-    event EventHandler? MeasurementStatusChanged;
-    event EventHandler? DevicePropertyChanged;
-    MyodamDevice? MyodamDevice { get; }
-    DeviceCalibration Calibration { get; set; }
-    MyodamAvailabilityStatus MyodamAvailability { get; }
-    bool IsCurrentlyMeasuring { get; }
-    Task ConnectMyodamAsync();
-    void SetDeviceAddressFilter(ulong? acceptedAddress);
-}
-
 public class MyodamManager : IMyodamManager
 {
     public event EventHandler? MyodamAvailabilityChanged;
@@ -30,7 +17,7 @@ public class MyodamManager : IMyodamManager
     private MyodamAvailabilityStatus _myodamAvailability;
     private ulong? _acceptedAddress;
     private const string _myodamName = "MYODAM";
-    public MyodamDevice? MyodamDevice { get; private set; }
+    public IMyodamDevice? MyodamDevice { get; private set; }
 
     public MyodamAvailabilityStatus MyodamAvailability
     {
@@ -100,7 +87,9 @@ public class MyodamManager : IMyodamManager
             throw new DeviceConnectionException(ex);
         }
 
-        MyodamDevice = new MyodamDevice(bleDevice, _messageParser, _synchronizationContextProvider, Calibration);
+        MyodamDevice = new MyodamDeviceUiWrapper(
+            new MyodamDevice(bleDevice, _messageParser, _synchronizationContextProvider, Calibration),
+            _synchronizationContextProvider);
         MyodamAvailability = MyodamAvailabilityStatus.Connected;
         MyodamDevice.ConnectionStatusChanged += OnConnectionStatusChanged;
         MyodamDevice.MeasurementStatusChanged += OnMeasurementStatusChanged;
