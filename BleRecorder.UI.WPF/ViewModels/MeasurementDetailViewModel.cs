@@ -20,10 +20,7 @@ using BleRecorder.Models.TestSubject;
 using BleRecorder.UI.WPF.Data.Repositories;
 using BleRecorder.UI.WPF.Event;
 using BleRecorder.UI.WPF.ViewModels.Services;
-using Microsoft.EntityFrameworkCore;
 using PropertyChanged;
-using Swordfish.NET.Collections.Auxiliary;
-using WinRT;
 
 namespace BleRecorder.UI.WPF.ViewModels
 {
@@ -121,9 +118,20 @@ namespace BleRecorder.UI.WPF.ViewModels
 
             _bleRecorderManager.BleRecorderAvailabilityChanged += OnBleRecorderStatusChanged;
             _bleRecorderManager.MeasurementStatusChanged += OnMeasurementStatusChanged;
+            _bleRecorderManager.DeviceErrorChanged += OnDeviceErrorChanged;
 
             Messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSavedAsync(e));
             Messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
+        }
+
+        private async void OnDeviceErrorChanged(object? sender, EventArgs e)
+        {
+            if (_bleRecorderManager.BleRecorderDevice is not null 
+                && _bleRecorderManager.IsCurrentlyMeasuring
+                && _bleRecorderManager.BleRecorderDevice.Error != BleRecorderError.NoError)
+            {
+                await StopMeasurementAsync();
+            }
         }
 
         private bool StopMeasurementCanExecute()
@@ -147,6 +155,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             MeasuredValues.CollectionChanged -= OnContractionValuesChanged;
             _bleRecorderManager.BleRecorderAvailabilityChanged -= OnBleRecorderStatusChanged;
             _bleRecorderManager.MeasurementStatusChanged -= OnMeasurementStatusChanged;
+            _bleRecorderManager.DeviceErrorChanged -= OnDeviceErrorChanged;
 
             Messenger.Unregister<AfterDetailSavedEventArgs>(this);
             Messenger.Unregister<AfterDetailDeletedEventArgs>(this);

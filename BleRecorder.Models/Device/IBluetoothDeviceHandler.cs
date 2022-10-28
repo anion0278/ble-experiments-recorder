@@ -27,7 +27,5 @@ public enum BleRecorderAvailabilityStatus
     DisconnectedAvailable,
     [Description("Connected")]
     Connected,
-    [Description("Error on device!")]
-    ErrorOnDevice
 }
 

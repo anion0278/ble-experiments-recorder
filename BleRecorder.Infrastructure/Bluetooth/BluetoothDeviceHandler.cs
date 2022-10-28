@@ -132,12 +132,11 @@ public class BluetoothDeviceHandler : IBluetoothDeviceHandler
     private void Uart_ReceivedData(GattCharacteristic sender, GattValueChangedEventArgs args)
     {
         LatestTimestamp = _dateTimeService.Now;
-        //Debug.Print(LatestTimestamp.ToString());
         var reader = DataReader.FromBuffer(args.CharacteristicValue);
         var input = new byte[reader.UnconsumedBufferLength];
         reader.ReadBytes(input);
         var receivedMsg = Encoding.UTF8.GetString(input);
-        //Debug.Print(LatestTimestamp + receivedMsg);
+        Debug.Print(LatestTimestamp + receivedMsg);
 
         DataReceived?.Invoke(this, receivedMsg);
     }

@@ -10,16 +10,16 @@ public class BleRecorderMessageParserTests
     [Fact]
     public void Parses_valid_message()
     {
-        string inputMessage = ">TS:01234_ST:0512_AC:098_CB:060_FB:100_EC:0_MS:1\\n";
+        string inputMessage = ">TS:01234_ST:0512_AC:00098_CB:060_FB:100_EC:0_MS:1\\n";
         var parser = new BleRecorderReplyParser();
         var expectedResult = new BleRecorderReplyMessage(
             TimeSpan.FromMilliseconds(1234),
             512.0,
-            98,
+            0.98,
             new Percentage(60),
             new Percentage(100),
             BleRecorderError.NoError,
-            BleRecorderMeasurement.MaximumContraction);
+            BleRecorderCommand.MaximumContraction);
         AssertionOptions.AssertEquivalencyUsing((c) => c.RespectingDeclaredTypes());
 
         var result = parser.ParseReply(inputMessage);

@@ -11,6 +11,7 @@ using System.Windows.Threading;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using BleRecorder.Business.Device;
+using BleRecorder.Business.Exception;
 using BleRecorder.DataAccess.DataExport;
 using BleRecorder.DataAccess.FileStorage;
 using BleRecorder.Infrastructure.Bluetooth;
@@ -18,7 +19,9 @@ using BleRecorder.Models.Device;
 using BleRecorder.Models.TestSubject;
 using BleRecorder.UI.WPF.Data.Repositories;
 using BleRecorder.UI.WPF.Event;
+using BleRecorder.UI.WPF.Exception;
 using BleRecorder.UI.WPF.ViewModels.Services;
+using Microsoft.AppCenter;
 using Microsoft.Win32;
 using Swordfish.NET.Collections.Auxiliary;
 
@@ -32,6 +35,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         private readonly IBleRecorderManager _bleRecorderManager;
         private readonly IDocumentManager _documentManager;
         private readonly IFileSystemManager _fileManager;
+        private readonly IGlobalExceptionHandler _exceptionHandler;
         private readonly ObservableCollection<NavigationAddTestSubjectItemViewModel> _navigationItems = new();
 
         public ListCollectionView TestSubjectsNavigationItems { get; }
@@ -44,6 +48,8 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         public int StimulatorBatteryPercentage => (int)(_bleRecorderManager.BleRecorderDevice?.StimulatorBattery.Value ?? 0);
         public int ControllerBatteryPercentage => (int)(_bleRecorderManager.BleRecorderDevice?.ControllerBattery.Value ?? 0);
+
+        public BleRecorderError DeviceError => _bleRecorderManager.BleRecorderDevice?.Error ?? BleRecorderError.NoError;
 
         public IDeviceCalibrationViewModel DeviceCalibrationVm { get; }
 
@@ -75,6 +81,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             IDeviceCalibrationViewModel deviceCalibrationViewModel,
             IDocumentManager documentManager,
             IFileSystemManager fileManager,
+            IGlobalExceptionHandler exceptionHandler,
             IAsyncRelayCommandFactory asyncCommandFactory)
         {
             ChangeBleRecorderConnectionCommand = asyncCommandFactory.Create(ChangeBleRecorderConnectionAsync, CanChangeBleRecorderConnection);
@@ -86,16 +93,27 @@ namespace BleRecorder.UI.WPF.ViewModels
             _bleRecorderManager = bleRecorderManager;
             _documentManager = documentManager;
             _fileManager = fileManager;
+            _exceptionHandler = exceptionHandler;
             DeviceCalibrationVm = deviceCalibrationViewModel;
 
             _bleRecorderManager.BleRecorderAvailabilityChanged += OnBleRecorderAvailabilityChanged;
             _bleRecorderManager.DevicePropertyChanged += OnBleRecorderPropertyChanged;
+            _bleRecorderManager.DeviceErrorChanged += OnBleRecorderErrorChanged;
             _bleRecorderManager.MeasurementStatusChanged += OnBleRecorderAvailabilityChanged; // yes, same handler
             _messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
             _messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
 
             TestSubjectsNavigationItems = (ListCollectionView)CollectionViewSource.GetDefaultView(_navigationItems);
             TestSubjectsNavigationItems.CustomSort = new NavigationAddItemViewModelRelationalComparer();
+        }
+
+        private async void OnBleRecorderErrorChanged(object? sender, EventArgs e)
+        {
+            OnPropertyChanged(nameof(DeviceError));
+            if (DeviceError != BleRecorderError.NoError)
+            {
+                await _exceptionHandler.HandleExceptionAsync(new DeviceErrorOccurredException(DeviceError));
+            }
         }
 
         private bool CanExportSelected()

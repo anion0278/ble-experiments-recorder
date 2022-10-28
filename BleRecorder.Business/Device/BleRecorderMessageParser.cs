@@ -22,7 +22,7 @@ public class BleRecorderReplyParser : IBleRecorderReplyParser
             && Percentage.TryParse(regex.Groups["controller_battery"].Value, out var controllerBattery)
             && Percentage.TryParse(regex.Groups["fes_battery"].Value, out var stimulatorBattery)
             && Enum.TryParse(typeof(BleRecorderError), regex.Groups["error"].Value, true, out var errorCode)
-            && Enum.TryParse(typeof(BleRecorderMeasurement), regex.Groups["measurement"].Value, true, out var measurementStatus))
+            && Enum.TryParse(typeof(BleRecorderCommand), regex.Groups["measurement"].Value, true, out var measurementStatus))
         {
             return new BleRecorderReplyMessage(
                 TimeSpan.FromMilliseconds(timestamp),
@@ -31,7 +31,7 @@ public class BleRecorderReplyParser : IBleRecorderReplyParser
                 controllerBattery,
                 stimulatorBattery,
                 (BleRecorderError)errorCode!,
-                (BleRecorderMeasurement)measurementStatus!);
+                (BleRecorderCommand)measurementStatus!);
         }
 
         throw new DeviceInvalidMessageException(msg);

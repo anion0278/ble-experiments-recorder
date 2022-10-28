@@ -8,6 +8,7 @@
              xmlns:viewModels="clr-namespace:BleRecorder.UI.WPF.ViewModels"
              xmlns:views="clr-namespace:BleRecorder.UI.WPF.Views"
              xmlns:extensions="clr-namespace:BleRecorder.UI.WPF.Extensions"
+             xmlns:device1="clr-namespace:BleRecorder.Business.Device;assembly=BleRecorder.Business"
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="380"
              d:DataContext="{d:DesignInstance viewModels:NavigationViewModel, IsDesignTimeCreatable=True}">
@@ -166,6 +167,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
@@ -218,34 +220,35 @@
                     </Button.Content>
                 </Button>
 
-                <Label Grid.Row="1" Grid.Column="0" Content="Status: "/>
-                <Label Grid.Row="1" Grid.Column="1" FontWeight="Bold" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">
-                    <Label.Content>
-                        <TextBlock TextWrapping="Wrap"
-                                Text="{Binding BleRecorderAvailability, Converter={StaticResource enumDescriptionConverter}}">
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding BleRecorderAvailability}" Value="{x:Static device:BleRecorderAvailabilityStatus.ErrorOnDevice}">
-                                            <Setter Property="Foreground" Value="{StaticResource ErrorTextColor}"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                    </Label.Content>
+                <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" FontWeight="Bold" HorizontalAlignment="Center" Foreground="{StaticResource ErrorTextColor}"
+                       Content="{Binding DeviceError, Converter={StaticResource enumDescriptionConverter}}" 
+                       ContentStringFormat="Error on device: {0}">
+                    <Label.Style>
+                        <Style TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
+                            <Setter Property="Visibility" Value="Visible"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding DeviceError}" Value="{x:Static device1:BleRecorderError.NoError}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Label.Style>
                 </Label>
 
-                <Label Grid.Row="2" Grid.Column="0"  Content="Unit Battery:" VerticalAlignment="Center"/>
-                <ProgressBar Grid.Row="2" Grid.Column="1" 
+                <Label Grid.Row="2" Grid.Column="0" Content="Connection status: "/>
+                <Label Grid.Row="2" Grid.Column="1" FontWeight="Bold" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                       Content="{Binding BleRecorderAvailability, Converter={StaticResource enumDescriptionConverter}}"/>
+
+                <Label Grid.Row="3" Grid.Column="0"  Content="Unit Battery:" VerticalAlignment="Center"/>
+                <ProgressBar Grid.Row="3" Grid.Column="1" 
                                  d:Value ="80"
                                  Value="{Binding StimulatorBatteryPercentage, Mode=OneWay}" />
 
-                <Label Grid.Row="3" Grid.Column="0"  Content="Device Battery:" VerticalAlignment="Center"/>
-                <ProgressBar Grid.Row="3" Grid.Column="1"
+                <Label Grid.Row="4" Grid.Column="0"  Content="Device Battery:" VerticalAlignment="Center"/>
+                <ProgressBar Grid.Row="4" Grid.Column="1"
                                  Value="{Binding ControllerBatteryPercentage, Mode=OneWay}"/>
 
-                <views:DeviceCalibrationView Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Bottom" Margin="0 10 0 0"
+                <views:DeviceCalibrationView Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Bottom" Margin="0 10 0 0"
                                              Visibility="{Binding AppConfiguration.IsCalibrationEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"    
                                              DataContext="{Binding DeviceCalibrationVm}"/>
             </Grid>

@@ -110,6 +110,7 @@
 
 	<ItemGroup>
 	  <Folder Include="Exception\" />
+	  <Folder Include="Helpers\" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -11,6 +11,7 @@ public class BleRecorderManager : IBleRecorderManager
     public event EventHandler? BleRecorderAvailabilityChanged;
     public event EventHandler? MeasurementStatusChanged;
     public event EventHandler? DevicePropertyChanged;
+    public event EventHandler? DeviceErrorChanged;
     private readonly IBluetoothManager _bluetoothManager;
     private readonly IBleRecorderReplyParser _messageParser;
     private readonly ISynchronizationContextProvider _synchronizationContextProvider;
@@ -94,6 +95,7 @@ public class BleRecorderManager : IBleRecorderManager
         BleRecorderDevice.ConnectionStatusChanged += OnConnectionStatusChanged;
         BleRecorderDevice.MeasurementStatusChanged += OnMeasurementStatusChanged;
         BleRecorderDevice.BatteryStatusChanged += OnDevicePropertyChanged;
+        BleRecorderDevice.ErrorChanged += OnDeviceErrorChanged;
     }
 
     private void OnDeviceDisconnection()
@@ -101,8 +103,14 @@ public class BleRecorderManager : IBleRecorderManager
         BleRecorderDevice!.ConnectionStatusChanged -= OnConnectionStatusChanged;
         BleRecorderDevice.MeasurementStatusChanged -= OnMeasurementStatusChanged;
         BleRecorderDevice.BatteryStatusChanged -= OnDevicePropertyChanged;
+        BleRecorderDevice.ErrorChanged -= OnDeviceErrorChanged;
         BleRecorderDevice = null;
         BleRecorderAvailability = BleRecorderAvailabilityStatus.DisconnectedUnavailable;
+    }
+
+    private void OnDeviceErrorChanged(object? sender, EventArgs e)
+    {
+        DeviceErrorChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private void OnDevicePropertyChanged(object? sender, EventArgs e)

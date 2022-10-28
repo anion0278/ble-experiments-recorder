@@ -12,7 +12,7 @@ public class BleRecorderDeviceUiWrapper : IBleRecorderDevice
 
     public event EventHandler<MeasuredValue>? NewValueReceived;
     public event EventHandler? ConnectionStatusChanged;
-    public event EventHandler<BleRecorderError>? ErrorChanged;
+    public event EventHandler? ErrorChanged;
     public event EventHandler? MeasurementStatusChanged;
     public event EventHandler? BatteryStatusChanged;
     public BleRecorderError Error => _bleRecorderDevice.Error;
@@ -63,7 +63,7 @@ public class BleRecorderDeviceUiWrapper : IBleRecorderDevice
         _contextProvider.RunInContext(() => MeasurementStatusChanged?.Invoke(sender, e));
     }
 
-    private void _bleRecorderDevice_ErrorChanged(object? sender, BleRecorderError e)
+    private void _bleRecorderDevice_ErrorChanged(object? sender, EventArgs e)
     {
         _contextProvider.RunInContext(() => ErrorChanged?.Invoke(sender, e));
     }

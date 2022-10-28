@@ -8,7 +8,7 @@ public interface IBleRecorderDevice
 {
     event EventHandler<MeasuredValue>? NewValueReceived;
     event EventHandler? ConnectionStatusChanged;
-    event EventHandler<BleRecorderError>? ErrorChanged;
+    event EventHandler? ErrorChanged;
     event EventHandler? MeasurementStatusChanged;
     event EventHandler? BatteryStatusChanged;
     BleRecorderError Error { get; }
