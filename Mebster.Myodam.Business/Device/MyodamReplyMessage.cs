@@ -13,7 +13,7 @@ public class MyodamReplyMessage
     public Percentage ControllerBattery { get; }
     public Percentage StimulatorBattery { get; }
     public MyodamError Error { get; }
-    public MyodamMeasurement MeasurementStatus { get; }
+    public MyodamCommand CommandStatus { get; }
 
     public MyodamReplyMessage(
         TimeSpan timestamp, 
@@ -22,7 +22,7 @@ public class MyodamReplyMessage
         Percentage controllerBattery,
         Percentage stimulatorBattery,
         MyodamError error,
-        MyodamMeasurement measurementStatus)
+        MyodamCommand commandStatus)
     {
         Timestamp = timestamp;
         SensorValue = sensorValue;
@@ -30,7 +30,7 @@ public class MyodamReplyMessage
         ControllerBattery = controllerBattery;
         StimulatorBattery = stimulatorBattery;
         Error = error;
-        MeasurementStatus = measurementStatus;
+        CommandStatus = commandStatus;
     }
 }
 

@@ -20,10 +20,7 @@ using Mebster.Myodam.Models.TestSubject;
 using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.Event;
 using Mebster.Myodam.UI.WPF.ViewModels.Services;
-using Microsoft.EntityFrameworkCore;
 using PropertyChanged;
-using Swordfish.NET.Collections.Auxiliary;
-using WinRT;
 
 namespace Mebster.Myodam.UI.WPF.ViewModels
 {
@@ -121,9 +118,20 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
             _myodamManager.MyodamAvailabilityChanged += OnMyodamStatusChanged;
             _myodamManager.MeasurementStatusChanged += OnMeasurementStatusChanged;
+            _myodamManager.DeviceErrorChanged += OnDeviceErrorChanged;
 
             Messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSavedAsync(e));
             Messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
+        }
+
+        private async void OnDeviceErrorChanged(object? sender, EventArgs e)
+        {
+            if (_myodamManager.MyodamDevice is not null 
+                && _myodamManager.IsCurrentlyMeasuring
+                && _myodamManager.MyodamDevice.Error != MyodamError.NoError)
+            {
+                await StopMeasurementAsync();
+            }
         }
 
         private bool StopMeasurementCanExecute()
@@ -147,6 +155,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             MeasuredValues.CollectionChanged -= OnContractionValuesChanged;
             _myodamManager.MyodamAvailabilityChanged -= OnMyodamStatusChanged;
             _myodamManager.MeasurementStatusChanged -= OnMeasurementStatusChanged;
+            _myodamManager.DeviceErrorChanged -= OnDeviceErrorChanged;
 
             Messenger.Unregister<AfterDetailSavedEventArgs>(this);
             Messenger.Unregister<AfterDetailDeletedEventArgs>(this);

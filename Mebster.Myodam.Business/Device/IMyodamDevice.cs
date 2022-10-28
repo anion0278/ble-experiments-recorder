@@ -8,7 +8,7 @@ public interface IMyodamDevice
 {
     event EventHandler<MeasuredValue>? NewValueReceived;
     event EventHandler? ConnectionStatusChanged;
-    event EventHandler<MyodamError>? ErrorChanged;
+    event EventHandler? ErrorChanged;
     event EventHandler? MeasurementStatusChanged;
     event EventHandler? BatteryStatusChanged;
     MyodamError Error { get; }

@@ -4,7 +4,7 @@ using Mebster.Myodam.Models.TestSubject;
 namespace Mebster.Myodam.Business.Device;
 
 
-public enum MyodamMeasurement // it has to be separated from MeasurementType not only due to UI, but also logically
+public enum MyodamCommand // it has to be separated from MeasurementType not only due to UI, but also logically
 {
     Idle,
     MaximumContraction,
@@ -17,15 +17,15 @@ public class MyodamRequestMessage
 {
     public StimulationParameters StimulationParameters { get; }
 
-    public MyodamMeasurement Command { get; }
+    public MyodamCommand Command { get; }
 
     public bool IsMeasurementRequested { get; }
 
     public MyodamRequestMessage(StimulationParameters stimulationParameters, MeasurementType measurementType, bool isMeasurementRequested)
-    : this(stimulationParameters, isMeasurementRequested ? Convert(measurementType) : MyodamMeasurement.Idle, isMeasurementRequested) 
+    : this(stimulationParameters, isMeasurementRequested ? Convert(measurementType) : MyodamCommand.Idle, isMeasurementRequested) 
     { }
 
-    private MyodamRequestMessage(StimulationParameters stimulationParameters, MyodamMeasurement command, bool isMeasurementRequested)
+    private MyodamRequestMessage(StimulationParameters stimulationParameters, MyodamCommand command, bool isMeasurementRequested)
     {
         Command = command;
         StimulationParameters = stimulationParameters;
@@ -34,13 +34,13 @@ public class MyodamRequestMessage
 
     public static MyodamRequestMessage GetDisableFesMessage()
     {
-        return new MyodamRequestMessage(StimulationParameters.GetDefaultValues(), MyodamMeasurement.DisableFes, false);
+        return new MyodamRequestMessage(StimulationParameters.GetDefaultValues(), MyodamCommand.DisableFes, false);
     }
 
     public string FormatForSending()
     {
         // TODO Strategy !!!
-        var stimTime = Command == MyodamMeasurement.Fatigue 
+        var stimTime = Command == MyodamCommand.Fatigue 
             ? StimulationParameters.FatigueStimulationTime.TotalSeconds
             : StimulationParameters.StimulationTime.TotalSeconds;
 
@@ -55,12 +55,12 @@ public class MyodamRequestMessage
             $"MC:{(int)Command}\n";
     }
 
-    public static MyodamMeasurement Convert(MeasurementType measurementType)
+    public static MyodamCommand Convert(MeasurementType measurementType)
     {
         return measurementType switch
         {
-            MeasurementType.MaximumContraction => MyodamMeasurement.MaximumContraction,
-            MeasurementType.Fatigue => MyodamMeasurement.Fatigue,
+            MeasurementType.MaximumContraction => MyodamCommand.MaximumContraction,
+            MeasurementType.Fatigue => MyodamCommand.Fatigue,
             _ => throw new ArgumentOutOfRangeException(nameof(measurementType), measurementType, null)
         };
     }

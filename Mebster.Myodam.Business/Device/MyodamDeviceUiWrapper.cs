@@ -12,7 +12,7 @@ public class MyodamDeviceUiWrapper : IMyodamDevice
 
     public event EventHandler<MeasuredValue>? NewValueReceived;
     public event EventHandler? ConnectionStatusChanged;
-    public event EventHandler<MyodamError>? ErrorChanged;
+    public event EventHandler? ErrorChanged;
     public event EventHandler? MeasurementStatusChanged;
     public event EventHandler? BatteryStatusChanged;
     public MyodamError Error => _myodamDevice.Error;
@@ -63,7 +63,7 @@ public class MyodamDeviceUiWrapper : IMyodamDevice
         _contextProvider.RunInContext(() => MeasurementStatusChanged?.Invoke(sender, e));
     }
 
-    private void _myodamDevice_ErrorChanged(object? sender, MyodamError e)
+    private void _myodamDevice_ErrorChanged(object? sender, EventArgs e)
     {
         _contextProvider.RunInContext(() => ErrorChanged?.Invoke(sender, e));
     }

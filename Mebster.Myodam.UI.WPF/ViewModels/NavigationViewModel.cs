@@ -11,6 +11,7 @@ using System.Windows.Threading;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Mebster.Myodam.Business.Device;
+using Mebster.Myodam.Business.Exception;
 using Mebster.Myodam.DataAccess.DataExport;
 using Mebster.Myodam.DataAccess.FileStorage;
 using Mebster.Myodam.Infrastructure.Bluetooth;
@@ -18,7 +19,9 @@ using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.Models.TestSubject;
 using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.Event;
+using Mebster.Myodam.UI.WPF.Exception;
 using Mebster.Myodam.UI.WPF.ViewModels.Services;
+using Microsoft.AppCenter;
 using Microsoft.Win32;
 using Swordfish.NET.Collections.Auxiliary;
 
@@ -32,6 +35,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         private readonly IMyodamManager _myodamManager;
         private readonly IDocumentManager _documentManager;
         private readonly IFileSystemManager _fileManager;
+        private readonly IGlobalExceptionHandler _exceptionHandler;
         private readonly ObservableCollection<NavigationAddTestSubjectItemViewModel> _navigationItems = new();
 
         public ListCollectionView TestSubjectsNavigationItems { get; }
@@ -44,6 +48,8 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         public int StimulatorBatteryPercentage => (int)(_myodamManager.MyodamDevice?.StimulatorBattery.Value ?? 0);
         public int ControllerBatteryPercentage => (int)(_myodamManager.MyodamDevice?.ControllerBattery.Value ?? 0);
+
+        public MyodamError DeviceError => _myodamManager.MyodamDevice?.Error ?? MyodamError.NoError;
 
         public IDeviceCalibrationViewModel DeviceCalibrationVm { get; }
 
@@ -75,6 +81,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             IDeviceCalibrationViewModel deviceCalibrationViewModel,
             IDocumentManager documentManager,
             IFileSystemManager fileManager,
+            IGlobalExceptionHandler exceptionHandler,
             IAsyncRelayCommandFactory asyncCommandFactory)
         {
             ChangeMyodamConnectionCommand = asyncCommandFactory.Create(ChangeMyodamConnectionAsync, CanChangeMyodamConnection);
@@ -86,16 +93,27 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             _myodamManager = myodamManager;
             _documentManager = documentManager;
             _fileManager = fileManager;
+            _exceptionHandler = exceptionHandler;
             DeviceCalibrationVm = deviceCalibrationViewModel;
 
             _myodamManager.MyodamAvailabilityChanged += OnMyodamAvailabilityChanged;
             _myodamManager.DevicePropertyChanged += OnMyodamPropertyChanged;
+            _myodamManager.DeviceErrorChanged += OnMyodamErrorChanged;
             _myodamManager.MeasurementStatusChanged += OnMyodamAvailabilityChanged; // yes, same handler
             _messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
             _messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
 
             TestSubjectsNavigationItems = (ListCollectionView)CollectionViewSource.GetDefaultView(_navigationItems);
             TestSubjectsNavigationItems.CustomSort = new NavigationAddItemViewModelRelationalComparer();
+        }
+
+        private async void OnMyodamErrorChanged(object? sender, EventArgs e)
+        {
+            OnPropertyChanged(nameof(DeviceError));
+            if (DeviceError != MyodamError.NoError)
+            {
+                await _exceptionHandler.HandleExceptionAsync(new DeviceErrorOccurredException(DeviceError));
+            }
         }
 
         private bool CanExportSelected()

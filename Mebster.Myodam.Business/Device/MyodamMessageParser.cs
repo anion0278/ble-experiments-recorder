@@ -22,7 +22,7 @@ public class MyodamReplyParser : IMyodamReplyParser
             && Percentage.TryParse(regex.Groups["controller_battery"].Value, out var controllerBattery)
             && Percentage.TryParse(regex.Groups["fes_battery"].Value, out var stimulatorBattery)
             && Enum.TryParse(typeof(MyodamError), regex.Groups["error"].Value, true, out var errorCode)
-            && Enum.TryParse(typeof(MyodamMeasurement), regex.Groups["measurement"].Value, true, out var measurementStatus))
+            && Enum.TryParse(typeof(MyodamCommand), regex.Groups["measurement"].Value, true, out var measurementStatus))
         {
             return new MyodamReplyMessage(
                 TimeSpan.FromMilliseconds(timestamp),
@@ -31,7 +31,7 @@ public class MyodamReplyParser : IMyodamReplyParser
                 controllerBattery,
                 stimulatorBattery,
                 (MyodamError)errorCode!,
-                (MyodamMeasurement)measurementStatus!);
+                (MyodamCommand)measurementStatus!);
         }
 
         throw new DeviceInvalidMessageException(msg);

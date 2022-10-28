@@ -24,7 +24,7 @@ public class MyodamDevice : IMyodamDevice
 
     public event EventHandler<MeasuredValue>? NewValueReceived;
     public event EventHandler? ConnectionStatusChanged;
-    public event EventHandler<MyodamError>? ErrorChanged;
+    public event EventHandler? ErrorChanged;
     public event EventHandler? MeasurementStatusChanged;
     public event EventHandler? BatteryStatusChanged;
 
@@ -35,7 +35,7 @@ public class MyodamDevice : IMyodamDevice
         {
             if (value == _error) return;
             _error = value;
-            ErrorChanged?.Invoke(this, _error);
+            ErrorChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 
@@ -135,11 +135,11 @@ public class MyodamDevice : IMyodamDevice
             StimulatorBattery = reply.StimulatorBattery;
             ControllerBattery = reply.ControllerBattery;
             Error = reply.Error;
-            IsCurrentlyMeasuring = reply.MeasurementStatus != MyodamMeasurement.Idle;
+            IsCurrentlyMeasuring = reply.CommandStatus != MyodamCommand.Idle;
 
             if (!IsCurrentlyMeasuring && !IsCalibrating) return;
 
-            if (reply.MeasurementStatus == MyodamMeasurement.FatigueIdle) return;
+            if (reply.CommandStatus == MyodamCommand.FatigueIdle) return;
 
             NewValueReceived?.Invoke(
                 this,
@@ -175,6 +175,8 @@ public class MyodamDevice : IMyodamDevice
     // We always send up-to-date parameters in order to make sure that stimulation is correct even if the device has restarted in meantime
     public async Task StartMeasurementAsync(StimulationParameters parameters, MeasurementType measurementType)
     {
+        if (Error != MyodamError.NoError) throw new DeviceHasErrorException();
+
         if (!Calibration.IsValid()) throw new DeviceMissingCalibrationException();
 
         if (IsCurrentlyMeasuring) throw new MeasurementIsAlreadyActiveException();
