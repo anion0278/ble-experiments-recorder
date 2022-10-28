@@ -26,8 +26,8 @@ public class BluetoothDeviceHandler : IBluetoothDeviceHandler
     private readonly TimeSpan _heartbeatInterval = TimeSpan.FromSeconds(0.4);
     private readonly TimeSpan _incomingHeartbeatTimeout = TimeSpan.FromSeconds(1.0);
     private bool _isConnected;
-    private readonly SemaphoreSlim _syncSemaphore = new (1,1);
-    private readonly object _syncRoot = new();
+    private readonly SemaphoreSlim _syncSemaphore = new(1, 1);
+    private readonly object _disposingSyncRoot = new();
 
     public bool IsDisposed { get; private set; }
     public ulong Address { get; set; }
@@ -57,6 +57,7 @@ public class BluetoothDeviceHandler : IBluetoothDeviceHandler
         SignalStrength = signalStrength;
         LatestTimestamp = timestamp;
         _incomingHeartbeatWatchdog = new System.Timers.Timer(_heartbeatInterval.TotalMilliseconds);
+        _incomingHeartbeatWatchdog.AutoReset = false; // requires manual enabling after each Elapsed event fired
         _incomingHeartbeatWatchdog.Elapsed += OnWatchdogPeriodElapsed;
 
         _outgoingHeartbeat = new System.Timers.Timer(_heartbeatInterval.TotalMilliseconds);
@@ -107,7 +108,11 @@ public class BluetoothDeviceHandler : IBluetoothDeviceHandler
     private void OnWatchdogPeriodElapsed(object? sender, ElapsedEventArgs e)
     {
         var ts = _dateTimeService.Now;
-        if (ts - LatestTimestamp < _incomingHeartbeatTimeout) return;
+        if (ts - LatestTimestamp < _incomingHeartbeatTimeout)
+        {
+            _incomingHeartbeatWatchdog.Enabled = true; // + AutoReset=false ensures that only a single thread at a time takes care of heartbeat
+            return;
+        }
 
         Disconnect();
 
@@ -142,7 +147,7 @@ public class BluetoothDeviceHandler : IBluetoothDeviceHandler
 
     public async Task SendAsync(string msg)
     {
-        Debug.Print("Sent "+ msg);
+        Debug.Print("Sent " + msg);
         await _syncSemaphore.WaitAsync();
         try
         {
@@ -166,11 +171,11 @@ public class BluetoothDeviceHandler : IBluetoothDeviceHandler
 
     public void Dispose()
     {
-        lock (_syncRoot)
+        lock (_disposingSyncRoot)
         {
             if (IsDisposed) return;
 
-            Debug.Print("Disposing");
+            Debug.Print("Disposing BLE device");
             IsConnected = false;
             IsDisposed = true;
             _incomingHeartbeatWatchdog.Stop();
@@ -193,7 +198,7 @@ public class BluetoothDeviceHandler : IBluetoothDeviceHandler
                 _device?.Dispose();
                 _device = null;
             }
-            Debug.Print("Disposed");
+            Debug.Print("Disposed BLE device");
         }
     }
 }
