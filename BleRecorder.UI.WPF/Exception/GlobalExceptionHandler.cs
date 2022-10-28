@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Transactions;
 using BleRecorder.UI.WPF.ViewModels.Services;
 using Microsoft.AppCenter.Crashes;
@@ -7,7 +8,7 @@ namespace BleRecorder.UI.WPF.Exception;
 
 public interface IGlobalExceptionHandler
 {
-    void HandleException(System.Exception exception);
+    Task HandleExceptionAsync(System.Exception exception);
 }
 
 public class GlobalExceptionHandler : IGlobalExceptionHandler
@@ -23,11 +24,11 @@ public class GlobalExceptionHandler : IGlobalExceptionHandler
         _logger = logger;
     }
 
-    public void HandleException(System.Exception exception)
+    public async Task HandleExceptionAsync(System.Exception exception)
     {
         try
         {
-            _dialogService.ShowInfoDialog("Unexpected error occurred: " + exception.Message);
+            await _dialogService.ShowInfoDialogAsync("Unexpected error occurred: " + exception.Message);
         }
         finally
         {

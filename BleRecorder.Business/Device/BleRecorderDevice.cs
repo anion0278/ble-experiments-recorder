@@ -10,7 +10,7 @@ using BleRecorder.Models.TestSubject;
 
 namespace BleRecorder.Business.Device;
 
-public class BleRecorderDevice // TODO Extract inteface
+public class BleRecorderDevice : IBleRecorderDevice
 {
     private readonly IBluetoothDeviceHandler _bleDeviceHandler;
     private readonly IBleRecorderReplyParser _messageParser;
@@ -142,17 +142,17 @@ public class BleRecorderDevice // TODO Extract inteface
             if (reply.MeasurementStatus == BleRecorderMeasurement.IntermittentIdle) return;
 
             NewValueReceived?.Invoke(
-                this, 
+                this,
                 new MeasuredValue(reply.SensorValue, reply.CurrentMilliAmp, reply.Timestamp));
         }
         catch (DeviceInvalidMessageException ex)
         {
-            _synchronizationContextProvider.RunInContext(() => throw ex); //throw; cannot be used
+            _synchronizationContextProvider.RunInContext(() => throw ex); // 'throw;' cannot be used here
         }
         catch (System.Exception ex)
         {
             _synchronizationContextProvider.RunInContext(
-                () => throw new DeviceInvalidMessageException("Error during processing data from device.", ex)); 
+                () => throw new DeviceInvalidMessageException("Error during processing data from device.", ex));
         }
     }
 

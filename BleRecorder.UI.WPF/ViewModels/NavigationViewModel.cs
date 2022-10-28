@@ -34,7 +34,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         private readonly IFileSystemManager _fileManager;
         private readonly ObservableCollection<NavigationAddTestSubjectItemViewModel> _navigationItems = new();
 
-        public ListCollectionView TestSubjectsNavigationItems { get; } 
+        public ListCollectionView TestSubjectsNavigationItems { get; }
 
         public IAsyncRelayCommand ChangeBleRecorderConnectionCommand { get; }
 
@@ -51,7 +51,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         /// Design-time ctor
         /// </summary>
         [Obsolete("Design-time only!")]
-        public NavigationViewModel(): this(new TestSubject(){FirstName = "Name", LastName = "Surname"})
+        public NavigationViewModel() : this(new TestSubject() { FirstName = "Name", LastName = "Surname" })
         {
         }
 
@@ -69,7 +69,7 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         public NavigationViewModel(
             ITestSubjectRepository testSubjectRepository,
-            IMessenger messenger, 
+            IMessenger messenger,
             IMessageDialogService dialogService,
             IBleRecorderManager bleRecorderManager,
             IDeviceCalibrationViewModel deviceCalibrationViewModel,
@@ -136,12 +136,9 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         private void OnBleRecorderAvailabilityChanged(object? o, EventArgs eventArgs)
         {
-            RunInViewContext(() =>
-            {
-                OnBleRecorderPropertyChanged(this, EventArgs.Empty);
-                ChangeBleRecorderConnectionCommand.NotifyCanExecuteChanged();
-                ExportSelectedCommand.NotifyCanExecuteChanged();
-            });
+            OnBleRecorderPropertyChanged(this, EventArgs.Empty);
+            ChangeBleRecorderConnectionCommand.NotifyCanExecuteChanged();
+            ExportSelectedCommand.NotifyCanExecuteChanged();
         }
 
         private bool CanChangeBleRecorderConnection()

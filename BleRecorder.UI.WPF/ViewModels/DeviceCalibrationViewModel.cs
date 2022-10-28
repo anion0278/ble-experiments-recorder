@@ -131,11 +131,8 @@ public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewM
 
     private void NotifyCalibrationCommandsCanExecuteChanged()
     {
-        RunInViewContext(() =>
-            {
-                CalibrateNoLoadSensorValueCommand.NotifyCanExecuteChanged();
-                CalibrateNominalLoadSensorValueCommand.NotifyCanExecuteChanged();
-            });
+        CalibrateNoLoadSensorValueCommand.NotifyCanExecuteChanged();
+        CalibrateNominalLoadSensorValueCommand.NotifyCanExecuteChanged();
     }
 
     private bool CanCalibrateExecute()

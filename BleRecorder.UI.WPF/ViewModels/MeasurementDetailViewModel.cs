@@ -163,7 +163,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             OnPropertyChanged(nameof(MeasuredValues));
         }
 
-        private void OnMeasurementStatusChanged(object? sender, EventArgs e)
+        private async void OnMeasurementStatusChanged(object? sender, EventArgs e)
         {
             // TODO solve case when device is null (was already disconnected and may cause memory leak)
             if (!_bleRecorderManager.IsCurrentlyMeasuring && _bleRecorderManager.BleRecorderDevice != null) //_bleRecorderManager.BleRecorderDevice != null
@@ -171,27 +171,23 @@ namespace BleRecorder.UI.WPF.ViewModels
                 _bleRecorderManager.BleRecorderDevice.NewValueReceived -= OnNewValueReceived;
             }
 
-            RunInViewContext(() =>
+            OnPropertyChanged(nameof(IsMeasurementRunning));
+            StartMeasurementCommand.NotifyCanExecuteChanged();
+            StopMeasurementCommand.NotifyCanExecuteChanged();
+            CleanRecordedDataCommand.NotifyCanExecuteChanged();
+            SaveCommand.NotifyCanExecuteChanged();
+            DeleteCommand.NotifyCanExecuteChanged();
+            if (_bleRecorderManager.IsCurrentlyMeasuring) return;
+
+            StopMeasurementCommand.NotifyCanExecuteChanged();
+            if (_bleRecorderManager.BleRecorderDevice is not null && _bleRecorderManager.BleRecorderDevice.IsConnected)
             {
-                OnPropertyChanged(nameof(IsMeasurementRunning));
-                StartMeasurementCommand.NotifyCanExecuteChanged();
-                StopMeasurementCommand.NotifyCanExecuteChanged();
-                CleanRecordedDataCommand.NotifyCanExecuteChanged();
-                SaveCommand.NotifyCanExecuteChanged();
-                DeleteCommand.NotifyCanExecuteChanged();
-                if (_bleRecorderManager.IsCurrentlyMeasuring) return;
+                return; // Measurement finished (by stopping or due meas finished)
+            }
 
-                StopMeasurementCommand.NotifyCanExecuteChanged();
-                if (_bleRecorderManager.BleRecorderDevice is not null && _bleRecorderManager.BleRecorderDevice.IsConnected)
-                {
-                    // Measurement finished (by stopping or due meas finished)
-                    return;
-                }
-
-                // Measurement interrupted (due to error on device)
-                DialogService.ShowInfoDialog("Measurement was interrupted due to device disconnection! Measured data were erased.");
-                ClearMeasuredData();
-            });
+            // Measurement interrupted (due to error on device)
+            await DialogService.ShowInfoDialogAsync("Measurement was interrupted due to device disconnection! Measured data were erased.");
+            ClearMeasuredData();
         }
 
         private bool StartMeasurementCanExecute()
@@ -201,7 +197,7 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         private void OnBleRecorderStatusChanged(object? o, EventArgs eventArgs)
         {
-            RunInViewContext(() => StartMeasurementCommand.NotifyCanExecuteChanged());
+            StartMeasurementCommand.NotifyCanExecuteChanged();
         }
 
         private async void CleanRecordedDataAsync()

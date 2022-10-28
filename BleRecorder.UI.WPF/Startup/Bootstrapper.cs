@@ -43,7 +43,8 @@ namespace BleRecorder.UI.WPF.Startup
 
             builder.RegisterType<BluetoothManager>().As<IBluetoothManager>().SingleInstance();
             builder.RegisterType<BleRecorderReplyParser>().As<IBleRecorderReplyParser>().SingleInstance();
-            builder.RegisterType<BleRecorderManager>().As<IBleRecorderManager>().SingleInstance();
+            builder.RegisterType<BleRecorderManagerUiWrapper>().As<IBleRecorderManager>().SingleInstance();
+            builder.RegisterType<BleRecorderManager>().SingleInstance();
             builder.RegisterType<SynchronizationContextProvider>().As<ISynchronizationContextProvider>().SingleInstance();
 
             builder.RegisterType<ExperimentsDbContext>().AsSelf();

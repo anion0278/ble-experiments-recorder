@@ -126,20 +126,22 @@ public class AsyncRelayCommandFactory : IAsyncRelayCommandFactory
 
     private void RegisterError(IAsyncRelayCommand command)
     {
-        command.PropertyChanged += (s, e) =>
-        {
-            if (s is null)
-            {
-                return;
-            }
+        // exception is now handled by the AsyncRelay itself (rethrown to UI thread)
 
-            if (e.PropertyName == nameof(AsyncRelayCommand.ExecutionTask) &&
-                ((IAsyncRelayCommand)s).ExecutionTask is Task task &&
-                task.Exception is AggregateException exception)
-            {
-                // TODO - investigate - throws aggregate exception, but the inner exceptions are rethrown again
-                _exceptionHandler.HandleException(exception);
-            }
-        };
+        //command.PropertyChanged += (s, e) =>
+        //{
+        //    if (s is null)
+        //    {
+        //        return;
+        //    }
+
+        //    if (e.PropertyName == nameof(AsyncRelayCommand.ExecutionTask) &&
+        //        ((IAsyncRelayCommand)s).ExecutionTask is Task task &&
+        //        task.Exception is AggregateException exception)
+        //    {
+        //        //_exceptionHandler.HandleException(exception);
+        //        
+        //    }
+        //};
     }
 }

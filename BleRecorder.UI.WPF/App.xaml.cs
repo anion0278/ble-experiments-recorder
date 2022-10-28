@@ -1,25 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Threading;
-using Windows.Foundation.Metadata;
 using Autofac;
-using BleRecorder.Business.Device;
-using BleRecorder.DataAccess;
 using BleRecorder.UI.WPF.Exception;
 using BleRecorder.UI.WPF.Startup;
 using BleRecorder.UI.WPF.Views;
-using Microsoft.AppCenter;
-using Microsoft.AppCenter.Analytics;
-using Microsoft.AppCenter.Crashes;
-using Microsoft.Extensions.Configuration;
 
 
 namespace BleRecorder.UI.WPF
@@ -45,7 +30,7 @@ namespace BleRecorder.UI.WPF
             // TODO disconnect from devices
         }
 
-        private void OnDispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        private async void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             e.Handled = true;
             if (IsAutomationNonCriticalException(e))
@@ -53,7 +38,8 @@ namespace BleRecorder.UI.WPF
                 Debug.Print("BleRecorder DataGrid non-fatal exception swallowed.");
                 return;
             }
-            _exceptionHandler.HandleException(e.Exception);
+
+            await _exceptionHandler.HandleExceptionAsync(e.Exception);
         }
 
         private static bool IsAutomationNonCriticalException(DispatcherUnhandledExceptionEventArgs e)

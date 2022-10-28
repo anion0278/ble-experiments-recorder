@@ -6,19 +6,6 @@ using BleRecorder.Models.Device;
 
 namespace BleRecorder.Business.Device;
 
-public interface IBleRecorderManager
-{
-    event EventHandler BleRecorderAvailabilityChanged;
-    event EventHandler? MeasurementStatusChanged;
-    event EventHandler? DevicePropertyChanged;
-    BleRecorderDevice? BleRecorderDevice { get; }
-    DeviceCalibration Calibration { get; set; }
-    BleRecorderAvailabilityStatus BleRecorderAvailability { get; }
-    bool IsCurrentlyMeasuring { get; }
-    Task ConnectBleRecorderAsync();
-    void SetDeviceAddressFilter(ulong? acceptedAddress);
-}
-
 public class BleRecorderManager : IBleRecorderManager
 {
     public event EventHandler? BleRecorderAvailabilityChanged;
@@ -30,7 +17,7 @@ public class BleRecorderManager : IBleRecorderManager
     private BleRecorderAvailabilityStatus _bleRecorderAvailability;
     private ulong? _acceptedAddress;
     private const string _bleRecorderName = "Aggregator";
-    public BleRecorderDevice? BleRecorderDevice { get; private set; }
+    public IBleRecorderDevice? BleRecorderDevice { get; private set; }
 
     public BleRecorderAvailabilityStatus BleRecorderAvailability
     {
@@ -100,7 +87,9 @@ public class BleRecorderManager : IBleRecorderManager
             throw new DeviceConnectionException(ex);
         }
 
-        BleRecorderDevice = new BleRecorderDevice(bleDevice, _messageParser, _synchronizationContextProvider, Calibration);
+        BleRecorderDevice = new BleRecorderDeviceUiWrapper(
+            new BleRecorderDevice(bleDevice, _messageParser, _synchronizationContextProvider, Calibration),
+            _synchronizationContextProvider);
         BleRecorderAvailability = BleRecorderAvailabilityStatus.Connected;
         BleRecorderDevice.ConnectionStatusChanged += OnConnectionStatusChanged;
         BleRecorderDevice.MeasurementStatusChanged += OnMeasurementStatusChanged;
