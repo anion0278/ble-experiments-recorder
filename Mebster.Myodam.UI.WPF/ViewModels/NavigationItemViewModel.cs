@@ -24,6 +24,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         }
     }
 
+    // TODO remove, since no longer used
     public class NavigationAddTestSubjectItemViewModel :  ViewModelBase
     {
         private readonly IMessenger _messenger;
