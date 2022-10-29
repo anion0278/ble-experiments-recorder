@@ -40,6 +40,7 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         public ListCollectionView TestSubjectsNavigationItems { get; }
 
+        public ICommand OpenDetailViewCommand { get; }
         public IAsyncRelayCommand ChangeBleRecorderConnectionCommand { get; }
 
         public IAsyncRelayCommand ExportSelectedCommand { get; }
@@ -70,7 +71,6 @@ namespace BleRecorder.UI.WPF.ViewModels
             TestSubjectsNavigationItems = (ListCollectionView)CollectionViewSource.GetDefaultView(_navigationItems);
             TestSubjectsNavigationItems.CustomSort = new NavigationAddItemViewModelRelationalComparer();
             _navigationItems.Add(new NavigationTestSubjectItemViewModel(testSubject, null!));
-            _navigationItems.Add(new NavigationAddTestSubjectItemViewModel(null!));
         }
 
         public NavigationViewModel(
@@ -86,6 +86,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         {
             ChangeBleRecorderConnectionCommand = asyncCommandFactory.Create(ChangeBleRecorderConnectionAsync, CanChangeBleRecorderConnection);
             ExportSelectedCommand = asyncCommandFactory.Create(ExportSelectedAsync, CanExportSelected);
+            OpenDetailViewCommand = new RelayCommand(OnOpenDetailViewExecute);
 
             _testSubjectRepository = testSubjectRepository;
             _messenger = messenger;
@@ -105,6 +106,15 @@ namespace BleRecorder.UI.WPF.ViewModels
 
             TestSubjectsNavigationItems = (ListCollectionView)CollectionViewSource.GetDefaultView(_navigationItems);
             TestSubjectsNavigationItems.CustomSort = new NavigationAddItemViewModelRelationalComparer();
+        }
+
+        private void OnOpenDetailViewExecute()
+        {
+            _messenger.Send(new OpenDetailViewEventArgs
+            {
+                Id = -999, // for new item
+                ViewModelName = nameof(TestSubjectDetailViewModel)
+            });
         }
 
         private async void OnBleRecorderErrorChanged(object? sender, EventArgs e)
@@ -186,7 +196,6 @@ namespace BleRecorder.UI.WPF.ViewModels
             var items = (await _testSubjectRepository.GetAllAsync())
                 .Select(ts => new NavigationTestSubjectItemViewModel(ts, _messenger));
             _navigationItems.AddRange(items);
-            _navigationItems.Add(new NavigationAddTestSubjectItemViewModel(_messenger));
             await DeviceCalibrationVm.LoadAsync();
         }
 
