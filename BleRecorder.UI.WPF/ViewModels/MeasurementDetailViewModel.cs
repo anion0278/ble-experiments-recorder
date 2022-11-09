@@ -194,9 +194,14 @@ namespace BleRecorder.UI.WPF.ViewModels
                 return; // Measurement finished (by stopping or due meas finished)
             }
 
-            // Measurement interrupted (due to error on device)
-            await DialogService.ShowInfoDialogAsync("Measurement was interrupted due to device disconnection! Measured data were erased.");
-            ClearMeasuredData();
+            if (IsActive)
+            {
+                // Measurement interrupted (due to error on device)
+                // show message only in case this tab is active
+                await DialogService.ShowInfoDialogAsync(
+                    "Measurement was interrupted due to device disconnection! Measured data were erased.");
+                ClearMeasuredData();
+            }
         }
 
         private bool StartMeasurementCanExecute()

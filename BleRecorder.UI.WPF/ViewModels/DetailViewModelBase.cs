@@ -28,6 +28,8 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         public int Id { get; protected set; }
 
+        public bool IsActive { get; set; }
+
         public virtual string Title { get; set; }
 
         public bool HasChanges

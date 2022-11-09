@@ -29,7 +29,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         private readonly IStimulationParametersRepository _stimulationParametersRepository;
         private readonly IMessageDialogService _dialogService;
         private readonly IIndex<string, IDetailViewModel> _detailViewModelCreator; // TODO change
-        private IDetailViewModel _selectedDetailViewModel;
+        private IDetailViewModel? _selectedDetailViewModel;
         private readonly ObservableCollection<IDetailViewModel> _detailViewModels = new();
 
         public StimulationParametersViewModel StimulationParametersViewModel { get; set; }
@@ -56,7 +56,10 @@ namespace BleRecorder.UI.WPF.ViewModels
                     _dialogService.ShowInfoDialog("Please, finish measurement first.");
                     return;
                 }
+
+                if (_selectedDetailViewModel != null) _selectedDetailViewModel.IsActive = false;
                 _selectedDetailViewModel = value;
+                if (_selectedDetailViewModel != null) _selectedDetailViewModel.IsActive = true;
             }
         }
 
