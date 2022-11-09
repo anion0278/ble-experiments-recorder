@@ -1,5 +1,6 @@
 {
   "IsCalibrationEnabled": false,
+  "MyodamAddress": 14065313771985,
   "MyodamCalibration": {
     "NoLoadSensorValue": 512.8,
     "NominalLoadSensorValue": 569.9,
