@@ -17,6 +17,7 @@
         TextOptions.TextRenderingMode="ClearType"
         TitleCharacterCasing="Normal"
         d:Background="Transparent"
+        WindowState ="Maximized"
         Closing="MainWindow_OnClosing"
         d:DataContext="{d:DesignInstance viewModel:MainViewModel, d:IsDesignTimeCreatable=True}">
     <mah:MetroWindow.IconTemplate>
