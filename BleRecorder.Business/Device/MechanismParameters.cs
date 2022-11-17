@@ -12,9 +12,9 @@ public class MechanismParameters
     public MechanismParameters(DeviceMechanicalAdjustments adjustments)
     {
         FixtureAdductionAbductionAngle = new MechanicalAdjustmentWithLimits(-5, 5, 1, adjustments.FixtureAdductionAbductionAngle);
-        FixtureAnteroPosteriorDistance = new MechanicalAdjustmentWithLimits(0, 50, 2.5, adjustments.FixtureAnteroPosteriorDistance);
-        FixtureProximalDistalDistance = new MechanicalAdjustmentWithLimits(0, 20, 2, adjustments.FixtureProximalDistalDistance);
-        CuffProximalDistalDistance = new MechanicalAdjustmentWithLimits(0, 100, 10, adjustments.CuffProximalDistalDistance);
+        FixtureAnteroPosteriorDistance = new MechanicalAdjustmentWithLimits(0, 10, 1, adjustments.FixtureAnteroPosteriorDistance);
+        FixtureProximalDistalDistance = new MechanicalAdjustmentWithLimits(0, 2, 1, adjustments.FixtureProximalDistalDistance);
+        CuffProximalDistalDistance = new MechanicalAdjustmentWithLimits(0, 10, 1, adjustments.CuffProximalDistalDistance);
     }
 
     public DeviceMechanicalAdjustments GetCurrentAdjustments()
