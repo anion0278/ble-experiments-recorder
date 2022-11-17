@@ -12,9 +12,9 @@ public class MechanismParameters
     public MechanismParameters(DeviceMechanicalAdjustments adjustments)
     {
         FootplateAdductionAbductionAngle = new MechanicalAdjustmentWithLimits(-5, 5, 1, adjustments.FootplateAdductionAbductionAngle);
-        FootplateAnteroPosteriorDistance = new MechanicalAdjustmentWithLimits(0, 50, 2.5, adjustments.FootplateAnteroPosteriorDistance);
-        FootplateProximalDistalDistance = new MechanicalAdjustmentWithLimits(0, 20, 2, adjustments.FootplateProximalDistalDistance);
-        CuffProximalDistalDistance = new MechanicalAdjustmentWithLimits(0, 100, 10, adjustments.CuffProximalDistalDistance);
+        FootplateAnteroPosteriorDistance = new MechanicalAdjustmentWithLimits(0, 10, 1, adjustments.FootplateAnteroPosteriorDistance);
+        FootplateProximalDistalDistance = new MechanicalAdjustmentWithLimits(0, 2, 1, adjustments.FootplateProximalDistalDistance);
+        CuffProximalDistalDistance = new MechanicalAdjustmentWithLimits(0, 10, 1, adjustments.CuffProximalDistalDistance);
     }
 
     public DeviceMechanicalAdjustments GetCurrentAdjustments()

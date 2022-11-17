@@ -17,3 +17,19 @@ public class AttachedRotation
         return (bool)element.GetValue(RotatedProperty);
     }
 }
+
+public class AttachedWidth
+{
+    public static readonly DependencyProperty WidthProperty =
+        DependencyProperty.RegisterAttached("Width", typeof(int), typeof(AttachedWidth), new PropertyMetadata(100));
+
+    public static void SetWidth(UIElement element, int value)
+    {
+        element.SetValue(WidthProperty, value);
+    }
+
+    public static int GetWidth(UIElement element)
+    {
+        return (int)element.GetValue(WidthProperty);
+    }
+}
