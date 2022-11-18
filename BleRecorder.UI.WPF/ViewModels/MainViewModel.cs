@@ -191,13 +191,6 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         private void RemoveDetailViewModel(int id, string viewModelName)
         {
-            // TODO forbid removing tab during measurement
-            //if (_bleRecorderManager.IsCurrentlyMeasuring)
-            //{
-            //    await _dialogService.ShowInfoDialogAsync("Please finish measurement first.");
-            //    return;
-            //}
-
             var detailViewModel = _detailViewModels
                    .Single(vm => vm.Id == id && vm.GetType().Name == viewModelName);
 
