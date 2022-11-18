@@ -191,13 +191,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         private void RemoveDetailViewModel(int id, string viewModelName)
         {
-            // TODO forbid removing tab during measurement
-            //if (_myodamManager.IsCurrentlyMeasuring)
-            //{
-            //    await _dialogService.ShowInfoDialogAsync("Please finish measurement first.");
-            //    return;
-            //}
-
             var detailViewModel = _detailViewModels
                    .Single(vm => vm.Id == id && vm.GetType().Name == viewModelName);
 
