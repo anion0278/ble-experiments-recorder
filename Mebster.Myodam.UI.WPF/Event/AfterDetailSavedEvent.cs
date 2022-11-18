@@ -1,15 +1,11 @@
-﻿using Prism.Events;
-
+﻿
 namespace Mebster.Myodam.UI.WPF.Event
 {
-  public class AfterDetailSavedEvent : PubSubEvent<AfterDetailSavedEventArgs>
-  {
-  }
 
-  public class AfterDetailSavedEventArgs
-  {
-    public int Id { get; set; }
-    public string DisplayMember { get; set; }
-    public string ViewModelName { get; set; }
-  }
+    public class AfterDetailSavedEventArgs : IDetailViewEventArgs
+    {
+        public int Id { get; init; }
+        public string DisplayMember { get; init; }
+        public string ViewModelName { get; init; }
+    }
 }

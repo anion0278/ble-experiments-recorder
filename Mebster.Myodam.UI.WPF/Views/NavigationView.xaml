@@ -1,0 +1,293 @@
+﻿<UserControl x:Class="Mebster.Myodam.UI.WPF.Views.NavigationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:device="clr-namespace:Mebster.Myodam.Models.Device;assembly=Mebster.Myodam.Models"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:viewModels="clr-namespace:Mebster.Myodam.UI.WPF.ViewModels"
+             xmlns:views="clr-namespace:Mebster.Myodam.UI.WPF.Views"
+             xmlns:extensions="clr-namespace:Mebster.Myodam.UI.WPF.Extensions"
+             xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:device1="clr-namespace:Mebster.Myodam.Business.Device;assembly=Mebster.Myodam.Business"
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="380"
+             d:DataContext="{d:DesignInstance viewModels:NavigationViewModel, IsDesignTimeCreatable=True}">
+    <UserControl.Resources>
+        <ControlTemplate x:Key="PercentageBar" TargetType="ProgressBar">
+            <Grid>
+                <ProgressBar Style="{StaticResource {x:Type ProgressBar}}" Minimum="0" Maximum="100" Margin="3"
+                             Value="{Binding Path=Value,
+                                RelativeSource={RelativeSource TemplatedParent}, 
+                                TargetNullValue=0, FallbackValue=0, Mode=TwoWay}" />
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"  FontWeight="Bold" Foreground="White">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                            <Setter Property="Text" Value="Unknown"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding MyodamAvailability}" 
+                                             Value="{x:Static device:MyodamAvailabilityStatus.Connected}" >
+                                    <Setter Property="Text" Value="{Binding Path=Value, StringFormat='{}{0}%',
+                                        RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Grid>
+        </ControlTemplate>
+
+        <Style TargetType="ProgressBar" BasedOn="{StaticResource {x:Type ProgressBar}}">
+            <Setter Property="Template" Value="{StaticResource PercentageBar}"></Setter>
+        </Style>
+
+        <Style x:Key="NavigationItemContainerStyle" TargetType="ContentPresenter">
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="Margin" Value="2"/>
+        </Style>
+
+        <Style x:Key="TestSubjectSelectionCheckBox" TargetType="{x:Type CheckBox}">
+            <Setter Property="Background" Value="LightSteelBlue" />
+            <Setter Property="BorderBrush" Value="#FF262E34"/>
+            <Setter Property="Foreground" Value="#FF262E34"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type CheckBox}">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" >
+                            <Border BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}" Width="15" Height="15">
+                                <Path Stretch="Uniform" Width="15" Height="10" Fill="BlueViolet" Name="eliCheck" Data="F1 M 9.97498,1.22334L 4.6983,9.09834L 4.52164,9.09834L 0,5.19331L 1.27664,3.52165L 4.255,6.08833L 8.33331,1.52588e-005L 9.97498,1.22334 Z " Visibility="Collapsed"/>
+                            </Border>
+                            <TextBlock Margin="5,0,0,0"  VerticalAlignment="Center" Foreground="{TemplateBinding Foreground}" Text="{TemplateBinding Content}"></TextBlock>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="Cornsilk" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#FF9C9E9F" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="LightGray" />
+                                <Setter Property="Foreground" Value="Gray" />
+                                <Setter Property="BorderBrush" Value="Gray"/>
+                                <Setter TargetName="eliCheck" Property="Opacity" Value="0.5" />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="eliCheck" Property="Visibility" Value="Visible"></Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--Region Implicit NavigationItem templates-->
+        <DataTemplate DataType="{x:Type viewModels:NavigationTestSubjectItemViewModel}">
+            <Button Content="{Binding DisplayMember}"
+              Command="{Binding OpenDetailViewCommand}"
+              FontSize="16" Style="{x:Null}">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Grid x:Name="grid">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <CheckBox Grid.Column="0" Style="{StaticResource TestSubjectSelectionCheckBox}" 
+                                      IsChecked="{Binding IsSelected}"/>
+                            <ContentPresenter Grid.Column="1" HorizontalAlignment="Left"
+                                              VerticalAlignment="Center"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Cursor" Value="Hand"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="FontWeight" Value="Normal"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type viewModels:NavigationAddTestSubjectItemViewModel}">
+            <Button FontStyle="Italic" 
+                    Command="{Binding OpenDetailViewCommand}"
+                    FontSize="12" Margin="5" Width="160" HorizontalAlignment="Stretch">
+                <Button.Content>
+                    <Grid x:Name="grid">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <icon:PackIconMaterial Height="15" Kind="AccountPlus" Margin="0 0 5 0" />
+                        <TextBlock Grid.Column="1" Text="Add new test subject" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </Grid>
+                </Button.Content>
+            </Button>
+        </DataTemplate>
+        <!--EndRegion-->
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <GroupBox Margin="0 0 0 3" mah:ControlsHelper.ContentCharacterCasing="Normal">
+            <GroupBox.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Test subjects"/>
+                    <Button Grid.Column="1" FontStyle="Italic" Style="{x:Null}" HorizontalAlignment="Right"
+                            Command="{Binding OpenDetailViewCommand}">
+                        <Button.Content>
+                            <Grid x:Name="grid">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <icon:PackIconMaterial Height="15" Kind="AccountPlus" Margin="0 0 5 0" />
+                                <TextBlock Grid.Column="1" Text="Add new test subject" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </Grid>
+                        </Button.Content>
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Grid x:Name="grid">
+                                    <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                </Grid>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Cursor" Value="Hand"/>
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                    </Trigger>
+                                    <Trigger Property="IsPressed" Value="True">
+                                        <Setter Property="FontWeight" Value="Normal"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+
+                    </Button>
+                </Grid>
+            </GroupBox.Header>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding TestSubjectsNavigationItems}"
+                                  ItemContainerStyle="{StaticResource NavigationItemContainerStyle}"
+                                  Margin="10"/>
+                </ScrollViewer>
+                <Button Grid.Row="1" Content="Export selected" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
+                        Command="{Binding ExportSelectedCommand}"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Grid.Row="1" MinHeight="200" Header="Device status" mah:ControlsHelper.ContentCharacterCasing="Normal">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Row="0" Grid.ColumnSpan="2" Command="{Binding ChangeMyodamConnectionCommand}" FontSize="14"
+                    IsEnabled="{Binding ChangeMyodamConnectionCommand.IsRunning, Converter={StaticResource inverseBooleanConverter}}">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <mah:ProgressRing Foreground="White" MinHeight="15" MinWidth="15" Height="15" Width="15" 
+                                              Padding="0" Margin="0 0 5 0">
+                                <mah:ProgressRing.Style>
+                                    <Style TargetType="mah:ProgressRing">
+                                        <Setter Property="IsActive" Value="False" />
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ChangeMyodamConnectionCommand.IsRunning}" Value="True">
+                                                <Setter Property="IsActive" Value="True"/>
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </mah:ProgressRing.Style>
+                            </mah:ProgressRing>
+                            <TextBlock>
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Text" Value="Connect" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ChangeMyodamConnectionCommand.IsRunning}" Value="True" >
+                                                <Setter Property="Text" Value="Connecting..."/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding MyodamAvailability}" Value="{x:Static device:MyodamAvailabilityStatus.Connected}" >
+                                                <Setter Property="Text" Value="Disconnect"/>
+                                            </DataTrigger>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding ChangeMyodamConnectionCommand.IsRunning}" Value="True"  />
+                                                    <Condition Binding="{Binding MyodamAvailability}" Value="{x:Static device:MyodamAvailabilityStatus.DisconnectedUnavailable}"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="Text" Value="Disconnecting..." />
+                                            </MultiDataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+
+                <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" FontWeight="Bold" HorizontalAlignment="Center" Foreground="{StaticResource ErrorTextColor}"
+                       Content="{Binding DeviceError, Converter={StaticResource enumDescriptionConverter}}" 
+                       ContentStringFormat="Error on device: {0}">
+                    <Label.Style>
+                        <Style TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
+                            <Setter Property="Visibility" Value="Visible"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding DeviceError}" Value="{x:Static device1:MyodamError.NoError}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Label.Style>
+                </Label>
+
+                <Label Grid.Row="2" Grid.Column="0" Content="Connection status: "/>
+                <Label Grid.Row="2" Grid.Column="1" FontWeight="Bold" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                       Content="{Binding MyodamAvailability, Converter={StaticResource enumDescriptionConverter}}"/>
+
+                <Label Grid.Row="3" Grid.Column="0"  Content="FES Battery:" VerticalAlignment="Center"/>
+                <ProgressBar Grid.Row="3" Grid.Column="1" 
+                                 d:Value ="80"
+                                 Value="{Binding StimulatorBatteryPercentage, Mode=OneWay}" />
+
+                <Label Grid.Row="4" Grid.Column="0"  Content="Device Battery:" VerticalAlignment="Center"/>
+                <ProgressBar Grid.Row="4" Grid.Column="1"
+                                 Value="{Binding ControllerBatteryPercentage, Mode=OneWay}"/>
+
+                <views:DeviceCalibrationView Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Bottom" Margin="0 10 0 0"
+                                             Visibility="{Binding AppConfiguration.IsCalibrationEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"    
+                                             DataContext="{Binding DeviceCalibrationVm}"/>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</UserControl>

@@ -1,16 +1,21 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Windows.Data;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Mebster.Myodam.UI.WPF.ViewModels
 {
 
-  public class ViewModelBase : INotifyPropertyChanged
-  {
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    protected virtual void OnPropertyChanged([CallerMemberName]string propertyName = null)
+    public class ViewModelBase : ObservableValidator
     {
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+        {
+            var value = GetType().GetProperty(e.PropertyName!)!.GetValue(this);
+            ValidateProperty(value, e.PropertyName);
+            base.OnPropertyChanged(e);
+        }
     }
-  }
 }

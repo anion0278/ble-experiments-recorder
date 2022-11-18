@@ -2,130 +2,120 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.UI.WPF.Event;
-using Mebster.Myodam.UI.WPF.View.Services;
+using Mebster.Myodam.UI.WPF.ViewModels.Services;
 using Microsoft.EntityFrameworkCore;
-using Prism.Commands;
-using Prism.Events;
 
 namespace Mebster.Myodam.UI.WPF.ViewModels
 {
     public abstract class DetailViewModelBase : ViewModelBase, IDetailViewModel
     {
         private bool _hasChanges;
-        protected readonly IEventAggregator EventAggregator;
-        protected readonly IMessageDialogService MessageDialogService;
-        private int _id;
-        private string _title;
+        protected readonly IMessenger Messenger;
+        protected readonly IMessageDialogService DialogService;
+        private readonly IMyodamManager _myodamManager;
 
-        public DetailViewModelBase(IEventAggregator eventAggregator,
-          IMessageDialogService messageDialogService)
-        {
-            EventAggregator = eventAggregator;
-            MessageDialogService = messageDialogService;
-            SaveCommand = new DelegateCommand(OnSaveExecute, OnSaveCanExecute);
-            DeleteCommand = new DelegateCommand(OnDeleteExecute);
-            CloseDetailViewCommand = new DelegateCommand(OnCloseDetailViewExecute);
-        }
+        public abstract Task LoadAsync(int measurementId, object argsData);
 
-        public abstract Task LoadAsync(int measurementId);
+        public IRelayCommand SaveCommand { get; }
 
-        public ICommand SaveCommand { get; private set; }
-
-        public ICommand DeleteCommand { get; private set; }
+        public IRelayCommand DeleteCommand { get; }
 
         public ICommand CloseDetailViewCommand { get; }
 
-        public int Id
-        {
-            get { return _id; }
-            protected set { _id = value; }
-        }
+        public int Id { get; protected set; }
 
-        public virtual string Title
-        {
-            get { return _title; }
-            protected set
-            {
-                _title = value;
-                OnPropertyChanged();
-            }
-        }
+        public bool IsActive { get; set; }
+
+        public virtual string Title { get; set; }
 
         public bool HasChanges
         {
-            get { return _hasChanges; }
+            get => _hasChanges;
             set
             {
-                if (_hasChanges != value)
-                {
-                    _hasChanges = value;
-                    OnPropertyChanged();
-                    ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
-                }
+                if (_hasChanges == value) return;
+                _hasChanges = value;
+                SaveCommand.NotifyCanExecuteChanged();
             }
         }
 
-        protected abstract void OnDeleteExecute();
+        protected DetailViewModelBase(
+            IMessenger messenger, 
+            IMessageDialogService dialogService,
+            IMyodamManager myodamManager)
+        {
+            Messenger = messenger;
+            DialogService = dialogService;
+            _myodamManager = myodamManager;
+            SaveCommand = new RelayCommand(OnSaveExecuteAsync, OnSaveCanExecute);
+            DeleteCommand = new RelayCommand(OnDeleteExecuteAsync, OnDeleteCanExecute);
+            CloseDetailViewCommand = new RelayCommand(OnCloseDetailViewExecuteAsync);
+        }
 
-        protected abstract bool OnSaveCanExecute();
+        protected virtual bool OnDeleteCanExecute()
+        {
+            return true;
+        }
 
-        protected abstract void OnSaveExecute();
+        protected abstract void OnDeleteExecuteAsync();
+
+        protected abstract void OnSaveExecuteAsync();
+
+        protected virtual bool OnSaveCanExecute()
+        {
+            return !HasErrors && HasChanges;
+        }
 
         protected virtual void RaiseDetailDeletedEvent(int modelId)
         {
-            EventAggregator.GetEvent<AfterDetailDeletedEvent>()
-                .Publish(new AfterDetailDeletedEventArgs
-                {
-                    Id = modelId,
-                    ViewModelName = this.GetType().Name
-                });
-        }
-
-        protected virtual void RaiseDetailSavedEvent(int modelId, string displayMember)
-        {
-            EventAggregator.GetEvent<AfterDetailSavedEvent>().Publish(new AfterDetailSavedEventArgs
+            UnsubscribeOnClosing();
+            Messenger.Send(new AfterDetailDeletedEventArgs
             {
                 Id = modelId,
-                DisplayMember = displayMember,
-                ViewModelName = this.GetType().Name
+                ViewModelName = GetType().Name
             });
         }
 
-        protected virtual void RaiseCollectionSavedEvent()
+        protected virtual void RaiseDetailSavedEvent(int modelId, string displayMember)// TODO check if these are used correctly everywhere
         {
-            EventAggregator.GetEvent<AfterCollectionSavedEvent>()
-              .Publish(new AfterCollectionSavedEventArgs
-              {
-                  ViewModelName = this.GetType().Name
-              });
-        }
-
-        protected virtual async void OnCloseDetailViewExecute()
-        {
-            if (HasChanges)
+            Messenger.Send(new AfterDetailSavedEventArgs
             {
-                var result = await MessageDialogService.ShowOkCancelDialogAsync(
-                  "You've made changes. Close this item?", "Question");
-                if (result == MessageDialogResult.Cancel)
-                {
-                    return;
-                }
-            }
-
-            EventAggregator.GetEvent<AfterDetailClosedEvent>()
-              .Publish(new AfterDetailClosedEventArgs
-              {
-                  Id = this.Id,
-                  ViewModelName = this.GetType().Name
-              });
+                Id = modelId,
+                DisplayMember = displayMember,
+                ViewModelName = GetType().Name
+            });
         }
 
-        protected async Task SaveAsync(Func<Task> saveFunc, Action afterSaveAction)
+        protected abstract void UnsubscribeOnClosing();
+
+        protected virtual async void OnCloseDetailViewExecuteAsync()
         {
-            await saveFunc();
-            afterSaveAction();
+            if (!await UserAcknowledgedClosingAsync()) return;
+
+            RaiseDetailClosedEvent();
         }
 
+        protected void RaiseDetailClosedEvent()
+        {
+            UnsubscribeOnClosing();
+            Messenger.Send(new AfterDetailClosedEventArgs 
+            {
+                Id = this.Id,
+                ViewModelName = GetType().Name
+            });
+        }
+
+        protected virtual async Task<bool> UserAcknowledgedClosingAsync()
+        {
+            if (!HasChanges) return true;
+
+            var result = await DialogService.ShowOkCancelDialogAsync(
+                "Close this item? Changes will be lost.", "Question");
+            return result == MessageDialogResult.OK;
+        }
     }
 }

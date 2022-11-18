@@ -1,14 +1,22 @@
-﻿using Prism.Events;
+﻿using Mebster.Myodam.Models.TestSubject;
 
 namespace Mebster.Myodam.UI.WPF.Event
 {
-  public class OpenDetailViewEvent : PubSubEvent<OpenDetailViewEventArgs>
-  {
-  }
+    public interface IDetailViewEventArgs
+    {
+        public int Id { get; init; }
+        public string ViewModelName { get; init; }
+    }
 
-  public class OpenDetailViewEventArgs
-  {
-    public int Id { get; set; }
-    public string ViewModelName { get; set; }
-  }
+    public class OpenDetailViewEventArgs : IDetailViewEventArgs
+    {
+        public int Id { get; init; }
+        public string ViewModelName { get; init; }
+        public object Data { get; init; }
+    }
+
+    //public class CreateMeasurementEventArgs: OpenDetailViewEventArgs
+    //{
+    //    public TestSubject TestSubject { get; init; }
+    //}
 }

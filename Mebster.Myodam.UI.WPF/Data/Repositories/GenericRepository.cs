@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,12 +15,13 @@ namespace Mebster.Myodam.UI.WPF.Data.Repositories
     {
       this.Context = context;
     }
+
     public void Add(TEntity model)
     {
       Context.Set<TEntity>().Add(model);
     }
 
-    public virtual async Task<TEntity> GetByIdAsync(int id)
+    public virtual async Task<TEntity?> GetByIdAsync(int id)
     {
       return await Context.Set<TEntity>().FindAsync(id);
     }

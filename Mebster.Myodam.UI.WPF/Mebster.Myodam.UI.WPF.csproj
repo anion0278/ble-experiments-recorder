@@ -2,41 +2,85 @@
 
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net6.0-windows$([Microsoft.Build.Utilities.ToolLocationHelper]::GetLatestSDKTargetPlatformVersion('Windows', '10.0'))</TargetFramework>
+		<TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
 		<Nullable>enable</Nullable>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 		<UseWPF>true</UseWPF>
 		<SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
 	</PropertyGroup>
 
 	<PropertyGroup>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<ApplicationIcon>Assets\icon.ico</ApplicationIcon>
+		<AssemblyName>MyodamGUI</AssemblyName>
+		<UserSecretsId>6e5e5a67-1bf1-49d2-8de0-bb00e0048c73</UserSecretsId>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Assets\Bottom_cut.png" />
+	  <None Remove="Assets\ISO.png" />
+	  <None Remove="Assets\myodam_mechanical_adjustment.png" />
+	  <None Remove="Assets\Side_cut.png" />
 	  <None Remove="Assets\splashScreen.png" />
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Resource Include="Assets\icon.ico" />
+	</ItemGroup>
+
+  <Target Name="RemoveDuplicateAnalyzers" BeforeTargets="CoreCompile">
+    <!-- Work around https://github.com/dotnet/wpf/issues/6792 -->
+
+    <ItemGroup>
+      <FilteredAnalyzer Include="@(Analyzer-&gt;Distinct())" />
+      <Analyzer Remove="@(Analyzer)" />
+      <Analyzer Include="@(FilteredAnalyzer)" />
+    </ItemGroup>
+  </Target>
+
+	<ItemGroup>
 		<PackageReference Include="Autofac" Version="6.3.0" />
-		<PackageReference Include="Fody" Version="6.6.2">
+		<PackageReference Include="AutoMapper" Version="11.0.1" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
+		<PackageReference Include="Fody" Version="6.6.3">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.0-beta.240" />
+		<PackageReference Include="LiveCharts" Version="0.9.7" />
+		<PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
 		<PackageReference Include="MahApps.Metro" Version="2.4.9" />
+		<PackageReference Include="MahApps.Metro.IconPacks.Material" Version="4.11.0" />
+		<PackageReference Include="Microsoft.AppCenter.Analytics" Version="4.5.3" />
+		<PackageReference Include="Microsoft.AppCenter.Crashes" Version="4.5.3" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.5" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.5">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
 		<PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.18362.2005" />
 		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="1.4.1" />
-		<PackageReference Include="Prism.Core" Version="8.1.97" />
-		<PackageReference Include="PropertyChanged.Fody" Version="3.4.0" />
+		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
+		<PackageReference Include="PropertyChanged.Fody" Version="3.4.1" />
+		<PackageReference Include="Serilog" Version="2.11.0" />
+		<PackageReference Include="Serilog.Enrichers.Demystifier" Version="1.0.2" />
+		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+		<PackageReference Include="Swordfish.NET.CollectionsV3" Version="3.3.9" />
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\Mebster.Myodam.Business\Mebster.Myodam.Business.csproj" />
+	  <ProjectReference Include="..\Mebster.Myodam.Common\Mebster.Myodam.Common.csproj" />
 	  <ProjectReference Include="..\Mebster.Myodam.DataAccess\Mebster.Myodam.DataAccess.csproj" />
+	  <ProjectReference Include="..\Mebster.Myodam.Infrastructure\Mebster.Myodam.Infrastructure.csproj" />
 	  <ProjectReference Include="..\Mebster.Myodam.Models\Mebster.Myodam.Models.csproj" />
 	</ItemGroup>
 
@@ -53,13 +97,28 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Update="config.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	  <None Update="Mebster.Myodam.Experiments.db">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	  <None Update="Properties\Settings.settings">
 	    <Generator>SettingsSingleFileGenerator</Generator>
 	    <LastGenOutput>Settings.Designer.cs</LastGenOutput>
 	  </None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Exception\" />
+	  <Folder Include="Helpers\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Resource Include="Assets\Bottom_cut.png" />
+	  <Resource Include="Assets\ISO.png" />
+	  <Resource Include="Assets\myodam_mechanical_adjustment.png" />
+	  <Resource Include="Assets\Side_cut.png" />
 	</ItemGroup>
 
 

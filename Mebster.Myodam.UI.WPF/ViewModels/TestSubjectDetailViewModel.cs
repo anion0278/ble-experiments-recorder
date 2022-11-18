@@ -2,27 +2,36 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
+using AutoMapper;
 using Castle.Components.DictionaryAdapter;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using LiveCharts;
+using Mebster.Myodam.Business.Device;
+using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.Models.TestSubject;
-using Mebster.Myodam.UI.WPF.Data.Lookups;
 using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.Event;
-using Mebster.Myodam.UI.WPF.View.Services;
-using Mebster.Myodam.UI.WPF.Wrapper;
-using Prism.Commands;
-using Prism.Events;
+using Mebster.Myodam.UI.WPF.ViewModels.Services;
+using Microsoft.EntityFrameworkCore.Metadata;
+using PropertyChanged;
 
 namespace Mebster.Myodam.UI.WPF.ViewModels
 {
     public class TestSubjectDetailViewModel : DetailViewModelBase, ITestSubjectDetailViewModel
     {
-        private ITestSubjectRepository _testSubjectRepository;
-        private readonly IMeasurementRepository _measurementsRepository;
-        private TestSubjectWrapper _testSubject;
+        private readonly IList<Measurement> _removedMeasurements = new List<Measurement>();
+        private readonly ObservableCollection<Measurement> _measurements;
+        private readonly ITestSubjectRepository _testSubjectRepository;
+        private readonly IMapper _mapper;
+        private readonly IStimulationParametersRepository _stimulationParametersRepository;
 
         public ICommand RemoveMeasurementCommand { get; set; }
 
@@ -31,174 +40,244 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         public ICommand AddMeasurementCommand { get; set; }
 
 
-        private BindingList<Measurement> _measurements = new();
+        public ChartValues<StatisticsValue> MaxContractionStatisticValues { get; set; } = new();
+        public ChartValues<StatisticsValue> FatigueStatisticValues { get; set; } = new();
 
         public ICollectionView Measurements { get; set; }
 
+        public TestSubject Model { get; set; } // MUST BE PUBLIC PROP in order to make validation work on init
 
-        public TestSubjectWrapper TestSubject
+        public MechanismParametersViewModel MechanismParametersVm { get; private set; }
+        public StimulationParametersViewModel StimulationParametersVm { get; private set; }
+
+        public override string Title => string.IsNullOrWhiteSpace(Model.FullName) ? "(New subject)" : Model.FullName;
+
+        [Required]
+        [StringLength(20, MinimumLength = 2)]
+        [AlsoNotifyFor(nameof(Title))]
+        public string FirstName
         {
-            get { return _testSubject; }
-            private set
-            {
-                _testSubject = value;
-                OnPropertyChanged();
-            }
+            get => Model.FirstName;
+            set => Model.FirstName = value;
+        }
+
+        [Required]
+        [StringLength(20, MinimumLength = 2)]
+        [AlsoNotifyFor(nameof(Title))]
+        public string LastName
+        {
+            get => Model.LastName;
+            set => Model.LastName = value;
+        }
+
+        public string? Notes
+        {
+            get => Model.Notes;
+            set => Model.Notes = value;
         }
 
         /// <summary>
         /// Design-time ctor
         /// </summary>
-        public TestSubjectDetailViewModel() : base(null, null)
-        { }
+        public TestSubjectDetailViewModel() : base(null!, null!, null!)
+        {
+            _measurements = new ObservableCollection<Measurement>() { new Measurement() { Title = "Measurement 1" } };
+            Measurements = CollectionViewSource.GetDefaultView(_measurements);
+        }
 
         public TestSubjectDetailViewModel(
             ITestSubjectRepository testSubjectRepository,
-            IMeasurementRepository measurementsRepository,
-            IEventAggregator eventAggregator,
-            IMessageDialogService messageDialogService)
-          : base(eventAggregator, messageDialogService)
+            IMessenger messenger,
+            IMapper mapper,
+            IMyodamManager myodamManager,
+            IStimulationParametersRepository stimulationParametersRepository,
+            IMessageDialogService dialogService)
+          : base(messenger, dialogService, myodamManager)
         {
-            _testSubjectRepository = testSubjectRepository;
-            _measurementsRepository = measurementsRepository;
+            _testSubjectRepository = testSubjectRepository; // TODO possible refactoring - this is main repo for VM, abstract it along with related methods
+            _mapper = mapper;
+            _stimulationParametersRepository = stimulationParametersRepository;
 
-            Measurements = new CollectionViewSource() { Source = _measurements }.View;
+            AddMeasurementCommand = new RelayCommand(async () => await OnAddMeasurementAsync());
+            EditMeasurementCommand = new RelayCommand(OnEditMeasurement, () => Measurements!.CurrentItem != null);
+            RemoveMeasurementCommand = new RelayCommand(OnRemoveMeasurement, () => Measurements!.CurrentItem != null);
 
-            AddMeasurementCommand = new DelegateCommand(OnAddMeasurement);
-            EditMeasurementCommand = new DelegateCommand(OnEditMeasurement);
-            RemoveMeasurementCommand = new DelegateCommand(OnRemoveMeasurement, () => _measurements.Any());
+            Messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailChanged(e));
+            Messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailChanged(e));
 
-            //eventAggregator.GetEvent<AfterCollectionSavedEvent>()
-            // .Subscribe(AfterCollectionSaved);
+            _measurements = new ObservableCollection<Measurement>();
+            _measurements.CollectionChanged += (_, _) => OnPropertyChanged(nameof(Measurements)); // TODO why is it required?
+            Measurements = CollectionViewSource.GetDefaultView(_measurements);
+            Measurements.SortDescriptions.Add(new SortDescription(nameof(Measurement.Date), ListSortDirection.Ascending));
+            Measurements.GroupDescriptions.Add(new PropertyGroupDescription(nameof(Measurement.Type)));
+            Measurements.MoveCurrentTo(null);
         }
 
-        private void OnRemoveMeasurement()
+
+        public override async Task LoadAsync(int id, object argsData)
         {
-            if (Measurements.CurrentItem != null)
-                _measurements.Remove((Measurement)Measurements.CurrentItem);
+            Model = id > 0
+                ? await _testSubjectRepository.GetByIdAsync(id)
+                : await CreateNewTestSubject();
+
+            Id = id;
+            if (id > 0) await RefreshMeasurements(); // TODO refactor
+
+            MechanismParametersVm = new MechanismParametersViewModel(new MechanismParameters(Model.CustomizedAdjustments), _mapper);
+            MechanismParametersVm.PropertyChanged += OnPropertyChangedEventHandler;
+
+            StimulationParametersVm = new StimulationParametersViewModel(Model.CustomizedParameters);
+            StimulationParametersVm.PropertyChanged += OnPropertyChangedEventHandler;
+
+            PropertyChanged += OnPropertyChangedEventHandler;
+        }
+
+        protected override void UnsubscribeOnClosing()
+        {
+            MechanismParametersVm.PropertyChanged -= OnPropertyChangedEventHandler;
+            StimulationParametersVm.PropertyChanged -= OnPropertyChangedEventHandler;
+            PropertyChanged -= OnPropertyChangedEventHandler;
+
+            //_measurements.CollectionChanged -= (_, _) => OnPropertyChanged(nameof(Measurements)); // TODO
+            Messenger.Unregister<AfterDetailSavedEventArgs>(this);
+            Messenger.Unregister<AfterDetailDeletedEventArgs>(this);
+        }
+
+        private void OnPropertyChangedEventHandler(object? o, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            MechanismParametersVm.CopyAdjustmentValuesTo(Model.CustomizedAdjustments);
+            HasChanges = _testSubjectRepository.HasChanges();
+        }
+
+        private async void AfterDetailChanged(IDetailViewEventArgs message)
+        {
+            // TODO reload only if changed VM is related to this TS
+            if (message.ViewModelName != nameof(MeasurementDetailViewModel)) return;
+
+            await RefreshMeasurements();
+        }
+
+        private async Task RefreshMeasurements()
+        {
+            Model = await _testSubjectRepository.ReloadAsync(Model);
+
+            _measurements.Clear();
+            foreach (var measurement in Model.Measurements.Except(_removedMeasurements)) 
+            {
+                _measurements.Add(measurement);
+            }
+
+            RefreshStatistics();
+        }
+
+        private void RefreshStatistics()
+        {
+            MaxContractionStatisticValues.Clear();
+            MaxContractionStatisticValues.AddRange(GetStatisticsValues(
+                MeasurementType.MaximumContraction,
+                m => new StatisticsValue(m.ContractionLoadData.Max(v => v.ContractionValue), m.Date!.Value)));
+            OnPropertyChanged(nameof(MaxContractionStatisticValues)); // only one update is enough, since MultiBinding will be triggered for both statements
+
+            FatigueStatisticValues.Clear();
+            FatigueStatisticValues.AddRange(GetStatisticsValues(
+                MeasurementType.Fatigue,
+                m => new StatisticsValue(m.Fatigue.Value, m.Date!.Value)));
+            OnPropertyChanged(nameof(FatigueStatisticValues));
+        }
+
+        private IEnumerable<StatisticsValue> GetStatisticsValues(MeasurementType measurementType, Func<Measurement, StatisticsValue> selector) // TODO into statistics Service
+        {
+            var statisticDataGroupedByDateOnly = _measurements
+                .Where(m => m.Type == measurementType && m.ContractionLoadData.Any() && m.Date.HasValue)
+                .Select(selector)
+                .GroupBy(d => d.MeasurementDate.Date);
+
+            return statisticDataGroupedByDateOnly
+                .Select(g => g.MaxBy(stat => stat.Value))
+                .OrderBy(sv => sv!.MeasurementDate)!;
+        }
+
+        private async Task OnAddMeasurementAsync()
+        {
+            if (await _testSubjectRepository.GetByIdAsync(Id) == null || HasChanges)
+            {
+                await DialogService.ShowInfoDialogAsync(
+                    "Changes are not saved. Please, save changes before adding measurements.");
+                return;
+            }
+
+            Messenger.Send(new OpenDetailViewEventArgs()
+            {
+                Id = -Id,
+                ViewModelName = nameof(MeasurementDetailViewModel),
+                Data = Model
+            });
         }
 
         private void OnEditMeasurement()
         {
-            EventAggregator.GetEvent<OpenDetailViewEvent>().Publish(
-                    new OpenDetailViewEventArgs
-                    {
-                        Id = -1,
-                        ViewModelName = nameof(MeasurementDetailViewModel)
-                    });
-        }
-
-        private void OnAddMeasurement()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override async Task LoadAsync(int measurementId)
-        {
-            var testSubject = measurementId > 0
-              ? await _testSubjectRepository.GetByIdAsync(measurementId)
-              : CreateNewTestSubject();
-
-            Id = measurementId;
-
-            InitializeTestSubject(testSubject);
-
-            //Measurements = _measurementsRepository.GetAllTestSubjectsAsync()
-        }
-
-        private void InitializeTestSubject(TestSubject testSubject)
-        {
-            _testSubject = new TestSubjectWrapper(testSubject);
-            _testSubject.PropertyChanged += (s, e) =>
-          {
-              // TODO REFACTORING !!!
-              if (!HasChanges)
-              {
-                  HasChanges = _testSubjectRepository.HasChanges();
-              }
-              if (e.PropertyName == nameof(_testSubject.HasErrors))
-              {
-                  ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
-              }
-              if (e.PropertyName == nameof(testSubject.FirstName) || e.PropertyName == nameof(testSubject.LastName))
-              {
-                  SetTitle();
-              }
-          };
-            ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
-            if (_testSubject.Id == 0)
+            Messenger.Send(new OpenDetailViewEventArgs
             {
-                // trigger the validation
-                _testSubject.FirstName = "";
-            }
-            SetTitle();
-
-            var now = DateTime.Now;
-
-            _measurements.Add(
-                new Measurement()
-                {
-                    Description = "Fatigue test 1",
-                    ForceData = new List<MeasuredValue>()
-                    {
-                        new MeasuredValue(3.3f, now.AddSeconds(1)),
-                        new MeasuredValue(4.3f, now.AddSeconds(2)),
-                        new MeasuredValue(5.3f, now.AddSeconds(3)),
-                        new MeasuredValue(3.3f, now.AddSeconds(4)),
-                    }
-                });
-            _measurements.Add(new Measurement()
-            {
-                Description = "Max force test 2",
-                ForceData = new List<MeasuredValue>()
-                    {
-                        new MeasuredValue(3.3f, now.AddSeconds(1)),
-                        new MeasuredValue(4.3f, now.AddSeconds(2)),
-                        new MeasuredValue(5.3f, now.AddSeconds(3)),
-                        new MeasuredValue(3.3f, now.AddSeconds(4)),
-                    }
+                Id = ((Measurement)Measurements.CurrentItem).Id,
+                ViewModelName = nameof(MeasurementDetailViewModel),
+                Data = Model
             });
         }
 
-        private void SetTitle() // TODO utilize FOdy
+        private void OnRemoveMeasurement()
         {
-            Title = $"{TestSubject.FirstName} {TestSubject.LastName}";
+            if (Measurements.CurrentItem == null) return;
+
+            var measToRemove = (Measurement)Measurements.CurrentItem;
+
+            _testSubjectRepository.RemoveMeasurement(measToRemove);
+            _measurements.Remove(measToRemove);
+            _removedMeasurements.Add(measToRemove);
+
+            RefreshStatistics();
         }
 
-        protected override async void OnSaveExecute()
+        protected override async void OnSaveExecuteAsync()
         {
-            await SaveAsync(_testSubjectRepository.SaveAsync,
-              () =>
-              {
-                  HasChanges = _testSubjectRepository.HasChanges();
-                  Id = TestSubject.Id;
-                  RaiseDetailSavedEvent(TestSubject.Id, $"{TestSubject.FirstName} {TestSubject.LastName}");
-              });
-        }
-
-        protected override bool OnSaveCanExecute()
-        {
-            return TestSubject != null
-              && !TestSubject.HasErrors
-              && HasChanges;
-        }
-
-        protected override async void OnDeleteExecute()
-        {
-            var result = await MessageDialogService.ShowOkCancelDialogAsync(
-                $"Do you really want to delete the test Subject {TestSubject.FirstName} {TestSubject.LastName}?", "Confirmation is required");
-
-            if (result == MessageDialogResult.OK)
+            if ((await _testSubjectRepository.GetAllAsync()) // TODO replace getAll with customized query
+                .Any(ts => ts.FullName == Model.FullName && ts.Id != Model.Id))
             {
-                _testSubjectRepository.Remove(TestSubject.Model);
-                await _testSubjectRepository.SaveAsync();
-                RaiseDetailDeletedEvent(TestSubject.Id);
+                await DialogService.ShowInfoDialogAsync($"A test subject with name '{Model.FullName}' already exists. Please change the name.");
+                return;
             }
+
+            await _testSubjectRepository.SaveAsync();
+            _removedMeasurements.Clear();
+            Id = Model.Id;
+            HasChanges = false;
+            RaiseDetailSavedEvent(Model.Id, $"{Model.FirstName} {Model.LastName}");
         }
 
-        private TestSubject CreateNewTestSubject()
+        protected override async void OnDeleteExecuteAsync()
         {
-            var testSubject = new TestSubject();
+            if (Id < 0)
+            {
+                OnCloseDetailViewExecuteAsync();
+                return;
+            }
+
+            var result = await DialogService.ShowOkCancelDialogAsync(
+                $"Do you really want to delete the test subject {Title} and all related measurements?", "Confirmation is required");
+            if (result != MessageDialogResult.OK) return;
+
+            _testSubjectRepository.Remove(Model);
+            await _testSubjectRepository.SaveAsync();
+            RaiseDetailDeletedEvent(Model.Id);
+        }
+
+        private async Task<TestSubject> CreateNewTestSubject()
+        {
+            var testSubject = new TestSubject
+            {
+                CustomizedAdjustments = new DeviceMechanicalAdjustments(),
+                CustomizedParameters = (StimulationParameters)(await _stimulationParametersRepository.GetByIdAsync(1))!.Clone()
+            };
+
             _testSubjectRepository.Add(testSubject);
             return testSubject;
         }

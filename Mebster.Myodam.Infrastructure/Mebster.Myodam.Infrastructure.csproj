@@ -8,6 +8,12 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="1.4.1" />
+		<PackageReference Include="Swordfish.NET.CollectionsV3" Version="3.3.9" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Mebster.Myodam.Common\Mebster.Myodam.Common.csproj" />
+	  <ProjectReference Include="..\Mebster.Myodam.Models\Mebster.Myodam.Models.csproj" />
 	</ItemGroup>
 
 </Project>

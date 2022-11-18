@@ -7,6 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="DataExport\TestSubjectDataExportTemplate.xlsx" />
+    <None Remove="DataExport\TestSubjectDataExportTemplates.xltm" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="DataExport\TestSubjectDataExportTemplate.xlsx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.96.0" />
+    <PackageReference Include="CsvHelper" Version="28.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="6.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.5" />
@@ -18,7 +29,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Mebster.Myodam.Common\Mebster.Myodam.Common.csproj" />
     <ProjectReference Include="..\Mebster.Myodam.Models\Mebster.Myodam.Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="PresentationFramework">
+      <HintPath>..\..\..\..\..\..\..\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App\6.0.8\PresentationFramework.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
