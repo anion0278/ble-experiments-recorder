@@ -52,6 +52,7 @@ public class ExcelDocumentManager : IDocumentManager
             foreach (var (measurement, row) in testSubject.Measurements.OrderBy(m => m.Date)
                                                                         .Zip(table.Rows().Skip(1)))
             {
+                var stimParams = measurement.ParametersDuringMeasurement;
                 var orderedData = new []
                 {
                     measurement.Title,
@@ -60,7 +61,15 @@ public class ExcelDocumentManager : IDocumentManager
                     measurement.Notes,
                     GetMeasurementStatistics(measurement),
                     FormatMechanicalAdjustments(measurement.AdjustmentsDuringMeasurement),
-                    FormatStimulationParameters(measurement.ParametersDuringMeasurement),
+                    //FormatStimulationParameters(measurement.ParametersDuringMeasurement),
+                    stimParams.Current,
+                    stimParams.Frequency,
+                    stimParams.PulseWidth.Value,
+                    FormatTime(measurement.Type == MeasurementType.MaximumContraction 
+                        ? stimParams.StimulationTime
+                        : stimParams.IntermittentStimulationTime),
+                    FormatTime(stimParams.RestTime),
+                    stimParams.IntermittentRepetitions,
                     measurement.SiteDuringMeasurement.GetDescription(),
                     measurement.PositionDuringMeasurement.GetDescription()
                 };
@@ -75,12 +84,17 @@ public class ExcelDocumentManager : IDocumentManager
         workbook.SaveAs(path);
     }
 
+    private string FormatTime(TimeSpan time)
+    {
+        return time.TotalSeconds.ToString();
+    }
+
     private static object GetMeasurementStatistics(Measurement measurement)
     {
         switch (measurement.Type)
         {
             case MeasurementType.MaximumContraction:
-                return measurement.MaxContractionLoad;
+                return measurement.MaxContractionLoad.ToString("0.00");
             case MeasurementType.Intermittent:
                 return measurement.Intermittent.ToString();
             default:
