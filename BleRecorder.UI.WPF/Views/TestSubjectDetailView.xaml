@@ -139,7 +139,8 @@
                     </Grid.ColumnDefinitions>
 
                     <DataGrid x:Name="MeasurementsGrid" IsSynchronizedWithCurrentItem="True"
-                          ItemsSource="{Binding Measurements}">
+                              d:DataContext="{d:DesignInstance testSubject:Measurement}"
+                              ItemsSource="{Binding Measurements}">
                         <DataGrid.GroupStyle>
                             <StaticResource ResourceKey="MeasurementDataGridGroupStyle" />
                         </DataGrid.GroupStyle>
