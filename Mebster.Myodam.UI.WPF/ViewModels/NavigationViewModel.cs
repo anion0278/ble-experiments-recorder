@@ -21,6 +21,7 @@ using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.Event;
 using Mebster.Myodam.UI.WPF.Exception;
 using Mebster.Myodam.UI.WPF.ViewModels.Services;
+using Mebster.Myodam.UI.WPF.Views.Resouces;
 using Microsoft.AppCenter;
 using Microsoft.Win32;
 using Swordfish.NET.Collections.Auxiliary;
@@ -36,6 +37,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         private readonly IDocumentManager _documentManager;
         private readonly IFileSystemManager _fileManager;
         private readonly IGlobalExceptionHandler _exceptionHandler;
+        private readonly IDialogHelpers _dialogHelpers;
         private readonly ObservableCollection<NavigationAddTestSubjectItemViewModel> _navigationItems = new();
 
         public ListCollectionView TestSubjectsNavigationItems { get; }
@@ -82,6 +84,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             IDocumentManager documentManager,
             IFileSystemManager fileManager,
             IGlobalExceptionHandler exceptionHandler,
+            IDialogHelpers dialogHelpers,
             IAsyncRelayCommandFactory asyncCommandFactory)
         {
             ChangeMyodamConnectionCommand = asyncCommandFactory.Create(ChangeMyodamConnectionAsync, CanChangeMyodamConnection);
@@ -95,6 +98,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             _documentManager = documentManager;
             _fileManager = fileManager;
             _exceptionHandler = exceptionHandler;
+            _dialogHelpers = dialogHelpers;
             DeviceCalibrationVm = deviceCalibrationViewModel;
 
             _myodamManager.MyodamAvailabilityChanged += OnMyodamAvailabilityChanged;
@@ -148,10 +152,10 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             //    await _testSubjectRepository.ReloadAsync(ts);
             //}
 
-            if (_fileManager.SaveSingleFileDialog("Export.xlsx", out var filePath))
+            if (_dialogHelpers.SaveSingleFileDialog("Export.xlsx", out var filePath))
             {
                 await Task.Run(() => _documentManager.Export(filePath!, subjects));
-                _fileManager.OpenOrShowDir(_fileManager.GetFileDir(filePath));
+                _dialogHelpers.OpenOrShowDir(_fileManager.GetFileDir(filePath));
             }
         }
 

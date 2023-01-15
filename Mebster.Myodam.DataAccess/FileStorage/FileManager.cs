@@ -7,10 +7,8 @@ public interface IFileSystemManager
 {
     string ReadAll(string path);
     void WriteAll(string path, string data);
-    bool SaveSingleFileDialog(string predefinedName, out string? selectedFileName);
-    bool FileExists(string path);
-    void OpenOrShowDir(string dirName);
     string GetFileDir(string filePath);
+    bool FileExists(string path);
 }
 
 public class FileSystemManager : IFileSystemManager
@@ -25,36 +23,9 @@ public class FileSystemManager : IFileSystemManager
         File.WriteAllText(path, data);
     }
 
-    public void OpenOrShowDir(string dirName)
-    {
-        var psi = new ProcessStartInfo()
-        {
-            FileName = dirName,
-            Verb = "open", // utilizes opened folder if available
-            UseShellExecute = true
-        };
-        Process.Start(psi);
-    }
-
     public string GetFileDir(string filePath)
     {
         return Path.GetDirectoryName(filePath);
-    }
-
-    public bool SaveSingleFileDialog(string predefinedName, out string? selectedFileName)
-    {
-        selectedFileName = null;
-        var saveFileDialog = new SaveFileDialog
-        {
-            Title = "Export data",
-            FileName = predefinedName,
-            Filter = "Excel Document|*.xlsx", // TODO Builder/Factory
-        };
-        bool? dialogResult = saveFileDialog.ShowDialog();
-        if (dialogResult != true) return false;
-
-        selectedFileName = saveFileDialog.FileName;
-        return true;
     }
 
     public bool FileExists(string path)
