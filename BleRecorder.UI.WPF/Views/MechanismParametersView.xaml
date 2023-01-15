@@ -89,14 +89,7 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <Grid.Background>
-            <LinearGradientBrush StartPoint="0 0" EndPoint="0 1">
-                <LinearGradientBrush.GradientStops>
-                    <GradientStop Offset="0.1" Color="AliceBlue" />
-                    <GradientStop Offset="1" Color="DodgerBlue" />
-                </LinearGradientBrush.GradientStops>
-            </LinearGradientBrush>
-        </Grid.Background>
+      
         <Image Source="../Assets/Bottom_cut.png" Margin="0 50 0 0"
                VerticalAlignment="Top" HorizontalAlignment="Left"
                RenderOptions.BitmapScalingMode="HighQuality" />
@@ -108,14 +101,14 @@
 
         <Canvas Grid.Column="0" Grid.ColumnSpan="2">
 
-            <Slider Canvas.Left="128" Canvas.Top="110" Minimum="{Binding Model.CuffProximalDistalDistance.MinValue}"
+            <Slider Canvas.Left="114" Canvas.Top="96" Minimum="{Binding Model.CuffProximalDistalDistance.MinValue}"
                 Maximum="{Binding Model.CuffProximalDistalDistance.MaxValue}"
                 TickFrequency="{Binding Model.CuffProximalDistalDistance.Step}"
                 Value = "{Binding CuffProximalDistalDistance}"
                 resouces:AttachedText.Text="C-Cuff (prox-dist):"
                 resouces:AttachedRotation.Rotated="True"
                 resouces:AttachedWidth.Width="80"
-                Width="135"
+                Width="170"
                 RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" >
                 <Slider.RenderTransform>
                     <TransformGroup>
@@ -145,7 +138,7 @@
                 Value = "{Binding FixtureAnteroPosteriorDistance}" 
                 resouces:AttachedText.Text="Fixture (ant-post):"
                 Width="190"
-                RenderTransformOrigin="0.5,0.5" Canvas.Left="119" Canvas.Top="335" HorizontalAlignment="Center" />
+                RenderTransformOrigin="0.5,0.5" Canvas.Left="119" Canvas.Top="333" HorizontalAlignment="Center" />
         </Canvas>
     </Grid>
 </UserControl>

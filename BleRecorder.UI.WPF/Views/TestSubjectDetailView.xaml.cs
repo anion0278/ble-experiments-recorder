@@ -22,10 +22,6 @@ namespace BleRecorder.UI.WPF.Views
         {
             InitializeComponent();
 
-            DefaultHandend customHandend = new DefaultHandend();
-            customHandend.Foreground = System.Windows.Media.Brushes.White;
-            StatisticsGraph.ChartHandend = customHandend;
-
             StatisticsGraphXAxis.LabelFormatter = FormatXAxisLabel;
 
             MaxContractionAxis.LabelFormatter = FormatNumericLabel;

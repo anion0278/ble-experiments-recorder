@@ -19,8 +19,7 @@
     <UserControl.Resources>
         <Style x:Key="MeasurementParamComboBoxStyle" TargetType="ComboBox" BasedOn="{StaticResource MeasurementParamComboBox}">
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="Width" Value="160"/>
-            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="IsEnabled" Value="{Binding MeasuredValues,Mode=OneWay, Converter={StaticResource measuredDataLengthToBooleanConverter}}"/>
             <Setter Property="ItemTemplate">
@@ -79,11 +78,11 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Label Grid.Row="0" Content="Short description" />
+            <Label Grid.Row="0" Content="Short description:" />
             <TextBox Grid.Row="1" MaxLength="40" 
                      Text="{Binding MeasurementDescription, UpdateSourceTrigger=PropertyChanged}" />
 
-            <Label Grid.Row="2" Content="Notes"/>
+            <Label Grid.Row="2" Content="Notes:"/>
             <TextBox Grid.Row="3" Style="{StaticResource NotesTextBox}"
                  Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}" />
 
@@ -97,7 +96,7 @@
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition/>
+                    <ColumnDefinition Width="240"/>
                 </Grid.ColumnDefinitions>
 
                 <Label Grid.Row="0" Grid.Column="0"  Content="Test subject:"/>
@@ -167,27 +166,6 @@
                             <RowDefinition/>
                         </Grid.RowDefinitions>
 
-                        <TextBlock Grid.Row="1" x:Name="GraphInsufficientDataMessage"
-                                   Text="No measurement data"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center" Padding="16"
-                                   Background="{StaticResource MainThemeColorAccent}"
-                                   FontSize="18" FontWeight="DemiBold"
-                                   Visibility="{Binding MeasuredValues, Converter={ StaticResource collectionToVisibilityConverterPipeline}}">
-                        </TextBlock>
-                        <mah:ProgressRing Grid.Row="1" Foreground="SteelBlue">
-                            <mah:ProgressRing.Style>
-                                <Style TargetType="mah:ProgressRing">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsMeasurementRunning}" Value="True">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </mah:ProgressRing.Style>
-                        </mah:ProgressRing>
-
                         <livecharts:CartesianChart Grid.Row="0" Grid.RowSpan="3" Foreground="{StaticResource MainThemeColorAccent}" 
                                                DisableAnimations="True" MinHeight="230" Margin="10 10 10 0">
                             <livecharts:CartesianChart.Style>
@@ -208,7 +186,7 @@
                             </livecharts:CartesianChart.Style>
 
                             <livecharts:CartesianChart.AxisY>
-                                <livecharts:Axis x:Name="GraphYAxis" Title="Contraction - Torque [Nm]" />
+                                <livecharts:Axis x:Name="GraphYAxis" Title="Contraction - Force [N]" />
                             </livecharts:CartesianChart.AxisY>
 
                             <livecharts:CartesianChart.AxisX>
@@ -227,7 +205,7 @@
                             </livecharts:CartesianChart.SeriesColors>
 
                             <livecharts:CartesianChart.Series>
-                                <livecharts:LineSeries LineSmoothness="0" Title="Measured torque" Values="{Binding MeasuredValues}"
+                                <livecharts:LineSeries LineSmoothness="0" Title="Measured force" Values="{Binding MeasuredValues}"
                                            Configuration="{StaticResource chartPointMapper}"/>
                             </livecharts:CartesianChart.Series>
                         </livecharts:CartesianChart>
@@ -246,7 +224,7 @@
                             <Label Content="{Binding Intermittent}" 
                                    FontWeight="DemiBold"  ContentStringFormat="Intermittent: {0}" HorizontalAlignment="Right" Margin="0 0 10 0" />
 
-                            <livecharts:CartesianChart Foreground="{StaticResource MainThemeColorAccent}" 
+                            <livecharts:CartesianChart Foreground="{StaticResource MainThemeColorAccent}"  
                                                        DisableAnimations="True" MinHeight="230" Margin="10 10 10 0">
                                 <livecharts:CartesianChart.Style>
                                     <Style TargetType="livecharts:CartesianChart">
@@ -263,7 +241,7 @@
                                 </livecharts:CartesianChart.Style>
 
                                 <livecharts:CartesianChart.AxisY>
-                                    <livecharts:Axis x:Name="Graph2YAxis" Title="Contraction - Torque [Nm]" />
+                                    <livecharts:Axis x:Name="Graph2YAxis" Title="Contraction - Force [N]" />
                                 </livecharts:CartesianChart.AxisY>
 
                                 <livecharts:CartesianChart.AxisX>
@@ -282,12 +260,36 @@
                                 </livecharts:CartesianChart.SeriesColors>
 
                                 <livecharts:CartesianChart.Series>
-                                    <livecharts:LineSeries LineSmoothness="0" Title="Measured torque" 
+                                    <livecharts:LineSeries LineSmoothness="0" Title="Measured force" 
                                                        Values="{Binding MeasuredValues}"
                                                        Configuration="{StaticResource chartRepetitionPointMapper}"/>
                                 </livecharts:CartesianChart.Series>
                             </livecharts:CartesianChart>
                         </StackPanel>
+
+                        <TextBlock Grid.Row="1" x:Name="GraphInsufficientDataMessage"
+                                   Style="{StaticResource {x:Type TextBlock}}"
+                                   Text="No measurement data"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" Padding="16"
+                                   Foreground="{StaticResource AdditionalTextColor}"
+                                   Background="{StaticResource FocusColor}"
+                                   FontSize="18" FontWeight="DemiBold"
+                                   Visibility="{Binding MeasuredValues, Converter={ StaticResource collectionToVisibilityConverterPipeline}}">
+                        </TextBlock>
+
+                        <mah:ProgressRing Grid.Row="1" Foreground="{StaticResource FocusColor}">
+                            <mah:ProgressRing.Style>
+                                <Style TargetType="mah:ProgressRing">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsMeasurementRunning}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </mah:ProgressRing.Style>
+                        </mah:ProgressRing>
                     </Grid>
 
                     <Grid Grid.Row="1">
