@@ -124,6 +124,7 @@ public class BleRecorderDevice : IBleRecorderDevice
 
     public async Task SendMsgAsync(BleRecorderRequestMessage message)
     {
+        //Debug.Print("Msg: " + message.FormatForSending());
         await _bleDeviceHandler.SendAsync(message.FormatForSending());
     }
 

@@ -25,6 +25,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Helpers\**" />
+	  <EmbeddedResource Remove="Helpers\**" />
+	  <None Remove="Helpers\**" />
+	  <Page Remove="Helpers\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <None Remove="Assets\Bottom_cut.png" />
 	  <None Remove="Assets\ISO.png" />
 	  <None Remove="Assets\bleRecorder_mechanical_adjustment.png" />
@@ -111,7 +118,6 @@
 
 	<ItemGroup>
 	  <Folder Include="Exception\" />
-	  <Folder Include="Helpers\" />
 	</ItemGroup>
 
 	<ItemGroup>
