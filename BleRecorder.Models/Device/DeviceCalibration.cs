@@ -11,10 +11,7 @@ public class DeviceCalibration
     public double NoLoadSensorValue { get; set; }
     public double NominalLoadSensorValue { get; set; }
     public double NominalLoad { get; set; }
-
-    public DeviceCalibration()
-    {
-    }
+    public double LeverLengthMeters { get; set; }
 
     public void UpdateCalibration()
     {
@@ -37,7 +34,7 @@ public class DeviceCalibration
 
     public double CalculateLoadValue(double sensorValue)
     {
-        return _linearEquation.CalculateLoadValue(sensorValue);
+        return _linearEquation.CalculateLoadValue(sensorValue) / LeverLengthMeters;
     }
 
     public bool IsValid()
@@ -45,7 +42,7 @@ public class DeviceCalibration
         return NominalLoadSensorValue != DefaultParametersValue 
                && NoLoadSensorValue != DefaultParametersValue
                && NominalLoad != DefaultParametersValue
-
+               && LeverLengthMeters != DefaultParametersValue
                && NominalLoadSensorValue > NoLoadSensorValue; 
     }
 }
