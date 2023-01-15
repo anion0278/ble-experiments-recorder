@@ -15,6 +15,7 @@
         MinWidth="800" MinHeight="600" 
         TextOptions.TextFormattingMode="Display"
         TextOptions.TextRenderingMode="ClearType"
+        FontSize="{StaticResource BaseFontSize}"
         TitleCharacterCasing="Normal"
         d:Background="Transparent"
         WindowStartupLocation="CenterScreen"
@@ -53,7 +54,7 @@
         <views:NavigationView Grid.Column="0" DataContext="{Binding NavigationViewModel}"/>
         <views:StimulationParametersView Grid.Column="1" Title="Default stimulation parameters:"
                                          DataContext="{Binding StimulationParametersViewModel}"
-                                         VerticalAlignment="Center" MaxWidth="300"/>
+                                         VerticalAlignment="Center" MaxWidth="500"/>
         <TabControl Grid.Column="1" VerticalAlignment="Stretch" IsSynchronizedWithCurrentItem="True"
                     ItemsSource="{Binding DetailViewModels}"
                     SelectedItem="{Binding SelectedDetailViewModel, ValidatesOnNotifyDataErrors=False}">
@@ -76,7 +77,7 @@
             </TabControl.Template>
             <TabControl.ItemContainerStyle>
                 <Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
-                    <Setter Property="Background" Value="DarkSlateBlue"/>
+                    <Setter Property="Background" Value="{StaticResource InactiveColor}"/>
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate>
@@ -87,7 +88,7 @@
                                             <ColumnDefinition/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="{Binding Title}" FontSize="14" >
+                                        <TextBlock Grid.Column="0" Text="{Binding Title}">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
                                                     <Style.Triggers>
@@ -100,10 +101,10 @@
                                             </TextBlock.Style>
                                         </TextBlock>
 
-                                        <TextBlock Grid.Column="1" Text="[changed]" Margin="3 -4 0 0" Padding="0" FontSize="8" 
+                                        <TextBlock Grid.Column="1" Text="[changed]" Margin="3 -4 0 0" Padding="0" FontSize="12" 
                                                    Visibility="{Binding HasChanges, Converter={StaticResource booleanToVisibilityConverter}}"/>
                                         <Button Grid.Column="2" HorizontalAlignment="Right" Content="x" Background="Transparent" 
-                                                Margin="3 -5 0 0" Padding="0" FontSize="16"
+                                                Margin="3 -5 0 0" Padding="0" FontSize="20"
                                                 Foreground="Silver" FontWeight="Bold" ToolTip="Close tab"
                                                 Command="{Binding CloseDetailViewCommand}">
                                             <Button.Style>
@@ -128,7 +129,7 @@
                     <Style.Triggers>
                         <Trigger Property="IsSelected" Value="True">
                             <Setter Property="FontWeight" Value="UltraBold" />
-                            <Setter Property="Background" Value="DodgerBlue"/>
+                            <Setter Property="Background" Value="{StaticResource FocusColor}"/>
                         </Trigger>
                     </Style.Triggers>
                 </Style>

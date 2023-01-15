@@ -41,7 +41,6 @@ namespace Mebster.Myodam.UI.WPF.Startup
             builder.RegisterType<AsyncRelayCommandFactory>().As<IAsyncRelayCommandFactory>().SingleInstance();
             builder.RegisterType<DateTimeService>().As<IDateTimeService>().SingleInstance();
             builder.RegisterType<AppConfigurationLoader>().As<IAppConfigurationLoader>();
-            builder.RegisterType<DialogHelpers>().As<IDialogHelpers>();
 
             builder.RegisterType<BluetoothManager>().As<IBluetoothManager>().SingleInstance();
             builder.RegisterType<MyodamReplyParser>().As<IMyodamReplyParser>().SingleInstance();

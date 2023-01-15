@@ -37,6 +37,49 @@
             </Grid>
         </ControlTemplate>
 
+        <DataTemplate x:Key="TestSubjectGroupHeaderTemplate">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Test subjects"/>
+                <Button Grid.Column="1" FontStyle="Italic" Style="{x:Null}" HorizontalAlignment="Right"
+                            Command="{Binding DataContext.OpenDetailViewCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type GroupBox}}}">
+                    <Button.Content>
+                        <Grid x:Name="grid">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <icon:PackIconMaterial Height="{StaticResource BaseFontSize}" Kind="AccountPlus" Margin="0 0 5 0"
+                                                   Foreground="{Binding RelativeSource={RelativeSource AncestorType=GroupBox}, Path=Foreground}"/>
+                            <TextBlock Grid.Column="1" Foreground="{Binding RelativeSource={RelativeSource AncestorType=GroupBox}, Path=Foreground}"
+                                       Text="Add new test subject" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Grid>
+                    </Button.Content>
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Grid x:Name="grid">
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Cursor" Value="Hand"/>
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter Property="FontWeight" Value="Normal"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
+        </DataTemplate>
+
         <Style TargetType="ProgressBar" BasedOn="{StaticResource {x:Type ProgressBar}}">
             <Setter Property="Template" Value="{StaticResource PercentageBar}"></Setter>
         </Style>
@@ -47,7 +90,6 @@
         </Style>
 
         <Style x:Key="TestSubjectSelectionCheckBox" TargetType="{x:Type CheckBox}">
-            <Setter Property="Background" Value="LightSteelBlue" />
             <Setter Property="BorderBrush" Value="#FF262E34"/>
             <Setter Property="Foreground" Value="#FF262E34"/>
             <Setter Property="BorderThickness" Value="1"/>
@@ -57,20 +99,20 @@
                     <ControlTemplate TargetType="{x:Type CheckBox}">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" >
                             <Border BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}" Width="15" Height="15">
-                                <Path Stretch="Uniform" Width="15" Height="10" Fill="BlueViolet" Name="eliCheck" Data="F1 M 9.97498,1.22334L 4.6983,9.09834L 4.52164,9.09834L 0,5.19331L 1.27664,3.52165L 4.255,6.08833L 8.33331,1.52588e-005L 9.97498,1.22334 Z " Visibility="Collapsed"/>
+                                <Path Stretch="Uniform" Width="15" Height="10" Fill="{StaticResource FocusColor}" Name="eliCheck" Data="F1 M 9.97498,1.22334L 4.6983,9.09834L 4.52164,9.09834L 0,5.19331L 1.27664,3.52165L 4.255,6.08833L 8.33331,1.52588e-005L 9.97498,1.22334 Z " Visibility="Collapsed"/>
                             </Border>
                             <TextBlock Margin="5,0,0,0"  VerticalAlignment="Center" Foreground="{TemplateBinding Foreground}" Text="{TemplateBinding Content}"></TextBlock>
                         </StackPanel>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="Cornsilk" />
+                                <Setter Property="Background" Value="{StaticResource InactiveColor}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
                                 <Setter Property="Background" Value="#FF9C9E9F" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Background" Value="LightGray" />
-                                <Setter Property="Foreground" Value="Gray" />
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="Foreground" Value="Transparent" />
                                 <Setter Property="BorderBrush" Value="Gray"/>
                                 <Setter TargetName="eliCheck" Property="Opacity" Value="0.5" />
                             </Trigger>
@@ -87,7 +129,7 @@
         <DataTemplate DataType="{x:Type viewModels:NavigationTestSubjectItemViewModel}">
             <Button Content="{Binding DisplayMember}"
               Command="{Binding OpenDetailViewCommand}"
-              FontSize="16" Style="{x:Null}">
+              Style="{x:Null}">
                 <Button.Template>
                     <ControlTemplate TargetType="Button">
                         <Grid x:Name="grid">
@@ -115,9 +157,9 @@
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type viewModels:NavigationAddTestSubjectItemViewModel}">
-            <Button FontStyle="Italic" 
+            <Button FontStyle="Oblique" 
                     Command="{Binding OpenDetailViewCommand}"
-                    FontSize="12" Margin="5" Width="160" HorizontalAlignment="Stretch">
+                    Margin="5" Width="160" HorizontalAlignment="Stretch">
                 <Button.Content>
                     <Grid x:Name="grid">
                         <Grid.ColumnDefinitions>
@@ -138,48 +180,8 @@
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <GroupBox Margin="0 0 0 3" mah:ControlsHelper.ContentCharacterCasing="Normal">
-            <GroupBox.Header>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock Text="Test subjects"/>
-                    <Button Grid.Column="1" FontStyle="Italic" Style="{x:Null}" HorizontalAlignment="Right"
-                            Command="{Binding OpenDetailViewCommand}">
-                        <Button.Content>
-                            <Grid x:Name="grid">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <icon:PackIconMaterial Height="15" Kind="AccountPlus" Margin="0 0 5 0" />
-                                <TextBlock Grid.Column="1" Text="Add new test subject" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                            </Grid>
-                        </Button.Content>
-                        <Button.Template>
-                            <ControlTemplate TargetType="Button">
-                                <Grid x:Name="grid">
-                                    <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                                </Grid>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Cursor" Value="Hand"/>
-                                        <Setter Property="FontWeight" Value="Bold"/>
-                                    </Trigger>
-                                    <Trigger Property="IsPressed" Value="True">
-                                        <Setter Property="FontWeight" Value="Normal"/>
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </Button.Template>
-
-                    </Button>
-                </Grid>
-            </GroupBox.Header>
+        <GroupBox Margin="0 0 0 3" 
+                  HeaderTemplate="{StaticResource TestSubjectGroupHeaderTemplate}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition/>
@@ -194,7 +196,7 @@
                         Command="{Binding ExportSelectedCommand}"/>
             </Grid>
         </GroupBox>
-        <GroupBox Grid.Row="1" MinHeight="200" Header="Device status" mah:ControlsHelper.ContentCharacterCasing="Normal">
+        <GroupBox Grid.Row="1" MinHeight="200" Header="Device status">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -211,11 +213,11 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
-                <Button Grid.Row="0" Grid.ColumnSpan="2" Command="{Binding ChangeMyodamConnectionCommand}" FontSize="14"
+                <Button Grid.Row="0" Grid.ColumnSpan="2" Command="{Binding ChangeMyodamConnectionCommand}" 
                     IsEnabled="{Binding ChangeMyodamConnectionCommand.IsRunning, Converter={StaticResource inverseBooleanConverter}}">
                     <Button.Content>
                         <StackPanel Orientation="Horizontal">
-                            <mah:ProgressRing Foreground="White" MinHeight="15" MinWidth="15" Height="15" Width="15" 
+                            <mah:ProgressRing Foreground="{StaticResource FocusColor}" MinHeight="15" MinWidth="15" Height="15" Width="15" 
                                               Padding="0" Margin="0 0 5 0">
                                 <mah:ProgressRing.Style>
                                     <Style TargetType="mah:ProgressRing">

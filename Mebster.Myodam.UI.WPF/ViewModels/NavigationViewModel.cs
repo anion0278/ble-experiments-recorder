@@ -37,7 +37,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         private readonly IDocumentManager _documentManager;
         private readonly IFileSystemManager _fileManager;
         private readonly IGlobalExceptionHandler _exceptionHandler;
-        private readonly IDialogHelpers _dialogHelpers;
         private readonly ObservableCollection<NavigationAddTestSubjectItemViewModel> _navigationItems = new();
 
         public ListCollectionView TestSubjectsNavigationItems { get; }
@@ -84,7 +83,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             IDocumentManager documentManager,
             IFileSystemManager fileManager,
             IGlobalExceptionHandler exceptionHandler,
-            IDialogHelpers dialogHelpers,
             IAsyncRelayCommandFactory asyncCommandFactory)
         {
             ChangeMyodamConnectionCommand = asyncCommandFactory.Create(ChangeMyodamConnectionAsync, CanChangeMyodamConnection);
@@ -98,7 +96,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             _documentManager = documentManager;
             _fileManager = fileManager;
             _exceptionHandler = exceptionHandler;
-            _dialogHelpers = dialogHelpers;
             DeviceCalibrationVm = deviceCalibrationViewModel;
 
             _myodamManager.MyodamAvailabilityChanged += OnMyodamAvailabilityChanged;
@@ -152,10 +149,10 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             //    await _testSubjectRepository.ReloadAsync(ts);
             //}
 
-            if (_dialogHelpers.SaveSingleFileDialog("Export.xlsx", out var filePath))
+            if (_dialogService.SaveSingleFileDialog("Export.xlsx", out var filePath))
             {
                 await Task.Run(() => _documentManager.Export(filePath!, subjects));
-                _dialogHelpers.OpenOrShowDir(_fileManager.GetFileDir(filePath));
+                _dialogService.OpenOrShowDir(_fileManager.GetFileDir(filePath));
             }
         }
 

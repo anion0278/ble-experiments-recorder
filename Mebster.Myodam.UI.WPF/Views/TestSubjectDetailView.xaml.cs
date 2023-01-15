@@ -22,10 +22,6 @@ namespace Mebster.Myodam.UI.WPF.Views
         {
             InitializeComponent();
 
-            DefaultLegend customLegend = new DefaultLegend();
-            customLegend.Foreground = System.Windows.Media.Brushes.White;
-            StatisticsGraph.ChartLegend = customLegend;
-
             StatisticsGraphXAxis.LabelFormatter = FormatXAxisLabel;
 
             MaxContractionAxis.LabelFormatter = FormatNumericLabel;
