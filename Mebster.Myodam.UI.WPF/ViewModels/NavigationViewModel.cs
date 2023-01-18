@@ -38,12 +38,16 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         private readonly IDocumentManager _documentManager;
         private readonly IFileSystemManager _fileManager;
         private readonly IGlobalExceptionHandler _exceptionHandler;
-        private readonly ObservableCollection<NavigationAddTestSubjectItemViewModel> _navigationItems = new();
+        private readonly ObservableCollection<NavigationTestSubjectItemViewModel> _navigationItems = new();
         private string _fullNameFilter;
 
         public ListCollectionView TestSubjectsNavigationItems { get; }
 
         public ICommand OpenDetailViewCommand { get; }
+
+        public ICommand SelectAllCommand { get; }
+        public ICommand DeselectAllCommand { get; }
+
         public IAsyncRelayCommand ChangeMyodamConnectionCommand { get; }
 
         public IAsyncRelayCommand ExportSelectedCommand { get; }
@@ -57,6 +61,10 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         public MyodamError DeviceError => _myodamManager.MyodamDevice?.Error ?? MyodamError.NoError;
 
         public IDeviceCalibrationViewModel DeviceCalibrationVm { get; }
+
+        // possible TODO: MVVM approach should provide Filtered ICollectionView and to let decide client (UI) how to use it (count)
+        public int SelectedItemsCount => _navigationItems
+            .Count(i => i.IsSelected);
 
         public string FullNameFilter
         {
@@ -100,7 +108,8 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         {
             ChangeMyodamConnectionCommand = asyncCommandFactory.Create(ChangeMyodamConnectionAsync, CanChangeMyodamConnection);
             ExportSelectedCommand = asyncCommandFactory.Create(ExportSelectedAsync, CanExportSelected);
-            OpenDetailViewCommand = new RelayCommand(OnOpenDetailViewExecute);
+            SelectAllCommand = new RelayCommand(() => _navigationItems.ForEach(i => i.IsSelected = true));
+            DeselectAllCommand = new RelayCommand(() => _navigationItems.ForEach(i => i.IsSelected = false));
 
             _testSubjectRepository = testSubjectRepository;
             _messenger = messenger;
@@ -148,15 +157,13 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         private bool CanExportSelected()
         {
-            return !_myodamManager.IsCurrentlyMeasuring && _navigationItems
-                .OfType<NavigationTestSubjectItemViewModel>()
-                .Count(item => item.IsSelected) > 0;
+            OnPropertyChanged(nameof(SelectedItemsCount));
+            return !_myodamManager.IsCurrentlyMeasuring && SelectedItemsCount > 0;
         }
 
         private async Task ExportSelectedAsync()
         {
             var subjects = _navigationItems
-                .OfType<NavigationTestSubjectItemViewModel>()
                 .Where(item => item.IsSelected)
                 .Select(item => item.Model).ToArray();
 

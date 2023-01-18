@@ -48,7 +48,7 @@
 
     <Grid Margin="3">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.38*"/>
+            <ColumnDefinition Width="0.38*" MinWidth="250"/>
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <views:NavigationView Grid.Column="0" DataContext="{Binding NavigationViewModel}"/>

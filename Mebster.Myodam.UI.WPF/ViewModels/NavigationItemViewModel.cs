@@ -9,6 +9,7 @@ using Mebster.Myodam.UI.WPF.Event;
 
 namespace Mebster.Myodam.UI.WPF.ViewModels
 {
+    // TODO remove, since no longer needed
     public class NavigationTestSubjectItemViewModel : NavigationAddTestSubjectItemViewModel
     {
         public TestSubject Model { get; }
