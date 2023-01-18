@@ -17,6 +17,11 @@
              d:DesignHeight="800" d:DesignWidth="800" 
              d:DataContext="{d:DesignInstance viewModels:MeasurementDetailViewModel, IsDesignTimeCreatable=True}">
     <UserControl.Resources>
+
+        <Style TargetType="livecharts:Separator" >
+            <Setter Property="Stroke" Value="{StaticResource SupplementaryColor}"/>
+        </Style>
+
         <Style x:Key="MeasurementParamComboBoxStyle" TargetType="ComboBox" BasedOn="{StaticResource MeasurementParamComboBox}">
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -190,11 +195,7 @@
                             </livecharts:CartesianChart.AxisY>
 
                             <livecharts:CartesianChart.AxisX>
-                                <livecharts:Axis x:Name="GraphXAxis" MinValue="0" Title="Stimulation current [mA]">
-                                    <!--<livecharts:Axis.Separator>
-                                        <livecharts:Separator Step="10"/>
-                                    </livecharts:Axis.Separator>-->
-                                </livecharts:Axis>
+                                <livecharts:Axis x:Name="GraphXAxis" MinValue="0" Title="Stimulation current [mA]" />
                             </livecharts:CartesianChart.AxisX>
 
                             <livecharts:CartesianChart.SeriesColors>
