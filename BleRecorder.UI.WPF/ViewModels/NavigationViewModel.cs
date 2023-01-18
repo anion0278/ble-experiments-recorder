@@ -12,6 +12,7 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using BleRecorder.Business.Device;
 using BleRecorder.Business.Exception;
+using BleRecorder.Common.Extensions;
 using BleRecorder.DataAccess.DataExport;
 using BleRecorder.DataAccess.FileStorage;
 using BleRecorder.Infrastructure.Bluetooth;
@@ -38,6 +39,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         private readonly IFileSystemManager _fileManager;
         private readonly IGlobalExceptionHandler _exceptionHandler;
         private readonly ObservableCollection<NavigationAddTestSubjectItemViewModel> _navigationItems = new();
+        private string _fullNameFilter;
 
         public ListCollectionView TestSubjectsNavigationItems { get; }
 
@@ -49,11 +51,22 @@ namespace BleRecorder.UI.WPF.ViewModels
         public BleRecorderAvailabilityStatus BleRecorderAvailability => _bleRecorderManager.BleRecorderAvailability;
 
         public int StimulatorBatteryPercentage => (int)(_bleRecorderManager.BleRecorderDevice?.StimulatorBattery.Value ?? 0);
+
         public int ControllerBatteryPercentage => (int)(_bleRecorderManager.BleRecorderDevice?.ControllerBattery.Value ?? 0);
 
         public BleRecorderError DeviceError => _bleRecorderManager.BleRecorderDevice?.Error ?? BleRecorderError.NoError;
 
         public IDeviceCalibrationViewModel DeviceCalibrationVm { get; }
+
+        public string FullNameFilter
+        {
+            get => _fullNameFilter;
+            set
+            {
+                _fullNameFilter = value;
+                TestSubjectsNavigationItems.Filter = string.IsNullOrWhiteSpace(_fullNameFilter) ? null : IsTestSubjectAccepted;
+            }
+        }
 
         /// <summary>
         /// Design-time ctor
@@ -107,6 +120,12 @@ namespace BleRecorder.UI.WPF.ViewModels
 
             TestSubjectsNavigationItems = (ListCollectionView)CollectionViewSource.GetDefaultView(_navigationItems);
             TestSubjectsNavigationItems.CustomSort = new NavigationAddItemViewModelRelationalComparer();
+        }
+
+
+        private bool IsTestSubjectAccepted(object obj)
+        {
+            return obj is NavigationTestSubjectItemViewModel tsVM && tsVM.Model.FullName.ContainsCaseInsensitive(_fullNameFilter);
         }
 
         private void OnOpenDetailViewExecute()
