@@ -174,7 +174,7 @@
                 </Grid>
             </Expander>
 
-            <Expander Grid.Row="9" 
+            <Expander Grid.Row="9" MinHeight="300"
                       Header="Statistics" IsExpanded="True">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -209,21 +209,11 @@
 
                         <wpf:CartesianChart.AxisY>
                             <wpf:Axis x:Name="MaxContractionAxis" Foreground="{StaticResource FocusColor}" MinValue="0" Title="Contraction - Force [N]">
-                                <!--<wpf:Axis.Resources>
-                                    <Style TargetType="wpf:Separator">
-                                        <Setter Property="Stroke" Value="DarkCyan"/>
-                                    </Style>
-                                </wpf:Axis.Resources>-->
                                 <wpf:Axis.Separator>
                                     <wpf:Separator Stroke="{StaticResource FocusColor}"/>
                                 </wpf:Axis.Separator>
                             </wpf:Axis>
                             <wpf:Axis x:Name="IntermittentAxis" Position="RightTop" Foreground="Violet" Title="Intermittent [%]">
-                                <!--<wpf:Axis.Resources>
-                                    <Style TargetType="wpf:Separator">
-                                        <Setter Property="Stroke" Value="DarkOrchid"/>
-                                    </Style>
-                                </wpf:Axis.Resources>-->
                                 <wpf:Axis.Separator>
                                     <wpf:Separator Stroke="DarkOrchid"/>
                                 </wpf:Axis.Separator>
@@ -272,7 +262,7 @@
                         </wpf:CartesianChart.Series>
 
                         <wpf:CartesianChart.ChartHandend>
-                            <wpf:DefaultHandend Foreground="{StaticResource SupplementaryTextColor}"/>
+                            <wpf:DefaultHandend Foreground="{StaticResource SupplementaryColor}"/>
                         </wpf:CartesianChart.ChartHandend>
 
                     </wpf:CartesianChart>

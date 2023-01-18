@@ -26,7 +26,7 @@
                     <SolidColorBrush x:Key="FocusColor" Color="DodgerBlue"/>
                     <SolidColorBrush x:Key="InactiveColor" Color="LightSkyBlue"/>
                     <SolidColorBrush x:Key="AdditionalTextColor" Color="White"/>
-                    <SolidColorBrush x:Key="SupplementaryTextColor" Color="Gray"/>
+                    <SolidColorBrush x:Key="SupplementaryColor" Color="Gray"/>
                     <!--EndRegion-->
 
                     <!--Region Font-->
@@ -77,9 +77,9 @@
 
                     <Style TargetType="livecharts:Axis" >
                         <Setter Property="FontSize" Value="{StaticResource BaseFontSize}"/>
-                        <Setter Property="Foreground" Value="{StaticResource SupplementaryTextColor}"/>
-                    </Style>             
-                    
+                        <Setter Property="Foreground" Value="{StaticResource SupplementaryColor}"/>
+                    </Style>
+
                     <Style TargetType="GroupBox"  BasedOn="{StaticResource {x:Type GroupBox}}">
                         <Setter Property="Foreground" Value="{StaticResource AdditionalTextColor}"/>
                         <Setter Property="FontWeight" Value="Bold"/>

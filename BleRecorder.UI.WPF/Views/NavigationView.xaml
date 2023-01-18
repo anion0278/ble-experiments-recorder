@@ -129,7 +129,7 @@
         <DataTemplate DataType="{x:Type viewModels:NavigationTestSubjectItemViewModel}">
             <Button Content="{Binding DisplayMember}"
               Command="{Binding OpenDetailViewCommand}"
-              Style="{x:Null}">
+              Style="{x:Null}" Margin="-5">
                 <Button.Template>
                     <ControlTemplate TargetType="Button">
                         <Grid x:Name="grid">
