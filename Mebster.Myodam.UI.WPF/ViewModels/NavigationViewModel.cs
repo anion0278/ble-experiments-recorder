@@ -12,6 +12,7 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.Business.Exception;
+using Mebster.Myodam.Common.Extensions;
 using Mebster.Myodam.DataAccess.DataExport;
 using Mebster.Myodam.DataAccess.FileStorage;
 using Mebster.Myodam.Infrastructure.Bluetooth;
@@ -38,6 +39,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         private readonly IFileSystemManager _fileManager;
         private readonly IGlobalExceptionHandler _exceptionHandler;
         private readonly ObservableCollection<NavigationAddTestSubjectItemViewModel> _navigationItems = new();
+        private string _fullNameFilter;
 
         public ListCollectionView TestSubjectsNavigationItems { get; }
 
@@ -49,11 +51,22 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         public MyodamAvailabilityStatus MyodamAvailability => _myodamManager.MyodamAvailability;
 
         public int StimulatorBatteryPercentage => (int)(_myodamManager.MyodamDevice?.StimulatorBattery.Value ?? 0);
+
         public int ControllerBatteryPercentage => (int)(_myodamManager.MyodamDevice?.ControllerBattery.Value ?? 0);
 
         public MyodamError DeviceError => _myodamManager.MyodamDevice?.Error ?? MyodamError.NoError;
 
         public IDeviceCalibrationViewModel DeviceCalibrationVm { get; }
+
+        public string FullNameFilter
+        {
+            get => _fullNameFilter;
+            set
+            {
+                _fullNameFilter = value;
+                TestSubjectsNavigationItems.Filter = string.IsNullOrWhiteSpace(_fullNameFilter) ? null : IsTestSubjectAccepted;
+            }
+        }
 
         /// <summary>
         /// Design-time ctor
@@ -107,6 +120,12 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
             TestSubjectsNavigationItems = (ListCollectionView)CollectionViewSource.GetDefaultView(_navigationItems);
             TestSubjectsNavigationItems.CustomSort = new NavigationAddItemViewModelRelationalComparer();
+        }
+
+
+        private bool IsTestSubjectAccepted(object obj)
+        {
+            return obj is NavigationTestSubjectItemViewModel tsVM && tsVM.Model.FullName.ContainsCaseInsensitive(_fullNameFilter);
         }
 
         private void OnOpenDetailViewExecute()
