@@ -9,6 +9,7 @@ using BleRecorder.UI.WPF.Event;
 
 namespace BleRecorder.UI.WPF.ViewModels
 {
+    // TODO remove, since no longer needed
     public class NavigationTestSubjectItemViewModel : NavigationAddTestSubjectItemViewModel
     {
         public TestSubject Model { get; }

@@ -156,22 +156,6 @@
             </Button>
         </DataTemplate>
 
-        <DataTemplate DataType="{x:Type viewModels:NavigationAddTestSubjectItemViewModel}">
-            <Button FontStyle="Oblique" 
-                    Command="{Binding OpenDetailViewCommand}"
-                    Margin="5" Width="160" HorizontalAlignment="Stretch">
-                <Button.Content>
-                    <Grid x:Name="grid">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <icon:PackIconMaterial Height="15" Kind="AccountPlus" Margin="0 0 5 0" />
-                        <TextBlock Grid.Column="1" Text="Add new test subject" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    </Grid>
-                </Button.Content>
-            </Button>
-        </DataTemplate>
         <!--EndRegion-->
     </UserControl.Resources>
 
@@ -201,8 +185,22 @@
                                   ItemContainerStyle="{StaticResource NavigationItemContainerStyle}"
                                   Margin="10"/>
                 </ScrollViewer>
-                <Button Grid.Row="2" Content="Export selected" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
-                        Command="{Binding ExportSelectedCommand}"/>
+                <Grid Grid.Row="2" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <!--Can be solved with Attached Behavior-->
+                    <CheckBox Grid.Column="0" HorizontalAlignment="Center"   x:Name="CheckedBox" IsChecked="True" 
+                              ToolTip="Select all" Command="{Binding SelectAllCommand}" Unchecked="CheckedBox_Unchecked"/>
+                    <Button Grid.Column="1" HorizontalAlignment="Center"  Content="{Binding SelectedItemsCount}" ContentStringFormat="{}Export selected ({0})" 
+                            extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
+                            Command="{Binding ExportSelectedCommand}"/>
+                    <CheckBox Grid.Column="2" x:Name="UncheckedBox" HorizontalAlignment="Center" IsChecked="False" 
+                              ToolTip="Deselect all" Command="{Binding DeselectAllCommand}" Checked="CheckBox_Checked"/>
+                </Grid>
             </Grid>
         </GroupBox>
         <GroupBox Grid.Row="1" MinHeight="200" Header="Device status">
