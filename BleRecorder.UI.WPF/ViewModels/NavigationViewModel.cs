@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using DocumentFormat.OpenXml.Bibliography;
 using BleRecorder.Business.Device;
 using BleRecorder.Business.Exception;
 using BleRecorder.Common.Extensions;
@@ -45,8 +46,8 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         public ICommand OpenDetailViewCommand { get; }
 
-        public ICommand SelectAllCommand { get; }
-        public ICommand DeselectAllCommand { get; }
+        public ICommand SelectAllFilteredCommand { get; }
+        public ICommand DeselectAllFilteredCommand { get; }
 
         public IAsyncRelayCommand ChangeBleRecorderConnectionCommand { get; }
 
@@ -106,10 +107,13 @@ namespace BleRecorder.UI.WPF.ViewModels
             IGlobalExceptionHandler exceptionHandler,
             IAsyncRelayCommandFactory asyncCommandFactory)
         {
+            TestSubjectsNavigationItems = (ListCollectionView)CollectionViewSource.GetDefaultView(_navigationItems);
+            TestSubjectsNavigationItems.CustomSort = new NavigationAddItemViewModelRelationalComparer();
+
             ChangeBleRecorderConnectionCommand = asyncCommandFactory.Create(ChangeBleRecorderConnectionAsync, CanChangeBleRecorderConnection);
             ExportSelectedCommand = asyncCommandFactory.Create(ExportSelectedAsync, CanExportSelected);
-            SelectAllCommand = new RelayCommand(() => _navigationItems.ForEach(i => i.IsSelected = true));
-            DeselectAllCommand = new RelayCommand(() => _navigationItems.ForEach(i => i.IsSelected = false));
+            SelectAllFilteredCommand = new RelayCommand(() => TestSubjectsNavigationItems.Cast<NavigationTestSubjectItemViewModel>().ForEach(i => i.IsSelected = true));
+            DeselectAllFilteredCommand = new RelayCommand(() => TestSubjectsNavigationItems.Cast<NavigationTestSubjectItemViewModel>().ForEach(i => i.IsSelected = false));
 
             _testSubjectRepository = testSubjectRepository;
             _messenger = messenger;
@@ -126,9 +130,6 @@ namespace BleRecorder.UI.WPF.ViewModels
             _bleRecorderManager.MeasurementStatusChanged += OnBleRecorderAvailabilityChanged; // yes, same handler
             _messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
             _messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
-
-            TestSubjectsNavigationItems = (ListCollectionView)CollectionViewSource.GetDefaultView(_navigationItems);
-            TestSubjectsNavigationItems.CustomSort = new NavigationAddItemViewModelRelationalComparer();
         }
 
 

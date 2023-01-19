@@ -194,12 +194,12 @@
 
                     <!--Can be solved with Attached Behavior-->
                     <CheckBox Grid.Column="0" HorizontalAlignment="Center"   x:Name="CheckedBox" IsChecked="True" 
-                              ToolTip="Select all" Command="{Binding SelectAllCommand}" Unchecked="CheckedBox_Unchecked"/>
+                              ToolTip="Select all from filtered" Command="{Binding SelectAllFilteredCommand}" Unchecked="CheckedBox_Unchecked"/>
                     <Button Grid.Column="1" HorizontalAlignment="Center"  Content="{Binding SelectedItemsCount}" ContentStringFormat="{}Export selected ({0})" 
                             extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
                             Command="{Binding ExportSelectedCommand}"/>
                     <CheckBox Grid.Column="2" x:Name="UncheckedBox" HorizontalAlignment="Center" IsChecked="False" 
-                              ToolTip="Deselect all" Command="{Binding DeselectAllCommand}" Checked="CheckBox_Checked"/>
+                              ToolTip="Deselect all from filtered" Command="{Binding DeselectAllFilteredCommand}" Checked="CheckBox_Checked"/>
                 </Grid>
             </Grid>
         </GroupBox>
