@@ -9,5 +9,8 @@ namespace Mebster.Myodam.UI.WPF.ViewModels.Services
     MessageDialogResult ShowYesNoDialog(string text, string title);
     Task ShowInfoDialogAsync(string text);
     void ShowInfoDialog(string text);
-  }
+
+    bool SaveSingleFileDialog(string predefinedName, out string? selectedFileName);
+    void OpenOrShowDir(string dirName);
+    }
 }

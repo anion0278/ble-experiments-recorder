@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Mebster.Myodam.DataAccess.FileStorage;
 using Mebster.Myodam.Models.Device;
+using Mebster.Myodam.UI.WPF.Views.Resouces;
 
 namespace Mebster.Myodam.UI.WPF.ViewModels.Services;
 

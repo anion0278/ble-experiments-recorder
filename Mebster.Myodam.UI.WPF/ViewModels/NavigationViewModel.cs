@@ -10,8 +10,10 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using DocumentFormat.OpenXml.Bibliography;
 using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.Business.Exception;
+using Mebster.Myodam.Common.Extensions;
 using Mebster.Myodam.DataAccess.DataExport;
 using Mebster.Myodam.DataAccess.FileStorage;
 using Mebster.Myodam.Infrastructure.Bluetooth;
@@ -21,6 +23,7 @@ using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.Event;
 using Mebster.Myodam.UI.WPF.Exception;
 using Mebster.Myodam.UI.WPF.ViewModels.Services;
+using Mebster.Myodam.UI.WPF.Views.Resouces;
 using Microsoft.AppCenter;
 using Microsoft.Win32;
 using Swordfish.NET.Collections.Auxiliary;
@@ -36,11 +39,16 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         private readonly IDocumentManager _documentManager;
         private readonly IFileSystemManager _fileManager;
         private readonly IGlobalExceptionHandler _exceptionHandler;
-        private readonly ObservableCollection<NavigationAddTestSubjectItemViewModel> _navigationItems = new();
+        private readonly ObservableCollection<NavigationTestSubjectItemViewModel> _navigationItems = new();
+        private string _fullNameFilter;
 
         public ListCollectionView TestSubjectsNavigationItems { get; }
 
         public ICommand OpenDetailViewCommand { get; }
+
+        public ICommand SelectAllFilteredCommand { get; }
+        public ICommand DeselectAllFilteredCommand { get; }
+
         public IAsyncRelayCommand ChangeMyodamConnectionCommand { get; }
 
         public IAsyncRelayCommand ExportSelectedCommand { get; }
@@ -48,11 +56,26 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         public MyodamAvailabilityStatus MyodamAvailability => _myodamManager.MyodamAvailability;
 
         public int StimulatorBatteryPercentage => (int)(_myodamManager.MyodamDevice?.StimulatorBattery.Value ?? 0);
+
         public int ControllerBatteryPercentage => (int)(_myodamManager.MyodamDevice?.ControllerBattery.Value ?? 0);
 
         public MyodamError DeviceError => _myodamManager.MyodamDevice?.Error ?? MyodamError.NoError;
 
         public IDeviceCalibrationViewModel DeviceCalibrationVm { get; }
+
+        // possible TODO: MVVM approach should provide Filtered ICollectionView and to let decide client (UI) how to use it (count)
+        public int SelectedItemsCount => _navigationItems
+            .Count(i => i.IsSelected);
+
+        public string FullNameFilter
+        {
+            get => _fullNameFilter;
+            set
+            {
+                _fullNameFilter = value;
+                TestSubjectsNavigationItems.Filter = string.IsNullOrWhiteSpace(_fullNameFilter) ? null : IsTestSubjectAccepted;
+            }
+        }
 
         /// <summary>
         /// Design-time ctor
@@ -84,9 +107,13 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             IGlobalExceptionHandler exceptionHandler,
             IAsyncRelayCommandFactory asyncCommandFactory)
         {
+            TestSubjectsNavigationItems = (ListCollectionView)CollectionViewSource.GetDefaultView(_navigationItems);
+            TestSubjectsNavigationItems.CustomSort = new NavigationAddItemViewModelRelationalComparer();
+
             ChangeMyodamConnectionCommand = asyncCommandFactory.Create(ChangeMyodamConnectionAsync, CanChangeMyodamConnection);
             ExportSelectedCommand = asyncCommandFactory.Create(ExportSelectedAsync, CanExportSelected);
-            OpenDetailViewCommand = new RelayCommand(OnOpenDetailViewExecute);
+            SelectAllFilteredCommand = new RelayCommand(() => TestSubjectsNavigationItems.Cast<NavigationTestSubjectItemViewModel>().ForEach(i => i.IsSelected = true));
+            DeselectAllFilteredCommand = new RelayCommand(() => TestSubjectsNavigationItems.Cast<NavigationTestSubjectItemViewModel>().ForEach(i => i.IsSelected = false));
 
             _testSubjectRepository = testSubjectRepository;
             _messenger = messenger;
@@ -103,9 +130,12 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             _myodamManager.MeasurementStatusChanged += OnMyodamAvailabilityChanged; // yes, same handler
             _messenger.Register<AfterDetailSavedEventArgs>(this, (s, e) => AfterDetailSaved(e));
             _messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
+        }
 
-            TestSubjectsNavigationItems = (ListCollectionView)CollectionViewSource.GetDefaultView(_navigationItems);
-            TestSubjectsNavigationItems.CustomSort = new NavigationAddItemViewModelRelationalComparer();
+
+        private bool IsTestSubjectAccepted(object obj)
+        {
+            return obj is NavigationTestSubjectItemViewModel tsVM && tsVM.Model.FullName.ContainsCaseInsensitive(_fullNameFilter);
         }
 
         private void OnOpenDetailViewExecute()
@@ -128,15 +158,13 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         private bool CanExportSelected()
         {
-            return !_myodamManager.IsCurrentlyMeasuring && _navigationItems
-                .OfType<NavigationTestSubjectItemViewModel>()
-                .Count(item => item.IsSelected) > 0;
+            OnPropertyChanged(nameof(SelectedItemsCount));
+            return !_myodamManager.IsCurrentlyMeasuring && SelectedItemsCount > 0;
         }
 
         private async Task ExportSelectedAsync()
         {
             var subjects = _navigationItems
-                .OfType<NavigationTestSubjectItemViewModel>()
                 .Where(item => item.IsSelected)
                 .Select(item => item.Model).ToArray();
 
@@ -148,10 +176,10 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             //    await _testSubjectRepository.ReloadAsync(ts);
             //}
 
-            if (_fileManager.SaveSingleFileDialog("Export.xlsx", out var filePath))
+            if (_dialogService.SaveSingleFileDialog("Export.xlsx", out var filePath))
             {
                 await Task.Run(() => _documentManager.Export(filePath!, subjects));
-                _fileManager.OpenOrShowDir(_fileManager.GetFileDir(filePath));
+                _dialogService.OpenOrShowDir(_fileManager.GetFileDir(filePath));
             }
         }
 

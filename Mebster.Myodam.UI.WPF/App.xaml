@@ -6,6 +6,8 @@
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:views="clr-namespace:Mebster.Myodam.UI.WPF.Views"
              xmlns:resouces="clr-namespace:Mebster.Myodam.UI.WPF.Views.Resouces"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             xmlns:livecharts="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
              Startup="Application_Startup"
              Exit="Application_OnExit">
     <Application.Resources>
@@ -14,13 +16,22 @@
                 <!-- MahApps.Metro resource dictionaries. Make sure that all file names are Case Sensitive! -->
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/dark.indigo.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/light.blue.xaml" />
 
                 <ResourceDictionary>
                     <!--Region Colors-->
                     <SolidColorBrush x:Key="MebsterColor" Color="#322882"/>
-                    <SolidColorBrush x:Key="ErrorColor" Color="DarkRed"/>
+                    <SolidColorBrush x:Key="ErrorColor" Color="LightCoral"/>
                     <SolidColorBrush x:Key="ErrorTextColor" Color="OrangeRed"/>
+                    <SolidColorBrush x:Key="FocusColor" Color="DodgerBlue"/>
+                    <SolidColorBrush x:Key="InactiveColor" Color="LightSkyBlue"/>
+                    <SolidColorBrush x:Key="AdditionalTextColor" Color="White"/>
+                    <SolidColorBrush x:Key="SupplementaryColor" Color="Gray"/>
+                    <!--EndRegion-->
+
+                    <!--Region Font-->
+                    <system:Double x:Key="BaseFontSize">16</system:Double>
+                    <system:Double x:Key="ErrorFontSize">14</system:Double>
                     <!--EndRegion-->
 
                     <!--Region Implicit MVVM teplates-->
@@ -32,50 +43,67 @@
                     </DataTemplate>
                     <!--EndRegion-->
 
+
                     <!-- Region Implicit GLOBAL styles -->
+                    <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                        <Setter Property="FontSize" Value="{StaticResource BaseFontSize}"/>
+                    </Style>
+
                     <Style TargetType="mah:NumericUpDown" BasedOn="{StaticResource {x:Type mah:NumericUpDown}}">
                         <Setter Property="Margin" Value="3"/>
                         <Setter Property="FontWeight" Value="Bold"/>
                         <Setter Property="TextAlignment" Value="Center"/>
-                        <Setter Property="FontSize" Value="12"/>
+                        <Setter Property="FontSize" Value="{StaticResource BaseFontSize}"/>
                     </Style>
 
                     <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                        <Setter Property="FontSize" Value="12"/>
-                        <Setter Property="Width" Value="150"/>
+                        <Setter Property="Width" Value="180"/>
                         <Setter Property="Margin" Value="10"/>
                         <Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
+                        <Setter Property="mah:ControlsHelper.ContentCharacterCasing" Value="Normal"/>
+                        <Setter Property="FontSize" Value="{StaticResource BaseFontSize}"/>
                     </Style>
 
                     <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
                         <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                        <Setter Property="FontSize" Value="12"/>
                         <Setter Property="FontWeight" Value="Bold"/>
                         <Setter Property="Margin" Value="3"/>
+                        <Setter Property="FontSize" Value="{StaticResource BaseFontSize}"/>
                     </Style>
 
+                    <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                        <Setter Property="mah:ControlsHelper.ContentCharacterCasing" Value="Normal"/>
+                    </Style>
 
-                    <!--<Style TargetType="GroupBox"  BasedOn="{StaticResource {x:Type GroupBox}}">
-                        <Setter Property="FontSize" Value="12"/>
+                    <Style TargetType="livecharts:Axis" >
+                        <Setter Property="FontSize" Value="{StaticResource BaseFontSize}"/>
+                        <Setter Property="Foreground" Value="{StaticResource SupplementaryColor}"/>
+                    </Style>
+
+                    <Style TargetType="GroupBox"  BasedOn="{StaticResource {x:Type GroupBox}}">
+                        <Setter Property="Foreground" Value="{StaticResource AdditionalTextColor}"/>
                         <Setter Property="FontWeight" Value="Bold"/>
                         <Setter Property="mah:ControlsHelper.ContentCharacterCasing" Value="Normal"/>
-                    </Style>-->
+                        <Setter Property="FontSize" Value="{StaticResource BaseFontSize}"/>
+                    </Style>
 
                     <Style TargetType="Expander"  BasedOn="{StaticResource {x:Type Expander}}">
                         <Setter Property="mah:ControlsHelper.ContentCharacterCasing" Value="Normal"/>
                         <Setter Property="Margin" Value="0 10 0 0"/>
+                        <Setter Property="FontSize" Value="{StaticResource BaseFontSize}"/>
                     </Style>
 
                     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-                        <Setter Property="FontSize" Value="14"/>
                         <Setter Property="Margin" Value="0 0 0 12"/>
+                        <Setter Property="FontSize" Value="{StaticResource BaseFontSize}"/>
                         <Setter Property="VerticalAlignment" Value="Center"/>
                         <Setter Property="Validation.ErrorTemplate">
                             <Setter.Value>
                                 <ControlTemplate>
                                     <StackPanel>
                                         <AdornedElementPlaceholder x:Name="placeholder"/>
-                                        <TextBlock FontSize="10" Foreground="{StaticResource ErrorTextColor}" 
+                                        <TextBlock Foreground="{StaticResource ErrorTextColor}" 
+                                                   FontSize="{StaticResource ErrorFontSize}"
                                                    Text="{Binding ElementName=placeholder, 
                                                     Path=AdornedElement.(Validation.Errors)/ErrorContent}"/>
                                     </StackPanel>
@@ -92,10 +120,9 @@
                     </Style>
 
                     <Style TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
-                        <Setter Property="Foreground" Value="#CCCCCC"/>
                         <Setter Property="VerticalAlignment" Value="Center"/>
+                        <Setter Property="Foreground" Value="Black"/>
                     </Style>
-                    <!-- EndRegion -->
 
                     <!-- Region Converters -->
                     <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter"/>
@@ -122,6 +149,7 @@
 
                     <Style x:Key="MeasurementParamNumericBox" TargetType="mah:NumericUpDown" BasedOn="{StaticResource {x:Type mah:NumericUpDown}}">
                         <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
+                        <Setter Property="Foreground" Value="Black"/>
                         <Style.Triggers>
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter Property="ToolTip" Value="Measurement parameters can be changed only if the measurement data are empty."/>

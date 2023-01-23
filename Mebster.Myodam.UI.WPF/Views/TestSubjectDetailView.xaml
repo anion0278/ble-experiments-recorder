@@ -26,10 +26,10 @@
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type GroupItem}">
-                                <Expander IsExpanded="True" BorderThickness="0" Background="DarkSlateBlue" IsTabStop="False" Style="{x:Null}">
+                                <Expander IsExpanded="True" BorderThickness="0" Background="{StaticResource InactiveColor}" IsTabStop="False" Style="{x:Null}">
                                     <Expander.Header>
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock FontSize="11" FontStyle="Italic" Foreground="White">
+                                            <TextBlock FontStyle="Italic">
                                                 <TextBlock.Text>
                                                     <MultiBinding StringFormat="Grouped by measurement type: {0}, Items: {1}">
                                                         <Binding Path="Name" />
@@ -61,7 +61,7 @@
                     <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource {x:Type DataGridCell}}">
                         <Style.Triggers>
                             <Trigger Property="DataGridCell.IsSelected" Value="True">
-                                <Setter Property="Background" Value="DodgerBlue" />
+                                <Setter Property="Background" Value="{StaticResource FocusColor}" />
                                 <Setter Property="BorderThickness" Value="0" />
                             </Trigger>
                         </Style.Triggers>
@@ -106,15 +106,15 @@
                 <RowDefinition />
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Label Content="First name"/>
+            <Label Content="First name:"/>
             <TextBox Grid.Row="1" MaxLength="25" 
                      Text="{Binding FirstName, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" />
 
-            <Label Grid.Row="2" Content="Last name"/>
+            <Label Grid.Row="2" Content="Last name:"/>
             <TextBox Grid.Row="3" MaxLength="25" 
                      Text="{Binding LastName, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" />
 
-            <Label Grid.Row="4" Content="Notes"/>
+            <Label Grid.Row="4" Content="Notes:"/>
             <TextBox Grid.Row="5" Style="{StaticResource NotesTextBox}"
                      Text="{Binding Notes, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" />
 
@@ -139,7 +139,8 @@
                     </Grid.ColumnDefinitions>
 
                     <DataGrid x:Name="MeasurementsGrid" IsSynchronizedWithCurrentItem="True"
-                          ItemsSource="{Binding Measurements}">
+                              d:DataContext="{d:DesignInstance testSubject:Measurement}"
+                              ItemsSource="{Binding Measurements}">
                         <DataGrid.GroupStyle>
                             <StaticResource ResourceKey="MeasurementDataGridGroupStyle" />
                         </DataGrid.GroupStyle>
@@ -151,11 +152,11 @@
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Measurement title" Width="*" IsReadOnly="True"
                                             Binding="{Binding Title}"/>
-                            <DataGridTextColumn Header="Experiment Date" Width="130" IsReadOnly="True"
+                            <DataGridTextColumn Header="Experiment Date" Width="150" IsReadOnly="True"
                                             Binding="{Binding Date, StringFormat='{}{0:dd MMM. yyyy, HH:mm}', TargetNullValue='Not completed'}"/>
-                            <DataGridTextColumn Header="Type" Width="130"  IsReadOnly="True"
+                            <DataGridTextColumn Header="Type" Width="170"  IsReadOnly="True"
                                             Binding="{Binding Type, Converter={StaticResource enumDescriptionConverter}}"/>
-                            <DataGridTextColumn Header="Site" Width="60" IsReadOnly="True"
+                            <DataGridTextColumn Header="Site" Width="75" IsReadOnly="True"
                                             Binding="{Binding SiteDuringMeasurement, Converter={StaticResource enumDescriptionConverter}}"/>
                             <DataGridTextColumn Header="Position" Width="80"  IsReadOnly="True"
                                             Binding="{Binding PositionDuringMeasurement, Converter={StaticResource enumDescriptionConverter}}"/>
@@ -173,7 +174,7 @@
                 </Grid>
             </Expander>
 
-            <Expander Grid.Row="9" 
+            <Expander Grid.Row="9" MinHeight="300"
                       Header="Statistics" IsExpanded="True">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -181,29 +182,11 @@
                         <RowDefinition/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-
-                    <TextBlock Grid.Row="1" x:Name="GraphInsufficientDataMessage"
-                               Text="Insufficient data for statistics"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center" Padding="16"
-                               Background="{StaticResource MebsterColor}"
-                               FontSize="18" FontWeight="DemiBold">
-                        <TextBlock.Visibility>
-                            <MultiBinding Converter="{StaticResource multiCollectionToVisibilityConverter}">
-                                <Binding Path="MaxContractionStatisticValues" />
-                                <Binding Path="FatigueStatisticValues" />
-                            </MultiBinding>
-                        </TextBlock.Visibility>
-                    </TextBlock>
-
+                
                     <wpf:CartesianChart Grid.Row="0" Grid.RowSpan="3" x:Name="StatisticsGraph" Foreground="{StaticResource MebsterColor}"
                                         DisableAnimations="True" MinHeight="230" 
                                         LegendLocation="Bottom" Margin="10 10 10 0">
-                        <wpf:CartesianChart.Resources>
-                            <!--<Style TargetType="wpf:Separator">
-                                <Setter Property="Stroke" Value="DimGray"/>
-                            </Style>-->
-                        </wpf:CartesianChart.Resources>
+
                         <wpf:CartesianChart.Style>
                             <Style TargetType="wpf:CartesianChart">
                                 <Setter Property="DataTooltip">
@@ -225,22 +208,12 @@
                         </wpf:CartesianChart.Style>
 
                         <wpf:CartesianChart.AxisY>
-                            <wpf:Axis x:Name="MaxContractionAxis" Foreground="Aqua" MinValue="0" Title="Contraction - Torque [Nm]">
-                                <!--<wpf:Axis.Resources>
-                                    <Style TargetType="wpf:Separator">
-                                        <Setter Property="Stroke" Value="DarkCyan"/>
-                                    </Style>
-                                </wpf:Axis.Resources>-->
+                            <wpf:Axis x:Name="MaxContractionAxis" Foreground="{StaticResource FocusColor}" MinValue="0" Title="Contraction - Force [N]">
                                 <wpf:Axis.Separator>
-                                    <wpf:Separator Stroke="CadetBlue"/>
+                                    <wpf:Separator Stroke="{StaticResource FocusColor}"/>
                                 </wpf:Axis.Separator>
                             </wpf:Axis>
                             <wpf:Axis x:Name="FatigueAxis" Position="RightTop" Foreground="Violet" Title="Fatigue [%]">
-                                <!--<wpf:Axis.Resources>
-                                    <Style TargetType="wpf:Separator">
-                                        <Setter Property="Stroke" Value="DarkOrchid"/>
-                                    </Style>
-                                </wpf:Axis.Resources>-->
                                 <wpf:Axis.Separator>
                                     <wpf:Separator Stroke="DarkOrchid"/>
                                 </wpf:Axis.Separator>
@@ -248,7 +221,7 @@
                         </wpf:CartesianChart.AxisY>
 
                         <wpf:CartesianChart.AxisX>
-                            <wpf:Axis x:Name="StatisticsGraphXAxis" LabelsRotation="60" Title="Date">
+                            <wpf:Axis x:Name="StatisticsGraphXAxis" LabelsRotation="60" Title="Date" FontSize="12">
                                 <wpf:Axis.Separator>
                                     <!--IsEnabled = False disables the vertical lines-->
                                     <wpf:Separator Step="1" IsEnabled="True"  />
@@ -279,7 +252,7 @@
 
                         <wpf:CartesianChart.Series>
                             <wpf:LineSeries Title="Maximum contraction trend" LineSmoothness="0"
-                                            ScalesYAt="0"
+                                            ScalesYAt="0" 
                                             Values="{Binding MaxContractionStatisticValues}"
                                             Configuration="{StaticResource chartPointMapper}" />
                             <wpf:LineSeries Title="Fatigue percentage trend" LineSmoothness="0"
@@ -287,14 +260,35 @@
                                             Values="{Binding FatigueStatisticValues}"
                                             Configuration="{StaticResource chartPointMapper}" />
                         </wpf:CartesianChart.Series>
+
+                        <wpf:CartesianChart.ChartLegend>
+                            <wpf:DefaultLegend Foreground="{StaticResource SupplementaryColor}"/>
+                        </wpf:CartesianChart.ChartLegend>
+
                     </wpf:CartesianChart>
+
+                    <TextBlock Grid.Row="1" x:Name="GraphInsufficientDataMessage"
+                               Text="Insufficient data for statistics"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center" Padding="16"
+                               Foreground="{StaticResource AdditionalTextColor}"
+                               Background="{StaticResource FocusColor}"
+                               FontSize="18" FontWeight="DemiBold">
+                        <TextBlock.Visibility>
+                            <MultiBinding Converter="{StaticResource multiCollectionToVisibilityConverter}">
+                                <Binding Path="MaxContractionStatisticValues" />
+                                <Binding Path="FatigueStatisticValues" />
+                            </MultiBinding>
+                        </TextBlock.Visibility>
+                    </TextBlock>
+
                 </Grid>
             </Expander>
 
             <StackPanel Grid.Row="10" Orientation="Horizontal">
-                <Button Content="Save Subject" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
+                <Button Content="Save subject" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
                     Command="{Binding SaveCommand}"/>
-                <Button Content="Delete Subject" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
+                <Button Content="Delete subject" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
                     Command="{Binding DeleteCommand}"/>
             </StackPanel>
         </Grid>

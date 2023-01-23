@@ -124,6 +124,7 @@ public class MyodamDevice : IMyodamDevice
 
     public async Task SendMsgAsync(MyodamRequestMessage message)
     {
+        //Debug.Print("Msg: " + message.FormatForSending());
         await _bleDeviceHandler.SendAsync(message.FormatForSending());
     }
 

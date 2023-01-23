@@ -25,6 +25,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Helpers\**" />
+	  <EmbeddedResource Remove="Helpers\**" />
+	  <None Remove="Helpers\**" />
+	  <Page Remove="Helpers\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <None Remove="Assets\Bottom_cut.png" />
 	  <None Remove="Assets\ISO.png" />
 	  <None Remove="Assets\myodam_mechanical_adjustment.png" />
@@ -101,7 +108,7 @@
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	  <None Update="Mebster.Myodam.Experiments.db">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	  </None>
 	  <None Update="Properties\Settings.settings">
 	    <Generator>SettingsSingleFileGenerator</Generator>
@@ -111,7 +118,6 @@
 
 	<ItemGroup>
 	  <Folder Include="Exception\" />
-	  <Folder Include="Helpers\" />
 	</ItemGroup>
 
 	<ItemGroup>

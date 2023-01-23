@@ -13,6 +13,7 @@ using Mebster.Myodam.UI.WPF.Exception;
 using Mebster.Myodam.UI.WPF.ViewModels;
 using Mebster.Myodam.UI.WPF.ViewModels.Services;
 using Mebster.Myodam.UI.WPF.Views;
+using Mebster.Myodam.UI.WPF.Views.Resouces;
 
 namespace Mebster.Myodam.UI.WPF.Startup
 {
