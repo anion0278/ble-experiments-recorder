@@ -114,6 +114,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             ExportSelectedCommand = asyncCommandFactory.Create(ExportSelectedAsync, CanExportSelected);
             SelectAllFilteredCommand = new RelayCommand(() => TestSubjectsNavigationItems.Cast<NavigationTestSubjectItemViewModel>().ForEach(i => i.IsSelected = true));
             DeselectAllFilteredCommand = new RelayCommand(() => TestSubjectsNavigationItems.Cast<NavigationTestSubjectItemViewModel>().ForEach(i => i.IsSelected = false));
+            OpenDetailViewCommand = new RelayCommand(OnOpenDetailViewExecute);
 
             _testSubjectRepository = testSubjectRepository;
             _messenger = messenger;

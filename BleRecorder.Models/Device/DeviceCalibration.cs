@@ -10,7 +10,7 @@ public class DeviceCalibration
     private const double DefaultParametersValue = 0;
     public double NoLoadSensorValue { get; set; }
     public double NominalLoadSensorValue { get; set; }
-    public double NominalLoad { get; set; }
+    public double NominalLoadNewtonMeters { get; set; }
     public double LeverLengthMeters { get; set; }
 
     public void UpdateCalibration()
@@ -19,7 +19,7 @@ public class DeviceCalibration
 
         _linearEquation = new LinearEquation(
             new CalibrationData(NoLoadSensorValue, 0),
-            new CalibrationData(NominalLoadSensorValue, NominalLoad));
+            new CalibrationData(NominalLoadSensorValue, NominalLoadNewtonMeters));
     }
 
     public static DeviceCalibration GetDefaultValues() 
@@ -28,7 +28,7 @@ public class DeviceCalibration
         {
             NoLoadSensorValue = DefaultParametersValue, 
             NominalLoadSensorValue = DefaultParametersValue, 
-            NominalLoad = DefaultParametersValue
+            NominalLoadNewtonMeters = DefaultParametersValue
         };
     }
 
@@ -41,7 +41,7 @@ public class DeviceCalibration
     {
         return NominalLoadSensorValue != DefaultParametersValue 
                && NoLoadSensorValue != DefaultParametersValue
-               && NominalLoad != DefaultParametersValue
+               && NominalLoadNewtonMeters != DefaultParametersValue
                && LeverLengthMeters != DefaultParametersValue
                && NominalLoadSensorValue > NoLoadSensorValue; 
     }

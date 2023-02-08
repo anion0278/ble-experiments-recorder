@@ -89,6 +89,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             _detailViewModelCreator = detailViewModelCreator;
             _dialogService = dialogService;
 
+
             DetailViewModels = CollectionViewSource.GetDefaultView(_detailViewModels);
 
             _messenger.Register<OpenDetailViewEventArgs>(this, (s, e) => OnOpenDetailViewAsync(e));
