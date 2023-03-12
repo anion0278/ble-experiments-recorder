@@ -28,7 +28,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         private readonly IBleRecorderManager _bleRecorderManager;
         private readonly IStimulationParametersRepository _stimulationParametersRepository;
         private readonly IMessageDialogService _dialogService;
-        private readonly IIndex<string, IDetailViewModel> _detailViewModelCreator; // TODO change
+        private readonly IIndex<string, IDetailViewModel> _detailViewModelCreator; // TODO change, ViewModelFactory would be cleaner
         private IDetailViewModel? _selectedDetailViewModel;
         private readonly ObservableCollection<IDetailViewModel> _detailViewModels = new();
 

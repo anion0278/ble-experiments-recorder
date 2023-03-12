@@ -1,4 +1,8 @@
-﻿using Autofac;
+﻿using System;
+using System.Linq;
+using System.Reflection;
+using Autofac;
+using Autofac.Util;
 using AutoMapper;
 using CommunityToolkit.Mvvm.Messaging;
 using BleRecorder.Business.Device;
@@ -10,6 +14,7 @@ using BleRecorder.Infrastructure.Bluetooth;
 using BleRecorder.Models.Device;
 using BleRecorder.UI.WPF.Data.Repositories;
 using BleRecorder.UI.WPF.Exception;
+using BleRecorder.UI.WPF.Extensions;
 using BleRecorder.UI.WPF.ViewModels;
 using BleRecorder.UI.WPF.ViewModels.Services;
 using BleRecorder.UI.WPF.Views;
@@ -27,34 +32,35 @@ namespace BleRecorder.UI.WPF.Startup
             builder.RegisterInstance<IMessenger>(WeakReferenceMessenger.Default);
             builder.RegisterInstance<IMapper>(SetupMapper());
 
-            builder.RegisterType<MainWindow>().AsSelf().SingleInstance();
-            builder.RegisterType<MainViewModel>().AsSelf().SingleInstance();
-            builder.RegisterType<NavigationViewModel>().As<INavigationViewModel>().SingleInstance();
             builder.RegisterType<TestSubjectDetailViewModel>().Keyed<IDetailViewModel>(nameof(TestSubjectDetailViewModel));
             builder.RegisterType<MeasurementDetailViewModel>().Keyed<IDetailViewModel>(nameof(MeasurementDetailViewModel));
-            builder.RegisterType<DeviceCalibrationViewModel>().As<IDeviceCalibrationViewModel>().SingleInstance();
-
-            builder.RegisterType<MessageDialogService>().As<IMessageDialogService>().SingleInstance();
-            builder.RegisterType<AppCenterIntegration>().As<IAppCenterIntegration>().SingleInstance();
-            builder.RegisterType<Logger>().As<ILogger>().SingleInstance();
-            builder.RegisterType<GlobalExceptionHandler>().As<IGlobalExceptionHandler>().SingleInstance();
-            builder.RegisterType<AsyncRelayCommandFactory>().As<IAsyncRelayCommandFactory>().SingleInstance();
-            builder.RegisterType<DateTimeService>().As<IDateTimeService>().SingleInstance();
-            builder.RegisterType<AppConfigurationLoader>().As<IAppConfigurationLoader>();
-
-            builder.RegisterType<BluetoothManager>().As<IBluetoothManager>().SingleInstance();
-            builder.RegisterType<BleRecorderReplyParser>().As<IBleRecorderReplyParser>().SingleInstance();
-            builder.RegisterType<BleRecorderManagerUiWrapper>().As<IBleRecorderManager>().SingleInstance();
-            builder.RegisterType<BleRecorderManager>().SingleInstance();
-            builder.RegisterType<SynchronizationContextProvider>().As<ISynchronizationContextProvider>().SingleInstance();
-
             builder.RegisterType<ExperimentsDbContext>().AsSelf();
-            builder.RegisterType<TestSubjectRepository>().As<ITestSubjectRepository>();
-            builder.RegisterType<MeasurementRepository>().As<IMeasurementRepository>();
-            builder.RegisterType<StimulationParametersRepository>().As<IStimulationParametersRepository>();
-            builder.RegisterType<FileSystemManager>().As<IFileSystemManager>();
-            builder.RegisterType<JsonManager>().As<IJsonManager>();
-            builder.RegisterType<ExcelDocumentManager>().As<IDocumentManager>();
+            builder.RegisterType<MainWindow>().AsSelf();
+            builder.RegisterType<MainViewModel>().AsSelf();
+
+            builder.RegisterAsInterfaceSingleton<NavigationViewModel>();
+            builder.RegisterAsInterfaceSingleton<DeviceCalibrationViewModel>();
+
+            builder.RegisterAsInterfaceSingleton<MessageDialogService>();
+            builder.RegisterAsInterfaceSingleton<AppCenterIntegration>();
+            builder.RegisterAsInterfaceSingleton<Logger>();
+            builder.RegisterAsInterfaceSingleton<AsyncRelayCommandFactory>();
+            builder.RegisterAsInterfaceSingleton<DateTimeService>();
+            builder.RegisterAsInterfaceSingleton<AppConfigurationLoader>();
+
+            builder.RegisterAsInterfaceSingleton<BluetoothManager>();
+            builder.RegisterAsInterfaceSingleton<BleRecorderReplyParser>();
+            builder.RegisterAsInterfaceSingleton<BleRecorderManagerUiWrapper>();
+            builder.RegisterAsInterfaceSingleton<BleRecorderManager>();
+            builder.RegisterAsInterfaceSingleton<SynchronizationContextProvider>();
+            builder.RegisterAsInterfaceSingleton<GlobalExceptionHandler>();
+
+            builder.RegisterAsInterface<TestSubjectRepository>();
+            builder.RegisterAsInterface<MeasurementRepository>();
+            builder.RegisterAsInterface<StimulationParametersRepository>();
+            builder.RegisterAsInterface<FileSystemManager>();
+            builder.RegisterAsInterface<JsonManager>();
+            builder.RegisterAsInterface<ExcelDocumentManager>();
 
             return builder.Build();
         }
