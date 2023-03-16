@@ -10,7 +10,7 @@ using Microsoft.Extensions.Configuration.UserSecrets;
 // associated with an assembly.
 
 
-[assembly: AssemblyTitle("BleRecorder.UI.WPF")]
+[assembly: AssemblyTitle("BleRecorder GUI")]
 [assembly: AssemblyDescription("Graphical Windows application")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("VSB")]
