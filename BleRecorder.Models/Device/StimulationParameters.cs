@@ -1,6 +1,19 @@
 ﻿namespace BleRecorder.Models.Device;
 
-public class StimulationParameters : ICloneable
+public interface IStimulationParameters
+{
+    int Id { get; }
+    int Current { get; set; }
+    int Frequency { get; set; }
+    StimulationPulseWidth PulseWidth { get; set; }
+    TimeSpan StimulationTime { get; set; }
+    TimeSpan IntermittentStimulationTime { get; set; }
+    TimeSpan RestTime { get; set; }
+    int IntermittentRepetitions { get; set; }
+    object Clone();
+}
+
+public class StimulationParameters : ICloneable, IStimulationParameters
 {
     public int Id { get; private set; }
 

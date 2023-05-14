@@ -16,7 +16,7 @@ namespace BleRecorder.Models.Tests
                 new CalibrationData(0, 10),
                 new CalibrationData(100, 20));
 
-            var y = equation.CalculateLoadValue(x);
+            var y = equation.CalculateYValue(x);
 
             y.Should().Be(expectedValue);
         }
