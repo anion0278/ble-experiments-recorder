@@ -19,9 +19,9 @@ public class LinearEquation
         _coefficients = new LinearEquationCoefficients(m, b);
     }
 
-    public double CalculateLoadValue(double sensorValue)
+    public double CalculateYValue(double xValue)
     {
-        return sensorValue * _coefficients.M + _coefficients.B;
+        return xValue * _coefficients.M + _coefficients.B;
     }
 }
 

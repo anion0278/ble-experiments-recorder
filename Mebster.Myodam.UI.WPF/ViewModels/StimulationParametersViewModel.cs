@@ -1,5 +1,6 @@
 ﻿using System;
 using Mebster.Myodam.Business.Device;
+using Mebster.Myodam.Common;
 using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.UI.WPF.Data.Repositories;
 
@@ -7,7 +8,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels;
 
 public class StimulationParametersViewModel : ViewModelBase
 {
-    private readonly StimulationParameters _model;
+    private readonly IStimulationParameters _model;
 
     public int CurrentMilliAmps
     {
@@ -42,7 +43,11 @@ public class StimulationParametersViewModel : ViewModelBase
     public int RestTimeSeconds
     {
         get => (int)_model.RestTime.TotalSeconds;
-        set => _model.RestTime = TimeSpan.FromSeconds(value);
+        set
+        {
+            Guard.ValueShouldBeMoreOrEqualThan(value, 0);
+            _model.RestTime = TimeSpan.FromSeconds(value);
+        }
     }
 
     public int FatigueRepetitions
@@ -51,12 +56,13 @@ public class StimulationParametersViewModel : ViewModelBase
         set => _model.FatigueRepetitions = value;
     }
 
-    // Design-time 
-    public StimulationParametersViewModel()
-    {
-    }
+    //// Design-time 
+    //[Obsolete("Design-time only!")]
+    //public StimulationParametersViewModel()
+    //{
+    //}
 
-    public StimulationParametersViewModel(StimulationParameters model)
+    public StimulationParametersViewModel(IStimulationParameters model)
     {
         _model = model;
     }

@@ -1,6 +1,19 @@
 ﻿namespace Mebster.Myodam.Models.Device;
 
-public class StimulationParameters : ICloneable
+public interface IStimulationParameters
+{
+    int Id { get; }
+    int Current { get; set; }
+    int Frequency { get; set; }
+    StimulationPulseWidth PulseWidth { get; set; }
+    TimeSpan StimulationTime { get; set; }
+    TimeSpan FatigueStimulationTime { get; set; }
+    TimeSpan RestTime { get; set; }
+    int FatigueRepetitions { get; set; }
+    object Clone();
+}
+
+public class StimulationParameters : ICloneable, IStimulationParameters
 {
     public int Id { get; private set; }
 

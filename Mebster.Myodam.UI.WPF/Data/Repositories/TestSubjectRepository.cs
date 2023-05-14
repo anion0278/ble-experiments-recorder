@@ -6,14 +6,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Mebster.Myodam.UI.WPF.Data.Repositories;
 
-public interface ITestSubjectRepository : IGenericRepository<TestSubject>
-{
-    void RemoveMeasurement(Measurement measurementsCurrentItem);
-
-    Task<TestSubject> ReloadAsync(TestSubject testSubject);
-    Task<IEnumerable<TestSubject>> GetAllWithRelatedDataAsync();
-}
-
 public class TestSubjectRepository : GenericRepository<TestSubject, ExperimentsDbContext>, ITestSubjectRepository
 {
     public TestSubjectRepository(ExperimentsDbContext context)
