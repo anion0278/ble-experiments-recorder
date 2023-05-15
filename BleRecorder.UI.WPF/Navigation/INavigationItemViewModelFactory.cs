@@ -4,5 +4,5 @@ namespace BleRecorder.UI.WPF.Navigation;
 
 public interface INavigationItemViewModelFactory
 {
-    INavigationTestSubjectItemViewModel GetViewModel(TestSubject ts);
+    INavigationItemViewModel GetViewModel(TestSubject ts);
 }

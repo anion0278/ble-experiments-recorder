@@ -1,6 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using BleRecorder.Business.Device;
+using BleRecorder.DataAccess.DataExport;
+using BleRecorder.DataAccess.FileStorage;
+using BleRecorder.UI.WPF.Data.Repositories;
 using BleRecorder.UI.WPF.ViewModels;
+using BleRecorder.UI.WPF.ViewModels.Services;
 
 namespace BleRecorder.UI.WPF.Navigation.Commands;
 
@@ -28,13 +33,25 @@ public class NavigationViewModelCommandsFactory : INavigationViewModelCommandsFa
         return new OpenDetailViewCommand(viewModel, _messenger);
     }
 
-    //public IAsyncRelayCommand GetChangeBleRecorderConnectionCommand(INavigationViewModel viewModel)
-    //{
+    public IAsyncRelayCommand GetChangeBleRecorderConnectionCommand(INavigationViewModel viewModel, IBleRecorderManager bleRecorderManager, IMessageDialogService dialogService)
+    {
+        return new ChangeBleRecorderConnectionCommand(viewModel, bleRecorderManager, dialogService);
+    }
 
-    //}
-
-    //public IAsyncRelayCommand GetExportSelectedCommand(INavigationViewModel viewModel)
-    //{
-
-    //}
+    public IAsyncRelayCommand GetExportSelectedCommand(
+        INavigationViewModel viewModel,
+        IBleRecorderManager bleRecorderManager,
+        ITestSubjectRepository testSubjectRepository,
+        IMessageDialogService dialogService,
+        IDocumentManager documentManager,
+        IFileSystemManager fileManager)
+    {
+        return new ExportSelectedCommand(
+            viewModel,
+            bleRecorderManager,
+            testSubjectRepository,
+            dialogService,
+            documentManager,
+            fileManager);
+    }
 }

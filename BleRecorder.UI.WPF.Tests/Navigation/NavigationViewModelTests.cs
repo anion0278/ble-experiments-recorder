@@ -19,7 +19,7 @@ namespace BleRecorder.UI.WPF.Tests.Navigation;
 
 public class NavigationViewModelTests
 {
-    private Fixture _fixture;
+    private readonly Fixture _fixture;
 
     public NavigationViewModelTests()
     {
@@ -34,7 +34,7 @@ public class NavigationViewModelTests
         var bleRecorderManagerMock = _fixture.Freeze<Mock<IBleRecorderManager>>();
         bleRecorderManagerMock
             .SetupGet(m => m.BleRecorderDevice)
-            .Returns(() => null); 
+            .Returns(() => null);
         var vm = _fixture.Create<NavigationViewModel>();
 
         using var scope = new AssertionScope();
@@ -47,8 +47,8 @@ public class NavigationViewModelTests
     [UnitTest]
     public async void LoadAsync_ShouldLoadItemsAndLoadInnerViewModels()
     {
-        var itemVm1 = new Mock<INavigationTestSubjectItemViewModel>();
-        var itemVm2 = new Mock<INavigationTestSubjectItemViewModel>();
+        var itemVm1 = new Mock<INavigationItemViewModel>();
+        var itemVm2 = new Mock<INavigationItemViewModel>();
 
         var deviceCalibrationVmMock = _fixture.Freeze<Mock<IDeviceCalibrationViewModel>>();
         var itemVmFactoryMock = _fixture.Freeze<Mock<INavigationItemViewModelFactory>>();
@@ -72,7 +72,7 @@ public class NavigationViewModelTests
         deviceCalibrationVmMock.Verify(m => m.LoadAsync(), Times.Once);
 
         vm.TestSubjectsNavigationItems.SourceCollection.Should().BeEquivalentTo(
-            new List<INavigationTestSubjectItemViewModel>()
+            new List<INavigationItemViewModel>()
             {
                 itemVm1.Object,
                 itemVm2.Object
@@ -88,11 +88,13 @@ public class NavigationViewModelTests
         var deviceManagerMock = _fixture.Freeze<Mock<IBleRecorderManager>>();
         deviceManagerMock.SetupGet(m => m.BleRecorderDevice).Returns(deviceMock.Object);
         var exceptionHandlerMock = _fixture.Freeze<Mock<IGlobalExceptionHandler>>();
+
         var vm = _fixture.Create<NavigationViewModel>();
+
 
         bool isNotificationRaised = false;
         string propName = "";
-        vm.PropertyChanged += (_,e) =>
+        vm.PropertyChanged += (_, e) =>
         {
             propName = e.PropertyName;
             isNotificationRaised = true;
@@ -103,7 +105,9 @@ public class NavigationViewModelTests
         using var scope = new AssertionScope();
         isNotificationRaised.Should().BeTrue();
         propName.Should().Be(nameof(vm.DeviceError));
-        exceptionHandlerMock.Verify( m=>m.HandleExceptionAsync(It.IsAny<DeviceErrorOccurredException>()));
+        exceptionHandlerMock.Verify(m => m.HandleExceptionAsync(It.IsAny<DeviceErrorOccurredException>()));
     }
 
+
+    //Test FullNameFilter!!!!
 }

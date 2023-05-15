@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.ComponentModel;
+using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
@@ -10,7 +11,7 @@ namespace BleRecorder.UI.WPF.ViewModels
     public interface INavigationViewModel
     {
         Task LoadAsync();
-        public ListCollectionView TestSubjectsNavigationItems { get; }
+        public ICollectionView TestSubjectsNavigationItems { get; }
         public int ControllerBatteryPercentage { get; }
         public BleRecorderError DeviceError { get; }
         public int SelectedItemsCount { get; }

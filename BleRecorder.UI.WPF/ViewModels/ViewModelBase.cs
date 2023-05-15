@@ -19,7 +19,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             base.OnPropertyChanged(e);
         }
 
-        protected ICollectionView GetDefaultCollectionView<T>(ObservableCollection<T> collection)
+        protected ICollectionView GetDefaultCollectionView<T>(IEnumerable<T> collection)
         {
             return CollectionViewSource.GetDefaultView(collection);
         }

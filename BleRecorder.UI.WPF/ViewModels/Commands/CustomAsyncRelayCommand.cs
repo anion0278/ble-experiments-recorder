@@ -15,13 +15,14 @@ public abstract class CustomAsyncRelayCommand : IAsyncRelayCommand
     public bool IsCancellationRequested => _innerAsyncCommand.IsCancellationRequested;
     public bool IsRunning => _innerAsyncCommand.IsRunning;
 
-
-    protected CustomAsyncRelayCommand(Func<Task> execute, Func<bool> canExecute)
+    protected CustomAsyncRelayCommand()
     {
-        _innerAsyncCommand = new AsyncRelayCommand(execute, canExecute);
+        _innerAsyncCommand = CreateCommand();
         _innerAsyncCommand.CanExecuteChanged += (s, e) => CanExecuteChanged?.Invoke(s, e);
         _innerAsyncCommand.PropertyChanged += (s, e) => PropertyChanged?.Invoke(s, e);
     }
+
+    protected abstract AsyncRelayCommand CreateCommand();
 
     public bool CanExecute(object? parameter)
     {

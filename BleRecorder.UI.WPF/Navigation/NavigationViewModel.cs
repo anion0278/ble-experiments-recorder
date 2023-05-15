@@ -1,7 +1,13 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
@@ -18,8 +24,8 @@ using BleRecorder.UI.WPF.Event;
 using BleRecorder.UI.WPF.Exception;
 using BleRecorder.UI.WPF.Navigation.Commands;
 using BleRecorder.UI.WPF.ViewModels;
-using BleRecorder.UI.WPF.ViewModels.Commands;
 using BleRecorder.UI.WPF.ViewModels.Services;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Swordfish.NET.Collections.Auxiliary;
 
 namespace BleRecorder.UI.WPF.Navigation
@@ -28,16 +34,13 @@ namespace BleRecorder.UI.WPF.Navigation
     {
         private readonly ITestSubjectRepository _testSubjectRepository;
         private readonly IMessenger _messenger;
-        private readonly IMessageDialogService _dialogService;
         private readonly IBleRecorderManager _bleRecorderManager;
-        private readonly IDocumentManager _documentManager;
-        private readonly IFileSystemManager _fileManager;
         private readonly IGlobalExceptionHandler _exceptionHandler;
         private readonly INavigationItemViewModelFactory _navigationItemViewModelFactory;
-        private readonly ObservableCollection<INavigationTestSubjectItemViewModel> _navigationItems = new();
+        private readonly ObservableCollectionEX<INavigationItemViewModel> _navigationItems = new();
         private string _fullNameFilter;
 
-        public ListCollectionView TestSubjectsNavigationItems { get; }
+        public ICollectionView TestSubjectsNavigationItems { get; }
 
         public ICommand OpenDetailViewCommand { get; }
 
@@ -85,9 +88,8 @@ namespace BleRecorder.UI.WPF.Navigation
         [Obsolete("Design-time only!")]
         protected NavigationViewModel(TestSubject testSubject)
         {
-            TestSubjectsNavigationItems = (ListCollectionView)CollectionViewSource.GetDefaultView(_navigationItems);
-            TestSubjectsNavigationItems.CustomSort = new NavigationAddItemViewModelRelationalComparer();
-            _navigationItems.Add(new NavigationTestSubjectItemViewModel(testSubject, null!));
+            TestSubjectsNavigationItems = GetDefaultCollectionView(_navigationItems);
+            _navigationItems.Add(new NavigationItemViewModel(testSubject, null!));
         }
 
         public NavigationViewModel(
@@ -102,21 +104,20 @@ namespace BleRecorder.UI.WPF.Navigation
             INavigationItemViewModelFactory navigationItemViewModelFactory,
             INavigationViewModelCommandsFactory commandsFactory)
         {
-            TestSubjectsNavigationItems = (ListCollectionView)GetDefaultCollectionView(_navigationItems);
-            TestSubjectsNavigationItems.CustomSort = new NavigationAddItemViewModelRelationalComparer();
+            TestSubjectsNavigationItems = GetDefaultCollectionView(_navigationItems);
+            _navigationItems.ItemPropertyChanged += ItemPropertyChanged; // TODO unsubscribe !!
+            _navigationItems.CollectionChanged += _navigationItems_CollectionChanged; 
 
-            ChangeBleRecorderConnectionCommand = new AsyncRelayCommand(ChangeBleRecorderConnectionAsync, CanChangeBleRecorderConnection);
-            ExportSelectedCommand = new AsyncRelayCommand(ExportSelectedAsync, CanExportSelected);
             SelectAllFilteredCommand = commandsFactory.GetSelectAllFilteredCommand(this);
             DeselectAllFilteredCommand = commandsFactory.GetDeselectAllFilteredCommand(this);
             OpenDetailViewCommand = commandsFactory.GetOpenDetailViewCommand(this);
+            ChangeBleRecorderConnectionCommand = commandsFactory.GetChangeBleRecorderConnectionCommand(this, bleRecorderManager, dialogService);
+            ExportSelectedCommand = commandsFactory.GetExportSelectedCommand(
+                this, bleRecorderManager, testSubjectRepository, dialogService, documentManager, fileManager);
 
             _testSubjectRepository = testSubjectRepository;
             _messenger = messenger;
-            _dialogService = dialogService;
             _bleRecorderManager = bleRecorderManager;
-            _documentManager = documentManager;
-            _fileManager = fileManager;
             _exceptionHandler = exceptionHandler;
             _navigationItemViewModelFactory = navigationItemViewModelFactory;
             DeviceCalibrationVm = deviceCalibrationViewModel;
@@ -129,57 +130,33 @@ namespace BleRecorder.UI.WPF.Navigation
             _messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
         }
 
+        private void _navigationItems_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action is NotifyCollectionChangedAction.Remove or NotifyCollectionChangedAction.Reset)
+            {
+                OnPropertyChanged(nameof(SelectedItemsCount));
+            }
+        }
+
+        private void ItemPropertyChanged(object item, PropertyChangedEventArgs e)
+        {
+            if (e is { PropertyName: nameof(INavigationItemViewModel.IsSelected)})
+            {
+                OnPropertyChanged(nameof(SelectedItemsCount));
+            }
+        }
+
+        public async Task LoadAsync()
+        {
+            var items = (await _testSubjectRepository.GetAllAsync())
+                .Select(ts => _navigationItemViewModelFactory.GetViewModel(ts));
+            _navigationItems.AddRange(items);
+            await DeviceCalibrationVm.LoadAsync();
+        }
 
         private bool IsTestSubjectAccepted(object obj)
         {
-            return obj is NavigationTestSubjectItemViewModel tsVM && tsVM.Model.FullName.ContainsCaseInsensitive(_fullNameFilter);
-        }
-
-        private bool CanExportSelected()
-        {
-            return !_bleRecorderManager.IsCurrentlyMeasuring && SelectedItemsCount > 0;
-        }
-
-        private async Task ExportSelectedAsync()
-        {
-            var subjects = _navigationItems
-                .Where(item => item.IsSelected)
-                .Select(item => item.Model).ToArray();
-
-            //// TODO optimize query 
-            var reloadedSubjects = await _testSubjectRepository.GetAllWithRelatedDataAsync();
-
-            //foreach (var ts in subjects) // Does not work the same way !! measurements are not loaded at all
-            //{
-            //    await _testSubjectRepository.ReloadAsync(ts);
-            //}
-
-            if (_dialogService.SaveSingleFileDialog("Export.xlsx", out var filePath))
-            {
-                await Task.Run(() => _documentManager.Export(filePath!, subjects));
-                _dialogService.OpenOrShowDir(_fileManager.GetFileDir(filePath));
-            }
-        }
-
-        private bool CanChangeBleRecorderConnection()
-        {
-            return BleRecorderAvailability != BleRecorderAvailabilityStatus.DisconnectedUnavailable && !_bleRecorderManager.IsCurrentlyMeasuring;
-        }
-
-        public async Task ChangeBleRecorderConnectionAsync()
-        {
-            if (_bleRecorderManager.IsCurrentlyMeasuring)
-            {
-                var result = await _dialogService.ShowOkCancelDialogAsync(
-                    "Measurement is currently running. Are you sure you want to stop the measurement and disconnect from device?",
-                    "Disconnect from device?");
-                if (result != MessageDialogResult.OK) return;
-            }
-            if (_bleRecorderManager.BleRecorderDevice != null && _bleRecorderManager.BleRecorderDevice.IsConnected)
-            {
-                await _bleRecorderManager.BleRecorderDevice.DisconnectAsync();
-            }
-            else await _bleRecorderManager.ConnectBleRecorderAsync();
+            return obj is NavigationItemViewModel tsVM && tsVM.Model.FullName.ContainsCaseInsensitive(_fullNameFilter);
         }
 
         private async void OnBleRecorderErrorChanged(object? sender, EventArgs e)
@@ -203,14 +180,6 @@ namespace BleRecorder.UI.WPF.Navigation
             OnBleRecorderPropertyChanged(this, EventArgs.Empty);
             ChangeBleRecorderConnectionCommand.NotifyCanExecuteChanged();
             ExportSelectedCommand.NotifyCanExecuteChanged();
-        }
-
-        public async Task LoadAsync()
-        {
-            var items = (await _testSubjectRepository.GetAllAsync())
-                .Select(ts => _navigationItemViewModelFactory.GetViewModel(ts));
-            _navigationItems.AddRange(items);
-            await DeviceCalibrationVm.LoadAsync();
         }
 
         private void AfterDetailDeleted(AfterDetailDeletedEventArgs args) // TODO refactoring!
@@ -239,7 +208,7 @@ namespace BleRecorder.UI.WPF.Navigation
                         _navigationItems.Add(_navigationItemViewModelFactory.GetViewModel(ts!));
                     }
                     else
-                    if (lookupItem is NavigationTestSubjectItemViewModel nvm)
+                    if (lookupItem is NavigationItemViewModel nvm)
                     {
                         nvm.DisplayMember = args.DisplayMember;
                     }
@@ -247,12 +216,56 @@ namespace BleRecorder.UI.WPF.Navigation
             }
         }
     }
+}
 
-    //internal class ChangeBleRecorderConnectionCommand : CustomAsyncRelayCommand
-    //{
-    //    public ChangeBleRecorderConnectionCommand() 
-    //        : base(execute, canExecute)
-    //    { }
-    //}
-        
+public dehandate void ListedItemPropertyChangedEventHandler(object Item, PropertyChangedEventArgs e);
+public class ObservableCollectionEX<T> : ObservableCollection<T>
+{
+    #region Constructors
+    public ObservableCollectionEX() : base()
+    {
+        CollectionChanged += ObservableCollection_CollectionChanged;
+    }
+    public ObservableCollectionEX(IEnumerable<T> c) : base(c)
+    {
+        CollectionChanged += ObservableCollection_CollectionChanged;
+    }
+    public ObservableCollectionEX(List<T> l) : base(l)
+    {
+        CollectionChanged += ObservableCollection_CollectionChanged;
+    }
+
+    #endregion
+
+    public new void Clear()
+    {
+        foreach (var item in this)
+            if (item is INotifyPropertyChanged i)
+                i.PropertyChanged -= Element_PropertyChanged;
+        base.Clear();
+    }
+
+    private void ObservableCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (e.OldItems != null)
+            foreach (var item in e.OldItems)
+                if (item != null && item is INotifyPropertyChanged i)
+                    i.PropertyChanged -= Element_PropertyChanged;
+
+
+        if (e.NewItems != null)
+            foreach (var item in e.NewItems)
+                if (item != null && item is INotifyPropertyChanged i)
+                {
+                    i.PropertyChanged -= Element_PropertyChanged;
+                    i.PropertyChanged += Element_PropertyChanged;
+                }
+    }
+
+    private void Element_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        ItemPropertyChanged?.Invoke(sender, e);
+    }
+
+    public ListedItemPropertyChangedEventHandler ItemPropertyChanged;
 }
