@@ -22,7 +22,7 @@ public class SelectAllFilteredCommand : CustomRelayCommandBase
     public override void Execute(object? parameter)
     {
         ViewModel.TestSubjectsNavigationItems
-            .Cast<NavigationTestSubjectItemViewModel>()
+            .Cast<NavigationItemViewModel>()
             .ForEach(i => i.IsSelected = true);
     }
 }

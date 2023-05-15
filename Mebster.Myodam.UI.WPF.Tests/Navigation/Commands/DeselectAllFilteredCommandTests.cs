@@ -23,11 +23,11 @@ public class DeselectAllFilteredCommandTests
         var vmMock = new Mock<INavigationViewModel>();
         fixture.Inject(StimulationPulseWidth.AvailableOptions[0]);
         fixture.Inject(fixture.Build<TestSubject>().Without(t => t.Measurements).Create());
-        var list = new List<NavigationTestSubjectItemViewModel>();
+        var list = new List<NavigationItemViewModel>();
         for (int i = 0; i < 3; i++)
         {
             list.Add(fixture
-                .Build<NavigationTestSubjectItemViewModel>()
+                .Build<NavigationItemViewModel>()
                 .With(s => s.IsSelected, true)
                 .Create());
         };

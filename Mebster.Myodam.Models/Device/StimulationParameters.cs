@@ -12,11 +12,6 @@ public class StimulationParameters : ICloneable
     public TimeSpan RestTime { get; set; }
     public int FatigueRepetitions { get; set; }
 
-    public StimulationParameters()
-    {
-        
-    }
-
     public StimulationParameters(
         int current, 
         int frequency, 

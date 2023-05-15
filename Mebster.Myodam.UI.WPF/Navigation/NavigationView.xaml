@@ -127,7 +127,7 @@
         </Style>
 
         <!--Region Implicit NavigationItem templates-->
-        <DataTemplate DataType="{x:Type navigation:NavigationTestSubjectItemViewModel}">
+        <DataTemplate DataType="{x:Type navigation:NavigationItemViewModel}">
             <Button Content="{Binding DisplayMember}"
               Command="{Binding OpenDetailViewCommand}"
               Style="{x:Null}" Margin="-5">

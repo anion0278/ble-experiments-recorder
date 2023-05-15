@@ -12,7 +12,7 @@ using Mebster.Myodam.UI.WPF.ViewModels;
 
 namespace Mebster.Myodam.UI.WPF.Navigation
 {
-    public interface INavigationTestSubjectItemViewModel
+    public interface INavigationItemViewModel : INotifyPropertyChanged // INPC is required to make BindingList propagate the changes
     {
         TestSubject Model { get; }
         bool IsSelected { get; set; }
@@ -23,7 +23,7 @@ namespace Mebster.Myodam.UI.WPF.Navigation
     }
 
     // TODO remove, since no longer needed
-    public class NavigationTestSubjectItemViewModel : NavigationAddTestSubjectItemViewModel, INavigationTestSubjectItemViewModel
+    public class NavigationItemViewModel : NavigationAddTestSubjectItemViewModel, INavigationItemViewModel
     {
         public TestSubject Model { get; }
 
@@ -31,7 +31,7 @@ namespace Mebster.Myodam.UI.WPF.Navigation
 
         public string DisplayMember { get; set; }
 
-        public NavigationTestSubjectItemViewModel(TestSubject testSubject, IMessenger messenger): base(messenger)
+        public NavigationItemViewModel(TestSubject testSubject, IMessenger messenger): base(messenger)
         {
             Id = testSubject.Id;
             DisplayMember = testSubject.FullName;
@@ -62,28 +62,6 @@ namespace Mebster.Myodam.UI.WPF.Navigation
                 Id = Id,
                 ViewModelName = nameof(TestSubjectDetailViewModel)
             });
-        }
-    }
-
-    public class NavigationAddItemViewModelRelationalComparer : IComparer
-    {
-        public int Compare(object x, object y)
-        {
-            var xType = x.GetType();
-            var yType = y.GetType();
-            if (xType == typeof(NavigationTestSubjectItemViewModel) && yType == typeof(NavigationAddTestSubjectItemViewModel)) return -1;
-            if (xType == typeof(NavigationAddTestSubjectItemViewModel) && yType == typeof(NavigationTestSubjectItemViewModel)) return 1;
-            if (x is NavigationTestSubjectItemViewModel xVm && y is NavigationTestSubjectItemViewModel yVm)
-            {
-                return string.Compare(GetNameParameter(xVm), GetNameParameter(yVm), StringComparison.OrdinalIgnoreCase);
-            }
-            return 0;
-        }
-
-        // comparing by LastName and FirstName instead of FullName because it is more likely to be comfortable
-        private static string GetNameParameter(NavigationTestSubjectItemViewModel vm)
-        {
-            return vm.Model.LastName + " " + vm.Model.FirstName;
         }
     }
 }

@@ -1,6 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using Mebster.Myodam.Business.Device;
+using Mebster.Myodam.DataAccess.DataExport;
+using Mebster.Myodam.DataAccess.FileStorage;
+using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.ViewModels;
+using Mebster.Myodam.UI.WPF.ViewModels.Services;
 
 namespace Mebster.Myodam.UI.WPF.Navigation.Commands;
 
@@ -28,13 +33,25 @@ public class NavigationViewModelCommandsFactory : INavigationViewModelCommandsFa
         return new OpenDetailViewCommand(viewModel, _messenger);
     }
 
-    //public IAsyncRelayCommand GetChangeMyodamConnectionCommand(INavigationViewModel viewModel)
-    //{
+    public IAsyncRelayCommand GetChangeMyodamConnectionCommand(INavigationViewModel viewModel, IMyodamManager myodamManager, IMessageDialogService dialogService)
+    {
+        return new ChangeMyodamConnectionCommand(viewModel, myodamManager, dialogService);
+    }
 
-    //}
-
-    //public IAsyncRelayCommand GetExportSelectedCommand(INavigationViewModel viewModel)
-    //{
-
-    //}
+    public IAsyncRelayCommand GetExportSelectedCommand(
+        INavigationViewModel viewModel,
+        IMyodamManager myodamManager,
+        ITestSubjectRepository testSubjectRepository,
+        IMessageDialogService dialogService,
+        IDocumentManager documentManager,
+        IFileSystemManager fileManager)
+    {
+        return new ExportSelectedCommand(
+            viewModel,
+            myodamManager,
+            testSubjectRepository,
+            dialogService,
+            documentManager,
+            fileManager);
+    }
 }

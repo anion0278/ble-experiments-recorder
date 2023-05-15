@@ -12,8 +12,8 @@ public class NavigationItemViewModelFactory : INavigationItemViewModelFactory
         _messenger = messenger;
     }
 
-    public INavigationTestSubjectItemViewModel GetViewModel(TestSubject ts)
+    public INavigationItemViewModel GetViewModel(TestSubject ts)
     {
-        return new NavigationTestSubjectItemViewModel(ts!, _messenger);
+        return new NavigationItemViewModel(ts!, _messenger);
     }
 }
