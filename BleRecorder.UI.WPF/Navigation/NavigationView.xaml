@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="BleRecorder.UI.WPF.Views.NavigationView"
+﻿<UserControl x:Class="BleRecorder.UI.WPF.Navigation.NavigationView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -10,9 +10,10 @@
              xmlns:extensions="clr-namespace:BleRecorder.UI.WPF.Extensions"
              xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:device1="clr-namespace:BleRecorder.Business.Device;assembly=BleRecorder.Business"
+             xmlns:navigation="clr-namespace:BleRecorder.UI.WPF.Navigation"
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="380"
-             d:DataContext="{d:DesignInstance viewModels:NavigationViewModel, IsDesignTimeCreatable=True}">
+             d:DataContext="{d:DesignInstance navigation:NavigationViewModel, IsDesignTimeCreatable=True}">
     <UserControl.Resources>
         <ControlTemplate x:Key="PercentageBar" TargetType="ProgressBar">
             <Grid>
@@ -126,7 +127,7 @@
         </Style>
 
         <!--Region Implicit NavigationItem templates-->
-        <DataTemplate DataType="{x:Type viewModels:NavigationTestSubjectItemViewModel}">
+        <DataTemplate DataType="{x:Type navigation:NavigationTestSubjectItemViewModel}">
             <Button Content="{Binding DisplayMember}"
               Command="{Binding OpenDetailViewCommand}"
               Style="{x:Null}" Margin="-5">

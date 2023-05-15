@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace BleRecorder.UI.WPF.Views
+namespace BleRecorder.UI.WPF.Navigation
 {
     /// <summary>
     /// Interaction logic for NavigationView.xaml

@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Autofac;
+using BleRecorder.DataAccess;
 using BleRecorder.UI.WPF.Exception;
 using BleRecorder.UI.WPF.Startup;
 using BleRecorder.UI.WPF.Views;
@@ -24,6 +25,7 @@ namespace BleRecorder.UI.WPF
             var bootstrapper = new Bootstrapper();
             var container = bootstrapper.Bootstrap();
             _exceptionHandler = container.Resolve<IGlobalExceptionHandler>();
+            var x = container.Resolve<ExperimentsDbContext>();
             DispatcherUnhandledException += OnDispatcherUnhandledException;
 
             var mainWindow = container.Resolve<MainWindow>();

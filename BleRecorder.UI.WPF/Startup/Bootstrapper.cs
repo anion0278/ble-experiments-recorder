@@ -15,6 +15,8 @@ using BleRecorder.Models.Device;
 using BleRecorder.UI.WPF.Data.Repositories;
 using BleRecorder.UI.WPF.Exception;
 using BleRecorder.UI.WPF.Extensions;
+using BleRecorder.UI.WPF.Navigation;
+using BleRecorder.UI.WPF.Navigation.Commands;
 using BleRecorder.UI.WPF.ViewModels;
 using BleRecorder.UI.WPF.ViewModels.Services;
 using BleRecorder.UI.WPF.Views;
@@ -30,7 +32,7 @@ namespace BleRecorder.UI.WPF.Startup
             var builder = new ContainerBuilder();
 
             builder.RegisterInstance<IMessenger>(WeakReferenceMessenger.Default);
-            builder.RegisterInstance<IMapper>(SetupMapper());
+            builder.RegisterInstance(SetupMapper());
 
             builder.RegisterType<TestSubjectDetailViewModel>().Keyed<IDetailViewModel>(nameof(TestSubjectDetailViewModel));
             builder.RegisterType<MeasurementDetailViewModel>().Keyed<IDetailViewModel>(nameof(MeasurementDetailViewModel));
@@ -40,6 +42,8 @@ namespace BleRecorder.UI.WPF.Startup
 
             builder.RegisterAsInterfaceSingleton<NavigationViewModel>();
             builder.RegisterAsInterfaceSingleton<DeviceCalibrationViewModel>();
+            builder.RegisterAsInterfaceSingleton<NavigationViewModelCommandsFactory>();
+            builder.RegisterAsInterfaceSingleton<NavigationItemViewModelFactory>();
 
             builder.RegisterAsInterfaceSingleton<MessageDialogService>();
             builder.RegisterAsInterfaceSingleton<AppCenterIntegration>();

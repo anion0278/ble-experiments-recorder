@@ -1,34 +1,28 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Threading;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using DocumentFormat.OpenXml.Bibliography;
 using BleRecorder.Business.Device;
 using BleRecorder.Business.Exception;
 using BleRecorder.Common.Extensions;
 using BleRecorder.DataAccess.DataExport;
 using BleRecorder.DataAccess.FileStorage;
-using BleRecorder.Infrastructure.Bluetooth;
 using BleRecorder.Models.Device;
 using BleRecorder.Models.TestSubject;
 using BleRecorder.UI.WPF.Data.Repositories;
 using BleRecorder.UI.WPF.Event;
 using BleRecorder.UI.WPF.Exception;
+using BleRecorder.UI.WPF.Navigation.Commands;
+using BleRecorder.UI.WPF.ViewModels;
+using BleRecorder.UI.WPF.ViewModels.Commands;
 using BleRecorder.UI.WPF.ViewModels.Services;
-using BleRecorder.UI.WPF.Views.Resouces;
-using Microsoft.AppCenter;
-using Microsoft.Win32;
 using Swordfish.NET.Collections.Auxiliary;
 
-namespace BleRecorder.UI.WPF.ViewModels
+namespace BleRecorder.UI.WPF.Navigation
 {
     public class NavigationViewModel : ViewModelBase, INavigationViewModel
     {
@@ -39,7 +33,8 @@ namespace BleRecorder.UI.WPF.ViewModels
         private readonly IDocumentManager _documentManager;
         private readonly IFileSystemManager _fileManager;
         private readonly IGlobalExceptionHandler _exceptionHandler;
-        private readonly ObservableCollection<NavigationTestSubjectItemViewModel> _navigationItems = new();
+        private readonly INavigationItemViewModelFactory _navigationItemViewModelFactory;
+        private readonly ObservableCollection<INavigationTestSubjectItemViewModel> _navigationItems = new();
         private string _fullNameFilter;
 
         public ListCollectionView TestSubjectsNavigationItems { get; }
@@ -64,8 +59,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         public IDeviceCalibrationViewModel DeviceCalibrationVm { get; }
 
         // possible TODO: MVVM approach should provide Filtered ICollectionView and to let decide client (UI) how to use it (count)
-        public int SelectedItemsCount => _navigationItems
-            .Count(i => i.IsSelected);
+        public int SelectedItemsCount => _navigationItems.Count(i => i.IsSelected);
 
         public string FullNameFilter
         {
@@ -81,7 +75,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         /// Design-time ctor
         /// </summary>
         [Obsolete("Design-time only!")]
-        public NavigationViewModel() : this(new TestSubject() { FirstName = "Name", LastName = "Surname" })
+        protected NavigationViewModel() : this(new TestSubject() { FirstName = "Name", LastName = "Surname" })
         {
         }
 
@@ -89,7 +83,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         /// Design-time ctor
         /// </summary>
         [Obsolete("Design-time only!")]
-        public NavigationViewModel(TestSubject testSubject)
+        protected NavigationViewModel(TestSubject testSubject)
         {
             TestSubjectsNavigationItems = (ListCollectionView)CollectionViewSource.GetDefaultView(_navigationItems);
             TestSubjectsNavigationItems.CustomSort = new NavigationAddItemViewModelRelationalComparer();
@@ -105,16 +99,17 @@ namespace BleRecorder.UI.WPF.ViewModels
             IDocumentManager documentManager,
             IFileSystemManager fileManager,
             IGlobalExceptionHandler exceptionHandler,
-            IAsyncRelayCommandFactory asyncCommandFactory)
+            INavigationItemViewModelFactory navigationItemViewModelFactory,
+            INavigationViewModelCommandsFactory commandsFactory)
         {
-            TestSubjectsNavigationItems = (ListCollectionView)CollectionViewSource.GetDefaultView(_navigationItems);
+            TestSubjectsNavigationItems = (ListCollectionView)GetDefaultCollectionView(_navigationItems);
             TestSubjectsNavigationItems.CustomSort = new NavigationAddItemViewModelRelationalComparer();
 
-            ChangeBleRecorderConnectionCommand = asyncCommandFactory.Create(ChangeBleRecorderConnectionAsync, CanChangeBleRecorderConnection);
-            ExportSelectedCommand = asyncCommandFactory.Create(ExportSelectedAsync, CanExportSelected);
-            SelectAllFilteredCommand = new RelayCommand(() => TestSubjectsNavigationItems.Cast<NavigationTestSubjectItemViewModel>().ForEach(i => i.IsSelected = true));
-            DeselectAllFilteredCommand = new RelayCommand(() => TestSubjectsNavigationItems.Cast<NavigationTestSubjectItemViewModel>().ForEach(i => i.IsSelected = false));
-            OpenDetailViewCommand = new RelayCommand(OnOpenDetailViewExecute);
+            ChangeBleRecorderConnectionCommand = new AsyncRelayCommand(ChangeBleRecorderConnectionAsync, CanChangeBleRecorderConnection);
+            ExportSelectedCommand = new AsyncRelayCommand(ExportSelectedAsync, CanExportSelected);
+            SelectAllFilteredCommand = commandsFactory.GetSelectAllFilteredCommand(this);
+            DeselectAllFilteredCommand = commandsFactory.GetDeselectAllFilteredCommand(this);
+            OpenDetailViewCommand = commandsFactory.GetOpenDetailViewCommand(this);
 
             _testSubjectRepository = testSubjectRepository;
             _messenger = messenger;
@@ -123,6 +118,7 @@ namespace BleRecorder.UI.WPF.ViewModels
             _documentManager = documentManager;
             _fileManager = fileManager;
             _exceptionHandler = exceptionHandler;
+            _navigationItemViewModelFactory = navigationItemViewModelFactory;
             DeviceCalibrationVm = deviceCalibrationViewModel;
 
             _bleRecorderManager.BleRecorderAvailabilityChanged += OnBleRecorderAvailabilityChanged;
@@ -139,27 +135,8 @@ namespace BleRecorder.UI.WPF.ViewModels
             return obj is NavigationTestSubjectItemViewModel tsVM && tsVM.Model.FullName.ContainsCaseInsensitive(_fullNameFilter);
         }
 
-        private void OnOpenDetailViewExecute()
-        {
-            _messenger.Send(new OpenDetailViewEventArgs
-            {
-                Id = -999, // for new item
-                ViewModelName = nameof(TestSubjectDetailViewModel)
-            });
-        }
-
-        private async void OnBleRecorderErrorChanged(object? sender, EventArgs e)
-        {
-            OnPropertyChanged(nameof(DeviceError));
-            if (DeviceError != BleRecorderError.NoError)
-            {
-                await _exceptionHandler.HandleExceptionAsync(new DeviceErrorOccurredException(DeviceError));
-            }
-        }
-
         private bool CanExportSelected()
         {
-            OnPropertyChanged(nameof(SelectedItemsCount));
             return !_bleRecorderManager.IsCurrentlyMeasuring && SelectedItemsCount > 0;
         }
 
@@ -184,20 +161,6 @@ namespace BleRecorder.UI.WPF.ViewModels
             }
         }
 
-        private void OnBleRecorderPropertyChanged(object? sender, EventArgs e)
-        {
-            OnPropertyChanged(nameof(ControllerBatteryPercentage));
-            OnPropertyChanged(nameof(StimulatorBatteryPercentage));
-            OnPropertyChanged(nameof(BleRecorderAvailability));
-        }
-
-        private void OnBleRecorderAvailabilityChanged(object? o, EventArgs eventArgs)
-        {
-            OnBleRecorderPropertyChanged(this, EventArgs.Empty);
-            ChangeBleRecorderConnectionCommand.NotifyCanExecuteChanged();
-            ExportSelectedCommand.NotifyCanExecuteChanged();
-        }
-
         private bool CanChangeBleRecorderConnection()
         {
             return BleRecorderAvailability != BleRecorderAvailabilityStatus.DisconnectedUnavailable && !_bleRecorderManager.IsCurrentlyMeasuring;
@@ -215,15 +178,37 @@ namespace BleRecorder.UI.WPF.ViewModels
             if (_bleRecorderManager.BleRecorderDevice != null && _bleRecorderManager.BleRecorderDevice.IsConnected)
             {
                 await _bleRecorderManager.BleRecorderDevice.DisconnectAsync();
-                await Task.Delay(TimeSpan.FromSeconds(2));
             }
             else await _bleRecorderManager.ConnectBleRecorderAsync();
+        }
+
+        private async void OnBleRecorderErrorChanged(object? sender, EventArgs e)
+        {
+            OnPropertyChanged(nameof(DeviceError));
+            if (DeviceError != BleRecorderError.NoError)
+            {
+                await _exceptionHandler.HandleExceptionAsync(new DeviceErrorOccurredException(DeviceError));
+            }
+        }
+
+        private void OnBleRecorderPropertyChanged(object? sender, EventArgs e)
+        {
+            OnPropertyChanged(nameof(ControllerBatteryPercentage));
+            OnPropertyChanged(nameof(StimulatorBatteryPercentage));
+            OnPropertyChanged(nameof(BleRecorderAvailability));
+        }
+
+        private void OnBleRecorderAvailabilityChanged(object? o, EventArgs eventArgs)
+        {
+            OnBleRecorderPropertyChanged(this, EventArgs.Empty);
+            ChangeBleRecorderConnectionCommand.NotifyCanExecuteChanged();
+            ExportSelectedCommand.NotifyCanExecuteChanged();
         }
 
         public async Task LoadAsync()
         {
             var items = (await _testSubjectRepository.GetAllAsync())
-                .Select(ts => new NavigationTestSubjectItemViewModel(ts, _messenger));
+                .Select(ts => _navigationItemViewModelFactory.GetViewModel(ts));
             _navigationItems.AddRange(items);
             await DeviceCalibrationVm.LoadAsync();
         }
@@ -251,7 +236,7 @@ namespace BleRecorder.UI.WPF.ViewModels
                     if (lookupItem == null)
                     {
                         var ts = await _testSubjectRepository.GetByIdAsync(args.Id);
-                        _navigationItems.Add(new NavigationTestSubjectItemViewModel(ts!, _messenger));
+                        _navigationItems.Add(_navigationItemViewModelFactory.GetViewModel(ts!));
                     }
                     else
                     if (lookupItem is NavigationTestSubjectItemViewModel nvm)
@@ -262,4 +247,12 @@ namespace BleRecorder.UI.WPF.ViewModels
             }
         }
     }
+
+    //internal class ChangeBleRecorderConnectionCommand : CustomAsyncRelayCommand
+    //{
+    //    public ChangeBleRecorderConnectionCommand() 
+    //        : base(execute, canExecute)
+    //    { }
+    //}
+        
 }

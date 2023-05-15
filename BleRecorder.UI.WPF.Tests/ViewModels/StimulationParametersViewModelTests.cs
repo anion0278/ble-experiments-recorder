@@ -4,38 +4,35 @@ using FluentAssertions;
 using BleRecorder.Models.Device;
 using BleRecorder.UI.WPF.ViewModels;
 using Moq;
+using Xunit.Categories;
 
 namespace BleRecorder.UI.WPF.Tests.ViewModels;
 
 public class StimulationParametersViewModelTests
 {
     private StimulationParametersViewModel _vm;
-    private Mock<IStimulationParameters> _stimParamsModelMock;
+    private StimulationParameters _stimParamsModel;
 
     public StimulationParametersViewModelTests()
     {
-        _stimParamsModelMock = new Mock<IStimulationParameters>();
-        _vm = new StimulationParametersViewModel(_stimParamsModelMock.Object);
+        _stimParamsModel = new StimulationParameters(0, 0, StimulationPulseWidth.AvailableOptions[0], TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, 0);
+        _vm = new StimulationParametersViewModel(_stimParamsModel);
     }
 
 
     [Theory]
+    [UnitTest]
     [InlineData(5)]
     [InlineData(10)]
     public void SetRestTimeSeconds_ShouldSetModelRestTime_WhenPositiveValueIsProvided(int validTimeInSeconds)
     {
-        //var fixture = new Fixture();
-        //fixture.Customize(new AutoMoqCustomization());
-        //var _stimParamsModelMock = fixture.Freeze<Mock<IStimulationParameters>>();
-        //_stimParamsModelMock.SetupProperty( m => m.PulseWidth, StimulationPulseWidth.AvailableOptions[0]);
-        //var _vm = fixture.Create<StimulationParametersViewModel>();
-
         _vm.RestTimeSeconds = validTimeInSeconds;
 
-        _stimParamsModelMock.VerifySet(m => m.RestTime = TimeSpan.FromSeconds(validTimeInSeconds));
+        _stimParamsModel.RestTime.Should().Be(TimeSpan.FromSeconds(validTimeInSeconds));
     }
 
     [Theory]
+    [UnitTest]
     [InlineData(-1)]
     [InlineData(-3)]
     public void SetRestTimeSeconds_ShouldThrow_WhenNegativeValueIsProvided(int negativeValue)

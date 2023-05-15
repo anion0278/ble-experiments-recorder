@@ -8,7 +8,7 @@ namespace BleRecorder.UI.WPF.ViewModels;
 
 public class StimulationParametersViewModel : ViewModelBase
 {
-    private readonly IStimulationParameters _model;
+    private readonly StimulationParameters _model;
 
     public int CurrentMilliAmps
     {
@@ -62,7 +62,7 @@ public class StimulationParametersViewModel : ViewModelBase
     //{
     //}
 
-    public StimulationParametersViewModel(IStimulationParameters model)
+    public StimulationParametersViewModel(StimulationParameters model)
     {
         _model = model;
     }

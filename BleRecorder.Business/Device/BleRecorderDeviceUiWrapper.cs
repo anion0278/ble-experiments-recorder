@@ -15,6 +15,8 @@ public class BleRecorderDeviceUiWrapper : IBleRecorderDevice
     public event EventHandler? ErrorChanged;
     public event EventHandler? MeasurementStatusChanged;
     public event EventHandler? BatteryStatusChanged;
+
+    private const int DisconnectionDelay = 2;
     public BleRecorderError Error => _bleRecorderDevice.Error;
 
     public TimeSpan DataRequestInterval => _bleRecorderDevice.DataRequestInterval;
@@ -28,6 +30,7 @@ public class BleRecorderDeviceUiWrapper : IBleRecorderDevice
     public bool IsCalibrating => _bleRecorderDevice.IsCalibrating;
 
     public bool IsCurrentlyMeasuring => _bleRecorderDevice.IsCurrentlyMeasuring;
+
 
     public DeviceCalibration Calibration
     {
@@ -111,5 +114,6 @@ public class BleRecorderDeviceUiWrapper : IBleRecorderDevice
         _bleRecorderDevice.ErrorChanged -= _bleRecorderDevice_ErrorChanged;
         _bleRecorderDevice.MeasurementStatusChanged -= _bleRecorderDevice_MeasurementStatusChanged;
         _bleRecorderDevice.BatteryStatusChanged -= _bleRecorderDevice_BatteryStatusChanged;
+        await Task.Delay(TimeSpan.FromSeconds(DisconnectionDelay));
     }
 }

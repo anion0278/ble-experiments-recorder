@@ -17,6 +17,7 @@ using BleRecorder.Models.Device;
 using BleRecorder.Models.TestSubject;
 using BleRecorder.UI.WPF.Data.Repositories;
 using BleRecorder.UI.WPF.Event;
+using BleRecorder.UI.WPF.Navigation;
 using BleRecorder.UI.WPF.ViewModels.Services;
 
 namespace BleRecorder.UI.WPF.ViewModels
@@ -64,17 +65,17 @@ namespace BleRecorder.UI.WPF.ViewModels
         }
 
 
-        /// <summary>
-        /// Design-time ctor
-        /// </summary>
-        [Obsolete("Design-time only!")]
-        public MainViewModel()
-        {
-            var ts = new TestSubject() { FirstName = "Subject", LastName = "Name", Notes = "Notes:\n   * Note1\n   * Note2" };
-            _detailViewModels.Add(new TestSubjectDetailViewModel() { Model = ts });
+        ///// <summary>
+        ///// Design-time ctor
+        ///// </summary>
+        //[Obsolete("Design-time only!")]
+        //public MainViewModel()
+        //{
+        //    var ts = new TestSubject() { FirstName = "Subject", LastName = "Name", Notes = "Notes:\n   * Note1\n   * Note2" };
+        //    _detailViewModels.Add(new TestSubjectDetailViewModel() { Model = ts });
 
-            NavigationViewModel = new NavigationViewModel(ts);
-        }
+        //    NavigationViewModel = new NavigationViewModel(ts);
+        //}
 
         public MainViewModel(INavigationViewModel navigationViewModel,
             IIndex<string, IDetailViewModel> detailViewModelCreator,

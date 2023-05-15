@@ -5,12 +5,10 @@ using BleRecorder.Models.Device;
 
 namespace BleRecorder.Models.TestSubject;
 
-public class TestSubject
+public class TestSubject 
 {
     public TestSubject() // TODO EF requires at least private param-less ctor, replace.      
-    {
-        Measurements = new Collection<Measurement>();
-    }
+    { }
 
     public int Id { get; set; }
 
@@ -31,6 +29,6 @@ public class TestSubject
 
     public StimulationParameters CustomizedParameters { get; set; }
 
-    public ICollection<Measurement> Measurements { get; set; }
+    public ICollection<Measurement> Measurements { get; set; } = new Collection<Measurement>();
 }
 
