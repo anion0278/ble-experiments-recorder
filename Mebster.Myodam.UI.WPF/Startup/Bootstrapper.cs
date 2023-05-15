@@ -15,6 +15,8 @@ using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.Exception;
 using Mebster.Myodam.UI.WPF.Extensions;
+using Mebster.Myodam.UI.WPF.Navigation;
+using Mebster.Myodam.UI.WPF.Navigation.Commands;
 using Mebster.Myodam.UI.WPF.ViewModels;
 using Mebster.Myodam.UI.WPF.ViewModels.Services;
 using Mebster.Myodam.UI.WPF.Views;
@@ -30,7 +32,7 @@ namespace Mebster.Myodam.UI.WPF.Startup
             var builder = new ContainerBuilder();
 
             builder.RegisterInstance<IMessenger>(WeakReferenceMessenger.Default);
-            builder.RegisterInstance<IMapper>(SetupMapper());
+            builder.RegisterInstance(SetupMapper());
 
             builder.RegisterType<TestSubjectDetailViewModel>().Keyed<IDetailViewModel>(nameof(TestSubjectDetailViewModel));
             builder.RegisterType<MeasurementDetailViewModel>().Keyed<IDetailViewModel>(nameof(MeasurementDetailViewModel));
@@ -40,6 +42,8 @@ namespace Mebster.Myodam.UI.WPF.Startup
 
             builder.RegisterAsInterfaceSingleton<NavigationViewModel>();
             builder.RegisterAsInterfaceSingleton<DeviceCalibrationViewModel>();
+            builder.RegisterAsInterfaceSingleton<NavigationViewModelCommandsFactory>();
+            builder.RegisterAsInterfaceSingleton<NavigationItemViewModelFactory>();
 
             builder.RegisterAsInterfaceSingleton<MessageDialogService>();
             builder.RegisterAsInterfaceSingleton<AppCenterIntegration>();

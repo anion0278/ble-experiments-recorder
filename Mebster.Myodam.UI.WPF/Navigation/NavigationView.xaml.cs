@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace Mebster.Myodam.UI.WPF.Views
+namespace Mebster.Myodam.UI.WPF.Navigation
 {
     /// <summary>
     /// Interaction logic for NavigationView.xaml

@@ -1,6 +1,6 @@
 ﻿namespace Mebster.Myodam.Models.Device;
 
-public class StimulationPulseWidth
+public class StimulationPulseWidth 
 {
     public int Value { get; }
     public static StimulationPulseWidth[] AvailableOptions { get; }

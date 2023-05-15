@@ -17,6 +17,7 @@ using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.Models.TestSubject;
 using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.Event;
+using Mebster.Myodam.UI.WPF.Navigation;
 using Mebster.Myodam.UI.WPF.ViewModels.Services;
 
 namespace Mebster.Myodam.UI.WPF.ViewModels
@@ -64,17 +65,17 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         }
 
 
-        /// <summary>
-        /// Design-time ctor
-        /// </summary>
-        [Obsolete("Design-time only!")]
-        public MainViewModel()
-        {
-            var ts = new TestSubject() { FirstName = "Subject", LastName = "Name", Notes = "Notes:\n   * Note1\n   * Note2" };
-            _detailViewModels.Add(new TestSubjectDetailViewModel() { Model = ts });
+        ///// <summary>
+        ///// Design-time ctor
+        ///// </summary>
+        //[Obsolete("Design-time only!")]
+        //public MainViewModel()
+        //{
+        //    var ts = new TestSubject() { FirstName = "Subject", LastName = "Name", Notes = "Notes:\n   * Note1\n   * Note2" };
+        //    _detailViewModels.Add(new TestSubjectDetailViewModel() { Model = ts });
 
-            NavigationViewModel = new NavigationViewModel(ts);
-        }
+        //    NavigationViewModel = new NavigationViewModel(ts);
+        //}
 
         public MainViewModel(INavigationViewModel navigationViewModel,
             IIndex<string, IDetailViewModel> detailViewModelCreator,

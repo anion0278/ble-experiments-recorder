@@ -15,6 +15,8 @@ public class MyodamDeviceUiWrapper : IMyodamDevice
     public event EventHandler? ErrorChanged;
     public event EventHandler? MeasurementStatusChanged;
     public event EventHandler? BatteryStatusChanged;
+
+    private const int DisconnectionDelay = 2;
     public MyodamError Error => _myodamDevice.Error;
 
     public TimeSpan DataRequestInterval => _myodamDevice.DataRequestInterval;
@@ -28,6 +30,7 @@ public class MyodamDeviceUiWrapper : IMyodamDevice
     public bool IsCalibrating => _myodamDevice.IsCalibrating;
 
     public bool IsCurrentlyMeasuring => _myodamDevice.IsCurrentlyMeasuring;
+
 
     public DeviceCalibration Calibration
     {
@@ -111,5 +114,6 @@ public class MyodamDeviceUiWrapper : IMyodamDevice
         _myodamDevice.ErrorChanged -= _myodamDevice_ErrorChanged;
         _myodamDevice.MeasurementStatusChanged -= _myodamDevice_MeasurementStatusChanged;
         _myodamDevice.BatteryStatusChanged -= _myodamDevice_BatteryStatusChanged;
+        await Task.Delay(TimeSpan.FromSeconds(DisconnectionDelay));
     }
 }

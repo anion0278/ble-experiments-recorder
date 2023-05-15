@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Autofac;
+using Mebster.Myodam.DataAccess;
 using Mebster.Myodam.UI.WPF.Exception;
 using Mebster.Myodam.UI.WPF.Startup;
 using Mebster.Myodam.UI.WPF.Views;
@@ -24,6 +25,7 @@ namespace Mebster.Myodam.UI.WPF
             var bootstrapper = new Bootstrapper();
             var container = bootstrapper.Bootstrap();
             _exceptionHandler = container.Resolve<IGlobalExceptionHandler>();
+            var x = container.Resolve<ExperimentsDbContext>();
             DispatcherUnhandledException += OnDispatcherUnhandledException;
 
             var mainWindow = container.Resolve<MainWindow>();
