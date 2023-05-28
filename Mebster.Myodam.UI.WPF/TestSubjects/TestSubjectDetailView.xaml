@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Mebster.Myodam.UI.WPF.Views.TestSubjectDetailView"
+﻿<UserControl x:Class="Mebster.Myodam.UI.WPF.TestSubjects.TestSubjectDetailView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -11,9 +11,11 @@
              xmlns:testSubject="clr-namespace:Mebster.Myodam.Models.TestSubject;assembly=Mebster.Myodam.Models"
              xmlns:wpf="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
              xmlns:resouces="clr-namespace:Mebster.Myodam.UI.WPF.Views.Resouces"
+             xmlns:testSubjects="clr-namespace:Mebster.Myodam.UI.WPF.TestSubjects"
+             xmlns:measurements="clr-namespace:Mebster.Myodam.UI.WPF.Measurements"
              mc:Ignorable="d" 
              d:DesignHeight="900" d:DesignWidth="900"
-             d:DataContext="{d:DesignInstance viewModels:TestSubjectDetailViewModel, d:IsDesignTimeCreatable=True}">
+             d:DataContext="{d:DesignInstance testSubjects:TestSubjectDetailViewModel, d:IsDesignTimeCreatable=True}">
     <UserControl.Resources>
         <GroupStyle x:Key="MeasurementDataGridGroupStyle">
             <GroupStyle.Panel>
@@ -125,8 +127,8 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <views:MechanismParametersView Grid.Column="0"  DataContext="{Binding MechanismParametersVm}"  />
-                    <views:StimulationParametersView Grid.Column="1" HorizontalAlignment="Center" Title="Default stimulation parameters for this test subject:"
+                    <measurements:MechanismParametersView Grid.Column="0"  DataContext="{Binding MechanismParametersVm}"  />
+                    <measurements:StimulationParametersView Grid.Column="1" HorizontalAlignment="Center" Title="Default stimulation parameters for this test subject:"
                                                      DataContext="{Binding StimulationParametersVm}" />
                 </Grid>
             </Expander>

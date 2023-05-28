@@ -5,6 +5,7 @@ using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.Models.Device;
+using Mebster.Myodam.UI.WPF.Calibration;
 
 namespace Mebster.Myodam.UI.WPF.ViewModels
 {

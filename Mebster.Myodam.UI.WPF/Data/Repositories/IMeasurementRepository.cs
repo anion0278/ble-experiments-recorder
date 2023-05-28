@@ -4,10 +4,10 @@ using Mebster.Myodam.Models.TestSubject;
 
 namespace Mebster.Myodam.UI.WPF.Data.Repositories
 {
-  public interface IMeasurementRepository : IGenericRepository<Measurement>
+  public interface IMeasurementRepository : IGenericRepository<Models.TestSubject.Measurement>
   {
-    public Task<TestSubject?> GetTestSubjectById(int id);
+    public Task<Models.TestSubject.TestSubject?> GetTestSubjectById(int id);
 
-    Task ReloadTestSubjectAsync(TestSubject testSubject);
+    Task ReloadTestSubjectAsync(Models.TestSubject.TestSubject testSubject);
   }
 }

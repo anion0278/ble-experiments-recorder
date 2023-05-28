@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Linq;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using AutoMapper.Configuration;
-using DocumentFormat.OpenXml.Drawing;
-using LiveCharts.Wpf;
-using Mebster.Myodam.UI.WPF.ViewModels;
 using Mebster.Myodam.UI.WPF.Views.Resouces;
 
-namespace Mebster.Myodam.UI.WPF.Views
+namespace Mebster.Myodam.UI.WPF.TestSubjects
 {
     /// <summary>
     /// Interaction logic for testSubjectDetailView.xaml

@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
 using AutoMapper;
-using Castle.Components.DictionaryAdapter;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using LiveCharts;
@@ -19,11 +16,12 @@ using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.Models.TestSubject;
 using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.Event;
+using Mebster.Myodam.UI.WPF.Measurements;
+using Mebster.Myodam.UI.WPF.ViewModels;
 using Mebster.Myodam.UI.WPF.ViewModels.Services;
-using Microsoft.EntityFrameworkCore.Metadata;
 using PropertyChanged;
 
-namespace Mebster.Myodam.UI.WPF.ViewModels
+namespace Mebster.Myodam.UI.WPF.TestSubjects
 {
     public class TestSubjectDetailViewModel : DetailViewModelBase, ITestSubjectDetailViewModel
     {
@@ -45,7 +43,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
 
         public ICollectionView Measurements { get; set; }
 
-        public TestSubject Model { get; set; } // MUST BE PUBLIC PROP in order to make validation work on init
+        public Models.TestSubject.TestSubject Model { get; set; } // MUST BE PUBLIC PROP in order to make validation work on init
 
         public MechanismParametersViewModel MechanismParametersVm { get; private set; }
         public StimulationParametersViewModel StimulationParametersVm { get; private set; }
@@ -240,7 +238,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         protected override async void OnSaveExecuteAsync()
         {
             if ((await _testSubjectRepository.GetAllAsync()) // TODO replace getAll with customized query
-                .Any(ts => ts.FullName == Model.FullName && ts.Id != Model.Id))
+                .Any<Models.TestSubject.TestSubject>(ts => ts.FullName == Model.FullName && ts.Id != Model.Id))
             {
                 await DialogService.ShowInfoDialogAsync($"A test subject with name '{Model.FullName}' already exists. Please change the name.");
                 return;
@@ -270,9 +268,9 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
             RaiseDetailDeletedEvent(Model.Id);
         }
 
-        private async Task<TestSubject> CreateNewTestSubject()
+        private async Task<Models.TestSubject.TestSubject> CreateNewTestSubject()
         {
-            var testSubject = new TestSubject
+            var testSubject = new Models.TestSubject.TestSubject
             {
                 CustomizedAdjustments = new DeviceMechanicalAdjustments(),
                 CustomizedParameters = (StimulationParameters)(await _stimulationParametersRepository.GetByIdAsync(1))!.Clone()

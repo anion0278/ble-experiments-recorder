@@ -17,7 +17,9 @@ using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.Models.TestSubject;
 using Mebster.Myodam.UI.WPF.Data.Repositories;
 using Mebster.Myodam.UI.WPF.Event;
+using Mebster.Myodam.UI.WPF.Measurements;
 using Mebster.Myodam.UI.WPF.Navigation;
+using Mebster.Myodam.UI.WPF.TestSubjects;
 using Mebster.Myodam.UI.WPF.ViewModels.Services;
 
 namespace Mebster.Myodam.UI.WPF.ViewModels

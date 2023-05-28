@@ -1,10 +1,9 @@
 ﻿using System;
-using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.Common;
 using Mebster.Myodam.Models.Device;
-using Mebster.Myodam.UI.WPF.Data.Repositories;
+using Mebster.Myodam.UI.WPF.ViewModels;
 
-namespace Mebster.Myodam.UI.WPF.ViewModels;
+namespace Mebster.Myodam.UI.WPF.Measurements;
 
 public class StimulationParametersViewModel : ViewModelBase
 {

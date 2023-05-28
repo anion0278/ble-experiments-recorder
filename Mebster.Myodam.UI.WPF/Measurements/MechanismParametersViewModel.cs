@@ -1,9 +1,9 @@
-﻿using System.Drawing;
-using AutoMapper;
+﻿using AutoMapper;
 using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.Models.Device;
+using Mebster.Myodam.UI.WPF.ViewModels;
 
-namespace Mebster.Myodam.UI.WPF.ViewModels;
+namespace Mebster.Myodam.UI.WPF.Measurements;
 
 public class MechanismParametersViewModel : ViewModelBase
 {

@@ -2,6 +2,7 @@
 using AutoFixture.AutoMoq;
 using FluentAssertions;
 using Mebster.Myodam.Models.Device;
+using Mebster.Myodam.UI.WPF.Measurements;
 using Mebster.Myodam.UI.WPF.ViewModels;
 using Moq;
 using Xunit.Categories;

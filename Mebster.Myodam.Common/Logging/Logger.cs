@@ -1,7 +1,6 @@
-﻿using System.Drawing;
-using Serilog;
+﻿using Serilog;
 
-namespace Mebster.Myodam.UI.WPF.ViewModels.Services;
+namespace Mebster.Myodam.Common.Logging;
 
 public interface ILogger
 {

@@ -8,6 +8,8 @@
              xmlns:resouces="clr-namespace:Mebster.Myodam.UI.WPF.Views.Resouces"
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
              xmlns:livecharts="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+             xmlns:measurements="clr-namespace:Mebster.Myodam.UI.WPF.Measurements"
+             xmlns:testSubjects="clr-namespace:Mebster.Myodam.UI.WPF.TestSubjects"
              Startup="Application_Startup"
              Exit="Application_OnExit">
     <Application.Resources>
@@ -35,11 +37,11 @@
                     <!--EndRegion-->
 
                     <!--Region Implicit MVVM teplates-->
-                    <DataTemplate DataType="{x:Type viewModel:TestSubjectDetailViewModel}">
-                        <views:TestSubjectDetailView/>
+                    <DataTemplate DataType="{x:Type testSubjects:TestSubjectDetailViewModel}">
+                        <testSubjects:TestSubjectDetailView/>
                     </DataTemplate>
-                    <DataTemplate DataType="{x:Type viewModel:MeasurementDetailViewModel}">
-                        <views:MeasurementDetailView/>
+                    <DataTemplate DataType="{x:Type measurements:MeasurementDetailViewModel}">
+                        <measurements:MeasurementDetailView/>
                     </DataTemplate>
                     <!--EndRegion-->
 
