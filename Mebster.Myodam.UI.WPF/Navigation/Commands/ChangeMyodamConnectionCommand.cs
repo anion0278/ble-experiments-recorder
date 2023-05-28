@@ -21,7 +21,7 @@ internal class ChangeMyodamConnectionCommand : CustomAsyncRelayCommand
         _dialogService = dialogService;
     }
 
-    protected override AsyncRelayCommand CreateCommand()
+    protected override AsyncRelayCommand CreateAsyncCommand()
     {
         return new AsyncRelayCommand(ChangeMyodamConnectionAsync, CanChangeMyodamConnection);
     }

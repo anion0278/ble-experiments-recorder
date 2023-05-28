@@ -7,7 +7,7 @@ namespace Mebster.Myodam.UI.WPF.ViewModels.Commands;
 
 public abstract class CustomAsyncRelayCommand : IAsyncRelayCommand
 {
-    private readonly AsyncRelayCommand _innerAsyncCommand;
+    private AsyncRelayCommand _innerAsyncCommand = null!;
     public event EventHandler? CanExecuteChanged;
     public event PropertyChangedEventHandler? PropertyChanged;
     public Task? ExecutionTask => _innerAsyncCommand.ExecutionTask;
@@ -17,12 +17,17 @@ public abstract class CustomAsyncRelayCommand : IAsyncRelayCommand
 
     protected CustomAsyncRelayCommand()
     {
-        _innerAsyncCommand = CreateCommand();
+        InitInnerCommand();
+    }
+
+    private void InitInnerCommand()
+    {
+        _innerAsyncCommand = CreateAsyncCommand();
         _innerAsyncCommand.CanExecuteChanged += (s, e) => CanExecuteChanged?.Invoke(s, e);
         _innerAsyncCommand.PropertyChanged += (s, e) => PropertyChanged?.Invoke(s, e);
     }
 
-    protected abstract AsyncRelayCommand CreateCommand();
+    protected abstract AsyncRelayCommand CreateAsyncCommand();
 
     public bool CanExecute(object? parameter)
     {

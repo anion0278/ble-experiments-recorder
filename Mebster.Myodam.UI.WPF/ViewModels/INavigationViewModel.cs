@@ -14,7 +14,6 @@ namespace Mebster.Myodam.UI.WPF.ViewModels
         public ICollectionView TestSubjectsNavigationItems { get; }
         public int ControllerBatteryPercentage { get; }
         public MyodamError DeviceError { get; }
-        public int SelectedItemsCount { get; }
         public string FullNameFilter { get; set; }
         public int StimulatorBatteryPercentage { get; }
         public ICommand OpenDetailViewCommand { get; }

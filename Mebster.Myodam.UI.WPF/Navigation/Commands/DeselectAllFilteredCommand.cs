@@ -13,6 +13,6 @@ public class DeselectAllFilteredCommand : SelectAllFilteredCommand
     {
         ViewModel.TestSubjectsNavigationItems
             .Cast<NavigationItemViewModel>()
-            .ForEach(i => i.IsSelected = false);
+            .ForEach(i => i.IsSelectedForExport = false);
     }
 }

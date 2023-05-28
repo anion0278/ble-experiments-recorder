@@ -23,6 +23,6 @@ public class SelectAllFilteredCommand : CustomRelayCommandBase
     {
         ViewModel.TestSubjectsNavigationItems
             .Cast<NavigationItemViewModel>()
-            .ForEach(i => i.IsSelected = true);
+            .ForEach(i => i.IsSelectedForExport = true);
     }
 }

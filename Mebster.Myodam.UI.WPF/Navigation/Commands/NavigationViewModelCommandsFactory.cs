@@ -46,7 +46,7 @@ public class NavigationViewModelCommandsFactory : INavigationViewModelCommandsFa
         IDocumentManager documentManager,
         IFileSystemManager fileManager)
     {
-        return new ExportSelectedCommand(
+        return new ExportSelectedItemsCommand(
             viewModel,
             myodamManager,
             testSubjectRepository,

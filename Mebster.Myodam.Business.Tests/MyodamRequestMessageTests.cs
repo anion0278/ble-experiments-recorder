@@ -3,12 +3,14 @@ using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.Models.Device;
 using Mebster.Myodam.Models.TestSubject;
 using Xunit;
+using Xunit.Categories;
 
 namespace Mebster.Myodam.Business.Tests
 {
     public class MyodamRequestMessageTests
     {
         [Theory]
+        [UnitTest]
         [InlineData(100, 80, 4, MeasurementType.MaximumContraction, true, ">SC:100_SF:080_SP:400_ST:10_RT:03_FR:04_MC:1\n")]
         [InlineData(8, 100, 0, MeasurementType.Fatigue, false, ">SC:008_SF:100_SP:050_ST:10_RT:03_FR:04_MC:0\n")]
         [InlineData(8, 100, 0, MeasurementType.Fatigue, true, ">SC:008_SF:100_SP:050_ST:05_RT:03_FR:04_MC:2\n")]

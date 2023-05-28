@@ -79,7 +79,7 @@ public interface IAsyncRelayCommandFactory
 /// <summary>
 /// Factory for creating <see cref="AsyncRelayCommand"/>s with exception handling.
 /// </summary>
-public class AsyncRelayCommandFactory : IAsyncRelayCommandFactory
+public class AsyncRelayCommandFactory : IAsyncRelayCommandFactory // TODO remove since no longer needed
 {
     private readonly IGlobalExceptionHandler _exceptionHandler;
 

@@ -11,7 +11,7 @@ using Mebster.Myodam.UI.WPF.ViewModels.Services;
 
 namespace Mebster.Myodam.UI.WPF.Navigation.Commands;
 
-public class ExportSelectedCommand : CustomAsyncRelayCommand
+public class ExportSelectedItemsCommand : CustomAsyncRelayCommand
 {
     private readonly INavigationViewModel _viewModel;
     private readonly IMyodamManager _myodamManager;
@@ -20,13 +20,13 @@ public class ExportSelectedCommand : CustomAsyncRelayCommand
     private readonly IDocumentManager _documentManager;
     private readonly IFileSystemManager _fileManager;
 
-    public ExportSelectedCommand(
+    public ExportSelectedItemsCommand(
         INavigationViewModel viewModel, 
         IMyodamManager myodamManager, 
         ITestSubjectRepository testSubjectRepository,
         IMessageDialogService dialogService,
         IDocumentManager documentManager,
-        IFileSystemManager fileManager)
+        IFileSystemManager fileManager) 
     {
         _viewModel = viewModel;
         _myodamManager = myodamManager;
@@ -36,21 +36,24 @@ public class ExportSelectedCommand : CustomAsyncRelayCommand
         _fileManager = fileManager;
     }
 
-    protected override AsyncRelayCommand CreateCommand()
+    protected override AsyncRelayCommand CreateAsyncCommand()
     {
         return new AsyncRelayCommand(ExportSelectedAsync, CanExportSelected);
     }
 
     private bool CanExportSelected()
     {
-        return !_myodamManager.IsCurrentlyMeasuring && _viewModel.SelectedItemsCount > 0;
+        return !_myodamManager.IsCurrentlyMeasuring 
+               && _viewModel.TestSubjectsNavigationItems.SourceCollection.Cast<object>().Any(); 
+        // It is important to get teh source collection, otherwise list of filtered items will be returned
     }
 
     private async Task ExportSelectedAsync()
     {
         var subjects = _viewModel.TestSubjectsNavigationItems
+            .SourceCollection
             .OfType<INavigationItemViewModel>()
-            .Where(item => item.IsSelected)
+            .Where(item => item.IsSelectedForExport)
             .Select(item => item.Model).ToArray();
 
         //// TODO optimize query 
