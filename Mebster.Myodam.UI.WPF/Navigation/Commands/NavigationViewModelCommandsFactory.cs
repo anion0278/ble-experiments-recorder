@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.DataAccess.DataExport;
 using Mebster.Myodam.DataAccess.FileStorage;
-using Mebster.Myodam.UI.WPF.Data.Repositories;
+using Mebster.Myodam.DataAccess.Repositories;
 using Mebster.Myodam.UI.WPF.ViewModels;
 using Mebster.Myodam.UI.WPF.ViewModels.Services;
 

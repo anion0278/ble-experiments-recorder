@@ -1,6 +1,4 @@
-﻿using Mebster.Myodam.Models.TestSubject;
-
-namespace Mebster.Myodam.UI.WPF.Event
+﻿namespace Mebster.Myodam.UI.WPF.Event
 {
     public interface IDetailViewEventArgs
     {

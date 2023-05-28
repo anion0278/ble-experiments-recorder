@@ -1,0 +1,115 @@
+﻿<UserControl x:Class="Mebster.Myodam.UI.WPF.Calibration.DeviceCalibrationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Mebster.Myodam.UI.WPF.Views"
+             xmlns:res="clr-namespace:Mebster.Myodam.UI.WPF.Views.Resouces"
+             xmlns:viewModels="clr-namespace:Mebster.Myodam.UI.WPF.ViewModels"
+             xmlns:extensions="clr-namespace:Mebster.Myodam.UI.WPF.Extensions"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="200" d:DesignWidth="350"
+             d:DataContext="{d:DesignInstance viewModels:DeviceCalibrationViewModel, IsDesignTimeCreatable=True}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"  Content="Calibration (for MEBSTER only!)"
+               HorizontalAlignment="Center" FontWeight="Bold"/>
+
+        <Label Grid.Row="1" Grid.Column="0" Content="No load value:"/>
+        <TextBox Grid.Row="1" Grid.Column="1" 
+                 Margin="5" MaxLength="18" HorizontalContentAlignment="Center" 
+                 FontWeight="Bold" 
+                 IsEnabled="{Binding Path=IsEnabled, ElementName=NoLoadButton}"
+                 Text="{Binding NoLoadSensorValue, TargetNullValue=''}"/>
+        <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" x:Name="NoLoadButton"
+                Width="NaN" Margin="5 0" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
+                Command="{Binding CalibrateNoLoadSensorValueCommand}">
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <mah:ProgressRing Foreground="White" MinHeight="15" MinWidth="15" Height="15" Width="15" 
+                                      Padding="0" Margin="0 0 5 0">
+                        <mah:ProgressRing.Style>
+                            <Style TargetType="mah:ProgressRing">
+                                <Setter Property="IsActive" Value="False" />
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CalibrateNoLoadSensorValueCommand.IsRunning}" Value="True">
+                                        <Setter Property="IsActive" Value="True"/>
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </mah:ProgressRing.Style>
+                    </mah:ProgressRing>
+                    <TextBlock>
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Text" Value="Calibrate without load" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CalibrateNoLoadSensorValueCommand.IsRunning}" Value="True" >
+                                        <Setter Property="Text" Value="Calibrating..."></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </StackPanel>
+            </Button.Content>
+        </Button>
+
+        <Label Grid.Row="4" Grid.Column="0" Content="Nominal load value:"/>
+        <TextBox Grid.Row="4" Grid.Column="1" 
+                 Margin="5" MaxLength="18" HorizontalContentAlignment="Center" 
+                 FontWeight="Bold"  
+                 IsEnabled="{Binding Path=IsEnabled, ElementName=NominalLoadButton}"
+                 Text="{Binding NominalLoadSensorValue, TargetNullValue=''}"/>
+        <Button Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" x:Name="NominalLoadButton"
+                Width="NaN" Margin="5 0 5 10" extensions:RelayCommandExtensions.IsCommandUpdateEnabled="True"
+                Command="{Binding CalibrateNominalLoadSensorValueCommand}">
+            <Button.Content>
+                <StackPanel Orientation="Horizontal">
+                    <mah:ProgressRing Foreground="White" MinHeight="15" MinWidth="15" Height="15" Width="15" 
+                                      Padding="0" Margin="0 0 5 0">
+                        <mah:ProgressRing.Style>
+                            <Style TargetType="mah:ProgressRing">
+                                <Setter Property="IsActive" Value="False" />
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CalibrateNominalLoadSensorValueCommand.IsRunning}" Value="True">
+                                        <Setter Property="IsActive" Value="True"/>
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </mah:ProgressRing.Style>
+                    </mah:ProgressRing>
+                    <TextBlock>
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Text" Value="Calibrate with nominal load" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CalibrateNominalLoadSensorValueCommand.IsRunning}" Value="True" >
+                                        <Setter Property="Text" Value="Calibrating..."/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </StackPanel>
+            </Button.Content>
+        </Button>
+    </Grid>
+</UserControl>

@@ -5,8 +5,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using Mebster.Myodam.Models.TestSubject;
+using Mebster.Myodam.Models.TestSubjects;
 using Mebster.Myodam.UI.WPF.Event;
+using Mebster.Myodam.UI.WPF.TestSubjects;
 using Mebster.Myodam.UI.WPF.ViewModels;
 
 namespace Mebster.Myodam.UI.WPF.Navigation

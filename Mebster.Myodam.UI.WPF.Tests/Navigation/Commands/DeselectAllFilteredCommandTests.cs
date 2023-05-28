@@ -3,7 +3,7 @@ using AutoFixture;
 using AutoFixture.AutoMoq;
 using FluentAssertions;
 using Mebster.Myodam.Models.Device;
-using Mebster.Myodam.Models.TestSubject;
+using Mebster.Myodam.Models.TestSubjects;
 using Mebster.Myodam.UI.WPF.Navigation;
 using Mebster.Myodam.UI.WPF.Navigation.Commands;
 using Mebster.Myodam.UI.WPF.ViewModels;

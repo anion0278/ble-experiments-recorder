@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Windows.Input;
-using Mebster.Myodam.Models.TestSubject;
+using Mebster.Myodam.Models.TestSubjects;
 
 namespace Mebster.Myodam.UI.WPF.Navigation;
 

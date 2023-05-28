@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Transactions;
+using Mebster.Myodam.Common;
+using Mebster.Myodam.Common.Logging;
 using Mebster.Myodam.UI.WPF.ViewModels.Services;
 using Microsoft.AppCenter.Crashes;
 
