@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.ObjectModel;
 using System.Windows.Data;
 using Castle.Core.Internal;
-using LiveCharts;
-using BleRecorder.UI.WPF.ViewModels;
 
-namespace BleRecorder.UI.WPF.Views.Resouces;
+namespace BleRecorder.UI.WPF.Measurements.Converters;
 
 [ValueConversion(typeof(IEnumerable), typeof(bool))]
 public class MeasuredDataToBooleanConverter : IValueConverter

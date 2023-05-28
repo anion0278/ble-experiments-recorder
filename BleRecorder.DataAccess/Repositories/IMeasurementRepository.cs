@@ -1,9 +1,12 @@
-﻿namespace BleRecorder.DataAccess.Repositories
-{
-  public interface IMeasurementRepository : IGenericRepository<Models.TestSubject.Measurement>
-  {
-    public Task<Models.TestSubject.TestSubject?> GetTestSubjectById(int id);
+﻿using BleRecorder.Models.Measurements;
+using BleRecorder.Models.TestSubjects;
 
-    Task ReloadTestSubjectAsync(Models.TestSubject.TestSubject testSubject);
+namespace BleRecorder.DataAccess.Repositories
+{
+  public interface IMeasurementRepository : IGenericRepository<Measurement>
+  {
+    public Task<TestSubject?> GetTestSubjectById(int id);
+
+    Task ReloadTestSubjectAsync(TestSubject testSubject);
   }
 }

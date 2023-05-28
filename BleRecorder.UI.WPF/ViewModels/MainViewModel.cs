@@ -15,7 +15,6 @@ using CommunityToolkit.Mvvm.Messaging;
 using BleRecorder.Business.Device;
 using BleRecorder.DataAccess.Repositories;
 using BleRecorder.Models.Device;
-using BleRecorder.Models.TestSubject;
 using BleRecorder.UI.WPF.Event;
 using BleRecorder.UI.WPF.Measurements;
 using BleRecorder.UI.WPF.Navigation;

@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using BleRecorder.Models.TestSubject;
+using BleRecorder.Models.Measurements;
 
 namespace BleRecorder.UI.WPF.Measurements
 {

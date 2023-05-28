@@ -14,7 +14,8 @@ using BleRecorder.Common.Services;
 using BleRecorder.DataAccess.Repositories;
 using BleRecorder.Models;
 using BleRecorder.Models.Device;
-using BleRecorder.Models.TestSubject;
+using BleRecorder.Models.Measurements;
+using BleRecorder.Models.TestSubjects;
 using BleRecorder.UI.WPF.Event;
 using BleRecorder.UI.WPF.TestSubjects;
 using BleRecorder.UI.WPF.ViewModels;
@@ -82,7 +83,7 @@ namespace BleRecorder.UI.WPF.Measurements
 
         public MechanismParametersViewModel MechanismParametersVm { get; private set; }
 
-        public Models.TestSubject.Measurement Model { get; private set; }
+        public Measurement Model { get; private set; }
 
         public IRelayCommand StartMeasurementCommand { get; }
         public IRelayCommand StopMeasurementCommand { get; }
@@ -248,9 +249,9 @@ namespace BleRecorder.UI.WPF.Measurements
         }
 
 
-        private async Task<Models.TestSubject.Measurement> CreateNewMeasurementAsync(TestSubject correspondingTestSubject)
+        private async Task<Measurement> CreateNewMeasurementAsync(TestSubject correspondingTestSubject)
         {
-            var newMeasurement = new Models.TestSubject.Measurement
+            var newMeasurement = new Measurement
             {
                 ContractionLoadData = new List<MeasuredValue>(),
                 TestSubject = (await _measurementRepository.GetTestSubjectById(correspondingTestSubject.Id))!

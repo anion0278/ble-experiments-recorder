@@ -1,6 +1,6 @@
 ﻿using BleRecorder.Models;
 using BleRecorder.Models.Device;
-using BleRecorder.Models.TestSubject;
+using BleRecorder.Models.Measurements;
 
 namespace BleRecorder.Business.Device;
 

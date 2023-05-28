@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace BleRecorder.UI.WPF.Views.Resouces;
+namespace BleRecorder.UI.WPF.Calibration.AttachProperties;
 
 public class AttachedRotation
 {

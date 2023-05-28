@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace BleRecorder.UI.WPF.Views.Resouces;
+namespace BleRecorder.UI.WPF.Calibration.AttachProperties;
 
 public class AttachedText // TODO check https://stackoverflow.com/questions/66750044/can-we-implement-dependency-property-in-a-class-that-does-not-inherit-from-depen
 {

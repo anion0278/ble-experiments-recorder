@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 
-namespace BleRecorder.Models.TestSubject;
+namespace BleRecorder.Models.Measurements;
 
 public enum MeasurementType
 {

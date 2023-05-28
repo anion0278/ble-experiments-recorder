@@ -10,7 +10,7 @@ using BleRecorder.DataAccess.DataExport;
 using BleRecorder.DataAccess.FileStorage;
 using BleRecorder.DataAccess.Repositories;
 using BleRecorder.Models.Device;
-using BleRecorder.Models.TestSubject;
+using BleRecorder.Models.TestSubjects;
 using BleRecorder.UI.WPF.Calibration;
 using BleRecorder.UI.WPF.Event;
 using BleRecorder.UI.WPF.Exception;

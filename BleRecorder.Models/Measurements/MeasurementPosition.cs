@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace BleRecorder.Models.TestSubject;
+namespace BleRecorder.Models.Measurements;
 
 public enum PositionDuringMeasurement
 {

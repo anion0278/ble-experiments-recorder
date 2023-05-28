@@ -5,9 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:resouces="clr-namespace:BleRecorder.UI.WPF.Views.Resouces"
              xmlns:viewModels="clr-namespace:BleRecorder.UI.WPF.ViewModels"
+             xmlns:attachProperties="clr-namespace:BleRecorder.UI.WPF.Calibration.AttachProperties"
+             xmlns:measurements="clr-namespace:BleRecorder.UI.WPF.Measurements"
              mc:Ignorable="d" 
              Height="380" Width="350"
-             d:DataContext="{d:DesignInstance viewModels:MechanismParametersViewModel, d:IsDesignTimeCreatable=True}">
+             d:DataContext="{d:DesignInstance measurements:MechanismParametersViewModel, d:IsDesignTimeCreatable=True}">
     <UserControl.Resources>
         <ControlTemplate x:Key="SliderWithLabels" TargetType="Slider">
             <ControlTemplate.Resources>
@@ -17,7 +19,7 @@
                     <Setter Property="HorizontalAlignment" Value="Center"/>
                     <Setter Property="Padding" Value="5 0 5 0"/>
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding Path=(resouces:AttachedRotation.Rotated), RelativeSource={RelativeSource TemplatedParent}}" Value="True">
+                        <DataTrigger Binding="{Binding Path=(attachProperties:AttachedRotation.Rotated), RelativeSource={RelativeSource TemplatedParent}}" Value="True">
                             <Setter Property="LayoutTransform">
                                 <Setter.Value>
                                     <RotateTransform Angle="90"/>
@@ -33,7 +35,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="{Binding Path=(resouces:AttachedWidth.Width), RelativeSource={RelativeSource TemplatedParent}}"/>
+                    <ColumnDefinition Width="{Binding Path=(attachProperties:AttachedWidth.Width), RelativeSource={RelativeSource TemplatedParent}}"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
@@ -47,7 +49,7 @@
                             HorizontalAlignment="Center" Orientation="Horizontal">
                     <TextBlock Style="{x:Null}"  HorizontalAlignment="Center" 
                            Foreground="{TemplateBinding Foreground}" FontWeight="Bold"
-                           Text="{Binding Path=(resouces:AttachedText.Text), RelativeSource={RelativeSource TemplatedParent}}" />
+                           Text="{Binding Path=(attachProperties:AttachedText.Text), RelativeSource={RelativeSource TemplatedParent}}" />
                     <TextBlock Style="{x:Null}" Foreground="{TemplateBinding Foreground}"
                            HorizontalAlignment="Center" Margin="3 0 0 0" FontWeight="Bold"
                            Text="{Binding Path=Value, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" />
@@ -105,9 +107,9 @@
                 Maximum="{Binding Model.CuffProximalDistalDistance.MaxValue}"
                 TickFrequency="{Binding Model.CuffProximalDistalDistance.Step}"
                 Value = "{Binding CuffProximalDistalDistance}"
-                resouces:AttachedText.Text="C-Cuff (prox-dist):"
-                resouces:AttachedRotation.Rotated="True"
-                resouces:AttachedWidth.Width="80"
+                attachProperties:AttachedText.Text="C-Cuff (prox-dist):"
+                attachProperties:AttachedRotation.Rotated="True"
+                attachProperties:AttachedWidth.Width="80"
                 Width="170"
                 RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" >
                 <Slider.RenderTransform>
@@ -121,9 +123,9 @@
                 Maximum="{Binding Model.FixtureProximalDistalDistance.MaxValue}"
                 TickFrequency="{Binding Model.FixtureProximalDistalDistance.Step}"
                 Value = "{Binding FixtureProximalDistalDistance}"
-                resouces:AttachedText.Text="Fixture (prox-dist):"
-                resouces:AttachedRotation.Rotated="True"
-                resouces:AttachedWidth.Width="40"
+                attachProperties:AttachedText.Text="Fixture (prox-dist):"
+                attachProperties:AttachedRotation.Rotated="True"
+                attachProperties:AttachedWidth.Width="40"
                 Canvas.Left="306" Canvas.Top="376" HorizontalAlignment="Center" >
                 <Slider.RenderTransform>
                     <TransformGroup>
@@ -136,7 +138,7 @@
                 Maximum="{Binding Model.FixtureAnteroPosteriorDistance.MaxValue}"
                 TickFrequency="{Binding Model.FixtureAnteroPosteriorDistance.Step}"
                 Value = "{Binding FixtureAnteroPosteriorDistance}" 
-                resouces:AttachedText.Text="Fixture (ant-post):"
+                attachProperties:AttachedText.Text="Fixture (ant-post):"
                 Width="190"
                 RenderTransformOrigin="0.5,0.5" Canvas.Left="119" Canvas.Top="333" HorizontalAlignment="Center" />
         </Canvas>

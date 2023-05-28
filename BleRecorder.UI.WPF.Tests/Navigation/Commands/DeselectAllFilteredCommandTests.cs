@@ -3,7 +3,7 @@ using AutoFixture;
 using AutoFixture.AutoMoq;
 using FluentAssertions;
 using BleRecorder.Models.Device;
-using BleRecorder.Models.TestSubject;
+using BleRecorder.Models.TestSubjects;
 using BleRecorder.UI.WPF.Navigation;
 using BleRecorder.UI.WPF.Navigation.Commands;
 using BleRecorder.UI.WPF.ViewModels;

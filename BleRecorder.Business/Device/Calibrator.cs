@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using BleRecorder.Business.Exception;
 using BleRecorder.Models.Device;
-using BleRecorder.Models.TestSubject;
+using BleRecorder.Models.Measurements;
 using Nito.AsyncEx;
 
 namespace BleRecorder.Business.Device;

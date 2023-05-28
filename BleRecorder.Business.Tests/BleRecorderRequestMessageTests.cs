@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using BleRecorder.Business.Device;
 using BleRecorder.Models.Device;
-using BleRecorder.Models.TestSubject;
+using BleRecorder.Models.Measurements;
 using Xunit;
 using Xunit.Categories;
 

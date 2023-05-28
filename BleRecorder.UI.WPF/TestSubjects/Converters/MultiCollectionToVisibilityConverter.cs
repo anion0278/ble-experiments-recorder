@@ -6,9 +6,10 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using LiveCharts;
-using BleRecorder.Models.TestSubject;
+using BleRecorder.Models.Measurements;
+using BleRecorder.UI.WPF.Views.Resouces;
 
-namespace BleRecorder.UI.WPF.Views.Resouces;
+namespace BleRecorder.UI.WPF.TestSubjects.Converters;
 
 public class MultiCollectionToVisibilityConverter : IMultiValueConverter
 {

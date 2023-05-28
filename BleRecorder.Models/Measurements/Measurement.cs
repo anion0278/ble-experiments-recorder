@@ -1,11 +1,9 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Globalization;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using BleRecorder.Models.Device;
+using BleRecorder.Models.TestSubjects;
 
-namespace BleRecorder.Models.TestSubject;
+namespace BleRecorder.Models.Measurements;
 
 public class Measurement
 {

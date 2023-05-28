@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Data;
 using BleRecorder.UI.WPF.Navigation;
 
-namespace BleRecorder.UI.WPF.Views.Resouces;
+namespace BleRecorder.UI.WPF.TestSubjects.Converters;
 
 [ValueConversion(typeof(ICollectionView), typeof(uint))]
 public class NavigationItemsCollectionToCountConverter : IValueConverter

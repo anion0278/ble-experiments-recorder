@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Data;
 
-namespace BleRecorder.UI.WPF.Views.Resouces;
+namespace BleRecorder.UI.WPF.Measurements.Converters;
 
 
 [ValueConversion(typeof(int), typeof(bool))]

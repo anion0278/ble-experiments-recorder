@@ -1,4 +1,5 @@
-﻿using BleRecorder.Models.TestSubject;
+﻿using BleRecorder.Models.Measurements;
+using BleRecorder.Models.TestSubjects;
 
 namespace BleRecorder.DataAccess.Repositories;
 

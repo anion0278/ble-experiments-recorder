@@ -33,8 +33,7 @@
 
 	<ItemGroup>
 	  <None Remove="Assets\Bottom_cut.png" />
-	  <None Remove="Assets\ISO.png" />
-	  <None Remove="Assets\bleRecorder_mechanical_adjustment.png" />
+	  <None Remove="Assets\device_mechanical_adjustment.png" />
 	  <None Remove="Assets\Side_cut.png" />
 	  <None Remove="Assets\splashScreen.png" />
 	</ItemGroup>
@@ -120,14 +119,14 @@
 
 	<ItemGroup>
 	  <Folder Include="Exception\" />
+	  <Folder Include="Navigation\Converters\" />
 	  <Folder Include="ViewModels\Commands\" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Resource Include="Assets\Bottom_cut.png" />
-	  <Resource Include="Assets\ISO.png" />
-	  <Resource Include="Assets\bleRecorder_mechanical_adjustment.png" />
-	  <Resource Include="Assets\Side_cut.png" />
+	  <Resource Include="Assets\bottom_cut.png" />
+	  <Resource Include="Assets\device_mechanical_adjustment.png" />
+	  <Resource Include="Assets\side_cut.png" />
 	</ItemGroup>
 
 

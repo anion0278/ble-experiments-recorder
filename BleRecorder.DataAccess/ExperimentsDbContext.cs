@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.Metrics;
 using BleRecorder.Models.Device;
-using BleRecorder.Models.TestSubject;
+using BleRecorder.Models.Measurements;
+using BleRecorder.Models.TestSubjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace BleRecorder.DataAccess;

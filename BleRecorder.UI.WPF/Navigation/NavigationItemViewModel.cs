@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using BleRecorder.Models.TestSubject;
+using BleRecorder.Models.TestSubjects;
 using BleRecorder.UI.WPF.Event;
 using BleRecorder.UI.WPF.TestSubjects;
 using BleRecorder.UI.WPF.ViewModels;

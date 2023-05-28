@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Windows.Input;
-using BleRecorder.Models.TestSubject;
+using BleRecorder.Models.TestSubjects;
 
 namespace BleRecorder.UI.WPF.Navigation;
 

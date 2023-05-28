@@ -1,6 +1,4 @@
-﻿using BleRecorder.Models.TestSubject;
-
-namespace BleRecorder.UI.WPF.Event
+﻿namespace BleRecorder.UI.WPF.Event
 {
     public interface IDetailViewEventArgs
     {

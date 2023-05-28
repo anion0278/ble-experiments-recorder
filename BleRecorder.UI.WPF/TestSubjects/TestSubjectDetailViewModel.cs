@@ -14,7 +14,8 @@ using LiveCharts;
 using BleRecorder.Business.Device;
 using BleRecorder.DataAccess.Repositories;
 using BleRecorder.Models.Device;
-using BleRecorder.Models.TestSubject;
+using BleRecorder.Models.Measurements;
+using BleRecorder.Models.TestSubjects;
 using BleRecorder.UI.WPF.Event;
 using BleRecorder.UI.WPF.Measurements;
 using BleRecorder.UI.WPF.ViewModels;
@@ -43,7 +44,7 @@ namespace BleRecorder.UI.WPF.TestSubjects
 
         public ICollectionView Measurements { get; set; }
 
-        public Models.TestSubject.TestSubject Model { get; set; } // MUST BE PUBLIC PROP in order to make validation work on init
+        public TestSubject Model { get; set; } // MUST BE PUBLIC PROP in order to make validation work on init
 
         public MechanismParametersViewModel MechanismParametersVm { get; private set; }
         public StimulationParametersViewModel StimulationParametersVm { get; private set; }
@@ -238,7 +239,7 @@ namespace BleRecorder.UI.WPF.TestSubjects
         protected override async void OnSaveExecuteAsync()
         {
             if ((await _testSubjectRepository.GetAllAsync()) // TODO replace getAll with customized query
-                .Any<Models.TestSubject.TestSubject>(ts => ts.FullName == Model.FullName && ts.Id != Model.Id))
+                .Any<TestSubject>(ts => ts.FullName == Model.FullName && ts.Id != Model.Id))
             {
                 await DialogService.ShowInfoDialogAsync($"A test subject with name '{Model.FullName}' already exists. Please change the name.");
                 return;
@@ -268,9 +269,9 @@ namespace BleRecorder.UI.WPF.TestSubjects
             RaiseDetailDeletedEvent(Model.Id);
         }
 
-        private async Task<Models.TestSubject.TestSubject> CreateNewTestSubject()
+        private async Task<TestSubject> CreateNewTestSubject()
         {
-            var testSubject = new Models.TestSubject.TestSubject
+            var testSubject = new TestSubject
             {
                 CustomizedAdjustments = new DeviceMechanicalAdjustments(),
                 CustomizedParameters = (StimulationParameters)(await _stimulationParametersRepository.GetByIdAsync(1))!.Clone()

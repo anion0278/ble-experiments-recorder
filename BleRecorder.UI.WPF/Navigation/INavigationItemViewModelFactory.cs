@@ -1,4 +1,4 @@
-﻿using BleRecorder.Models.TestSubject;
+﻿using BleRecorder.Models.TestSubjects;
 
 namespace BleRecorder.UI.WPF.Navigation;
 

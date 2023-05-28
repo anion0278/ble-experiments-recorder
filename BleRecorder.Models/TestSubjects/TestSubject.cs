@@ -2,8 +2,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using BleRecorder.Models.Device;
+using BleRecorder.Models.Measurements;
 
-namespace BleRecorder.Models.TestSubject;
+namespace BleRecorder.Models.TestSubjects;
 
 public class TestSubject 
 {

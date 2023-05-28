@@ -1,9 +1,9 @@
-﻿using System.Windows.Media;
-using LiveCharts.Configurations;
-using BleRecorder.Models.TestSubject;
+﻿using LiveCharts.Configurations;
+using BleRecorder.Models.Measurements;
+using BleRecorder.UI.WPF.Views.Resouces;
 using TimeSpan = System.TimeSpan;
 
-namespace BleRecorder.UI.WPF.Views.Resouces;
+namespace BleRecorder.UI.WPF.Measurements.Converters;
 
 public class MeasurementValuesChartPointMapper : CartesianMapper<MeasuredValue>
 {

@@ -1,6 +1,5 @@
 ﻿using System.Drawing;
 using BleRecorder.Models;
-using BleRecorder.Models.TestSubject;
 
 namespace BleRecorder.Business.Device;
 
