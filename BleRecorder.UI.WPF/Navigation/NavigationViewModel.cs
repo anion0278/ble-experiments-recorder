@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
@@ -37,7 +35,7 @@ namespace BleRecorder.UI.WPF.Navigation
         private readonly IBleRecorderManager _bleRecorderManager;
         private readonly IGlobalExceptionHandler _exceptionHandler;
         private readonly INavigationItemViewModelFactory _navigationItemViewModelFactory;
-        private readonly ObservableCollectionEX<INavigationItemViewModel> _navigationItems = new();
+        private readonly ObservableCollectionWithItemChangeNotification<INavigationItemViewModel> _navigationItems = new();
         private string _fullNameFilter;
 
         public ICollectionView TestSubjectsNavigationItems { get; }
@@ -60,9 +58,6 @@ namespace BleRecorder.UI.WPF.Navigation
         public BleRecorderError DeviceError => _bleRecorderManager.BleRecorderDevice?.Error ?? BleRecorderError.NoError;
 
         public IDeviceCalibrationViewModel DeviceCalibrationVm { get; }
-
-        // possible TODO: MVVM approach should provide Filtered ICollectionView and to let decide client (UI) how to use it (count)
-        public int SelectedItemsCount => _navigationItems.Count(i => i.IsSelected);
 
         public string FullNameFilter
         {
@@ -106,7 +101,7 @@ namespace BleRecorder.UI.WPF.Navigation
         {
             TestSubjectsNavigationItems = GetDefaultCollectionView(_navigationItems);
             _navigationItems.ItemPropertyChanged += ItemPropertyChanged; // TODO unsubscribe !!
-            _navigationItems.CollectionChanged += _navigationItems_CollectionChanged; 
+            _navigationItems.CollectionChanged += NavigationItems_CollectionChanged;
 
             SelectAllFilteredCommand = commandsFactory.GetSelectAllFilteredCommand(this);
             DeselectAllFilteredCommand = commandsFactory.GetDeselectAllFilteredCommand(this);
@@ -130,19 +125,19 @@ namespace BleRecorder.UI.WPF.Navigation
             _messenger.Register<AfterDetailDeletedEventArgs>(this, (s, e) => AfterDetailDeleted(e));
         }
 
-        private void _navigationItems_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        private void NavigationItems_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.Action is NotifyCollectionChangedAction.Remove or NotifyCollectionChangedAction.Reset)
             {
-                OnPropertyChanged(nameof(SelectedItemsCount));
+                OnPropertyChanged(nameof(TestSubjectsNavigationItems));
             }
         }
 
-        private void ItemPropertyChanged(object item, PropertyChangedEventArgs e)
+        private void ItemPropertyChanged(object? item, PropertyChangedEventArgs e)
         {
-            if (e is { PropertyName: nameof(INavigationItemViewModel.IsSelected)})
+            if (e is { PropertyName: nameof(INavigationItemViewModel.IsSelectedForExport) })
             {
-                OnPropertyChanged(nameof(SelectedItemsCount));
+                OnPropertyChanged(nameof(TestSubjectsNavigationItems));
             }
         }
 
@@ -184,88 +179,23 @@ namespace BleRecorder.UI.WPF.Navigation
 
         private void AfterDetailDeleted(AfterDetailDeletedEventArgs args) // TODO refactoring!
         {
-            switch (args.ViewModelName)
-            {
-                case nameof(TestSubjectDetailViewModel):
-                    var item = _navigationItems.SingleOrDefault(f => f.Id == args.Id);
-                    if (item != null)
-                    {
-                        _navigationItems.Remove(item);
-                    }
-                    break;
-            }
+            if (args.ViewModelName != nameof(TestSubjectDetailViewModel)) return;
+
+            var item = _navigationItems.SingleOrDefault(f => f.Id == args.Id);
+            if (item == null) return;
+
+            _navigationItems.Remove(item);
         }
 
         private async void AfterDetailSaved(AfterDetailSavedEventArgs args) // TODO refactoring!
         {
-            switch (args.ViewModelName)
-            {
-                case nameof(TestSubjectDetailViewModel):
-                    var lookupItem = _navigationItems.SingleOrDefault(l => l.Id == args.Id);
-                    if (lookupItem == null)
-                    {
-                        var ts = await _testSubjectRepository.GetByIdAsync(args.Id);
-                        _navigationItems.Add(_navigationItemViewModelFactory.GetViewModel(ts!));
-                    }
-                    else
-                    if (lookupItem is NavigationItemViewModel nvm)
-                    {
-                        nvm.DisplayMember = args.DisplayMember;
-                    }
-                    break;
-            }
+            if (args.ViewModelName != nameof(TestSubjectDetailViewModel)) return;
+
+            var lookupItem = _navigationItems.SingleOrDefault(l => l.Id == args.Id);
+            if (lookupItem != null) return;
+
+            var ts = await _testSubjectRepository.GetByIdAsync(args.Id);
+            _navigationItems.Add(_navigationItemViewModelFactory.GetViewModel(ts!));
         }
     }
-}
-
-public dehandate void ListedItemPropertyChangedEventHandler(object Item, PropertyChangedEventArgs e);
-public class ObservableCollectionEX<T> : ObservableCollection<T>
-{
-    #region Constructors
-    public ObservableCollectionEX() : base()
-    {
-        CollectionChanged += ObservableCollection_CollectionChanged;
-    }
-    public ObservableCollectionEX(IEnumerable<T> c) : base(c)
-    {
-        CollectionChanged += ObservableCollection_CollectionChanged;
-    }
-    public ObservableCollectionEX(List<T> l) : base(l)
-    {
-        CollectionChanged += ObservableCollection_CollectionChanged;
-    }
-
-    #endregion
-
-    public new void Clear()
-    {
-        foreach (var item in this)
-            if (item is INotifyPropertyChanged i)
-                i.PropertyChanged -= Element_PropertyChanged;
-        base.Clear();
-    }
-
-    private void ObservableCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-    {
-        if (e.OldItems != null)
-            foreach (var item in e.OldItems)
-                if (item != null && item is INotifyPropertyChanged i)
-                    i.PropertyChanged -= Element_PropertyChanged;
-
-
-        if (e.NewItems != null)
-            foreach (var item in e.NewItems)
-                if (item != null && item is INotifyPropertyChanged i)
-                {
-                    i.PropertyChanged -= Element_PropertyChanged;
-                    i.PropertyChanged += Element_PropertyChanged;
-                }
-    }
-
-    private void Element_PropertyChanged(object sender, PropertyChangedEventArgs e)
-    {
-        ItemPropertyChanged?.Invoke(sender, e);
-    }
-
-    public ListedItemPropertyChangedEventHandler ItemPropertyChanged;
 }

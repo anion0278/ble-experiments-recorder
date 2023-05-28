@@ -28,7 +28,7 @@ public class SelectAllFilteredCommandTests
         {
             list.Add(fixture
                 .Build<NavigationItemViewModel>()
-                .With(s => s.IsSelected, false)
+                .With(s => s.IsSelectedForExport, false)
                 .Create());
         };
         vmMock.Setup(m => m.TestSubjectsNavigationItems).Returns(new ListCollectionView(list));
@@ -40,7 +40,7 @@ public class SelectAllFilteredCommandTests
 
         list.Should().AllSatisfy(item =>
         {
-            item.IsSelected.Should().BeTrue();
+            item.IsSelectedForExport.Should().BeTrue();
         });
     }
 }

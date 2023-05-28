@@ -2,7 +2,7 @@
 
 namespace BleRecorder.UI.WPF.Views.Resouces;
 
-public class AttachedText
+public class AttachedText // TODO check https://stackoverflow.com/questions/66750044/can-we-implement-dependency-property-in-a-class-that-does-not-inherit-from-depen
 {
     public static readonly DependencyProperty TextProperty =
         DependencyProperty.RegisterAttached("Text", typeof(string), typeof(AttachedText), new PropertyMetadata(default(string)));

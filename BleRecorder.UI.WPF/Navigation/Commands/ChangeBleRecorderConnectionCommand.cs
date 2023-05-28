@@ -21,7 +21,7 @@ internal class ChangeBleRecorderConnectionCommand : CustomAsyncRelayCommand
         _dialogService = dialogService;
     }
 
-    protected override AsyncRelayCommand CreateCommand()
+    protected override AsyncRelayCommand CreateAsyncCommand()
     {
         return new AsyncRelayCommand(ChangeBleRecorderConnectionAsync, CanChangeBleRecorderConnection);
     }
