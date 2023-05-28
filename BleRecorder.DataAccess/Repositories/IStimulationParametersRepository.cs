@@ -1,6 +1,6 @@
 ﻿using BleRecorder.Models.Device;
 
-namespace BleRecorder.UI.WPF.Data.Repositories;
+namespace BleRecorder.DataAccess.Repositories;
 
 public interface IStimulationParametersRepository : IGenericRepository<StimulationParameters>
 {

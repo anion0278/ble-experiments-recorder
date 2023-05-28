@@ -4,7 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using BleRecorder.Business.Device;
 using BleRecorder.DataAccess.DataExport;
 using BleRecorder.DataAccess.FileStorage;
-using BleRecorder.UI.WPF.Data.Repositories;
+using BleRecorder.DataAccess.Repositories;
 using BleRecorder.UI.WPF.ViewModels;
 using BleRecorder.UI.WPF.ViewModels.Commands;
 using BleRecorder.UI.WPF.ViewModels.Services;

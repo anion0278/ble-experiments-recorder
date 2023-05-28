@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
-namespace BleRecorder.UI.WPF.Data.Repositories
+namespace BleRecorder.DataAccess.Repositories
 {
   public class GenericRepository<TEntity, TContext> : IGenericRepository<TEntity>
     where TEntity : class

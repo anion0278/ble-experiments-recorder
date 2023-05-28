@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using BleRecorder.Models.TestSubject;
-
-namespace BleRecorder.UI.WPF.Data.Repositories
+﻿namespace BleRecorder.DataAccess.Repositories
 {
   public interface IMeasurementRepository : IGenericRepository<Models.TestSubject.Measurement>
   {

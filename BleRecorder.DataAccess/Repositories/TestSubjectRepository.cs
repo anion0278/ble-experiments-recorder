@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using BleRecorder.DataAccess;
-using BleRecorder.Models.TestSubject;
+﻿using BleRecorder.Models.TestSubject;
 using Microsoft.EntityFrameworkCore;
 
-namespace BleRecorder.UI.WPF.Data.Repositories;
+namespace BleRecorder.DataAccess.Repositories;
 
 public class TestSubjectRepository : GenericRepository<TestSubject, ExperimentsDbContext>, ITestSubjectRepository
 {

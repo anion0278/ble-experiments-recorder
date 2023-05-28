@@ -1,12 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BleRecorder.DataAccess;
-using BleRecorder.Models.Device;
+﻿using BleRecorder.Models.Device;
 using BleRecorder.Models.TestSubject;
 using Microsoft.EntityFrameworkCore;
 
-namespace BleRecorder.UI.WPF.Data.Repositories;
+namespace BleRecorder.DataAccess.Repositories;
 public class MeasurementRepository : GenericRepository<Measurement, ExperimentsDbContext>, IMeasurementRepository
 {
     public MeasurementRepository(ExperimentsDbContext context) : base(context)
