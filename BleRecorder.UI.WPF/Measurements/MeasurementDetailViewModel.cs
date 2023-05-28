@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Data;
 using AutoMapper;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -19,10 +16,12 @@ using BleRecorder.Models.Device;
 using BleRecorder.Models.TestSubject;
 using BleRecorder.UI.WPF.Data.Repositories;
 using BleRecorder.UI.WPF.Event;
+using BleRecorder.UI.WPF.TestSubjects;
+using BleRecorder.UI.WPF.ViewModels;
 using BleRecorder.UI.WPF.ViewModels.Services;
 using PropertyChanged;
 
-namespace BleRecorder.UI.WPF.ViewModels
+namespace BleRecorder.UI.WPF.Measurements
 {
     public class MeasurementDetailViewModel : DetailViewModelBase, IMeasurementDetailViewModel
     {
@@ -83,7 +82,7 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         public MechanismParametersViewModel MechanismParametersVm { get; private set; }
 
-        public Measurement Model { get; private set; }
+        public Models.TestSubject.Measurement Model { get; private set; }
 
         public IRelayCommand StartMeasurementCommand { get; }
         public IRelayCommand StopMeasurementCommand { get; }
@@ -249,9 +248,9 @@ namespace BleRecorder.UI.WPF.ViewModels
         }
 
 
-        private async Task<Measurement> CreateNewMeasurementAsync(TestSubject correspondingTestSubject)
+        private async Task<Models.TestSubject.Measurement> CreateNewMeasurementAsync(TestSubject correspondingTestSubject)
         {
-            var newMeasurement = new Measurement
+            var newMeasurement = new Models.TestSubject.Measurement
             {
                 ContractionLoadData = new List<MeasuredValue>(),
                 TestSubject = (await _measurementRepository.GetTestSubjectById(correspondingTestSubject.Id))!

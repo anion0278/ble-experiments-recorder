@@ -2,6 +2,7 @@
 using AutoFixture.AutoMoq;
 using FluentAssertions;
 using BleRecorder.Models.Device;
+using BleRecorder.UI.WPF.Measurements;
 using BleRecorder.UI.WPF.ViewModels;
 using Moq;
 using Xunit.Categories;

@@ -10,6 +10,7 @@
         xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:resouces="clr-namespace:BleRecorder.UI.WPF.Views.Resouces"
         xmlns:navigation="clr-namespace:BleRecorder.UI.WPF.Navigation"
+        xmlns:measurements="clr-namespace:BleRecorder.UI.WPF.Measurements"
         mc:Ignorable="d"
         Title="{Binding AppVersion, StringFormat='{}Aggregator GUI v{0}'}" 
         Width="1200" Height="700"
@@ -53,7 +54,7 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <navigation:NavigationView Grid.Column="0" DataContext="{Binding NavigationViewModel}"/>
-        <views:StimulationParametersView Grid.Column="1" Title="Default stimulation parameters:"
+        <measurements:StimulationParametersView Grid.Column="1" Title="Default stimulation parameters:"
                                          DataContext="{Binding StimulationParametersViewModel}"
                                          VerticalAlignment="Center" MaxWidth="500"/>
         <TabControl Grid.Column="1" VerticalAlignment="Stretch" IsSynchronizedWithCurrentItem="True"

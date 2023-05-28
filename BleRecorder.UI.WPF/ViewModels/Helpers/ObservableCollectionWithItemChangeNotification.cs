@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 
-namespace BleRecorder.UI.WPF.ViewModels;
+namespace BleRecorder.UI.WPF.ViewModels.Helpers;
 
 public class ObservableCollectionWithItemChangeNotification<T> : ObservableCollection<T>
 {

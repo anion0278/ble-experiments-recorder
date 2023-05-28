@@ -3,21 +3,10 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using BleRecorder.Business.Device;
 using BleRecorder.Models.Device;
-using BleRecorder.UI.WPF.Data.Repositories;
+using BleRecorder.UI.WPF.ViewModels;
 using BleRecorder.UI.WPF.ViewModels.Services;
 
-namespace BleRecorder.UI.WPF.ViewModels;
-
-public interface IDeviceCalibrationViewModel
-{
-    string NoLoadSensorValue { get; set; }
-    string NominalLoadSensorValue { get; set; }
-    bool IsCalibrationRunning { get; }
-    IAsyncRelayCommand CalibrateNoLoadSensorValueCommand { get; }
-    IAsyncRelayCommand CalibrateNominalLoadSensorValueCommand { get; }
-    AppConfiguration AppConfiguration { get; }
-    Task LoadAsync();
-}
+namespace BleRecorder.UI.WPF.Calibration;
 
 public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewModel
 {
@@ -25,7 +14,7 @@ public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewM
     private readonly IMessageDialogService _dialogService;
     private readonly IAppConfigurationLoader _configurationLoader;
 
-    public DeviceCalibration Model { get; private set; } = new(); // must be public prop
+    public Models.Device.DeviceCalibration Model { get; private set; } = new(); // must be public prop
 
     public AppConfiguration AppConfiguration { get; }
 
@@ -69,7 +58,6 @@ public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewM
 
     public DeviceCalibrationViewModel(
         IBleRecorderManager bleRecorderManager,
-        IAsyncRelayCommandFactory asyncCommandFactory,
         IMessageDialogService dialogService,
         IAppConfigurationLoader configurationLoader)
     {
@@ -84,8 +72,8 @@ public class DeviceCalibrationViewModel : ViewModelBase, IDeviceCalibrationViewM
         Model = AppConfiguration.BleRecorderCalibration;
         _bleRecorderManager.Calibration = Model;
 
-        CalibrateNoLoadSensorValueCommand = asyncCommandFactory.Create(CalibrateNoLoadSensorValueAsync, CanCalibrateExecute);
-        CalibrateNominalLoadSensorValueCommand = asyncCommandFactory.Create(CalibrateNominalLoadSensorValueAsync, CanCalibrateExecute);
+        CalibrateNoLoadSensorValueCommand = new AsyncRelayCommand(CalibrateNoLoadSensorValueAsync, CanCalibrateExecute);
+        CalibrateNominalLoadSensorValueCommand = new AsyncRelayCommand(CalibrateNominalLoadSensorValueAsync, CanCalibrateExecute);
     }
 
     public async Task LoadAsync()

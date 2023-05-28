@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Transactions;
+using BleRecorder.Common;
+using BleRecorder.Common.Logging;
 using BleRecorder.UI.WPF.ViewModels.Services;
 using Microsoft.AppCenter.Crashes;
 

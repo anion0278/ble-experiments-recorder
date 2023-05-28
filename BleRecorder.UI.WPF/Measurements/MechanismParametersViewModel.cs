@@ -1,9 +1,9 @@
-﻿using System.Drawing;
-using AutoMapper;
+﻿using AutoMapper;
 using BleRecorder.Business.Device;
 using BleRecorder.Models.Device;
+using BleRecorder.UI.WPF.ViewModels;
 
-namespace BleRecorder.UI.WPF.ViewModels;
+namespace BleRecorder.UI.WPF.Measurements;
 
 public class MechanismParametersViewModel : ViewModelBase
 {

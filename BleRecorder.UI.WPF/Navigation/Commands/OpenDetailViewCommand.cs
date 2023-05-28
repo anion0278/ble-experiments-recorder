@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
 using BleRecorder.UI.WPF.Event;
+using BleRecorder.UI.WPF.TestSubjects;
 using BleRecorder.UI.WPF.ViewModels;
 
 namespace BleRecorder.UI.WPF.Navigation.Commands;

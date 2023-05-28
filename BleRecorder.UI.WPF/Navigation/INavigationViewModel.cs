@@ -5,6 +5,7 @@ using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using BleRecorder.Business.Device;
 using BleRecorder.Models.Device;
+using BleRecorder.UI.WPF.Calibration;
 
 namespace BleRecorder.UI.WPF.ViewModels
 {

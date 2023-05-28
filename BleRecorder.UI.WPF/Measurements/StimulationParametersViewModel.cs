@@ -1,10 +1,9 @@
 ﻿using System;
-using BleRecorder.Business.Device;
 using BleRecorder.Common;
 using BleRecorder.Models.Device;
-using BleRecorder.UI.WPF.Data.Repositories;
+using BleRecorder.UI.WPF.ViewModels;
 
-namespace BleRecorder.UI.WPF.ViewModels;
+namespace BleRecorder.UI.WPF.Measurements;
 
 public class StimulationParametersViewModel : ViewModelBase
 {

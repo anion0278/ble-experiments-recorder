@@ -17,7 +17,9 @@ using BleRecorder.Models.Device;
 using BleRecorder.Models.TestSubject;
 using BleRecorder.UI.WPF.Data.Repositories;
 using BleRecorder.UI.WPF.Event;
+using BleRecorder.UI.WPF.Measurements;
 using BleRecorder.UI.WPF.Navigation;
+using BleRecorder.UI.WPF.TestSubjects;
 using BleRecorder.UI.WPF.ViewModels.Services;
 
 namespace BleRecorder.UI.WPF.ViewModels

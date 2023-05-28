@@ -1,7 +1,6 @@
-﻿using System.Drawing;
-using Serilog;
+﻿using Serilog;
 
-namespace BleRecorder.UI.WPF.ViewModels.Services;
+namespace BleRecorder.Common.Logging;
 
 public interface ILogger
 {
