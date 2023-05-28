@@ -1,6 +1,6 @@
 ﻿using Mebster.Myodam.Models.Device;
 
-namespace Mebster.Myodam.UI.WPF.Data.Repositories;
+namespace Mebster.Myodam.DataAccess.Repositories;
 
 public interface IStimulationParametersRepository : IGenericRepository<StimulationParameters>
 {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace Mebster.Myodam.UI.WPF.Data.Repositories
+﻿namespace Mebster.Myodam.DataAccess.Repositories
 {
     public interface IGenericRepository<T>
     {

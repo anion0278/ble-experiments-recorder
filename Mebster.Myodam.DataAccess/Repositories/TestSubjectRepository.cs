@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Mebster.Myodam.DataAccess;
-using Mebster.Myodam.Models.TestSubject;
+﻿using Mebster.Myodam.Models.TestSubject;
 using Microsoft.EntityFrameworkCore;
 
-namespace Mebster.Myodam.UI.WPF.Data.Repositories;
+namespace Mebster.Myodam.DataAccess.Repositories;
 
 public class TestSubjectRepository : GenericRepository<TestSubject, ExperimentsDbContext>, ITestSubjectRepository
 {
