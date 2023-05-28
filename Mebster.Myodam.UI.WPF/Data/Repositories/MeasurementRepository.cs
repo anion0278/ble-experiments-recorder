@@ -41,7 +41,3 @@ public class StimulationParametersRepository : GenericRepository<StimulationPara
     {
     }
 }
-
-public interface IStimulationParametersRepository : IGenericRepository<StimulationParameters>
-{
-}

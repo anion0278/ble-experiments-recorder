@@ -2,12 +2,14 @@
 using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.Models;
 using Xunit;
+using Xunit.Categories;
 
 namespace Mebster.Myodam.Business.Tests;
 
 public class MyodamMessageParserTests
 {
     [Fact]
+    [UnitTest]
     public void Parses_valid_message()
     {
         string inputMessage = ">TS:01234_ST:0512_AC:00098_CB:060_FB:100_EC:0_MS:1\\n";

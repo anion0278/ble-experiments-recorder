@@ -34,7 +34,7 @@ public class DeviceCalibration
 
     public double CalculateLoadValue(double sensorValue)
     {
-        return _linearEquation.CalculateLoadValue(sensorValue) / LeverLengthMeters;
+        return _linearEquation.CalculateYValue(sensorValue) / LeverLengthMeters;
     }
 
     public bool IsValid()

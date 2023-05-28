@@ -130,6 +130,8 @@
                     <resouces:MeasuredDataToBooleanConverter x:Key="measuredDataLengthToBooleanConverter"/>
                     <resouces:IdToBooleanConverter x:Key="idToBooleanConverter"/>
                     <resouces:EnumToDescriptionConverter x:Key="enumDescriptionConverter"/>
+                    <resouces:DebugConverter x:Key="debugConverter"/>
+                    <resouces:NavigationItemsCollectionToCountConverter x:Key="collectionViewToCountConverter"/>
                     <!-- EndRegion -->
 
                     <Style x:Key="NotesTextBox" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">

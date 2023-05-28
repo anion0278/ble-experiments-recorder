@@ -4,14 +4,13 @@ public class StimulationParameters : ICloneable
 {
     public int Id { get; private set; }
 
-    public int Current { get; set; }
+    public int Current { get; set; } 
     public int Frequency { get; set; }
-    public StimulationPulseWidth PulseWidth { get; set; }
+    public virtual StimulationPulseWidth PulseWidth { get; set; }
     public TimeSpan StimulationTime { get; set; }
     public TimeSpan FatigueStimulationTime { get; set; }
     public TimeSpan RestTime { get; set; }
     public int FatigueRepetitions { get; set; }
-
 
     public StimulationParameters(
         int current, 
