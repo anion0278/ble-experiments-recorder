@@ -1,7 +1,5 @@
 ﻿using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Spreadsheet;
 using System.Reflection;
-using Castle.Core.Internal;
 using System.Linq;
 using BleRecorder.Common.Extensions;
 using BleRecorder.Models.Device;
@@ -63,7 +61,7 @@ public class ExcelDocumentManager : IDocumentManager
                     GetMeasurementStatistics(measurement),
                     FormatMechanicalAdjustments(measurement.AdjustmentsDuringMeasurement),
                     //FormatStimulationParameters(measurement.ParametersDuringMeasurement),
-                    stimParams.Current,
+                    stimParams.Amplitude,
                     stimParams.Frequency,
                     stimParams.PulseWidth.Value,
                     FormatTime(measurement.Type == MeasurementType.MaximumContraction 
@@ -109,7 +107,7 @@ public class ExcelDocumentManager : IDocumentManager
 
         return $"Frequency: {stimulationParameters.Frequency}Hz\n" +
                $"Pulse width: {stimulationParameters.PulseWidth}us\n" +
-               $"Max. current limit: {stimulationParameters.Current}mA\n" +
+               $"Max. amplitude limit: {stimulationParameters.Amplitude}mA\n" +
                $"Stimulation time: {stimulationParameters.StimulationTime.TotalSeconds}s";
     }
 
@@ -117,7 +115,7 @@ public class ExcelDocumentManager : IDocumentManager
     {
         if (mechanicalAdjustments == null) return string.Empty;
 
-        return $"C-Cuff proximal-distal: {mechanicalAdjustments.CuffProximalDistalDistance}\n" +
+        return $"Cuff proximal-distal: {mechanicalAdjustments.CuffProximalDistalDistance}\n" +
                $"Fixture adduction-abduction: {mechanicalAdjustments.FixtureAdductionAbductionAngle}\n" +
                $"Fixture antero-posterior: {mechanicalAdjustments.FixtureAnteroPosteriorDistance}\n" +
                $"Fixture proximal-distal: {mechanicalAdjustments.FixtureProximalDistalDistance}";

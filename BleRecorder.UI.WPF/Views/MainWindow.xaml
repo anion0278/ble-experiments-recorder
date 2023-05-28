@@ -12,7 +12,7 @@
         xmlns:navigation="clr-namespace:BleRecorder.UI.WPF.Navigation"
         xmlns:measurements="clr-namespace:BleRecorder.UI.WPF.Measurements"
         mc:Ignorable="d"
-        Title="{Binding AppVersion, StringFormat='{}Aggregator GUI v{0}'}" 
+        Title="{Binding AppVersion, StringFormat='{}BLE Recorder GUI v{0}'}" 
         Width="1200" Height="700"
         MinWidth="800" MinHeight="600" 
         TextOptions.TextFormattingMode="Display"

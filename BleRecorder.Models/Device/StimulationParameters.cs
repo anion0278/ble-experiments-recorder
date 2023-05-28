@@ -4,7 +4,7 @@ public class StimulationParameters : ICloneable
 {
     public int Id { get; private set; }
 
-    public int Current { get; set; } 
+    public int Amplitude { get; set; } 
     public int Frequency { get; set; }
     public virtual StimulationPulseWidth PulseWidth { get; set; }
     public TimeSpan StimulationTime { get; set; }
@@ -13,24 +13,24 @@ public class StimulationParameters : ICloneable
     public int IntermittentRepetitions { get; set; }
 
     public StimulationParameters(
-        int current, 
+        int amplitude, 
         int frequency, 
         StimulationPulseWidth pulseWidth, 
         TimeSpan stimulationTime,
-        TimeSpan fatigueStimulationTime,
+        TimeSpan intermittentStimulationTime,
         TimeSpan restTime, 
-        int fatigueRepetitions)
+        int intermittentRepetitions)
     {
-        //if (current < 1 || current > 100) throw new ArgumentException($"Parameter {nameof(Current)} is ")
+        //if (amplitude < 1 || amplitude > 100) throw new ArgumentException($"Parameter {nameof(Amplitude)} is ")
         // TODO Validate
 
-        Current = current;
+        Amplitude = amplitude;
         Frequency = frequency;
         PulseWidth = pulseWidth;
         StimulationTime = stimulationTime;
         RestTime = restTime;
-        IntermittentRepetitions = fatigueRepetitions;
-        IntermittentStimulationTime = fatigueStimulationTime;
+        IntermittentRepetitions = intermittentRepetitions;
+        IntermittentStimulationTime = intermittentStimulationTime;
     }
 
     public static StimulationParameters GetDefaultValues(int id = 0) // TODO into  DefaultValuesFactory
@@ -50,7 +50,7 @@ public class StimulationParameters : ICloneable
     public object Clone()
     {
         return new StimulationParameters(
-            Current,
+            Amplitude,
             Frequency,
             PulseWidth,
             StimulationTime,

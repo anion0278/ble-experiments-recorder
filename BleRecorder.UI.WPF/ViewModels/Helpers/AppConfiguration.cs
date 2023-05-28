@@ -1,7 +1,6 @@
 ﻿using System.CodeDom;
 using System.Drawing;
 using System.IO;
-using System.Text.Json;
 using System.Threading.Tasks;
 using BleRecorder.DataAccess.FileStorage;
 using BleRecorder.Models.Device;

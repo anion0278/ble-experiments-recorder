@@ -9,10 +9,10 @@ public class StimulationParametersViewModel : ViewModelBase
 {
     private readonly StimulationParameters _model;
 
-    public int CurrentMilliAmps
+    public int AmplitudeMilliAmps
     {
-        get => _model.Current;
-        set => _model.Current = value;
+        get => _model.Amplitude;
+        set => _model.Amplitude = value;
     }
 
     public int FrequencyHz

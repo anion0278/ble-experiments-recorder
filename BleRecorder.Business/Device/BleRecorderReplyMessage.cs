@@ -7,7 +7,7 @@ public class BleRecorderReplyMessage
 {
     public TimeSpan Timestamp { get; }
     public double SensorValue { get; }
-    public double CurrentMilliAmp { get; }
+    public double Amplitude { get; }
 
     public Percentage ControllerBattery { get; }
     public Percentage StimulatorBattery { get; }
@@ -17,7 +17,7 @@ public class BleRecorderReplyMessage
     public BleRecorderReplyMessage(
         TimeSpan timestamp, 
         double sensorValue,
-        double currentMilliAmp,
+        double amplitude,
         Percentage controllerBattery,
         Percentage stimulatorBattery,
         BleRecorderError error,
@@ -25,7 +25,7 @@ public class BleRecorderReplyMessage
     {
         Timestamp = timestamp;
         SensorValue = sensorValue;
-        CurrentMilliAmp = currentMilliAmp;
+        Amplitude = amplitude;
         ControllerBattery = controllerBattery;
         StimulatorBattery = stimulatorBattery;
         Error = error;

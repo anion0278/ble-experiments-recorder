@@ -46,7 +46,7 @@ public class BleRecorderRequestMessage
 
         // TODO possible refactoring
         return     
-            $">SC:{StimulationParameters.Current:000}_" +
+            $">SC:{StimulationParameters.Amplitude:000}_" +
             $"SF:{StimulationParameters.Frequency:000}_" +
             $"SP:{StimulationParameters.PulseWidth.Value:000}_" +
             $"ST:{stimTime:00}_" +

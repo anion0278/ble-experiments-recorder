@@ -15,7 +15,7 @@ namespace BleRecorder.Business.Tests
         [InlineData(8, 100, 0, MeasurementType.Intermittent, false, ">SC:008_SF:100_SP:050_ST:10_RT:03_FR:04_MC:0\n")]
         [InlineData(8, 100, 0, MeasurementType.Intermittent, true, ">SC:008_SF:100_SP:050_ST:05_RT:03_FR:04_MC:2\n")]
         public void Formats_valid_message_to_string(
-            int current, 
+            int amplitude, 
             int frequency, 
             int pulseWidthOption, 
             MeasurementType measurementType, 
@@ -23,7 +23,7 @@ namespace BleRecorder.Business.Tests
             string expectedResult)
         {
             var msg = new BleRecorderRequestMessage(new StimulationParameters(
-                current,
+                amplitude,
                 frequency,
                 StimulationPulseWidth.AvailableOptions[pulseWidthOption],
                 TimeSpan.FromSeconds(10),

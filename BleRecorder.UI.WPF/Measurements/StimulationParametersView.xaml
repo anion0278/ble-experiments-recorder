@@ -8,10 +8,11 @@
              xmlns:device="clr-namespace:BleRecorder.Models.Device;assembly=BleRecorder.Models"
              xmlns:viewModels="clr-namespace:BleRecorder.UI.WPF.ViewModels"
              xmlns:measurements="clr-namespace:BleRecorder.Models.Measurements;assembly=BleRecorder.Models"
+             xmlns:meas="clr-namespace:BleRecorder.UI.WPF.Measurements"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
              x:Name="control"
-             d:DataContext="{d:DesignInstance viewModels:StimulationParametersViewModel, IsDesignTimeCreatable=True}">
+             d:DataContext="{d:DesignInstance meas:StimulationParametersViewModel, IsDesignTimeCreatable=True}">
     <UserControl.Resources>
 
         <Style x:Key="MaxContractionParamLabel" TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
@@ -70,10 +71,10 @@
                    Text="{Binding ElementName=control, Path=Title}" FontWeight="Bold" 
                HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"/>
 
-        <Label Grid.Row="1" Grid.Column="0" Content="Max. current limit [mA]:"  VerticalAlignment="Center"/>
+        <Label Grid.Row="1" Grid.Column="0" Content="Max. amplitude [-]:"  VerticalAlignment="Center"/>
         <mah:NumericUpDown Grid.Row="1" Grid.Column="1" Style="{StaticResource MeasurementParamNumericBox}"
                            Interval="10" Minimum="10" Maximum="100"
-                           Value="{Binding CurrentMilliAmps}" />
+                           Value="{Binding AmplitudeMilliAmps}" />
 
         <Label Grid.Row="2" Grid.Column="0"  Content="Frequency [Hz]:" VerticalAlignment="Center"/>
         <mah:NumericUpDown Grid.Row="2" Grid.Column="1"  Style="{StaticResource MeasurementParamNumericBox}"

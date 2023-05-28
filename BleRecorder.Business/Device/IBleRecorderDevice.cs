@@ -14,8 +14,8 @@ public interface IBleRecorderDevice
     BleRecorderError Error { get; }
     DeviceCalibration Calibration { get; set; }
     TimeSpan DataRequestInterval { get; }
-    StimulationParameters CurrentParameters { get; set; }
-    Percentage StimulatorBattery { get; }
+    StimulationParameters ActiveParameters { get; set; }
+    Percentage UnitBattery { get; }
     Percentage ControllerBattery { get; }
     bool IsConnected { get; }
 

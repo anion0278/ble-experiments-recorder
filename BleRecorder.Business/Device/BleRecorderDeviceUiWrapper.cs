@@ -21,7 +21,7 @@ public class BleRecorderDeviceUiWrapper : IBleRecorderDevice
 
     public TimeSpan DataRequestInterval => _bleRecorderDevice.DataRequestInterval;
 
-    public Percentage StimulatorBattery => _bleRecorderDevice.StimulatorBattery;
+    public Percentage UnitBattery => _bleRecorderDevice.UnitBattery;
 
     public Percentage ControllerBattery => _bleRecorderDevice.ControllerBattery;
 
@@ -38,10 +38,10 @@ public class BleRecorderDeviceUiWrapper : IBleRecorderDevice
         set => _bleRecorderDevice.Calibration = value;
     }
 
-    public StimulationParameters CurrentParameters
+    public StimulationParameters ActiveParameters
     {
-        get => _bleRecorderDevice.CurrentParameters;
-        set => _bleRecorderDevice.CurrentParameters = value;
+        get => _bleRecorderDevice.ActiveParameters;
+        set => _bleRecorderDevice.ActiveParameters = value;
     }
 
     public BleRecorderDeviceUiWrapper(IBleRecorderDevice bleRecorderDevice, ISynchronizationContextProvider contextProvider)

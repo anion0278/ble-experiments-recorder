@@ -18,7 +18,7 @@ public class BleRecorderReplyParser : IBleRecorderReplyParser
         if (regex.Success
             && int.TryParse(regex.Groups["timestamp"].Value, out var timestamp)
             && int.TryParse(regex.Groups["sensor"].Value, out var sensorValue)
-            && int.TryParse(regex.Groups["current"].Value, out var currentVal)
+            && int.TryParse(regex.Groups["current"].Value, out var amplitudeVal)
             && Percentage.TryParse(regex.Groups["controller_battery"].Value, out var controllerBattery)
             && Percentage.TryParse(regex.Groups["fes_battery"].Value, out var stimulatorBattery)
             && Enum.TryParse(typeof(BleRecorderError), regex.Groups["error"].Value, true, out var errorCode)
@@ -27,7 +27,7 @@ public class BleRecorderReplyParser : IBleRecorderReplyParser
             return new BleRecorderReplyMessage(
                 TimeSpan.FromMilliseconds(timestamp),
                 sensorValue,
-                GetCurrentMilliAmp(currentVal), 
+                GetAmplitude(amplitudeVal), 
                 controllerBattery,
                 stimulatorBattery,
                 (BleRecorderError)errorCode!,
@@ -37,8 +37,8 @@ public class BleRecorderReplyParser : IBleRecorderReplyParser
         throw new DeviceInvalidMessageException(msg);
     }
 
-    private static double GetCurrentMilliAmp(int currentValue)
+    private static double GetAmplitude(int currentValue)
     {
-        return currentValue / 100.0; // We use currentMultiplier=100 to pass current with higher accuracy
+        return currentValue / 100.0; // We use Multiplier=100 to pass value with higher accuracy
     }
 }

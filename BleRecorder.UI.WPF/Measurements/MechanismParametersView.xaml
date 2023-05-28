@@ -87,14 +87,8 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.7*"/>
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-
-      
-        <Image Source="../Assets/Bottom_cut.png" Margin="0 50 0 0"
-               VerticalAlignment="Top" HorizontalAlignment="Left"
-               RenderOptions.BitmapScalingMode="HighQuality" />
 
 
         <Image Grid.Column="1" Source="../Assets/Side_cut.png"
@@ -103,18 +97,21 @@
 
         <Canvas Grid.Column="0" Grid.ColumnSpan="2">
 
-            <Slider Canvas.Left="114" Canvas.Top="96" Minimum="{Binding Model.CuffProximalDistalDistance.MinValue}"
+            <Slider Canvas.Left="186" Canvas.Top="185" Minimum="{Binding Model.CuffProximalDistalDistance.MinValue}"
                 Maximum="{Binding Model.CuffProximalDistalDistance.MaxValue}"
                 TickFrequency="{Binding Model.CuffProximalDistalDistance.Step}"
                 Value = "{Binding CuffProximalDistalDistance}"
-                attachProperties:AttachedText.Text="C-Cuff (prox-dist):"
+                attachProperties:AttachedText.Text="Cuff (prox-dist):"
                 attachProperties:AttachedRotation.Rotated="True"
                 attachProperties:AttachedWidth.Width="80"
                 Width="170"
-                RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" >
+                RenderTransformOrigin="0.5,0.5" >
                 <Slider.RenderTransform>
                     <TransformGroup>
-                        <RotateTransform Angle="-90"/>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="-48.723"/>
+                        <TranslateTransform/>
                     </TransformGroup>
                 </Slider.RenderTransform>
             </Slider>
@@ -126,7 +123,7 @@
                 attachProperties:AttachedText.Text="Fixture (prox-dist):"
                 attachProperties:AttachedRotation.Rotated="True"
                 attachProperties:AttachedWidth.Width="40"
-                Canvas.Left="306" Canvas.Top="376" HorizontalAlignment="Center" >
+                Canvas.Left="18" Canvas.Top="327" VerticalAlignment="Center" >
                 <Slider.RenderTransform>
                     <TransformGroup>
                         <RotateTransform Angle="-90"/>
@@ -140,7 +137,7 @@
                 Value = "{Binding FixtureAnteroPosteriorDistance}" 
                 attachProperties:AttachedText.Text="Fixture (ant-post):"
                 Width="190"
-                RenderTransformOrigin="0.5,0.5" Canvas.Left="119" Canvas.Top="333" HorizontalAlignment="Center" />
+                RenderTransformOrigin="0.5,0.5" Canvas.Left="10" Canvas.Top="327" />
         </Canvas>
     </Grid>
 </UserControl>

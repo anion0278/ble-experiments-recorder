@@ -33,10 +33,4 @@
     <ProjectReference Include="..\BleRecorder.Models\BleRecorder.Models.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="PresentationFramework">
-      <HintPath>..\..\..\..\..\..\..\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App\6.0.8\PresentationFramework.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>

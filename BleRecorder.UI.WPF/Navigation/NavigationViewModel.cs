@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -54,7 +53,7 @@ namespace BleRecorder.UI.WPF.Navigation
 
         public BleRecorderAvailabilityStatus BleRecorderAvailability => _bleRecorderManager.BleRecorderAvailability;
 
-        public int StimulatorBatteryPercentage => (int)(_bleRecorderManager.BleRecorderDevice?.StimulatorBattery.Value ?? 0);
+        public int StimulatorBatteryPercentage => (int)(_bleRecorderManager.BleRecorderDevice?.UnitBattery.Value ?? 0);
 
         public int ControllerBatteryPercentage => (int)(_bleRecorderManager.BleRecorderDevice?.ControllerBattery.Value ?? 0);
 

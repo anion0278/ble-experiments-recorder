@@ -21,7 +21,6 @@ using BleRecorder.UI.WPF.ViewModels;
 using BleRecorder.UI.WPF.ViewModels.Services;
 using Microsoft.EntityFrameworkCore.Storage;
 using Moq;
-using NotifyPropertyChanged.Verifier;
 using Xunit.Categories;
 
 namespace BleRecorder.UI.WPF.Tests.Navigation;

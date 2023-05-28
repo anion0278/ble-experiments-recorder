@@ -17,7 +17,7 @@ public class MechanismParameters
         CuffProximalDistalDistance = new MechanicalAdjustmentWithLimits(0, 10, 1, adjustments.CuffProximalDistalDistance);
     }
 
-    public DeviceMechanicalAdjustments GetCurrentAdjustments()
+    public DeviceMechanicalAdjustments GetActiveAdjustments()
     {
         return new DeviceMechanicalAdjustments()
         {

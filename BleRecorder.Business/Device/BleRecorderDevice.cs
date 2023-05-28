@@ -16,9 +16,9 @@ public class BleRecorderDevice : IBleRecorderDevice
     private readonly IBleRecorderReplyParser _messageParser;
     private readonly ISynchronizationContextProvider _synchronizationContextProvider;
     private bool _isCurrentlyMeasuring;
-    private Percentage _stimulatorBattery;
+    private Percentage _unitBattery;
     private Percentage _controllerBattery;
-    private StimulationParameters? _currentParameters;
+    private StimulationParameters? _activeParameters;
     private bool _isCalibrating;
     private BleRecorderError _error = BleRecorderError.NoError;
 
@@ -43,19 +43,19 @@ public class BleRecorderDevice : IBleRecorderDevice
 
     public TimeSpan DataRequestInterval { get; } = TimeSpan.FromMilliseconds(100);
 
-    public StimulationParameters CurrentParameters
+    public StimulationParameters ActiveParameters
     {
-        get => _currentParameters ?? StimulationParameters.GetDefaultValues();
-        set => _currentParameters = value;
+        get => _activeParameters ?? StimulationParameters.GetDefaultValues();
+        set => _activeParameters = value;
     }
 
-    public Percentage StimulatorBattery
+    public Percentage UnitBattery
     {
-        get => _stimulatorBattery;
+        get => _unitBattery;
         private set
         {
-            if (_stimulatorBattery.Equals(value)) return;
-            _stimulatorBattery = value;
+            if (_unitBattery.Equals(value)) return;
+            _unitBattery = value;
             BatteryStatusChanged?.Invoke(this, EventArgs.Empty);
         }
     }
@@ -108,7 +108,7 @@ public class BleRecorderDevice : IBleRecorderDevice
         _bleDeviceHandler.DataReceived += BleDeviceHandlerDataReceived;
         _bleDeviceHandler.DeviceStatusChanged += BleDeviceStatusChanged;
 
-        StimulatorBattery = new Percentage(0);
+        UnitBattery = new Percentage(0);
         ControllerBattery = new Percentage(0);
     }
 
@@ -133,7 +133,7 @@ public class BleRecorderDevice : IBleRecorderDevice
         try
         {
             var reply = _messageParser.ParseReply(data);
-            StimulatorBattery = reply.StimulatorBattery;
+            UnitBattery = reply.StimulatorBattery;
             ControllerBattery = reply.ControllerBattery;
             Error = reply.Error;
             IsCurrentlyMeasuring = reply.CommandStatus != BleRecorderCommand.Idle;
@@ -144,7 +144,7 @@ public class BleRecorderDevice : IBleRecorderDevice
 
             NewValueReceived?.Invoke(
                 this,
-                new MeasuredValue(reply.SensorValue, reply.CurrentMilliAmp, reply.Timestamp));
+                new MeasuredValue(reply.SensorValue, reply.Amplitude, reply.Timestamp));
         }
         catch (DeviceInvalidMessageException ex)
         {
@@ -182,9 +182,9 @@ public class BleRecorderDevice : IBleRecorderDevice
 
         if (IsCurrentlyMeasuring) throw new MeasurementIsAlreadyActiveException();
 
-        CurrentParameters = parameters;
+        ActiveParameters = parameters;
         var msg = new BleRecorderRequestMessage(
-            CurrentParameters,
+            ActiveParameters,
             measurementType,
             true);
         await SendMsgAsync(msg);
@@ -193,7 +193,7 @@ public class BleRecorderDevice : IBleRecorderDevice
     public async Task StopMeasurementAsync()
     {
         var msg = new BleRecorderRequestMessage(
-            CurrentParameters,
+            ActiveParameters,
             MeasurementType.MaximumContraction,
             false);
         await SendMsgAsync(msg);

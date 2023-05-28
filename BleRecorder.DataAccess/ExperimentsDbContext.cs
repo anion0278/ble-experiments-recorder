@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.Metrics;
-using BleRecorder.Models.Device;
+﻿using BleRecorder.Models.Device;
 using BleRecorder.Models.Measurements;
 using BleRecorder.Models.TestSubjects;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +8,6 @@ public sealed class ExperimentsDbContext : DbContext
 {
     public DbSet<TestSubject> TestSubjects { get; set; }
     public DbSet<Measurement> Measurements { get; set; }
-    public DbSet<StimulationParameters> StimulationParameters { get; set; }
 
     public ExperimentsDbContext()
     {
