@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
-             xmlns:testSubject="clr-namespace:Mebster.Myodam.Models.TestSubject;assembly=Mebster.Myodam.Models"
              xmlns:livecharts="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
              xmlns:viewModels="clr-namespace:Mebster.Myodam.UI.WPF.ViewModels"
              xmlns:extensions="clr-namespace:Mebster.Myodam.UI.WPF.Extensions"
@@ -13,6 +12,8 @@
              xmlns:views="clr-namespace:Mebster.Myodam.UI.WPF.Views"
              xmlns:resouces="clr-namespace:Mebster.Myodam.UI.WPF.Views.Resouces"
              xmlns:measurements="clr-namespace:Mebster.Myodam.UI.WPF.Measurements"
+             xmlns:testSubject1="clr-namespace:Mebster.Myodam.Models.Measurements;assembly=Mebster.Myodam.Models"
+             xmlns:converters="clr-namespace:Mebster.Myodam.UI.WPF.Measurements.Converters"
              mc:Ignorable="d"
              x:Name="control"
              d:DesignHeight="800" d:DesignWidth="800" 
@@ -44,27 +45,27 @@
 
         <ObjectDataProvider x:Key="MeasurementTypeEnum" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="testSubject:MeasurementType"/>
+                <x:Type TypeName="testSubject1:MeasurementType"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
 
         <ObjectDataProvider x:Key="MeasurementSiteEnum" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="testSubject:MeasurementSite"/>
+                <x:Type TypeName="testSubject1:MeasurementSite"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
 
         <ObjectDataProvider x:Key="PositionDuringMeasurementEnum" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="testSubject:PositionDuringMeasurement"/>
+                <x:Type TypeName="testSubject1:PositionDuringMeasurement"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
 
-        <resouces:MeasurementValuesChartPointMapper x:Key="chartPointMapper" />
-        <resouces:MeasurementRepetitionsChartPointMapper x:Key="chartRepetitionPointMapper" />
+        <converters:MeasurementValuesChartPointMapper x:Key="chartPointMapper" />
+        <converters:MeasurementRepetitionsChartPointMapper x:Key="chartRepetitionPointMapper" />
 
         <resouces:ConverterPipeline x:Key="collectionToVisibilityConverterPipeline">
-            <resouces:MeasuredDataToBooleanConverter/>
+            <converters:MeasuredDataToBooleanConverter/>
             <BooleanToVisibilityConverter />
         </resouces:ConverterPipeline>
     </UserControl.Resources>
@@ -184,7 +185,7 @@
                                                 </Setter.Value>
                                             </Setter>
                                         </DataTrigger>
-                                        <DataTrigger  Binding="{Binding Type}" Value="{x:Static testSubject:MeasurementType.Fatigue}">
+                                        <DataTrigger  Binding="{Binding Type}" Value="{x:Static testSubject1:MeasurementType.Fatigue}">
                                             <Setter Property="Visibility" Value="Collapsed"/>
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -216,7 +217,7 @@
                             <StackPanel.Style>
                                 <Style TargetType="StackPanel">
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Type}" Value="{x:Static testSubject:MeasurementType.MaximumContraction}">
+                                        <DataTrigger Binding="{Binding Type}" Value="{x:Static testSubject1:MeasurementType.MaximumContraction}">
                                             <Setter Property="Visibility" Value="Collapsed"/>
                                         </DataTrigger>
                                     </Style.Triggers>

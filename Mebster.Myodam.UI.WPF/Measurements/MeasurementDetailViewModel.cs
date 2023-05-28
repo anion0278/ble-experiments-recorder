@@ -14,7 +14,8 @@ using Mebster.Myodam.Common.Services;
 using Mebster.Myodam.DataAccess.Repositories;
 using Mebster.Myodam.Models;
 using Mebster.Myodam.Models.Device;
-using Mebster.Myodam.Models.TestSubject;
+using Mebster.Myodam.Models.Measurements;
+using Mebster.Myodam.Models.TestSubjects;
 using Mebster.Myodam.UI.WPF.Event;
 using Mebster.Myodam.UI.WPF.TestSubjects;
 using Mebster.Myodam.UI.WPF.ViewModels;
@@ -82,7 +83,7 @@ namespace Mebster.Myodam.UI.WPF.Measurements
 
         public MechanismParametersViewModel MechanismParametersVm { get; private set; }
 
-        public Models.TestSubject.Measurement Model { get; private set; }
+        public Measurement Model { get; private set; }
 
         public IRelayCommand StartMeasurementCommand { get; }
         public IRelayCommand StopMeasurementCommand { get; }
@@ -248,9 +249,9 @@ namespace Mebster.Myodam.UI.WPF.Measurements
         }
 
 
-        private async Task<Models.TestSubject.Measurement> CreateNewMeasurementAsync(TestSubject correspondingTestSubject)
+        private async Task<Measurement> CreateNewMeasurementAsync(TestSubject correspondingTestSubject)
         {
-            var newMeasurement = new Models.TestSubject.Measurement
+            var newMeasurement = new Measurement
             {
                 ContractionLoadData = new List<MeasuredValue>(),
                 TestSubject = (await _measurementRepository.GetTestSubjectById(correspondingTestSubject.Id))!

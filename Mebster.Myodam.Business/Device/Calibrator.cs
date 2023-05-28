@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using Mebster.Myodam.Business.Exception;
 using Mebster.Myodam.Models.Device;
-using Mebster.Myodam.Models.TestSubject;
+using Mebster.Myodam.Models.Measurements;
 using Nito.AsyncEx;
 
 namespace Mebster.Myodam.Business.Device;

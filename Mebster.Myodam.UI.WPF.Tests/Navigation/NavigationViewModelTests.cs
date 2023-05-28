@@ -10,7 +10,7 @@ using Mebster.Myodam.DataAccess.DataExport;
 using Mebster.Myodam.DataAccess.FileStorage;
 using Mebster.Myodam.DataAccess.Repositories;
 using Mebster.Myodam.Models.Device;
-using Mebster.Myodam.Models.TestSubject;
+using Mebster.Myodam.Models.TestSubjects;
 using Mebster.Myodam.UI.WPF.Calibration;
 using Mebster.Myodam.UI.WPF.Event;
 using Mebster.Myodam.UI.WPF.Exception;

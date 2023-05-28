@@ -1,9 +1,12 @@
-﻿namespace Mebster.Myodam.DataAccess.Repositories
-{
-  public interface IMeasurementRepository : IGenericRepository<Models.TestSubject.Measurement>
-  {
-    public Task<Models.TestSubject.TestSubject?> GetTestSubjectById(int id);
+﻿using Mebster.Myodam.Models.Measurements;
+using Mebster.Myodam.Models.TestSubjects;
 
-    Task ReloadTestSubjectAsync(Models.TestSubject.TestSubject testSubject);
+namespace Mebster.Myodam.DataAccess.Repositories
+{
+  public interface IMeasurementRepository : IGenericRepository<Measurement>
+  {
+    public Task<TestSubject?> GetTestSubjectById(int id);
+
+    Task ReloadTestSubjectAsync(TestSubject testSubject);
   }
 }

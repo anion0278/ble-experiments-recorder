@@ -10,6 +10,8 @@
              xmlns:livecharts="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
              xmlns:measurements="clr-namespace:Mebster.Myodam.UI.WPF.Measurements"
              xmlns:testSubjects="clr-namespace:Mebster.Myodam.UI.WPF.TestSubjects"
+             xmlns:converters="clr-namespace:Mebster.Myodam.UI.WPF.Measurements.Converters"
+             xmlns:converters1="clr-namespace:Mebster.Myodam.UI.WPF.TestSubjects.Converters"
              Startup="Application_Startup"
              Exit="Application_OnExit">
     <Application.Resources>
@@ -129,11 +131,11 @@
                     <!-- Region Converters -->
                     <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter"/>
                     <resouces:InverseBooleanConverter x:Key="inverseBooleanConverter"/>
-                    <resouces:MeasuredDataToBooleanConverter x:Key="measuredDataLengthToBooleanConverter"/>
-                    <resouces:IdToBooleanConverter x:Key="idToBooleanConverter"/>
+                    <converters:MeasuredDataToBooleanConverter x:Key="measuredDataLengthToBooleanConverter"/>
+                    <converters:IdToBooleanConverter x:Key="idToBooleanConverter"/>
                     <resouces:EnumToDescriptionConverter x:Key="enumDescriptionConverter"/>
                     <resouces:DebugConverter x:Key="debugConverter"/>
-                    <resouces:NavigationItemsCollectionToCountConverter x:Key="collectionViewToCountConverter"/>
+                    <converters1:NavigationItemsCollectionToCountConverter x:Key="collectionViewToCountConverter"/>
                     <!-- EndRegion -->
 
                     <Style x:Key="NotesTextBox" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">

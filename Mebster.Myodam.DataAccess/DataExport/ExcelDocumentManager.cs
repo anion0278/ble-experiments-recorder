@@ -1,11 +1,12 @@
 ﻿using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
-using Mebster.Myodam.Models.TestSubject;
 using System.Reflection;
 using Castle.Core.Internal;
 using System.Linq;
 using Mebster.Myodam.Common.Extensions;
 using Mebster.Myodam.Models.Device;
+using Mebster.Myodam.Models.Measurements;
+using Mebster.Myodam.Models.TestSubjects;
 
 namespace Mebster.Myodam.DataAccess.DataExport;
 

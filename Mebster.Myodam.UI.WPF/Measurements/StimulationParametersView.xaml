@@ -7,7 +7,7 @@
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:device="clr-namespace:Mebster.Myodam.Models.Device;assembly=Mebster.Myodam.Models"
              xmlns:viewModels="clr-namespace:Mebster.Myodam.UI.WPF.ViewModels"
-             xmlns:testSubject="clr-namespace:Mebster.Myodam.Models.TestSubject;assembly=Mebster.Myodam.Models"
+             xmlns:measurements="clr-namespace:Mebster.Myodam.Models.Measurements;assembly=Mebster.Myodam.Models"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
              x:Name="control"
@@ -17,7 +17,7 @@
         <Style x:Key="MaxContractionParamLabel" TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
             <Setter Property="Visibility" Value="Visible"/>
             <Style.Triggers>
-                <DataTrigger Binding="{Binding ElementName=control, Path=MeasurementType}" Value="{x:Static testSubject:MeasurementType.Fatigue}">
+                <DataTrigger Binding="{Binding ElementName=control, Path=MeasurementType}" Value="{x:Static measurements:MeasurementType.Fatigue}">
                     <Setter Property="Visibility" Value="Collapsed"/>
                 </DataTrigger>
             </Style.Triggers>
@@ -26,7 +26,7 @@
         <Style x:Key="FatigueParamLabel" TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
             <Setter Property="Visibility" Value="Visible"/>
             <Style.Triggers>
-                <DataTrigger Binding="{Binding ElementName=control, Path=MeasurementType}" Value="{x:Static testSubject:MeasurementType.MaximumContraction}">
+                <DataTrigger Binding="{Binding ElementName=control, Path=MeasurementType}" Value="{x:Static measurements:MeasurementType.MaximumContraction}">
                     <Setter Property="Visibility" Value="Collapsed"/>
                 </DataTrigger>
             </Style.Triggers>
@@ -35,7 +35,7 @@
         <Style x:Key="MaxContractionParamTextBox" TargetType="mah:NumericUpDown" BasedOn="{StaticResource MeasurementParamNumericBox}">
             <Setter Property="Visibility" Value="Visible"/>
             <Style.Triggers>
-                <DataTrigger Binding="{Binding ElementName=control, Path=MeasurementType}" Value="{x:Static testSubject:MeasurementType.Fatigue}">
+                <DataTrigger Binding="{Binding ElementName=control, Path=MeasurementType}" Value="{x:Static measurements:MeasurementType.Fatigue}">
                     <Setter Property="Visibility" Value="Collapsed"/>
                 </DataTrigger>
             </Style.Triggers>
@@ -44,7 +44,7 @@
         <Style x:Key="FatigueParamTextBox" TargetType="mah:NumericUpDown" BasedOn="{StaticResource MeasurementParamNumericBox}">
             <Setter Property="Visibility" Value="Visible"/>
             <Style.Triggers>
-                <DataTrigger Binding="{Binding ElementName=control, Path=MeasurementType}" Value="{x:Static testSubject:MeasurementType.MaximumContraction}">
+                <DataTrigger Binding="{Binding ElementName=control, Path=MeasurementType}" Value="{x:Static measurements:MeasurementType.MaximumContraction}">
                     <Setter Property="Visibility" Value="Collapsed"/>
                 </DataTrigger>
             </Style.Triggers>

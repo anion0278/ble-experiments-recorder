@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.Models.Device;
-using Mebster.Myodam.Models.TestSubject;
+using Mebster.Myodam.Models.Measurements;
 using Xunit;
 using Xunit.Categories;
 

@@ -15,7 +15,6 @@ using CommunityToolkit.Mvvm.Messaging;
 using Mebster.Myodam.Business.Device;
 using Mebster.Myodam.DataAccess.Repositories;
 using Mebster.Myodam.Models.Device;
-using Mebster.Myodam.Models.TestSubject;
 using Mebster.Myodam.UI.WPF.Event;
 using Mebster.Myodam.UI.WPF.Measurements;
 using Mebster.Myodam.UI.WPF.Navigation;

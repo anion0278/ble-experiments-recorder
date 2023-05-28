@@ -1,4 +1,5 @@
-﻿using Mebster.Myodam.Models.TestSubject;
+﻿using Mebster.Myodam.Models.Measurements;
+using Mebster.Myodam.Models.TestSubjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mebster.Myodam.DataAccess.Repositories;

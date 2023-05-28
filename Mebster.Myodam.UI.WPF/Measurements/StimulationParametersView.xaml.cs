@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using Mebster.Myodam.Models.TestSubject;
+using Mebster.Myodam.Models.Measurements;
 
 namespace Mebster.Myodam.UI.WPF.Measurements
 {

@@ -1,6 +1,5 @@
 ﻿using System.Drawing;
 using Mebster.Myodam.Models;
-using Mebster.Myodam.Models.TestSubject;
 
 namespace Mebster.Myodam.Business.Device;
 
