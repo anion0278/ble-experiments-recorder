@@ -23,7 +23,7 @@ public class TestSubjectRepository : GenericRepository<TestSubject, ExperimentsD
 
     public async Task<TestSubject> ReloadAsync(TestSubject testSubject)
     {
-        Context.Entry(testSubject).State = EntityState.Detached;
+        Context.Entry(testSubject).State = EntityState.Detached; // TODO replace with Reload
         return (await GetByIdAsync(testSubject.Id))!;
     }
 

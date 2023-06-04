@@ -1,5 +1,4 @@
-﻿using BleRecorder.Models.Device;
-using BleRecorder.Models.Measurements;
+﻿using BleRecorder.Models.Measurements;
 using BleRecorder.Models.TestSubjects;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,13 +27,5 @@ public class MeasurementRepository : GenericRepository<Measurement, ExperimentsD
     {
         await Context.Entry(testSubject).ReloadAsync();
         await Context.Entry(testSubject).Collection(ts => ts.Measurements).LoadAsync();
-    }
-}
-
-
-public class StimulationParametersRepository : GenericRepository<StimulationParameters, ExperimentsDbContext>, IStimulationParametersRepository
-{
-    public StimulationParametersRepository(ExperimentsDbContext context) : base(context)
-    {
     }
 }

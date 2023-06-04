@@ -20,11 +20,13 @@ public sealed class IgnoreMouseWheelBehavior : Behavior<UIElement>
 
     void AssociatedObject_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
     {
+        // stop propagation to cancel the standard scrolling in datagrid
         e.Handled = true;
 
         var e2 = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
         e2.RoutedEvent = UIElement.MouseWheelEvent;
 
+        // raise event to notify parent scrollview about scrolling
         AssociatedObject.RaiseEvent(e2);
     }
 }

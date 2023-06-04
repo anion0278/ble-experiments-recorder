@@ -239,7 +239,7 @@ namespace BleRecorder.UI.WPF.TestSubjects
         protected override async void OnSaveExecuteAsync()
         {
             if ((await _testSubjectRepository.GetAllAsync()) // TODO replace getAll with customized query
-                .Any<TestSubject>(ts => ts.FullName == Model.FullName && ts.Id != Model.Id))
+                .Any(ts => ts.FullName == Model.FullName && ts.Id != Model.Id))
             {
                 await DialogService.ShowInfoDialogAsync($"A test subject with name '{Model.FullName}' already exists. Please change the name.");
                 return;
