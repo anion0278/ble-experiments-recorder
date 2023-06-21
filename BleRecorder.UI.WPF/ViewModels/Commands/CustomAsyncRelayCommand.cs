@@ -1,11 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 
 namespace BleRecorder.UI.WPF.ViewModels.Commands;
 
-public abstract class CustomAsyncRelayCommand : IAsyncRelayCommand
+public abstract class CustomAsyncRelayCommand : IAsyncRelayCommand, INotifyPropertyChanged
 {
     private AsyncRelayCommand _innerAsyncCommand = null!;
     public event EventHandler? CanExecuteChanged;
@@ -23,8 +24,8 @@ public abstract class CustomAsyncRelayCommand : IAsyncRelayCommand
     private void InitInnerCommand()
     {
         _innerAsyncCommand = CreateAsyncCommand();
-        _innerAsyncCommand.CanExecuteChanged += (s, e) => CanExecuteChanged?.Invoke(s, e);
-        _innerAsyncCommand.PropertyChanged += (s, e) => PropertyChanged?.Invoke(s, e);
+        _innerAsyncCommand.CanExecuteChanged += (_, e) => CanExecuteChanged?.Invoke(this, e);
+        _innerAsyncCommand.PropertyChanged += (_, e) => PropertyChanged?.Invoke(this, e);
     }
 
     protected abstract AsyncRelayCommand CreateAsyncCommand();
