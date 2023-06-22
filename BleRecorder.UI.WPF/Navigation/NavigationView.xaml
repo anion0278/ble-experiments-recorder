@@ -39,6 +39,10 @@
             </Grid>
         </ControlTemplate>
 
+        <Style TargetType="Button" x:Key="NavigationItemStyle">
+            <Setter Property="FontWeight" Value="Normal"/>
+        </Style>
+
         <DataTemplate x:Key="TestSubjectGroupHeaderTemplate">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -55,7 +59,8 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <icon:PackIconMaterial Height="{StaticResource BaseFontSize}" Kind="AccountPlus" Margin="0 0 5 0"
+                            <icon:PackIconMaterial Height="{StaticResource BaseFontSize}" 
+                                                   Kind="AccountPlus" Margin="0 0 5 0" Padding="0 -5 0 -10"
                                                    Foreground="{Binding RelativeSource={RelativeSource AncestorType=GroupBox}, Path=Foreground}"/>
                             <TextBlock Grid.Column="1" Foreground="{Binding RelativeSource={RelativeSource AncestorType=GroupBox}, Path=Foreground}"
                                        Text="Add new test subject" VerticalAlignment="Center" HorizontalAlignment="Center"/>
@@ -71,9 +76,6 @@
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter Property="Cursor" Value="Hand"/>
                                     <Setter Property="FontWeight" Value="Bold"/>
-                                </Trigger>
-                                <Trigger Property="IsPressed" Value="True">
-                                    <Setter Property="FontWeight" Value="Normal"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -131,26 +133,27 @@
         <DataTemplate DataType="{x:Type navigation:NavigationItemViewModel}">
             <Button Content="{Binding ItemName}"
               Command="{Binding OpenDetailViewCommand}"
-              Style="{x:Null}" Margin="-5">
+              Style="{StaticResource NavigationItemStyle}" Margin="-5" >
                 <Button.Template>
                     <ControlTemplate TargetType="Button">
                         <Grid x:Name="grid">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
                             <CheckBox Grid.Column="0" Style="{StaticResource TestSubjectSelectionCheckBox}" 
                                       IsChecked="{Binding IsSelectedForExport}"/>
-                            <ContentPresenter Grid.Column="1" HorizontalAlignment="Left"
+                            <icon:PackIconMaterial Grid.Column="1"  Height="{StaticResource BaseFontSize}" 
+                                                   Kind="Account" Margin="0 0 5 0" Padding="0 5 0 -10"
+                                                   Foreground="{StaticResource InactiveColor}"/>
+                            <ContentPresenter Grid.Column="2" HorizontalAlignment="Left"
                                               VerticalAlignment="Center"/>
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter Property="Cursor" Value="Hand"/>
                                 <Setter Property="FontWeight" Value="Bold"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="FontWeight" Value="Normal"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>

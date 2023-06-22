@@ -232,7 +232,7 @@ namespace BleRecorder.UI.WPF.TestSubjects
 
             var measToRemove = (Measurement)Measurements.CurrentItem;
 
-            _testSubjectRepository.RemoveMeasurement(measToRemove);
+            Model.Measurements.Remove(measToRemove);
             _measurements.Remove(measToRemove);
             _removedMeasurements.Add(measToRemove);
 

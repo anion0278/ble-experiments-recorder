@@ -24,7 +24,6 @@ namespace BleRecorder.UI.WPF.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
-        private int nextNewItemId = 0;
         private readonly IMessenger _messenger;
         private readonly IBleRecorderManager _bleRecorderManager;
         private readonly IStimulationParametersRepository _stimulationParametersRepository;

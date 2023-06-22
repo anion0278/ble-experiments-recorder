@@ -36,9 +36,4 @@ public class TestSubjectRepository : GenericRepository<TestSubject, ExperimentsD
             .Include(ts => ts.CustomizedParameters)
             .ToListAsync();
     }
-
-    public void RemoveMeasurement(Measurement item) // TODO join repositories, or change Collection to List to remove item from TestSubj
-    {
-        Context.Measurements.Remove(item);
-    }
 }
