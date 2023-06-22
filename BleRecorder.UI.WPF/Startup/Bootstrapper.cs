@@ -58,8 +58,9 @@ namespace BleRecorder.UI.WPF.Startup
 
             builder.RegisterAsInterfaceSingleton<BluetoothManager>();
             builder.RegisterAsInterfaceSingleton<BleRecorderReplyParser>();
-            builder.RegisterAsInterfaceSingleton<BleRecorderManagerUiWrapper>();
-            builder.RegisterAsInterfaceSingleton<BleRecorderManager>();
+
+            RegisterDeviceManagerWithWrapper(builder);
+
             builder.RegisterAsInterfaceSingleton<SynchronizationContextProvider>();
             builder.RegisterAsInterfaceSingleton<GlobalExceptionHandler>();
 
@@ -71,6 +72,12 @@ namespace BleRecorder.UI.WPF.Startup
             builder.RegisterAsInterface<ExcelDocumentManager>();
 
             return builder.Build();
+        }
+
+        private static void RegisterDeviceManagerWithWrapper(ContainerBuilder builder)
+        {
+            builder.RegisterAsInterfaceSingleton<BleRecorderManagerUiWrapper>();
+            builder.RegisterType<BleRecorderManager>();
         }
 
         public IMapper SetupMapper()

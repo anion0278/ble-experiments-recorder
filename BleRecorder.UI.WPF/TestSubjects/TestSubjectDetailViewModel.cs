@@ -80,7 +80,7 @@ namespace BleRecorder.UI.WPF.TestSubjects
         /// </summary>
         public TestSubjectDetailViewModel() : base(null!, null!, null!)
         {
-            _measurements = new ObservableCollection<Measurement>() { new Measurement() { Title = "Measurement 1" } };
+            _measurements = new ObservableCollection<Measurement>() { new() { Title = "Measurement 1" } };
             Measurements = CollectionViewSource.GetDefaultView(_measurements);
         }
 
@@ -131,7 +131,7 @@ namespace BleRecorder.UI.WPF.TestSubjects
             PropertyChanged += OnPropertyChangedEventHandler;
         }
 
-        protected override void UnsubscribeOnClosing()
+        protected override void CleanupOnClosing()
         {
             MechanismParametersVm.PropertyChanged -= OnPropertyChangedEventHandler;
             StimulationParametersVm.PropertyChanged -= OnPropertyChangedEventHandler;
@@ -140,6 +140,9 @@ namespace BleRecorder.UI.WPF.TestSubjects
             //_measurements.CollectionChanged -= (_, _) => OnPropertyChanged(nameof(Measurements)); // TODO
             Messenger.Unregister<AfterDetailSavedEventArgs>(this);
             Messenger.Unregister<AfterDetailDeletedEventArgs>(this);
+
+            _stimulationParametersRepository.Dispose();
+            _testSubjectRepository.Dispose();
         }
 
         private void OnPropertyChangedEventHandler(object? o, PropertyChangedEventArgs propertyChangedEventArgs)

@@ -17,7 +17,7 @@ public class BleRecorderManager : IBleRecorderManager
     private readonly ISynchronizationContextProvider _synchronizationContextProvider;
     private BleRecorderAvailabilityStatus _bleRecorderAvailability;
     private ulong? _acceptedAddress;
-    private const string _bleRecorderName = "Aggregator";
+    private const string _bleRecorderName = "RecorderController";
     public IBleRecorderDevice? BleRecorderDevice { get; private set; }
 
     public BleRecorderAvailabilityStatus BleRecorderAvailability

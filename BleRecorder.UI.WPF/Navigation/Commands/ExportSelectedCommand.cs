@@ -44,7 +44,9 @@ public class ExportSelectedItemsCommand : CustomAsyncRelayCommand
     private bool CanExportSelected()
     {
         return !_bleRecorderManager.IsCurrentlyMeasuring 
-               && _viewModel.TestSubjectsNavigationItems.SourceCollection.Cast<object>().Any(); 
+               && _viewModel.TestSubjectsNavigationItems.SourceCollection
+                   .Cast<INavigationItemViewModel>()
+                   .Any(i => i.IsSelectedForExport); 
         // It is important to get teh source collection, otherwise list of filtered items will be returned
     }
 

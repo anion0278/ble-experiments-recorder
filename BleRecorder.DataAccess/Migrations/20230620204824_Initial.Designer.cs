@@ -3,6 +3,7 @@ using System;
 using BleRecorder.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -11,59 +12,37 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BleRecorder.DataAccess.Migrations
 {
     [DbContext(typeof(ExperimentsDbContext))]
-    [Migration("20220805101135_AddedDeviceCalibration")]
-    partial class AddedDeviceCalibration
+    [Migration("20230620204824_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "6.0.5");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "6.0.5")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            modelBuilder.Entity("BleRecorder.Models.Device.DeviceCalibration", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<double>("NoLoadSensorValue")
-                        .HasColumnType("REAL");
-
-                    b.Property<double>("NominalLoadSensorValue")
-                        .HasColumnType("REAL");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("DeviceCalibrations");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            NoLoadSensorValue = 1.0,
-                            NominalLoadSensorValue = 1.0
-                        });
-                });
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("BleRecorder.Models.Device.DeviceMechanicalAdjustments", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
-                    b.Property<int>("AnkleAxisX")
-                        .HasColumnType("INTEGER");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("AnkleAxisY")
-                        .HasColumnType("INTEGER");
+                    b.Property<double>("CuffProximalDistalDistance")
+                        .HasColumnType("float");
 
-                    b.Property<int>("AnkleAxisZ")
-                        .HasColumnType("INTEGER");
+                    b.Property<double>("FixtureAdductionAbductionAngle")
+                        .HasColumnType("float");
 
-                    b.Property<int>("KneeAxisDeviation")
-                        .HasColumnType("INTEGER");
+                    b.Property<double>("FixtureAnteroPosteriorDistance")
+                        .HasColumnType("float");
 
-                    b.Property<int>("TibiaLength")
-                        .HasColumnType("INTEGER");
+                    b.Property<double>("FixtureProximalDistalDistance")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
@@ -74,19 +53,30 @@ namespace BleRecorder.DataAccess.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
-                    b.Property<int>("Current")
-                        .HasColumnType("INTEGER");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("Amplitude")
+                        .HasColumnType("int");
 
                     b.Property<int>("Frequency")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
+
+                    b.Property<int>("IntermittentRepetitions")
+                        .HasColumnType("int");
+
+                    b.Property<TimeSpan>("IntermittentStimulationTime")
+                        .HasColumnType("time");
 
                     b.Property<int>("PulseWidth")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
+
+                    b.Property<TimeSpan>("RestTime")
+                        .HasColumnType("time");
 
                     b.Property<TimeSpan>("StimulationTime")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("time");
 
                     b.HasKey("Id");
 
@@ -96,52 +86,57 @@ namespace BleRecorder.DataAccess.Migrations
                         new
                         {
                             Id = 1,
-                            Current = 10,
+                            Amplitude = 10,
                             Frequency = 50,
+                            IntermittentRepetitions = 4,
+                            IntermittentStimulationTime = new TimeSpan(0, 0, 0, 1, 0),
                             PulseWidth = 50,
+                            RestTime = new TimeSpan(0, 0, 0, 5, 0),
                             StimulationTime = new TimeSpan(0, 0, 0, 5, 0)
                         });
                 });
 
-            modelBuilder.Entity("BleRecorder.Models.TestSubject.Measurement", b =>
+            modelBuilder.Entity("BleRecorder.Models.Measurements.Measurement", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<int?>("AdjustmentsDuringMeasurementId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
+
+                    b.Property<string>("ContractionLoadData")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset?>("Date")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ForceData")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(400)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(400)");
 
                     b.Property<int?>("ParametersDuringMeasurementId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<int>("PositionDuringMeasurement")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<int>("SiteDuringMeasurement")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<int>("TestSubjectId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(40)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(40)");
 
                     b.Property<int>("Type")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -154,30 +149,32 @@ namespace BleRecorder.DataAccess.Migrations
                     b.ToTable("Measurements");
                 });
 
-            modelBuilder.Entity("BleRecorder.Models.TestSubject.TestSubject", b =>
+            modelBuilder.Entity("BleRecorder.Models.TestSubjects.TestSubject", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<int>("CustomizedAdjustmentsId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<int>("CustomizedParametersId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -188,7 +185,7 @@ namespace BleRecorder.DataAccess.Migrations
                     b.ToTable("TestSubjects");
                 });
 
-            modelBuilder.Entity("BleRecorder.Models.TestSubject.Measurement", b =>
+            modelBuilder.Entity("BleRecorder.Models.Measurements.Measurement", b =>
                 {
                     b.HasOne("BleRecorder.Models.Device.DeviceMechanicalAdjustments", "AdjustmentsDuringMeasurement")
                         .WithMany()
@@ -198,7 +195,7 @@ namespace BleRecorder.DataAccess.Migrations
                         .WithMany()
                         .HasForeignKey("ParametersDuringMeasurementId");
 
-                    b.HasOne("BleRecorder.Models.TestSubject.TestSubject", "TestSubject")
+                    b.HasOne("BleRecorder.Models.TestSubjects.TestSubject", "TestSubject")
                         .WithMany("Measurements")
                         .HasForeignKey("TestSubjectId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -211,7 +208,7 @@ namespace BleRecorder.DataAccess.Migrations
                     b.Navigation("TestSubject");
                 });
 
-            modelBuilder.Entity("BleRecorder.Models.TestSubject.TestSubject", b =>
+            modelBuilder.Entity("BleRecorder.Models.TestSubjects.TestSubject", b =>
                 {
                     b.HasOne("BleRecorder.Models.Device.DeviceMechanicalAdjustments", "CustomizedAdjustments")
                         .WithMany()
@@ -230,7 +227,7 @@ namespace BleRecorder.DataAccess.Migrations
                     b.Navigation("CustomizedParameters");
                 });
 
-            modelBuilder.Entity("BleRecorder.Models.TestSubject.TestSubject", b =>
+            modelBuilder.Entity("BleRecorder.Models.TestSubjects.TestSubject", b =>
                 {
                     b.Navigation("Measurements");
                 });

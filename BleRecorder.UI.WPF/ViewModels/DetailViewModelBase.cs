@@ -72,7 +72,7 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         protected virtual void RaiseDetailDeletedEvent(int modelId)
         {
-            UnsubscribeOnClosing();
+            CleanupOnClosing();
             Messenger.Send(new AfterDetailDeletedEventArgs
             {
                 Id = modelId,
@@ -90,9 +90,9 @@ namespace BleRecorder.UI.WPF.ViewModels
             });
         }
 
-        protected abstract void UnsubscribeOnClosing();
+        protected abstract void CleanupOnClosing();
 
-        protected virtual async void OnCloseDetailViewExecuteAsync()
+        protected async void OnCloseDetailViewExecuteAsync()
         {
             if (!await UserAcknowledgedClosingAsync()) return;
 
@@ -101,7 +101,7 @@ namespace BleRecorder.UI.WPF.ViewModels
 
         protected void RaiseDetailClosedEvent()
         {
-            UnsubscribeOnClosing();
+            CleanupOnClosing();
             Messenger.Send(new AfterDetailClosedEventArgs 
             {
                 Id = this.Id,

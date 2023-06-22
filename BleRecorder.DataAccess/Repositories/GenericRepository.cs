@@ -2,45 +2,52 @@
 
 namespace BleRecorder.DataAccess.Repositories
 {
-  public class GenericRepository<TEntity, TContext> : IGenericRepository<TEntity>
-    where TEntity : class
-    where TContext : DbContext
-  {
-    protected readonly TContext Context;
-
-    protected GenericRepository(TContext context)
+    public class GenericRepository<TEntity, TContext> : IGenericRepository<TEntity>
+      where TEntity : class
+      where TContext : DbContext
     {
-      this.Context = context;
-    }
+        protected readonly TContext Context;
+        protected readonly DbSet<TEntity> Table;
 
-    public void Add(TEntity model)
-    {
-      Context.Set<TEntity>().Add(model);
-    }
+        protected GenericRepository(TContext context)
+        {
+            this.Context = context;
+            Table = Context.Set<TEntity>();
+        }
 
-    public virtual async Task<TEntity?> GetByIdAsync(int id)
-    {
-      return await Context.Set<TEntity>().FindAsync(id);
-    }
+        public void Add(TEntity model)
+        {
+            Table.Add(model);
+        }
 
-    public async Task<IEnumerable<TEntity>> GetAllAsync()
-    {
-      return await Context.Set<TEntity>().ToListAsync();
-    }
+        public virtual async Task<TEntity?> GetByIdAsync(int id)
+        {
+            return await Table.FindAsync(id);
+        }
 
-    public bool HasChanges()
-    {
-      return Context.ChangeTracker.HasChanges();
-    }
+        public async Task<IReadOnlyList<TEntity>> GetAllAsync()
+        {
+            return await Table.ToListAsync();
+        }
 
-    public void Remove(TEntity model)
-    {
-      Context.Set<TEntity>().Remove(model);
-    }
+        public void Remove(TEntity model)
+        {
+            Table.Remove(model);
+        }
 
-    public async Task SaveAsync()
-    {
-      await Context.SaveChangesAsync();
+        public bool HasChanges()
+        {
+            return Context.ChangeTracker.HasChanges();
+        }
+
+        public async Task SaveAsync()
+        {
+            await Context.SaveChangesAsync();
+        }
+
+        public void Dispose()
+        {
+            Context.Dispose();
+        }
     }
-  }
 }

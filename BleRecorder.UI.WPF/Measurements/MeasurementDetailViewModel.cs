@@ -144,7 +144,7 @@ namespace BleRecorder.UI.WPF.Measurements
             return !StopMeasurementCanExecute();
         }
 
-        protected override void UnsubscribeOnClosing()
+        protected override void CleanupOnClosing()
         {
             if (_bleRecorderManager.BleRecorderDevice != null) _bleRecorderManager.BleRecorderDevice.NewValueReceived -= OnNewValueReceived;
 
@@ -159,6 +159,8 @@ namespace BleRecorder.UI.WPF.Measurements
 
             Messenger.Unregister<AfterDetailSavedEventArgs>(this);
             Messenger.Unregister<AfterDetailDeletedEventArgs>(this);
+
+            _measurementRepository.Dispose();
         }
 
         private void OnPropertyChangedEventHandler(object? o, PropertyChangedEventArgs propertyChangedEventArgs)
