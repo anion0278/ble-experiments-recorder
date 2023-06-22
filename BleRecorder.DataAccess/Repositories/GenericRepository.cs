@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BleRecorder.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace BleRecorder.DataAccess.Repositories
 {
     public class GenericRepository<TEntity, TContext> : IGenericRepository<TEntity>
-      where TEntity : class
+      where TEntity : class, IEntity
       where TContext : DbContext
     {
         protected readonly TContext Context;
@@ -11,7 +12,7 @@ namespace BleRecorder.DataAccess.Repositories
 
         protected GenericRepository(TContext context)
         {
-            this.Context = context;
+            Context = context;
             Table = Context.Set<TEntity>();
         }
 

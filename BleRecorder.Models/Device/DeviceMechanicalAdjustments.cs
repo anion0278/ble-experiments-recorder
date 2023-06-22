@@ -1,11 +1,13 @@
-﻿namespace BleRecorder.Models.Device;
+﻿using BleRecorder.Common;
+
+namespace BleRecorder.Models.Device;
 
 public class AdjustableParameter
 {
     public int Value { get; set; }
 }
 
-public class DeviceMechanicalAdjustments : ICloneable // TODO: Prototype pattern
+public class DeviceMechanicalAdjustments : IEntity, ICloneable // TODO: Prototype pattern
 {
     public int Id { get; private set; }
     public double FixtureAdductionAbductionAngle { get; set; }

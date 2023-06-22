@@ -33,7 +33,7 @@ namespace BleRecorder.UI.WPF.ViewModels
         private IDetailViewModel? _selectedDetailViewModel;
         private readonly ObservableCollection<IDetailViewModel> _detailViewModels = new();
 
-        public StimulationParametersViewModel StimulationParametersViewModel { get; set; }
+        public StimulationParametersViewModel? StimulationParametersViewModel { get; set; }
 
         public ICommand OpenSingleDetailViewCommand { get; }
         public RelayCommand<CancelEventArgs> MainViewClosingCommand { get; set; }
@@ -117,7 +117,10 @@ namespace BleRecorder.UI.WPF.ViewModels
                 }
             }
 
-            StimulationParametersViewModel.PropertyChanged -= StimulationParametersViewModel_PropertyChanged;
+            if (StimulationParametersViewModel != null)
+            {
+                StimulationParametersViewModel.PropertyChanged -= StimulationParametersViewModel_PropertyChanged;
+            }
 
             if (_bleRecorderManager.BleRecorderDevice is null) return;
             var resultFes = _dialogService.ShowYesNoDialog(

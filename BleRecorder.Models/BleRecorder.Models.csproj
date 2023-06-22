@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BleRecorder.Common\BleRecorder.Common.csproj" />
+  </ItemGroup>
+
 </Project>

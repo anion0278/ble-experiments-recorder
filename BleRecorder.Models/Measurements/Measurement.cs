@@ -1,11 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
+using BleRecorder.Common;
 using BleRecorder.Models.Device;
 using BleRecorder.Models.TestSubjects;
 
 namespace BleRecorder.Models.Measurements;
 
-public class Measurement
+public class Measurement: IEntity
 {
     public int Id { get; set; }
 

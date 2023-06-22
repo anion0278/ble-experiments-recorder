@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using System.Windows;
 using Autofac;
 using Autofac.Util;
 using AutoMapper;
@@ -26,6 +27,8 @@ using BleRecorder.UI.WPF.ViewModels;
 using BleRecorder.UI.WPF.ViewModels.Services;
 using BleRecorder.UI.WPF.Views;
 using BleRecorder.UI.WPF.Views.Resouces;
+using Microsoft.Extensions.Configuration;
+using IConfigurationProvider = Microsoft.Extensions.Configuration.IConfigurationProvider;
 
 namespace BleRecorder.UI.WPF.Startup
 {
@@ -33,7 +36,6 @@ namespace BleRecorder.UI.WPF.Startup
     {
         public IContainer Bootstrap()
         {
-            // TODO implement logging interceptor https://autofac.readthedocs.io/en/latest/advanced/interceptors.html
             var builder = new ContainerBuilder();
 
             builder.RegisterInstance<IMessenger>(WeakReferenceMessenger.Default);
@@ -71,7 +73,15 @@ namespace BleRecorder.UI.WPF.Startup
             builder.RegisterAsInterface<JsonManager>();
             builder.RegisterAsInterface<ExcelDocumentManager>();
 
+            RegisterConfiguration(builder);
+
             return builder.Build();
+        }
+
+        private static void RegisterConfiguration(ContainerBuilder builder)
+        {
+            var config = new ConfigurationBuilder().AddUserSecrets<App>().Build();
+            builder.RegisterInstance(config.Providers.First());
         }
 
         private static void RegisterDeviceManagerWithWrapper(ContainerBuilder builder)

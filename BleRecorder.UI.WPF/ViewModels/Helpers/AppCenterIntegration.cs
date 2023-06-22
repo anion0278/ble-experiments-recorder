@@ -13,12 +13,9 @@ public interface IAppCenterIntegration
 
 public class AppCenterIntegration : IAppCenterIntegration
 {
-    public AppCenterIntegration()
+    public AppCenterIntegration(IConfigurationProvider configurationProvider)
     {
-        var config = new ConfigurationBuilder().AddUserSecrets<App>().Build();
-        var secretProvider = config.Providers.First();
-        secretProvider.TryGet("appCenterKey", out var appCenterKey); // this requires to have user-secrets defined
-
+        configurationProvider.TryGet("appCenterKey", out var appCenterKey); // requires to have user-secrets defined
         AppCenter.Start(appCenterKey, typeof(Analytics), typeof(Crashes));
     }
 

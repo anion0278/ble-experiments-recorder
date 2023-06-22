@@ -1,6 +1,8 @@
-﻿namespace BleRecorder.Models.Device;
+﻿using BleRecorder.Common;
 
-public class StimulationParameters : ICloneable
+namespace BleRecorder.Models.Device;
+
+public class StimulationParameters : IEntity, ICloneable
 {
     public int Id { get; private set; }
 

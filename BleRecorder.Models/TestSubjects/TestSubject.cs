@@ -1,14 +1,15 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using BleRecorder.Common;
 using BleRecorder.Models.Device;
 using BleRecorder.Models.Measurements;
 
 namespace BleRecorder.Models.TestSubjects;
 
-public class TestSubject 
+public class TestSubject: IEntity
 {
-    public TestSubject() // TODO EF requires at least private param-less ctor, replace.      
+    public TestSubject() 
     { }
 
     public int Id { get; set; }
