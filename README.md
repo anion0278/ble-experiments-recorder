@@ -12,3 +12,6 @@ WPF GUI app for recording participants' reactions during experiment of inducing 
 - Dependency Injection, IoC Containers (Autofac)
 - Layered data-centric architecture.
 
+# Requirements:
+- <b>Latest</b> (!) Bluetooth drivers
+- Windows SDK 10.0.19041.0
