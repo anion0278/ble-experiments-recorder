@@ -7,7 +7,8 @@ WPF GUI app for recording participants' reactions during experiment of inducing 
 - Multi-threading and synchronization
 - xUnit, Moq, AutoFixture, FluentAssertions
 - EF Core, Code-First
-- BLE communication 
+- BLE communication
+- LiveCharts
 - SOLID principles
 - Dependency Injection, IoC Containers (Autofac)
 - Layered data-centric architecture.
